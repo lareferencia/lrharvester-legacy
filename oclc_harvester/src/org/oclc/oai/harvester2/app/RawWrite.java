@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package ORG.oclc.oai.harvester2.app;
+package org.oclc.oai.harvester2.app;
 
 import java.io.*;
 import java.lang.NoSuchFieldException;
@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.HashMap;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import ORG.oclc.oai.harvester2.verb.*;
+
+
+import org.oclc.oai.harvester2.verb.*;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

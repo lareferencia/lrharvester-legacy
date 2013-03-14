@@ -13,7 +13,7 @@
  limitations under the License.
  */
 
-package ORG.oclc.oai.harvester2.verb;
+package org.oclc.oai.harvester2.verb;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

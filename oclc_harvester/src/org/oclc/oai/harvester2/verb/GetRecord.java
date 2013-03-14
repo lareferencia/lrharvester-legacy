@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package ORG.oclc.oai.harvester2.verb;
+package org.oclc.oai.harvester2.verb;
 
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;

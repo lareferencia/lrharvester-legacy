@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package ORG.oclc.oai.harvester2.verb;
+package org.oclc.oai.harvester2.verb;
 
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,58 +22,59 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 /**
- * This class represents an Identify response on either the server or
+ * This class represents an ListSets response on either the server or
  * on the client
  *
  * @author Jeffrey A. Young, OCLC Online Computer Library Center
  */
-public class Identify extends HarvesterVerb {
+public class ListSets extends HarvesterVerb {
     /**
      * Mock object constructor (for unit testing purposes)
      */
-    public Identify() {
+    public ListSets() {
         super();
     }
     
     /**
-     * Client-side Identify verb constructor
+     * Client-side ListSets verb constructor
      *
      * @param baseURL the baseURL of the server to be queried
      * @exception MalformedURLException the baseURL is bad
      * @exception IOException an I/O error occurred
      */
-    public Identify(String baseURL)
+    public ListSets(String baseURL)
     throws IOException, ParserConfigurationException, SAXException,
     TransformerException {
         super(getRequestURL(baseURL));
     }
     
     /**
-     * Get the oai:protocolVersion value from the Identify response
+     * Get the oai:resumptionToken from the response
      * 
-     * @return the oai:protocolVersion value
+     * @return the oai:resumptionToken as a String
      * @throws TransformerException
      * @throws NoSuchFieldException
      */
-    public String getProtocolVersion()
+    public String getResumptionToken()
     throws TransformerException, NoSuchFieldException {
         if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
-            return getSingleString("/oai20:OAI-PMH/oai20:Identify/oai20:protocolVersion");
-        } else if (SCHEMA_LOCATION_V1_1_IDENTIFY.equals(getSchemaLocation())) {
-            return getSingleString("/oai11_Identify:Identify/oai11_Identify:protocolVersion");
+            return getSingleString("/oai20:OAI-PMH/oai20:ListSets/oai20:resumptionToken");
+        } else if (SCHEMA_LOCATION_V1_1_LIST_SETS.equals(getSchemaLocation())) {
+            return getSingleString("/oai11_ListSets:ListSets/oai11_ListSets:resumptionToken");
         } else {
             throw new NoSuchFieldException(getSchemaLocation());
         }
     }
     
     /**
-     * generate the Identify request URL for the specified baseURL
+     * Generate a ListSets request for the given baseURL
+     * 
      * @param baseURL
-     * @return the requestURL
+     * @return
      */
     private static String getRequestURL(String baseURL) {
         StringBuffer requestURL =  new StringBuffer(baseURL);
-        requestURL.append("?verb=Identify");
+        requestURL.append("?verb=ListSets");
         return requestURL.toString();
     }
 }
