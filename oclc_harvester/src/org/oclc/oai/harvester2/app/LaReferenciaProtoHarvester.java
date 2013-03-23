@@ -35,13 +35,19 @@ public class LaReferenciaProtoHarvester {
 	
 	public LaReferenciaProtoHarvester(String baseURL) {
 		this.baseURL = baseURL;
+		this.resumptionToken = null;
+	}
+	
+	public LaReferenciaProtoHarvester(String baseURL, String resumptionToken) {
+		this.baseURL = baseURL;
+		this.resumptionToken = resumptionToken;
 	}
 
 	public ListRecords listRecords() throws HarvestingException {
 		/*Se encapsulan las dos llamadas distintas en una sola, que depende de la existencia del RT */
 		try {
 		
-		    if (batchIndex == 0)
+		    if (batchIndex == 0 && resumptionToken == null)
 				actualListRecords = new ListRecords(baseURL, from, until, setSpec, metadataPrefix);
 			else
 		    	actualListRecords = new ListRecords(baseURL, resumptionToken);
@@ -148,8 +154,10 @@ public class LaReferenciaProtoHarvester {
 
 		if (args.length == 1)
 			new LaReferenciaProtoHarvester(args[0]).harvest();
+		else if (args.length == 2)
+			new LaReferenciaProtoHarvester(args[0], args[1]).harvest();
 		else
-			System.out.println("Harverster uri");
+			System.out.println("Harverster uri [resumptionToken]");
 
 	}
 	
