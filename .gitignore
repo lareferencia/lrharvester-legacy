@@ -6,3 +6,11 @@
 # Package Files #
 *.war
 *.ear
+
+backend/target/*
+
+Servers/
+
+backend/.settings
+backend/.classpath
+backend/target/classes/
