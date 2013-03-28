@@ -1,73 +1,66 @@
 package org.lareferencia.backend;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.domain.Country;
+import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.OAIOrigin;
+import org.lareferencia.backend.domain.OAISet;
+import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-public class OAIRecordPersistenceTests {
+public class NetworkPersistenceTests {
 
 
 	@Autowired
-	OAIRecordRepository repository;
+	NationalNetworkRepository repository;
 
 	@Test
 	@Transactional
 	public void testSave() throws Exception {
+		NationalNetwork nn = new NationalNetwork();
+		nn.setName("A name");
 		
-		OAIRecord record = new OAIRecord();
-		record.setIdentifier("oai:test/0001");
-		record.setOriginalXML("<xml/>");
-		record.setPublishedXML("<xml/>");
+		OAIOrigin o = new OAIOrigin();
+		o.setName("Origin");
+		o.setUri("http://Test.com");
+		nn.getOrigins().add(o);
+		
+		OAISet s = new OAISet();
+		s.setName("set1");
+		s.setDescription("la descripción");
+		
+		o.getSets().add(s);
 	
-		repository.save(record);
+		Country c = new Country();
+		c.setIso("AR");
+		c.setName("Argentina");
+		nn.setCountry(c);
 		
-		assertNotNull(record.getId());
+		repository.save(nn);
+		
+		assertNotNull(nn.getId());
 	}
-	
-	@Test
-	@Transactional
-	public void testSaveEmptyLob() throws Exception {
-	/*Bug in Hibernate 3.6 solved in 3.6.10*/	
-		OAIRecord record = new OAIRecord();
-		record.setIdentifier("oai:test/0001");
-		record.setOriginalXML("");
-		record.setPublishedXML("");
-		
-		
-		repository.save(record);
-		
-		assertNotNull(record.getId());
-	}
-	
 
-	
-	
-	@Test(expected=DataIntegrityViolationException.class)
-	@Transactional
-	public void testSaveNullIdentifier() throws Exception {
-		
-		OAIRecord record1 = new OAIRecord();
-		
-		repository.save(record1);
-	}
-/*
 	@Test
 	@Transactional
 	public void testSaveAndGet() throws Exception {
 		NationalNetwork nn = new NationalNetwork();
+		nn.setName("A name");
 		
 		OAIOrigin o = new OAIOrigin();
+		o.setUri("test.uri");
 		nn.getOrigins().add(o);
+		
 		
 		OAISet s = new OAISet();
 		s.setName("set1");
@@ -94,7 +87,7 @@ public class OAIRecordPersistenceTests {
 		assertEquals(c, loadedNN.getCountry());
 		
 	}
-*/
+
 	
 
 }

@@ -28,9 +28,21 @@ public class NationalNetwork extends AbstractEntity {
 	@JoinColumn(name="network_id")
 	private Collection<OAIOrigin> origins = new LinkedHashSet<OAIOrigin>();
 	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="network_id")
+	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
+	
+	
+	/** TODO: Hay que revisar la regla cascade para pais, es debil o fuerte respecto de la red,
+	 *  Es decir, si sacamos la red, tiene sentido que exista el pais en nuestro dominio?
+	 */
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="country_id")
 	private Country country;
+	
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="schedule_id")
+	private Schedule schedule;
     
 	
 }
