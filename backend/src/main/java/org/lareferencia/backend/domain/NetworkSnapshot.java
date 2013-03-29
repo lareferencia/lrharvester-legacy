@@ -44,4 +44,5 @@ public class NetworkSnapshot extends AbstractEntity {
 		startTime = new DateTime().toDate();
 	}
 	
+	
 }

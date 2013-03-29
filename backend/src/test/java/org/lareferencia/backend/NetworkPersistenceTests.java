@@ -36,8 +36,8 @@ public class NetworkPersistenceTests {
 		nn.getOrigins().add(o);
 		
 		OAISet s = new OAISet();
-		s.setName("set1");
-		s.setDescription("la descripción");
+		s.setSpec("set1");
+		s.setName("la descripción");
 		
 		o.getSets().add(s);
 	
@@ -63,8 +63,8 @@ public class NetworkPersistenceTests {
 		
 		
 		OAISet s = new OAISet();
-		s.setName("set1");
-		s.setDescription("la descripción");
+		s.setSpec("set1");
+		s.setName("la descripción");
 		
 		o.getSets().add(s);
 		

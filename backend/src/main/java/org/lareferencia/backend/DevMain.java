@@ -34,7 +34,6 @@ public  class DevMain {
 	public TaskScheduler scheduler;
 	
 	
-
 	public OAIRecordRepository getRecordRepository() {
 		return recordRepository;
 	}
@@ -55,6 +54,15 @@ public  class DevMain {
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
 		DevMain dao =  context.getBean("devMain",DevMain.class);
+		/*
+		NationalNetworkRepository nrepo = dao.getRepository();
+		
+		SnapshotProcessor processor = context.getBean("snapshotProcessor", SnapshotProcessor.class);
+		processor.setNetwork(nrepo.findOne(1L));
+		
+		processor.run();
+		*/
+		
 		
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();

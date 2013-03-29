@@ -6,9 +6,13 @@ import java.util.LinkedHashSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +30,7 @@ public class NationalNetwork extends AbstractEntity {
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="network_id")
+	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
 	private Collection<OAIOrigin> origins = new LinkedHashSet<OAIOrigin>();
 	
 	@OneToMany(cascade=CascadeType.ALL)

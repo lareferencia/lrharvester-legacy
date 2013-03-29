@@ -116,6 +116,22 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
 		</dependency>
+		<dependency>
+      		<groupId>org.dspace</groupId>
+      		<artifactId>oclc-harvester2</artifactId>
+      		<version>0.1.12</version>
+    	</dependency>
+    	<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		 <dependency>
+	      <groupId>apache-xerces</groupId>
+	      <artifactId>xercesImpl</artifactId>
+	      <version>2.9.1</version>
+    	</dependency>
+            
 	</dependencies>
 
 	<build>
@@ -132,7 +148,7 @@
 		</plugins>
 	</build>
 
- <!-- 	<pluginRepositories>
+ 	<pluginRepositories>
 		<pluginRepository>
 			<id>Codehaus</id>
 			<url>http://repository.codehaus.org/</url>
@@ -142,6 +158,12 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
+	    <repository>
+        	<id>jboss thirdparty</id>
+       	 	<name>JBoss Thirdparty Uploads</name>
+        	<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+      	</repository>
+    
 		<repository>
 			<id>org.jboss.repository.releases</id>
 			<name>JBoss Maven Release Repository</name>
@@ -167,5 +189,5 @@
 			<name>Spring Snapshot Repository</name>
 			<url>file:///${user.dir}/target/staging/snapshot</url>
 		</snapshotRepository>
-	</distributionManagement> -->
+	</distributionManagement> 
 </project>

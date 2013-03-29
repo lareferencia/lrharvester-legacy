@@ -38,8 +38,8 @@ public class SnapshotPersistenceTests {
 		nn.getOrigins().add(o);
 		
 		OAISet s = new OAISet();
-		s.setName("set1");
-		s.setDescription("la descripción");
+		s.setSpec("set1");
+		s.setName("la descripción");
 		
 		o.getSets().add(s);
 	

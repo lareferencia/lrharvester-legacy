@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,10 @@ public class SnapshotManager {
 	
 	@Autowired
 	private TaskScheduler scheduler;
+	
+	@Autowired 
+	private ApplicationContext applicationContext;
+
 	
 		
 	private ConcurrentLinkedQueue<SnapshotProcessor> activeProcessors;
@@ -38,7 +43,8 @@ public class SnapshotManager {
 		Collection<NationalNetwork> storedNetworks = networkRepository.findAll();
 		
 		for ( NationalNetwork storedNetwork:storedNetworks ) {
-			SnapshotProcessor processor = SnapShotProcessorCreator.createSnapshotProcessor(storedNetwork);
+			SnapshotProcessor processor = applicationContext.getBean("snapshotProcessor", SnapshotProcessor.class);
+			processor.setNetwork(storedNetwork);
 			activeProcessors.add(processor);
 			scheduler.schedule(processor, new SnapshotCronTrigger(storedNetwork) );
 		}

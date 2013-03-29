@@ -1,42 +1,63 @@
 package org.lareferencia.backend.tasks;
 
-import java.util.Date;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.harvester.HarvestingEvent;
+import org.lareferencia.backend.harvester.IHarvester;
+import org.lareferencia.backend.harvester.IHarvestingEventListener;
+import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 @Scope(value="prototype")
-public class SnapshotProcessor implements Processor {
+public class SnapshotProcessor implements Processor, IHarvestingEventListener {
+	
+	@Autowired
+	public NationalNetworkRepository repository;
+	
+	IHarvester harvester;
 
-	NationalNetwork network;
-
-	public SnapshotProcessor(NationalNetwork network) {
+	private NationalNetwork network;
+	
+	
+	public void setNetwork(NationalNetwork network) {
 		this.network = network;
+	}
+
+
+	public SnapshotProcessor() {
+	};
+	
+	/**
+	 * TODO: Podría ser Async, pero no tiene sentido empezar un nuevo proceso de harvesting para una misma red si el anterior
+	 * no terminó. Hay que cuidar los bloqueos!!! TODO: Podría implemetarse el suicidio de procesos para evitar problemas
+	 */
+	@Override
+	public void run() {
+		
+		/** 
+		 * TODO: Es probable que deba refrescarse la red desde la bd todas las corridas, es posible que cambie y genere incosistencias
+		 */
+		if ( network != null ) {
+			try {
+			System.out.println("Procesing:" + network.getName() );
+			harvester.harvest(network);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Autowired
+	public void setHarvester(IHarvester harvester) {
+		this.harvester = harvester;
+		harvester.addEventListener(this);		
 	}
 	
 	@Override
-    @Async
-	public void run() {
-				
-		String threadName = network.getName() + "-"+ Thread.currentThread().getName();
-	
-	    System.out.println(  threadName + " beginning work. Processing: " );
-	    try {
-	           Thread.sleep(10000); // simulates work
-	        }
-	        catch (InterruptedException e) {
-	            Thread.currentThread().interrupt();
-	        }
-	        System.out.println( threadName + " completed work on "); 
+	public void harvestingEventOccurred(HarvestingEvent event) {
+		System.out.println( this.network.getName() + "Evento recibido: " + event.getStatus() );
 	}
-
-	
 }

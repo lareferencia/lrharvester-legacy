@@ -16,10 +16,10 @@ import lombok.Setter;
 @Setter
 public class OAISet extends AbstractEntity {
 	
-	private String description;
+	private String name;
 	
 	@Column(nullable = false)
-	private String name;
+	private String spec;
 	
 	
 
