@@ -12,9 +12,9 @@ import org.lareferencia.backend.domain.Schedule;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.tasks.SnapshotCronTrigger;
-import org.lareferencia.backend.tasks.Processor;
+import org.lareferencia.backend.tasks.ISnapshotWorker;
 import org.lareferencia.backend.tasks.SnapshotManager;
-import org.lareferencia.backend.tasks.SnapshotProcessor;
+import org.lareferencia.backend.tasks.SnapshotWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -54,16 +54,16 @@ public  class DevMain {
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
 		DevMain dao =  context.getBean("devMain",DevMain.class);
-		/*
+		
 		NationalNetworkRepository nrepo = dao.getRepository();
 		
-		SnapshotProcessor processor = context.getBean("snapshotProcessor", SnapshotProcessor.class);
+		ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
 		processor.setNetwork(nrepo.findOne(1L));
 		
 		processor.run();
-		*/
 		
 		
+		/*
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();
 

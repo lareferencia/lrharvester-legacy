@@ -23,12 +23,11 @@ public class SnapshotManager {
 	private ApplicationContext applicationContext;
 
 	
-		
-	private ConcurrentLinkedQueue<SnapshotProcessor> activeProcessors;
+	private ConcurrentLinkedQueue<ISnapshotWorker> activeProcessors;
 	
 	
 	public SnapshotManager() {
-		activeProcessors = new ConcurrentLinkedQueue<SnapshotProcessor>();
+		activeProcessors = new ConcurrentLinkedQueue<ISnapshotWorker>();
 	}
 	
 	/**
@@ -43,7 +42,7 @@ public class SnapshotManager {
 		Collection<NationalNetwork> storedNetworks = networkRepository.findAll();
 		
 		for ( NationalNetwork storedNetwork:storedNetworks ) {
-			SnapshotProcessor processor = applicationContext.getBean("snapshotProcessor", SnapshotProcessor.class);
+			ISnapshotWorker processor = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 			processor.setNetwork(storedNetwork);
 			activeProcessors.add(processor);
 			scheduler.schedule(processor, new SnapshotCronTrigger(storedNetwork) );

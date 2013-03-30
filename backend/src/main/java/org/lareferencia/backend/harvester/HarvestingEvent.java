@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.OAIRecord;
 
 @Getter
 @Setter
@@ -14,19 +15,16 @@ import org.lareferencia.backend.domain.NationalNetwork;
 public class HarvestingEvent {
 	
 	private String errorMessage;
-	private String response;
-	private HarvestingResult status;
+	private List<OAIRecord> records;
+	private HarvestingEventStatus status;
 	
-	public HarvestingEvent(String response, HarvestingResult status) {
-		this.response = response;
+
+
+	public HarvestingEvent(List<OAIRecord> records,
+			HarvestingEventStatus ok) {
+		this.records = records;
 		this.status = status;
-	}
-	
-	public HarvestingEvent(String response, String errorMsg, HarvestingResult status) {
-		this.response = response;
-		this.status = status;
-		this.errorMessage = errorMessage;
-		
+		//this.errorMessage = errorMessage;
 	}
 
 

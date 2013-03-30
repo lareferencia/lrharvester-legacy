@@ -1,6 +1,6 @@
 package org.lareferencia.backend.harvester;
 
-public enum HarvestingResult {
+public enum HarvestingEventStatus {
 	
 	OK,
 	ERROR

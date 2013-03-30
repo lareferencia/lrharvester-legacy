@@ -43,7 +43,7 @@
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven transaction-manager="transactionManager"/>
 
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
 	<task:scheduler id="taskScheduler" pool-size="5"/>

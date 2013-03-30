@@ -1,6 +1,8 @@
 
 package org.lareferencia.backend.domain;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,9 +28,9 @@ public class OAIRecord extends AbstractEntity {
 	@Column(nullable = false)
 	private String identifier;
 	
-	@Temporal(TemporalType.DATE)
-	@Column(nullable = false)
-	private java.util.Date date;
+	@Temporal(TemporalType.TIMESTAMP)
+	//@Column(nullable = false)
+	private Date datestamp;
 	
 	@Lob @Basic(fetch=FetchType.LAZY)
 	private String originalXML;
@@ -41,6 +43,14 @@ public class OAIRecord extends AbstractEntity {
 
 	public OAIRecord() {
 		this.status = RecordStatus.UNTESTED;
+	}
+	
+	public OAIRecord(String identifier, Date datestamp, String xmlstring) {
+		this.status = RecordStatus.UNTESTED;
+		this.identifier = identifier;
+		this.datestamp = datestamp;
+		this.originalXML = xmlstring;
+		
 	}
 		
 }
