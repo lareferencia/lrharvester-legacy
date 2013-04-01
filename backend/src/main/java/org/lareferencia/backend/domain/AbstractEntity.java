@@ -9,17 +9,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import org.springframework.hateoas.Identifiable;
 
-/**
- * Base class for entity implementations. Uses a {@link Long} id.
- * 
- * @author Oliver Gierke
- */
+
 @MappedSuperclass
 @Getter
 @ToString
 @EqualsAndHashCode
-public class AbstractEntity  {
+public class AbstractEntity implements Identifiable<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,25 +1,15 @@
 package org.lareferencia.backend;
 
-import java.util.Date;
-
-import org.lareferencia.backend.domain.Country;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.lareferencia.backend.domain.NationalNetwork;
-import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.OAIOrigin;
-import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.domain.OAISet;
-import org.lareferencia.backend.domain.Schedule;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.tasks.SnapshotCronTrigger;
 import org.lareferencia.backend.tasks.ISnapshotWorker;
-import org.lareferencia.backend.tasks.SnapshotManager;
-import org.lareferencia.backend.tasks.SnapshotWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 
 
 public  class DevMain {
@@ -50,23 +40,26 @@ public  class DevMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		Logger.getRootLogger().setLevel(Level.WARN);
+		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
 		DevMain dao =  context.getBean("devMain",DevMain.class);
 		
 		NationalNetworkRepository nrepo = dao.getRepository();
+		NationalNetwork network = nrepo.findOne(1L);
 		
 		ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
-		processor.setNetwork(nrepo.findOne(1L));
-		
+		processor.setNetworkID(network.getId());
+	
 		processor.run();
-		
-		
 		/*
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();
-
+		*/
+		
 		/*
 		NationalNetworkRepository nrepo = dao.getRepository();
 		OAIRecordRepository rrepo = dao.getRecordRepository();
@@ -75,14 +68,8 @@ public  class DevMain {
 		nn.setName("IBICT Brasil");
 		
 		OAIOrigin o = new OAIOrigin();
-		o.setName("primer origen");
-		o.setUri("http://test.com/");
-		
-		OAISet s = new OAISet();
-		s.setName("set1");
-		s.setDescription("la descripción");
-		
-		o.getSets().add(s);
+		o.setName("Origen principal");
+		o.setUri("http://repositoriosdigitales.mincyt.gob.ar:8280/is/mvc/oai/oai.do");
 		
 		Country c = new Country();
 		c.setName("Brasil");
@@ -92,23 +79,12 @@ public  class DevMain {
 		sch.setCronExpression("0/5 * * * * ?");
 		
 		nn.setSchedule(sch);
-		
 		nn.getOrigins().add(o);
 		nn.setCountry(c);
-		
-		OAIRecord record = new OAIRecord();
-		record.setIdentifier("oai:test/0001");
-		record.setOriginalXML("<xml/>");
-		record.setPublishedXML("<xml/>");
-	
-		NetworkSnapshot ns = new NetworkSnapshot();
-		ns.getRecords().add(record);
-	
-		nn.getSnapshots().add(ns);
-			
+				
 		nrepo.saveAndFlush(nn);
-		
 		*/
+		
 	}
 
 	public TaskScheduler getScheduler() {

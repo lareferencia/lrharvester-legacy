@@ -14,6 +14,9 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.joda.time.DateTime;
+
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +32,7 @@ public class OAIRecord extends AbstractEntity {
 	private String identifier;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	//@Column(nullable = false)
+	@Column(nullable = false)
 	private Date datestamp;
 	
 	@Lob @Basic(fetch=FetchType.LAZY)
@@ -42,15 +45,29 @@ public class OAIRecord extends AbstractEntity {
 	private RecordStatus status;
 
 	public OAIRecord() {
+		super();
 		this.status = RecordStatus.UNTESTED;
 	}
 	
-	public OAIRecord(String identifier, Date datestamp, String xmlstring) {
+	public OAIRecord(String identifier, String xmlstring) {
+		super();
 		this.status = RecordStatus.UNTESTED;
 		this.identifier = identifier;
-		this.datestamp = datestamp;
+		this.datestamp = new DateTime().toDate();
 		this.originalXML = xmlstring;
 		
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return this.identifier.equals( ((OAIRecord)o).identifier );
+	}
+
+	@Override
+	public int hashCode() {
+		return this.identifier.hashCode();
+	}
+	
+	
 		
 }

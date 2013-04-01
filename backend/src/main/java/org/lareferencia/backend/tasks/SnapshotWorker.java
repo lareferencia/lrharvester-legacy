@@ -1,11 +1,15 @@
 package org.lareferencia.backend.tasks;
 
+import java.util.Collection;
+
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
+import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.HarvestingEvent;
+import org.lareferencia.backend.harvester.HarvestingEventStatus;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
@@ -26,44 +30,57 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	public NetworkSnapshotRepository snapshotRepository;
 	
+	@Autowired
+	public OAIRecordRepository recordRepository;
+	
 	private IHarvester harvester;
 	
-	private NetworkSnapshot snapshot;
+	private Long _network_id;
 
 	private NationalNetwork network;
-	
-	
-	public void setNetwork(NationalNetwork network) {
-		this.network = network;
-	}
 
+	private NetworkSnapshot snapshot;
+
+	public void setNetworkID(Long networkID) {
+		this._network_id = networkID;
+	}
 
 	public SnapshotWorker() {
 	};
 	
+	
 	/**
 	 * TODO: Podría ser Async, pero no tiene sentido empezar un nuevo proceso de harvesting para una misma red si el anterior
-	 * no terminó. Hay que cuidar los bloqueos!!! TODO: Podría implemetarse el suicidio de procesos para evitar problemas
+	 * no terminó. Hay que cuidar los bloqueos!!! TODO: Podría implemetarse la limpieza de procesos inactivos para evitar problemas
 	 */
 	@Override
 	public void run() {
 		
-		snapshot = new NetworkSnapshot();
-		snapshotRepository.save(snapshot);
-	
-		/** 
-		 * TODO: Es probable que deba refrescarse la red desde la bd todas las corridas, es posible que cambie y genere incosistencias
-		 */
-		if ( network != null ) {
-			try {
-				launchHarvesting();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+		network = networkRepository.findOne( _network_id );
+		
+		if (network != null) {
+			
+			launchInicialization();
+			launchHarvesting();
 		}
+		
+		
+
 	}
 	
+	/********************* Inicialization ************************/
+	
+	private void launchInicialization() {
+		
+		snapshot = new NetworkSnapshot();
+		network.getSnapshots().add(snapshot);
+
+		snapshotRepository.save(snapshot);
+		networkRepository.save(network);
+		
+	}
+	
+	/*************************************************************/
 	
 	/********************* Harvesting ************************/
 	
@@ -74,17 +91,41 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 	
 	@Override
-	@Transactional
 	public void harvestingEventOccurred(HarvestingEvent event) {
-		System.out.println( this.network.getName() + "Evento recibido: " + event.getStatus() );
-		
-		snapshot.getRecords().addAll(event.getRecords());
 		
 		
+		System.out.println( network.getName() + "Evento recibido: " + event.getStatus() );
+	
+	
+		if ( event.getStatus() == HarvestingEventStatus.OK ) {
+			
+			// Agrega los records al snapshot actual
+			
+			//TODO: Es probable que la persistencia de registros deba implementare saltando el ORM para mejorar la performance.
+			recordRepository.save( event.getRecords() );
+			snapshot.getRecords().addAll( event.getRecords() );			
+			
+			snapshotRepository.save(snapshot);
+			
+			snapshot.setSize( snapshot.getRecords().size() );
+			
+			System.out.println( network.getName() + ":" + snapshot.getSize() );
+	
+		} else if ( event.getStatus() == HarvestingEventStatus.ERROR) {
+			
+		}
+		//TODO: Definir que se hace en caso de eventos sin status conocido
 		
 	}
 	
-	public void launchHarvesting() {
+	
+	
+	private void launchHarvesting() {
+		
+		// pasa el estado del snapshot a harvesting
+		snapshot.setStatus( SnapshotStatus.HARVESTING );
+		snapshotRepository.save(snapshot);
+		
 		
 		// Se recorren los orígenes 
 		for ( OAIOrigin origin:network.getOrigins() ) {

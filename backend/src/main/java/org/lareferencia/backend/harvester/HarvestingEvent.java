@@ -21,7 +21,7 @@ public class HarvestingEvent {
 
 
 	public HarvestingEvent(List<OAIRecord> records,
-			HarvestingEventStatus ok) {
+			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;
 		//this.errorMessage = errorMessage;

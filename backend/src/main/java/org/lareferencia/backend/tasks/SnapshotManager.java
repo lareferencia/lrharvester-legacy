@@ -43,7 +43,7 @@ public class SnapshotManager {
 		
 		for ( NationalNetwork storedNetwork:storedNetworks ) {
 			ISnapshotWorker processor = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
-			processor.setNetwork(storedNetwork);
+			processor.setNetworkID(storedNetwork.getId());
 			activeProcessors.add(processor);
 			scheduler.schedule(processor, new SnapshotCronTrigger(storedNetwork) );
 		}

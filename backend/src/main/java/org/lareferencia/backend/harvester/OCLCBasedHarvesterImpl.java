@@ -33,6 +33,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		IHarvester {
 
 	private static final int STANDARD_RECORD_SIZE = 100;
+	private static final String METADATA_NODE_NAME = "metadata";
 	int MAX_RETRIES = 3;
 	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 	private static DateTimeFormatter dateTimeParser = DateTimeFormat.forPattern("yyyy-MMM-dd'THH:mm:ssZ");
@@ -55,7 +56,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// La condición es que sea la primera corrida o que no sea null el
 		// resumption (caso de fin)
 		// TODO: Hay casos donde dio null y no era el fin, estudiar alternativas
-		while (batchIndex == 0 || resumptionToken != null) {
+		while ( /*batchIndex < 3 && */(batchIndex == 0 || resumptionToken != null) ) {
 
 			do {
 				try {
@@ -74,8 +75,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = 5;
 					break;
 
-				} catch (HarvestingException | NoSuchFieldException
-						| TransformerException e) {
+				} catch (HarvestingException | NoSuchFieldException| TransformerException e) {
+					
+					e.printStackTrace();
 					System.out.println("Problemas en el lote: " + batchIndex
 							+ " reintento: " + actualRetry);
 					System.out.println(e.getMessage());
@@ -123,7 +125,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				if (resumptionToken != null && resumptionToken.length() == 0)
 					resumptionToken = null;
 			}
-
+		//TODO: Deben reordenarse el lanzamiento y conversión de exceptions
 		} catch (IOException e) {
 			throw new HarvestingException(e.getMessage());
 		} catch (ParserConfigurationException e) {
@@ -160,19 +162,19 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			throw new NoSuchFieldException(listRecords.getSchemaLocation());
 		}
 		
-		
+		//System.out.println( listRecords.toString() );
+				
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			
-			String identifier = listRecords.getSingleString(node, "//"+namespace+":header/" + namespace + ":identifier");
-		    String datestampString = listRecords.getSingleString(node, "//"+namespace+":header/" + namespace + ":datestamp");
-				
-			//DateTime datestamp = dateTimeParser.parseDateTime(datestampString);
-			
-			result.add( new OAIRecord(identifier, null, getMetadataXMLFromRecordNode(node)) );
+			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");
+		    
+			//System.out.println(identifier);
+						
+			result.add( new OAIRecord(identifier, getMetadataXMLFromRecordNode(node)) );
 		}
 		
-		System.out.println();
+		//System.out.println();
 		
 		
 		return result;
@@ -185,14 +187,27 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	 * @param node
 	 * @return
 	 * @throws TransformerException
+	 * @throws NoSuchFieldException 
 	 */
-	private String getMetadataXMLFromRecordNode(Node node) throws TransformerException {
+	private String getMetadataXMLFromRecordNode(Node node) throws TransformerException, NoSuchFieldException {
+		
+		
+		// TODO: búsqueda secuencial, puede ser ineficiente pero xpath presentaba problemas
+		NodeList childs = node.getChildNodes();
+		Node metadataNode = null;
+		for (int i=0; i < childs.getLength(); i++)
+			if ( childs.item(i).getNodeName().equals(METADATA_NODE_NAME) )  
+				metadataNode = childs.item(i);
+
+		if (metadataNode == null) 
+			throw new NoSuchFieldException(METADATA_NODE_NAME);
+		
 		
 		StringWriter sw = new StringWriter();
 	    Result output = new StreamResult(sw);
 		Transformer idTransformer = xformFactory.newTransformer();
         idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        idTransformer.transform( new DOMSource(node.getLastChild().getFirstChild()), output);
+        idTransformer.transform( new DOMSource(metadataNode), output);
 		return sw.toString();
 		
 	}

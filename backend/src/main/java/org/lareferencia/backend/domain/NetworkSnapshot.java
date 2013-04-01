@@ -3,6 +3,8 @@ package org.lareferencia.backend.domain;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,13 +37,18 @@ public class NetworkSnapshot extends AbstractEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	private java.util.Date endTime;
 	
+	@Column(nullable = false)
+	private Integer size;
+
 	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="snapshot_id")
+	@JoinColumn(name="snapshot_id"/*, nullable=false*/)
 	private Collection<OAIRecord> records = new LinkedHashSet<OAIRecord>();
 	
 	public NetworkSnapshot() {
+		super();
 		this.status = SnapshotStatus.INITIALIZED;
 		startTime = new DateTime().toDate();
+		this.size = 0;
 	}
 	
 	

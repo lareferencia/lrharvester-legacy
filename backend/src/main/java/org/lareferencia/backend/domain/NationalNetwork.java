@@ -35,6 +35,7 @@ public class NationalNetwork extends AbstractEntity {
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="network_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
 	
 	
