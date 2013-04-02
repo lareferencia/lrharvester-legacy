@@ -15,48 +15,42 @@
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<spring.framework.version>3.2.0.RELEASE</spring.framework.version>
+		<hibernate.version>4.1.9.Final</hibernate.version>
+		<jackson.version>2.1.4</jackson.version>	
 	</properties>
 	 
 	<dependencies>
-		<!--dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.10.Final</version>
-		</dependency-->
+
+		<!-- Hibernate -->
 		<dependency>
-     	<groupId>org.hibernate</groupId>
-	     	<artifactId>hibernate-entitymanager</artifactId>
-	     	<version>4.1.9.Final</version>
-	     	<!-- will come with Hibernate core-->
-		</dependency>
-		
-		<!--  dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.1.Final</version>
-		</dependency-->
+		</dependency>
+		<dependency>
+     		<groupId>org.hibernate</groupId>
+	     	<artifactId>hibernate-entitymanager</artifactId>
+	     	<version>${hibernate.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.1.Final</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
-		</dependency>
-        <dependency>
+	    <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.10</version>
             <scope>runtime</scope>
         </dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
 		</dependency>
+    
+	
+		<!--  Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -72,6 +66,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.12</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -93,6 +93,32 @@
 			<artifactId>spring-hateoas</artifactId>
 			<version>0.4.0.RELEASE</version>
 		</dependency>
+		
+		<!-- OCLC Harvester -->
+		<dependency>
+      		<groupId>org.dspace</groupId>
+      		<artifactId>oclc-harvester2</artifactId>
+      		<version>0.1.12</version>
+    	</dependency>
+    	<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		 <dependency>
+	      <groupId>apache-xerces</groupId>
+	      <artifactId>xercesImpl</artifactId>
+	      <version>2.9.1</version>
+    	</dependency>
+		
+		
+		<!-- Common -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
@@ -109,13 +135,6 @@
 			<version>0.11.4</version>
 			<scope>provided</scope>
 		</dependency>
-		<!--  dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -128,21 +147,11 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
 		</dependency>
-		<dependency>
-      		<groupId>org.dspace</groupId>
-      		<artifactId>oclc-harvester2</artifactId>
-      		<version>0.1.12</version>
-    	</dependency>
     	<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>2.7.1</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
-		 <dependency>
-	      <groupId>apache-xerces</groupId>
-	      <artifactId>xercesImpl</artifactId>
-	      <version>2.9.1</version>
-    	</dependency>
             
 	</dependencies>
 
@@ -160,16 +169,9 @@
 		</plugins>
 	</build>
 
- 	<pluginRepositories>
-		<pluginRepository>
-			<id>Codehaus</id>
-			<url>http://repository.codehaus.org/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+ 	
 	<repositories>
+		
 	    <repository>
         	<id>jboss thirdparty</id>
        	 	<name>JBoss Thirdparty Uploads</name>
@@ -185,21 +187,5 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<distributionManagement>
-		<downloadUrl>http://www.springframework.org/download</downloadUrl>
-		<site>
-			<id>staging</id>
-			<url>file:///${user.dir}/target/staging/org.springframework.batch.archetype/${pom.artifactId}</url>
-		</site>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring Release Repository</name>
-			<url>file:///${user.dir}/target/staging/release</url>
-		</repository>
-		<snapshotRepository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshot Repository</name>
-			<url>file:///${user.dir}/target/staging/snapshot</url>
-		</snapshotRepository>
-	</distributionManagement> 
+	
 </project>
