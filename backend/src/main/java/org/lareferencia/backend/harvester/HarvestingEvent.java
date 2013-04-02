@@ -14,7 +14,7 @@ import org.lareferencia.backend.domain.OAIRecord;
 @ToString
 public class HarvestingEvent {
 	
-	private String errorMessage;
+	private String message;
 	private List<OAIRecord> records;
 	private HarvestingEventStatus status;
 	
@@ -25,6 +25,13 @@ public class HarvestingEvent {
 		this.records = records;
 		this.status = status;
 		//this.errorMessage = errorMessage;
+	}
+	
+	public HarvestingEvent(String msg,
+			HarvestingEventStatus status) {
+		
+		this.message = msg;
+		this.status = status;
 	}
 
 

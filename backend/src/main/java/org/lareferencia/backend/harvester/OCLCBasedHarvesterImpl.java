@@ -20,6 +20,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,11 +37,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	private static final String METADATA_NODE_NAME = "metadata";
 	int MAX_RETRIES = 3;
 	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
-	private static DateTimeFormatter dateTimeParser = DateTimeFormat.forPattern("yyyy-MMM-dd'THH:mm:ssZ");
 
 	public OCLCBasedHarvesterImpl() {
 		super();
-		System.out.println("Creando Harvester" + this.toString());
+		System.out.println("Creando Harvester: " + this.toString());
 	}
 
 	public void harvest(String uri, String from, String until, String setname,
@@ -56,16 +56,19 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// La condición es que sea la primera corrida o que no sea null el
 		// resumption (caso de fin)
 		// TODO: Hay casos donde dio null y no era el fin, estudiar alternativas
-		while ( /*batchIndex < 3 && */(batchIndex == 0 || resumptionToken != null) ) {
+		while ( batchIndex == 0 || (resumptionToken.trim().length() != 0 ) ) {
 
 			do {
 				try {
-					actualListRecords = listRecords(uri, setname,
-							metadataPrefix, batchIndex, resumptionToken);
-					resumptionToken = actualListRecords.getResumptionToken();
-
 					
-
+					System.out.println( "Request:" + resumptionToken);
+					actualListRecords = listRecords(uri, setname, metadataPrefix, batchIndex, resumptionToken);
+					resumptionToken = actualListRecords.getResumptionToken();
+					
+					/**
+					 * TODO: Baja prioridad. Dado que dos llamadas no se superponen puede reutilizarse el mismo evento dentro
+					 * de esta función
+					 */
 					fireHarvestingEvent(new HarvestingEvent(
 							parseRecords(actualListRecords),
 							HarvestingEventStatus.OK));
@@ -75,28 +78,38 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = 5;
 					break;
 
-				} catch (HarvestingException | NoSuchFieldException| TransformerException e) {
+				} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 					
-					e.printStackTrace();
-					System.out.println("Problemas en el lote: " + batchIndex
-							+ " reintento: " + actualRetry);
-					System.out.println(e.getMessage());
-
-					System.out.print("Esperando " + secondsToNextRetry
-							+ " segundos para el proximo reintento ..");
-					try {
-						Thread.sleep(secondsToNextRetry * 1000);
-					} catch (InterruptedException t) {
-					}
-					System.out.println("OK");
-
+					String message = buildErrorMessage(e, batchIndex, actualRetry);
+					message += "Esperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
+					
+					fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_RETRY) );
+						
+					// Una espera de secondsToNextRetry
+					try { Thread.sleep(secondsToNextRetry * 1000); } catch (InterruptedException t) {}
+						
 					// Se incrementa el retry y se duplica el tiempo de espera
 					actualRetry++;
 					secondsToNextRetry = secondsToNextRetry * 2;
 				}
+				
 			} while (actualRetry < MAX_RETRIES);
+			
+			if ( actualRetry == MAX_RETRIES ) {
+				String message = "Número de reintentos máximos alcanzados.  Abortando proceso de cosecha.";
+				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_FATAL) );
+				break;
+			}
 
 		}
+	}
+	
+	private String buildErrorMessage(Exception e, int batchIndex, int actualRetry) {
+		String message = "Error en lote: " + batchIndex + " reintento: " + actualRetry + "\n";
+		message += "Detalles del error:\n";
+		message += e.getMessage();
+		message += "Fin detalles:\n";
+		return message;
 	}
 
 	private ListRecords listRecords(String baseURL, String setSpec,
@@ -146,6 +159,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	private List<OAIRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
 		List<OAIRecord> result = new ArrayList<OAIRecord>(STANDARD_RECORD_SIZE);
+		/**
+		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
+		 * objetos de registro, habría que evaluarlo cuidadosamente
+		 */
 		
 		
 		// La obtención de registros por xpath se realiza de acuerdo al schema correspondiente

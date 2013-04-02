@@ -6,6 +6,7 @@ import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.tasks.ISnapshotWorker;
+import org.lareferencia.backend.tasks.SnapshotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,24 +42,24 @@ public  class DevMain {
 	 */
 	public static void main(String[] args) {
 		
-		Logger.getRootLogger().setLevel(Level.WARN);
+		Logger.getRootLogger().setLevel(Level.INFO);
 		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
 		DevMain dao =  context.getBean("devMain",DevMain.class);
 		
-		NationalNetworkRepository nrepo = dao.getRepository();
+		/*NationalNetworkRepository nrepo = dao.getRepository();
 		NationalNetwork network = nrepo.findOne(1L);
 		
 		ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
 		processor.setNetworkID(network.getId());
 	
-		processor.run();
-		/*
+		processor.run();*/
+		
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();
-		*/
+		
 		
 		/*
 		NationalNetworkRepository nrepo = dao.getRepository();

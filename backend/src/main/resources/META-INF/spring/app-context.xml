@@ -17,11 +17,11 @@
 
     <jpa:repositories base-package="org.lareferencia.backend.repositories"  />
     
-	<context:component-scan base-package="org.lareferencia.backend" />
+	<context:component-scan base-package="org.lareferencia.backend" />	
+	
 
     <!-- Persistence setup -->
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="org.lareferencia.backend" />
 		<property name="jpaVendorAdapter">
@@ -32,6 +32,7 @@
 			</bean>
 		</property>
 	</bean>
+	
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -39,11 +40,12 @@
 		<property name="username" value="root" />
 		<property name="password" value="ljm210279" />
 	</bean>
+	
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	
-	<tx:annotation-driven transaction-manager="transactionManager" mode="aspectj"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
 	<task:scheduler id="taskScheduler" pool-size="5"/>

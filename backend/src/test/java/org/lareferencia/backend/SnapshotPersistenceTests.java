@@ -56,8 +56,7 @@ public class SnapshotPersistenceTests {
 		record.setOriginalXML("<xml/>");
 		record.setPublishedXML("<xml/>");
 	
-		ns.getRecords().add(record);
-		
+		record.setSnapshot(ns);
 		
 		repository.save(nn);
 		assertNotNull(ns.getId());

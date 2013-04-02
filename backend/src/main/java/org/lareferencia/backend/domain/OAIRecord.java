@@ -1,15 +1,20 @@
 
 package org.lareferencia.backend.domain;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -43,6 +48,10 @@ public class OAIRecord extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private RecordStatus status;
+	
+	@ManyToOne(fetch=FetchType.LAZY,optional=false)	
+	@JoinColumn(name="snapshot_id")
+	private NetworkSnapshot snapshot;
 
 	public OAIRecord() {
 		super();
@@ -57,17 +66,5 @@ public class OAIRecord extends AbstractEntity {
 		this.originalXML = xmlstring;
 		
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		return this.identifier.equals( ((OAIRecord)o).identifier );
-	}
-
-	@Override
-	public int hashCode() {
-		return this.identifier.hashCode();
-	}
-	
-	
 		
 }

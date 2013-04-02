@@ -1,6 +1,11 @@
 package org.lareferencia.backend.tasks;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
@@ -14,6 +19,7 @@ import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
+import org.lareferencia.backend.repositories.OAIRecordDAO;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,14 +30,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Scope(value="prototype")
 public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener {
 	
-	@Autowired
-	public NationalNetworkRepository networkRepository;
-		
-	@Autowired
-	public NetworkSnapshotRepository snapshotRepository;
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	@Autowired
-	public OAIRecordRepository recordRepository;
+	private NationalNetworkRepository networkRepository;
+		
+	@Autowired
+	private NetworkSnapshotRepository snapshotRepository;
+	
+	@Autowired
+	private OAIRecordDAO recordDAO;
 	
 	private IHarvester harvester;
 	
@@ -58,14 +67,18 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		
 		network = networkRepository.findOne( _network_id );
 		
-		if (network != null) {
-			
-			launchInicialization();
-			launchHarvesting();
-		}
+		launchInicialization();
+		launchHarvesting();
 		
+		// Cierre del Snapshot
+		snapshot.setStatus( SnapshotStatus.FINISHED );
+		snapshot.setEndTime( new Date() );
+		snapshotRepository.save(snapshot);
 		
-
+		// Flush y llamados al GC
+		networkRepository.flush();
+		snapshotRepository.flush();
+		System.gc();
 	}
 	
 	/********************* Inicialization ************************/
@@ -90,42 +103,65 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		harvester.addEventListener(this);		
 	}
 	
+	
+	
 	@Override
+	@Transactional
 	public void harvestingEventOccurred(HarvestingEvent event) {
 		
-		
 		System.out.println( network.getName() + "Evento recibido: " + event.getStatus() );
-	
-	
-		if ( event.getStatus() == HarvestingEventStatus.OK ) {
 			
-			// Agrega los records al snapshot actual
+		switch ( event.getStatus() ) {
+			case OK:			
+				// Agrega los records al snapshot actual
+				
+				
+				/*
+				for (OAIRecord record:event.getRecords() ) {
+		    		record.setSnapshot(snapshot);		
+		    		recordDAO.store(record);
+				}
+					recordDAO.flushAndClear();
+				 */
+				
+
+				recordDAO.store( event.getRecords(), snapshot );
+				
+				snapshot.setSize( snapshot.getSize() + event.getRecords().size() );	
+				snapshotRepository.save(snapshot);
+				
 			
-			//TODO: Es probable que la persistencia de registros deba implementare saltando el ORM para mejorar la performance.
-			recordRepository.save( event.getRecords() );
-			snapshot.getRecords().addAll( event.getRecords() );			
+				
 			
-			snapshotRepository.save(snapshot);
+				// Este flush mantine mas o menos constante el uso de memoria, quitando los records
+				                       
+				System.out.println( network.getName() + ":" + snapshot.getSize() );
+			break;
 			
-			snapshot.setSize( snapshot.getRecords().size() );
+			case ERROR_RETRY:
+				System.out.println( event.getMessage() );
+			break;
 			
-			System.out.println( network.getName() + ":" + snapshot.getSize() );
-	
-		} else if ( event.getStatus() == HarvestingEventStatus.ERROR) {
-			
+			case ERROR_FATAL:
+				System.out.println( event.getMessage() );
+			break;
+
+			default:
+				/**
+				 * TODO: Definir que se hace en caso de eventos sin status conocido
+				 */	
+			break;
 		}
-		//TODO: Definir que se hace en caso de eventos sin status conocido
+		
+		
 		
 	}
-	
-	
 	
 	private void launchHarvesting() {
 		
 		// pasa el estado del snapshot a harvesting
 		snapshot.setStatus( SnapshotStatus.HARVESTING );
 		snapshotRepository.save(snapshot);
-		
 		
 		// Se recorren los orígenes 
 		for ( OAIOrigin origin:network.getOrigins() ) {
@@ -142,8 +178,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix());
 			}
 				
+	
 			
-		}	
+	}	
 	}
 	/******************** Fin Harvesting *********************/
 	

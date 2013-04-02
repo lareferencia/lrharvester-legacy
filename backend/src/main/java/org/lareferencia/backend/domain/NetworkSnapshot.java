@@ -40,9 +40,14 @@ public class NetworkSnapshot extends AbstractEntity {
 	@Column(nullable = false)
 	private Integer size;
 
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="snapshot_id"/*, nullable=false*/)
-	private Collection<OAIRecord> records = new LinkedHashSet<OAIRecord>();
+	
+	/** Atención, las one2many con colecciones grandes generan problemas con el flush/clean durante bulk inserts 
+	 *  en los casos donde conviven en la misma session. La pertenencia al set evita que sean detacheados.
+	 *  Por eso se evita el uso de la relación con los registros aquí, esto es un problema que hay que resolver. TODO  
+	 **/
+	//@OneToMany(cascade=CascadeType.ALL)
+	//@JoinColumn(name="snapshot_id"/*, nullable=false*/)
+	//private Collection<OAIRecord> records = new LinkedHashSet<OAIRecord>();
 	
 	public NetworkSnapshot() {
 		super();
