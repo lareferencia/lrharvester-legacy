@@ -13,9 +13,11 @@ import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
+import org.lareferencia.backend.harvester.IHarvesterRecord;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
@@ -128,10 +130,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			case OK:			
 				// Agrega los records al snapshot actual
 				
-				for (Entry<String, Node> entry:event.getRecords().entrySet() ) {
+				for (Entry<String, IHarvesterRecord> entry:event.getRecords().entrySet() ) {
 		  
 					try {
-						OAIRecord record = new OAIRecord(entry.getKey(), domHelper.Node2XMLString(entry.getValue()));
+						OAIRecord record = new OAIRecord(entry.getKey(), domHelper.Node2XMLString(entry.getValue().getDomNode()));
 						record.setSnapshot(snapshot);		
 			    		recordDAO.store(record);
 						

@@ -15,10 +15,10 @@ import lombok.ToString;
 public class HarvestingEvent {
 	
 	private String message;
-	private Map<String,Node> records;
+	private Map<String,IHarvesterRecord> records;
 	private HarvestingEventStatus status;
 	
-	public HarvestingEvent(Map<String,Node> records,
+	public HarvestingEvent(Map<String,IHarvesterRecord> records,
 			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;

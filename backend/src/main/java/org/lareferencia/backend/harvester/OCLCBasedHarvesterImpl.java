@@ -150,9 +150,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private Map<String,Node> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
+	private Map<String,IHarvesterRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
-		Map<String,Node> result = new HashMap<String,Node>(STANDARD_RECORD_SIZE);
+		Map<String,IHarvesterRecord> result = new HashMap<String,IHarvesterRecord>(STANDARD_RECORD_SIZE);
 		/**
 		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
 		 * objetos de registro, habría que evaluarlo cuidadosamente
@@ -178,7 +178,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);			
 			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
-			result.put(identifier, getMetadataNode(node));				
+			result.put(identifier, new HarvesterRecord(node));				
 		}		
 		
 		return result;
