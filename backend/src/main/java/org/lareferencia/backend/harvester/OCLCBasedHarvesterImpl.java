@@ -2,9 +2,8 @@ package org.lareferencia.backend.harvester;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -15,12 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.lareferencia.backend.domain.OAIRecord;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -156,9 +150,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private List<OAIRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
+	private Map<String,Node> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
-		List<OAIRecord> result = new ArrayList<OAIRecord>(STANDARD_RECORD_SIZE);
+		Map<String,Node> result = new HashMap<String,Node>(STANDARD_RECORD_SIZE);
 		/**
 		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
 		 * objetos de registro, habría que evaluarlo cuidadosamente
@@ -182,34 +176,29 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		//System.out.println( listRecords.toString() );
 				
 		for (int i=0; i<nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			
-			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");
-		    
-			//System.out.println(identifier);
-						
-			result.add( new OAIRecord(identifier, getMetadataXMLFromRecordNode(node)) );
-		}
-		
-		//System.out.println();
-		
+			Node node = nodes.item(i);			
+			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
+			result.put(identifier, getMetadataNode(node));				
+		}		
 		
 		return result;
 	}
 	
 	/**
-	 * Retorna un String conteniendo el XML correspondiente al contenido de metadada, asumiendo que node "record"
-	 * y que metadata es el ultimo (segundo) nodo bajo "record"
-	 * 
 	 * @param node
-	 * @return
+	 * @return 
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException 
 	 */
-	private String getMetadataXMLFromRecordNode(Node node) throws TransformerException, NoSuchFieldException {
+	private Node getMetadataNode(Node node) throws TransformerException, NoSuchFieldException {
 		
 		
-		// TODO: búsqueda secuencial, puede ser ineficiente pero xpath presentaba problemas
+		/**
+		 *  TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta implementado sobre nodos individaules
+		 *  en la interfaz listRecords, en necesario construir un DomHelper para Harvester, es sencillo dada la clase
+		 *  base BaseMetadataDOMHelper
+		 */ 
+		
 		NodeList childs = node.getChildNodes();
 		Node metadataNode = null;
 		for (int i=0; i < childs.getLength(); i++)
@@ -220,12 +209,6 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			throw new NoSuchFieldException(METADATA_NODE_NAME);
 		
 		
-		StringWriter sw = new StringWriter();
-	    Result output = new StreamResult(sw);
-		Transformer idTransformer = xformFactory.newTransformer();
-        idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        idTransformer.transform( new DOMSource(metadataNode), output);
-		return sw.toString();
-		
+		return metadataNode;
 	}
 }

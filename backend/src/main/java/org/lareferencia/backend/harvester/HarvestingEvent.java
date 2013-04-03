@@ -1,13 +1,13 @@
 package org.lareferencia.backend.harvester;
 
-import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.lareferencia.backend.domain.NationalNetwork;
-import org.lareferencia.backend.domain.OAIRecord;
 
 @Getter
 @Setter
@@ -15,16 +15,13 @@ import org.lareferencia.backend.domain.OAIRecord;
 public class HarvestingEvent {
 	
 	private String message;
-	private List<OAIRecord> records;
+	private Map<String,Node> records;
 	private HarvestingEventStatus status;
 	
-
-
-	public HarvestingEvent(List<OAIRecord> records,
+	public HarvestingEvent(Map<String,Node> records,
 			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;
-		//this.errorMessage = errorMessage;
 	}
 	
 	public HarvestingEvent(String msg,
