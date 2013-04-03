@@ -31,10 +31,11 @@ public class OAIRecordDAO {
     @PersistenceContext
     private EntityManager entityManager;
     
+    @Transactional
     public void store(OAIRecord record) {
         entityManager.merge(record);
-    	//entityManager.flush();
-    	//entityManager.clear();
+    	entityManager.flush();
+    	entityManager.clear();
     }
 
     @Transactional
