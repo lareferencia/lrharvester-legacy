@@ -21,10 +21,8 @@ public class SnapshotManager {
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
-
 	
 	private ConcurrentLinkedQueue<ISnapshotWorker> activeProcessors;
-	
 	
 	public SnapshotManager() {
 		activeProcessors = new ConcurrentLinkedQueue<ISnapshotWorker>();
@@ -49,8 +47,4 @@ public class SnapshotManager {
 		}
 		
 	}
-	
-	
-	
-
 }

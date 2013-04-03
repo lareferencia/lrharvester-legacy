@@ -6,6 +6,9 @@ public interface IHarvesterRecord {
 	
 	public Node getDomNode();
 	public void setDomNode(Node node);
+	
+	public String getIdentifier();
+	public void setIdentifier(String identifier);
 
 	
 

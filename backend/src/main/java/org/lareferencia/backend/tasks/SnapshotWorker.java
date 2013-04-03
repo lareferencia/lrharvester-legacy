@@ -45,6 +45,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private OAIRecordDAO recordDAO;
 	
+	@Autowired
 	private IMetadataDOMHelper domHelper;
 	
 	private IHarvester harvester;
@@ -70,7 +71,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		 * Al ser un requerimiento de baja prioridad queda para el final o futuras implementaciones.
 		 * 
 		 * **/
-		domHelper = new DCMetadataDOMHelper();
 	};
 	
 	
@@ -130,10 +130,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			case OK:			
 				// Agrega los records al snapshot actual
 				
-				for (Entry<String, IHarvesterRecord> entry:event.getRecords().entrySet() ) {
+				for (IHarvesterRecord  hRecord:event.getRecords() ) {
 		  
 					try {
-						OAIRecord record = new OAIRecord(entry.getKey(), domHelper.Node2XMLString(entry.getValue().getDomNode()));
+						OAIRecord record = new OAIRecord(hRecord.getIdentifier(), 
+														 domHelper.Node2XMLString(hRecord.getDomNode())
+						);
 						record.setSnapshot(snapshot);		
 			    		recordDAO.store(record);
 						

@@ -1,9 +1,6 @@
 package org.lareferencia.backend.harvester;
 
-import java.util.Map;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,10 +12,10 @@ import lombok.ToString;
 public class HarvestingEvent {
 	
 	private String message;
-	private Map<String,IHarvesterRecord> records;
+	private List<IHarvesterRecord> records;
 	private HarvestingEventStatus status;
 	
-	public HarvestingEvent(Map<String,IHarvesterRecord> records,
+	public HarvestingEvent(List<IHarvesterRecord> records,
 			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;
