@@ -1,4 +1,4 @@
-package org.lareferencia.backend;
+package org.lareferencia.backend.util;
 
 import static org.springframework.orm.jpa.EntityManagerFactoryUtils.ENTITY_MANAGER_SYNCHRONIZATION_ORDER;
 import static org.springframework.util.ReflectionUtils.invokeMethod;

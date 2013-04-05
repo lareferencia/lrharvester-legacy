@@ -1,24 +1,19 @@
 package org.lareferencia.backend;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.dom4j.util.IndexedDocumentFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.util.BaseMedatadaDOMHelper;
-import org.lareferencia.backend.util.DCMetadataDOMHelper;
-import org.lareferencia.backend.util.IMetadataDOMHelper;
+import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 @ContextConfiguration
@@ -37,29 +32,26 @@ public class DOMHelperTests {
 	@Test()
 	public void testParse() throws ParserConfigurationException, SAXException, IOException {
 		
-		IMetadataDOMHelper domhelper = new DCMetadataDOMHelper();	
-		Document doc = domhelper.parseXML(xmlstring);		
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);		
 		assertNotNull( doc ); 	
 	}
 	
 	@Test()
 	public void testParseAndXpathSingleString() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 		
-		IMetadataDOMHelper domhelper = new DCMetadataDOMHelper();	
-		Document doc = domhelper.parseXML(xmlstring);	
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);	
 		
-		assertEquals("Discovering geographic services from textual use cases",  domhelper.getSingleString(doc, "//dc:title") );	
+		assertEquals("Discovering geographic services from textual use cases",  MedatadaDOMHelper.getSingleString(doc, "//dc:title") );	
 	}
 	
 	@Test()
 	public void testParseAndXpathNodeList() throws ParserConfigurationException, SAXException, IOException, TransformerException {
 		
-		IMetadataDOMHelper domhelper = new DCMetadataDOMHelper();	
-		Document doc = domhelper.parseXML(xmlstring);	
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);	
 		
-		assertEquals(2,  domhelper.getNodeList(doc, "//dc:type").getLength() );
+		assertEquals(2,  MedatadaDOMHelper.getNodeList(doc, "//dc:type").getLength() );
 		
-		assertEquals("info:eu-repo/semantics/article",  domhelper.getNodeList(doc, "//dc:type").item(0).getFirstChild().getNodeValue() );	
+		assertEquals("info:eu-repo/semantics/article",  MedatadaDOMHelper.getNodeList(doc, "//dc:type").item(0).getFirstChild().getNodeValue() );	
 	}
 
 	

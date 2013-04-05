@@ -49,17 +49,17 @@ public  class DevMain {
 
 		DevMain dao =  context.getBean("devMain",DevMain.class);
 		
-		/*NationalNetworkRepository nrepo = dao.getRepository();
+		NationalNetworkRepository nrepo = dao.getRepository();
 		NationalNetwork network = nrepo.findOne(1L);
 		
 		ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
 		processor.setNetworkID(network.getId());
 	
-		processor.run();*/
-		
+		processor.run();
+		/*
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();
-		
+		*/
 		
 		/*
 		NationalNetworkRepository nrepo = dao.getRepository();

@@ -1,7 +1,6 @@
 package org.lareferencia.backend.tasks;
 
 import java.util.Date;
-import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,21 +12,18 @@ import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.SnapshotStatus;
-import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
-import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.IHarvesterRecord;
+import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
-import org.lareferencia.backend.util.DCMetadataDOMHelper;
-import org.lareferencia.backend.util.IMetadataDOMHelper;
+import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Node;
 
 @Component
 @Scope(value="prototype")
@@ -44,9 +40,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Autowired
 	private OAIRecordDAO recordDAO;
-	
-	@Autowired
-	private IMetadataDOMHelper domHelper;
 	
 	private IHarvester harvester;
 	
@@ -134,7 +127,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		  
 					try {
 						OAIRecord record = new OAIRecord(hRecord.getIdentifier(), 
-														 domHelper.Node2XMLString(hRecord.getDomNode())
+														 MedatadaDOMHelper.Node2XMLString(hRecord.getDomNode())
 						);
 						record.setSnapshot(snapshot);		
 			    		recordDAO.store(record);

@@ -46,6 +46,8 @@
 	</bean>
 	
 	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- context:load-time-weaver/-->
+	
 
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
 	<task:scheduler id="taskScheduler" pool-size="5"/>
