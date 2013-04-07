@@ -1,0 +1,13 @@
+<phpunit>
+  <testsuite name="Application Test Suite">
+    <file>AllTests.php</file>
+  </testsuite>
+
+  <filter>
+    <blacklist>
+      <directory>/usr/share/php</directory>
+      <directory>/usr/local/lib</directory>
+      <directory>.</directory>
+    </blacklist>
+  </filter>
+</phpunit>

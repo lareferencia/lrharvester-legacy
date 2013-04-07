@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="en">
+
+        
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    
+    <title>Inicio de Búsqueda</title>
+
+        <link rel="search" type="application/opensearchdescription+xml" title="Library Catalog Search" href="http://200.0.206.180/vufind/Search/OpenSearch?method=describe" />
+    
+        <link rel="stylesheet" type="text/css" media="screen, projection" href="/vufind/interface/themes/blueprint/css/blueprint/screen.css" />
+    <link rel="stylesheet" type="text/css" media="print" href="/vufind/interface/themes/blueprint/css/blueprint/print.css" />
+    <!--[if lt IE 8]><link rel="stylesheet" href="http://200.0.206.180/vufind/interface/themes/blueprint/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+    
+        <script type="text/javascript">
+    //<![CDATA[
+      var path = 'http://200.0.206.180/vufind';
+    //]]>
+    </script>
+
+	    <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery.metadata.js"></script>
+    <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery.validate.min.js"></script>    
+    
+        <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery-ui-1.8.7.custom/js/jquery-ui-1.8.7.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="http://200.0.206.180/vufind/interface/themes/blueprint/js/jquery-ui-1.8.7.custom/css/smoothness/jquery-ui-1.8.7.custom.css" />
+        
+        <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/lightbox.js"></script>
+
+        <script type="text/javascript" src="/vufind/interface/themes/blueprint/js/common.js"></script>
+
+        <link rel="stylesheet" type="text/css" media="screen, projection" href="/vufind/interface/themes/blueprint/css/styles.css" />
+    <link rel="stylesheet" type="text/css" media="print" href="/vufind/interface/themes/blueprint/css/print.css" />
+    <!--[if lt IE 8]><link rel="stylesheet" href="http://200.0.206.180/vufind/interface/themes/blueprint/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+  </head>
+
+  <body>
+    <div class="container">
+	  <div class="header">
+		<script type="text/javascript" src="/vufind/interface/themes/blueprint/js/jquery.cookie.js"></script>
+<a id="logo" href="http://200.0.206.180/vufind"></a>
+<div id="headerRight">
+    <div id="logoutOptions" class="hide">
+    <a class="account" href="/vufind/MyResearch/Home">Su Cuenta</a> |
+    <a class="logout" href="/vufind/MyResearch/Logout">Salir</a>
+  </div>
+  <div id="loginOptions">
+      <a class="login" href="/vufind/MyResearch/Home">Entrar</a>
+    </div>
+    <form method="post" name="langForm" action="" id="langForm">
+    <label for="langForm_mylang">Idioma:</label>
+    <select id="langForm_mylang" name="mylang" class="jumpMenu">
+              <option value="en">English</option>
+              <option value="de">German</option>
+              <option value="es" selected="selected">Spanish</option>
+              <option value="fr">French</option>
+              <option value="it">Italian</option>
+              <option value="ja">Japanese</option>
+              <option value="nl">Dutch</option>
+              <option value="pt">Portuguese</option>
+              <option value="zh-cn">Simplified Chinese</option>
+              <option value="zh">Chinese</option>
+              <option value="tr">Turkish</option>
+              <option value="he">Hebrew</option>
+              <option value="ga">Irish</option>
+              <option value="cy">Welsh</option>
+              <option value="el">Greek</option>
+              <option value="ca">Catalan</option>
+              <option value="eu">Basque</option>
+              <option value="ru">Russian</option>
+              <option value="cs">Czech</option>
+          </select>
+    <noscript><input type="submit" value="Poner" /></noscript>
+  </form>
+  </div>
+
+<div class="clear"></div>	  </div>
+
+	  
+      
+	  <div class="main">
+                <div class="searchHomeContent">    
+  <div class="searchHomeForm">
+    <div class="searchform">
+      <form method="get" action="/vufind/Search/Results" name="searchForm" id="searchForm" class="search">
+      <label for="searchForm_lookfor" class="offscreen">Search Terms</label>
+      <input id="searchForm_lookfor" type="text" name="lookfor" size="40" value="" class="autocomplete typeSelector:searchForm_type"/>
+      <label for="searchForm_type" class="offscreen">Tipo de búsqueda</label>
+      <select id="searchForm_type" name="type">
+              <option value="AllFields">Todos los Campos</option>
+              <option value="Title">Título</option>
+              <option value="Author">Autor</option>
+              <option value="Subject">Materia</option>
+              <option value="CallNumber">Número de Clasificación</option>
+              <option value="ISN">ISBN/ISSN</option>
+              <option value="tag">Etiqueta</option>
+            </select>
+      <input type="submit" name="submit" value="Buscar"/>
+      <a href="/vufind/Search/Advanced" class="small">Avanzado</a>
+
+                                                    </form>
+    <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
+  </div>  </div>
+</div>
+
+<div class="searchHomeBrowse">
+                    <h2 class="span-5">Revisar por Idioma</h2> 
+                  <h2 class="span-5">Revisar por Formato</h2> 
+        <div class="span-14 last"><!-- pad out header row --></div>
+            <ul class="span-5">
+                                                  <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22English%22">English</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22Espa%C3%B1ol%22">Español</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22French%22">French</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22in%22">in</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22otro%22">otro</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22spa%22">spa</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=language%3A%22Spanish+%2F+Castilian%22">Spanish / Castilian</a></li>
+                            </ul>
+          <ul class="span-5">
+                                                  <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22Documento+de+trabajo%22">Documento de trabajo</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2Farticle%22">info:eu-repo/semantics/article</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FbachelorThesis%22">info:eu-repo/semantics/bachelorThesis</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2Fbook%22">info:eu-repo/semantics/book</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FbookPart%22">info:eu-repo/semantics/bookPart</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FdoctoralThesis%22">info:eu-repo/semantics/doctoralThesis</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2Fdraft%22">info:eu-repo/semantics/draft</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FmasterThesis%22">info:eu-repo/semantics/masterThesis</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2Fother%22">info:eu-repo/semantics/other</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FpublishedVersion%22">info:eu-repo/semantics/publishedVersion</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2Freport%22">info:eu-repo/semantics/report</a></li>
+                                        <li><a href="http://200.0.206.180/vufind/Search/Results?lookfor=&amp;type=AllFields&amp;filter%5B%5D=format%3A%22info%3Aeu-repo%2Fsemantics%2FworkingPaper%22">info:eu-repo/semantics/workingPaper</a></li>
+                                                      <li><a href="/vufind/Search/Advanced"><strong>Más opciones...</strong></a></li>
+                                                                                                                                                                                                                                                                                                      </ul>
+    <div class="clear"></div>
+</div>
+	  </div>
+
+	  <div class="footer">
+		<div class="span-5"><p><strong>Opciones de Búsqueda</strong></p>
+  <ul>
+    <li><a href="/vufind/Search/History">Historia de Búsqueda</a></li>
+    <li><a href="/vufind/Search/Advanced">Búsqueda Avanzada</a></li>
+  </ul>
+</div>
+<div class="span-5"><p><strong>Buscar Más</strong></p>
+  <ul>
+    <li><a href="/vufind/Browse/Home">Revisar el Catálogo</a></li>
+    <li><a href="/vufind/AlphaBrowse/Home">Lista Alfabética</a></li>
+    <li><a href="/vufind/Search/Reserves">Reservas de Curso</a></li>
+    <li><a href="/vufind/Search/NewItem">Nuevos ejemplares</a></li>
+  </ul>
+</div>
+<div class="span-5 last"><p><strong>¿Necesita Ayuda?</strong></p>
+  <ul>
+    <li><a href="http://200.0.206.180/vufind/Help/Home?topic=search" class="searchHelp">Consejos de Búsqueda</a></li>
+    <li><a href="#">Consulte a un Bibliotecario</a></li>
+    <li><a href="#">Preguntas Frecuentes</a></li>
+  </ul>
+</div>
+<div class="clear"></div>
+<a id="pie" href="http://200.0.206.180/vufind"></a>
+	  </div>
+    </div>
+  </body>
+</html>
