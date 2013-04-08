@@ -3,24 +3,21 @@ package org.lareferencia.backend.validator;
 import java.util.regex.Pattern;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-
-import org.springframework.stereotype.Component;
 
 
 @ToString(exclude={"pattern"})
-public class FieldContentRegexVRule extends BaseContentVRule {
+public class RegexContentValidationRule extends BaseContentValidationRule {
 	
 	private @Getter String regexString;
 	private Pattern pattern;
 	
-	public FieldContentRegexVRule() {
+	public RegexContentValidationRule() {
 		super();
 	}
 
-	public FieldContentRegexVRule(String fieldName, String regexString) {
-		super(fieldName);
+	public RegexContentValidationRule(String regexString, boolean isMadatory) {
+		super(isMadatory);
 		this.regexString = regexString;
 		this.pattern = Pattern.compile(regexString);
 	}
@@ -31,7 +28,7 @@ public class FieldContentRegexVRule extends BaseContentVRule {
 	}
 
 	@Override
-	protected boolean testOccurrenceContents(String content) {
+	public boolean validate(String content) {
 		if (content == null) return false;
 		return pattern.matcher(content).matches();
 	}

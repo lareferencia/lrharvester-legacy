@@ -7,27 +7,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.springframework.stereotype.Component;
-
 @Getter
 @Setter
 @ToString
-public class FieldContentControlledValueVRule extends BaseContentVRule {
+public class ControlledValueContentValidationRule extends BaseContentValidationRule {
 	
 	private List<String> controlledValues;
 	
-	public FieldContentControlledValueVRule() {
+	public ControlledValueContentValidationRule() {
 		super();
 		controlledValues = new ArrayList<String>();
 	}
 
-	public FieldContentControlledValueVRule(String fieldName, List<String> controlledValues) {
-		super(fieldName);
+	public ControlledValueContentValidationRule(List<String> controlledValues, boolean isMadatory) {
+		super(isMadatory);
 		this.controlledValues = controlledValues;
 	}
 
 	@Override
-	protected boolean testOccurrenceContents(String content) {
+	public boolean validate(String content) {
 		if (content == null) return false;
 		return this.controlledValues.contains(content);
 	}

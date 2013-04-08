@@ -9,23 +9,23 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @ToString
-public class FieldContentLengthVRule extends BaseContentVRule {
+public class LengthContentValidationRule extends BaseContentValidationRule {
 	
-	public FieldContentLengthVRule() {
+	public LengthContentValidationRule() {
 		super();
 	}
 
 	private Integer minLength = 0;
 	private Integer maxLength = Integer.MAX_VALUE;
 
-	public FieldContentLengthVRule(String fieldName, Integer min,  Integer max) {
-		super(fieldName);
-		this.maxLength = min;
-		this.minLength = max;
+	public LengthContentValidationRule(Integer min,  Integer max, boolean isMadatory) {
+		super(isMadatory);
+		this.maxLength = max;
+		this.minLength = min;
 	}
 
 	@Override
-	protected boolean testOccurrenceContents(String content) {
+	public boolean validate(String content) {
 		
 		if (content == null)
 			return false;

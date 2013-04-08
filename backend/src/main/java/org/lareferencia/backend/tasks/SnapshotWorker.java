@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.xml.transform.TransformerException;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
@@ -12,14 +11,13 @@ import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
-import org.lareferencia.backend.harvester.IHarvesterRecord;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -121,32 +119,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 		switch ( event.getStatus() ) {
 			case OK:			
-				// Agrega los records al snapshot actual
-				
-				for (IHarvesterRecord  hRecord:event.getRecords() ) {
-		  
-					try {
-						OAIRecord record = new OAIRecord(hRecord.getIdentifier(), 
-														 MedatadaDOMHelper.Node2XMLString(hRecord.getDomNode())
-						);
-						record.setSnapshot(snapshot);		
-			    		recordDAO.store(record);
-						
-					} catch (TransformerException e) {
-						e.printStackTrace();
-					}
+				// Agrega los records al snapshot actual			
+				for (HarvesterRecord  hRecord:event.getRecords() ) {
+					OAIRecord record = new OAIRecord(hRecord.getIdentifier(), hRecord.getMetadataXmlString() );
+					record.setSnapshot(snapshot);		
+					recordDAO.store(record);
 				}
-				
-				//recordDAO.store( event.getRecords(), snapshot );
-				
+								
 				snapshot.setSize( snapshot.getSize() + event.getRecords().size() );	
+				snapshot.setEndTime( new Date() );
 				snapshotRepository.save(snapshot);
-				
-			
-				
-			
-				// Este flush mantine mas o menos constante el uso de memoria, quitando los records
-				                       
+								                       
 				System.out.println( network.getName() + ":" + snapshot.getSize() );
 			break;
 			

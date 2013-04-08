@@ -46,7 +46,7 @@ public  class DevMain {
 		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
-
+/*
 		DevMain dao =  context.getBean("devMain",DevMain.class);
 		
 		NationalNetworkRepository nrepo = dao.getRepository();
@@ -56,10 +56,11 @@ public  class DevMain {
 		processor.setNetworkID(network.getId());
 	
 		processor.run();
-		/*
+*/
+		
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();
-		*/
+		
 		
 		/*
 		NationalNetworkRepository nrepo = dao.getRepository();

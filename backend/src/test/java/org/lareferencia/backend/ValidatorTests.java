@@ -3,16 +3,28 @@ package org.lareferencia.backend;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
-import org.lareferencia.backend.validator.FieldContentLengthVRule;
-import org.lareferencia.backend.validator.FieldContentRegexVRule;
-import org.lareferencia.backend.validator.FieldOccurrenceRangeVRule;
+import org.lareferencia.backend.validator.LengthContentValidationRule;
+import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validator.IContentValidationRule;
+import org.lareferencia.backend.validator.IValidator;
+import org.lareferencia.backend.validator.RegexContentValidationRule;
+import org.lareferencia.backend.validator.ValidatorImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,98 +39,115 @@ public class ValidatorTests {
 			"</oai_dc:dc>" +
 			"</metadata>";
 	
-	
-
 	@Test
-	public void testOccurrenceRule() throws Exception {
-		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
-		
-		
-		
-		FieldOccurrenceRangeVRule orule = new FieldOccurrenceRangeVRule();
-		
-		orule.setMinOccurences(2);
-		orule.setMaxOccurences(100);
-		orule.setFieldName("dc:type");
-		
-		assertTrue( orule.validate(record) );
-		
-		orule.setFieldName("dc:title");
-		assertFalse( orule.validate(record) );
-		
-		orule.setFieldName("noexistendfield");
-		assertFalse( orule.validate(record) );
-		
-	}
-	
-	
-	@Test
-	public void testFieldContentLengthRule() throws Exception {
+	public void testLengthRule() throws Exception {
 		
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
 		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
 		
-		FieldContentLengthVRule clrule = new FieldContentLengthVRule();
-		clrule .setMinLength(2);
-		clrule.setMaxLength(100);
-		clrule.setFieldName("dc:type");
-		
-		assertTrue( clrule.validate(record) );
-		
+		LengthContentValidationRule clrule = new LengthContentValidationRule();
 		clrule.setMinLength(2);
-		clrule.setMaxLength(2);
-		clrule.setFieldName("dc:title");
-		assertFalse( clrule.validate(record) );
+		clrule.setMaxLength(100);
+	
 		
-		clrule.setMinLength(100);
-		clrule.setMaxLength(255);
-		clrule.setFieldName("dc:title");
-		assertFalse( clrule.validate(record) );
+		for (String content: record.getFieldOcurrences("dc:type")) {	
+			assertTrue("dc:type  " + clrule, clrule.validate(content) == content.length() >= 2 && content.length() <= 100  );
+		}
 		
-		clrule.setFieldName("noexistendfield");
-		assertFalse( clrule.validate(record) );
-		
-		clrule.setAllOccurrencesMustBeValid(true);
-		clrule.setMinLength(30);
-		clrule.setMaxLength(255);
-		clrule.setFieldName("dc:type");
-		assertTrue( clrule.validate(record) );
-		
-		clrule.setAllOccurrencesMustBeValid(true);
-		clrule.setMinLength(31);
-		clrule.setMaxLength(255);
-		clrule.setFieldName("dc:type");
-		assertFalse( clrule.validate(record) );
+		for (String content: record.getFieldOcurrences("dc:title")) {	
+			assertTrue("dc:title  " + clrule, clrule.validate(content) == content.length() >= 2 && content.length() <= 100  );
+		}
+	
 	}
 	
+	
 	@Test
-	public void testFieldContentControlledValueRule() throws Exception {
+	public void testControlledValueRule() throws Exception {
 		
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
 		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
 		
-		FieldContentRegexVRule rerule = new FieldContentRegexVRule();
-		rerule  .setFieldName("dc:type");
-		rerule.setRegexString(".*");
-		assertTrue( rerule.validate(record) );
+		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
+
+		ArrayList<String> cclist = new ArrayList<String>();
+		cclist.add("info:eu-repo/semantics/publishedVersion");
+		cclist.add("info:eu-repo/semantics/article");
 		
-		rerule.setFieldName("dc:type");
-		rerule.setAllOccurrencesMustBeValid(true);
+		
+		ccrule.setControlledValues(cclist);
+		for (String content: record.getFieldOcurrences("dc:type")) {	
+			assertTrue("dc:type  " + ccrule, ccrule.validate(content)  );
+		}
+		
+		for (String content: record.getFieldOcurrences("dc:title")) {	
+			assertFalse("dc:type  " + ccrule, ccrule.validate(content)  );
+		}
+	}
+	
+	@Test
+	public void testRegexRule() throws Exception {
+		
+		
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
+		
+		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		
+		RegexContentValidationRule rerule = new RegexContentValidationRule();
+
 		rerule.setRegexString("info.*");
-		assertTrue( rerule.validate(record) );
+		for (String content: record.getFieldOcurrences("dc:type")) {	
+			assertTrue("dc:type  " + rerule, rerule.validate(content)  );
+		}
 		
-		rerule.setFieldName("dc:type");
-		rerule.setAllOccurrencesMustBeValid(false);
 		rerule.setRegexString("noamatchexpresion");
-		assertFalse( rerule.validate(record) );
+		for (String content: record.getFieldOcurrences("dc:type")) {	
+			assertFalse("dc:type  " + rerule, rerule.validate(content)  );
+		}
+	}
+	
+	@Test
+	public void testValidator() throws Exception {
+		
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
+		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+	
+		ValidatorImpl validator = new ValidatorImpl();
+		
+		Map<String, List<IContentValidationRule>> rulesPerField = new HashMap<String, List<IContentValidationRule>>();
+		
+		ArrayList<String> cclist = new ArrayList<String>();
+		cclist.add("info:eu-repo/semantics/publishedVersion");
+		
+		ArrayList<IContentValidationRule> type_rules = new ArrayList<IContentValidationRule>(); 
+		
+		IContentValidationRule cvrule = new ControlledValueContentValidationRule(cclist,true);
+		IContentValidationRule clrule = new LengthContentValidationRule(1, 255, true);
+		
+		type_rules.add(cvrule);
+		type_rules.add(clrule);
+		
+		rulesPerField.put("dc:type", type_rules);
+		
+		validator.setRulesPerField(rulesPerField);
+		
+		// dc:type tiene un valor que no esta dentro de los controlados
+		assertFalse( validator.validate(record).isValid() );
+		
+		// dc:type ahora no es requerido
+		cvrule.setMandatory(false);
+		assertTrue( validator.validate(record).isValid() );
+
+		// agregado del valor faltante y vuelve a ser requerido
+		cvrule.setMandatory(true);
+		cclist.add("info:eu-repo/semantics/article");
+		assertTrue( validator.validate(record).isValid() );
+
 		
 		
 	}
+	
 }

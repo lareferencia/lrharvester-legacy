@@ -12,10 +12,10 @@ import lombok.ToString;
 public class HarvestingEvent {
 	
 	private String message;
-	private List<IHarvesterRecord> records;
+	private List<HarvesterRecord> records;
 	private HarvestingEventStatus status;
 	
-	public HarvestingEvent(List<IHarvesterRecord> records,
+	public HarvestingEvent(List<HarvesterRecord> records,
 			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;

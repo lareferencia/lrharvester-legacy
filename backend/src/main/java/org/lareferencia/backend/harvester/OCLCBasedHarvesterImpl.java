@@ -74,7 +74,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = 5;
 					break;
 
-				} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
+				}
+				catch (Exception e) {
+				//TODO: Esto es compatible solo con 1.7
+				//} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 					
 					String message = buildErrorMessage(e, batchIndex, actualRetry);
 					message += "Esperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
@@ -152,9 +155,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private List<IHarvesterRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
+	private List<HarvesterRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
-		List<IHarvesterRecord> result = new ArrayList<IHarvesterRecord>(STANDARD_RECORD_SIZE);
+		List<HarvesterRecord> result = new ArrayList<HarvesterRecord>(STANDARD_RECORD_SIZE);
 		/**
 		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
 		 * objetos de registro, habría que evaluarlo cuidadosamente
@@ -180,7 +183,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		for (int i=0; i<nodes.getLength(); i++) {
 			Node node = nodes.item(i);			
 			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
-			result.add(new HarvesterRecord(identifier,node));				
+			result.add(new HarvesterRecord(identifier, getMetadataNode(node) ));				
 		}		
 		
 		return result;
