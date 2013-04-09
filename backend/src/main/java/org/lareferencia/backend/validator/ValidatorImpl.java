@@ -24,30 +24,7 @@ public class ValidatorImpl implements IValidator {
 	
 		boolean isRecordValid = true;
 		
-		// Para cada campo 
-		for ( String fieldName: rulesPerField.keySet() ) {
-			
-			boolean isFieldValid = true;
-			
-			// Se obtienen las reglas de ese campo
-			List<IContentValidationRule> rulesList = rulesPerField.get(fieldName);
-			
-			// Se obtienen todas las ocurrencias de ese campo en el registro
-			for (String content: record.getFieldOcurrences(fieldName) ) {
-				
-				boolean isOccurrenceValid = true;	
-				
-				// Se evaluan las reglas para esa ocurrencia
-				for (IContentValidationRule rule:rulesList) {	
-					boolean isRuleValid = rule.validate(content);
-					isOccurrenceValid &= (isRuleValid || !rule.isMandatory());
-				}
-				
-				isFieldValid &= isOccurrenceValid;
-			}
-			
-			isRecordValid &= isFieldValid;
-		}
+		
 		
 		return new ValidationResult(isRecordValid);
 	}

@@ -29,4 +29,7 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 		if (content == null) return false;
 		return this.controlledValues.contains(content);
 	}
+
+
+	
 }

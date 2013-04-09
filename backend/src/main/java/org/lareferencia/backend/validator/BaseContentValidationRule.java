@@ -23,8 +23,10 @@ import lombok.ToString;
 public abstract class BaseContentValidationRule implements IContentValidationRule {
 
 	// Indica si todas las ocurrencias deben validar o basta con que cualquiera lo haga
-	private boolean allOccurrencesMustBeValid = false;
 	protected boolean mandatory = false;
+	
+	protected Integer minValidOccurrences = 0;
+	protected Integer maxValidOccurrences = Integer.MAX_VALUE;
 
 	public BaseContentValidationRule() {
 	}
