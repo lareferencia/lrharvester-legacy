@@ -1,5 +1,7 @@
 package org.lareferencia.backend.validator;
 
+import java.util.List;
+
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -7,7 +9,8 @@ import org.w3c.dom.Node;
 
 public interface IValidator {
 	
-	public void addFieldValidator(String fieldName, FieldValidator validator, boolean isMandatory);
 	public ValidationResult validate(HarvesterRecord record);
+	public List<FieldValidator> getFieldValidators();
+	public void setFieldValidators( List<FieldValidator> validators);
 
 }

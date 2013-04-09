@@ -16,7 +16,8 @@ import lombok.ToString;
 public abstract class BaseContentValidationRule implements IContentValidationRule {
 	
 	protected static int MAX_EXPECTED_LENGTH = 255; 
-
+	
+	protected String quantifier = IContentValidationRule.QUANTIFIER_ZERO_OR_MORE;
 	
 	public BaseContentValidationRule() {
 	}

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -15,13 +14,13 @@
 
 	<description></description>
 
-    <jpa:repositories base-package="org.lareferencia.backend.repositories"  />
-    
-	<context:component-scan base-package="org.lareferencia.backend" />	
-	
+	<jpa:repositories base-package="org.lareferencia.backend.repositories" />
 
-    <!-- Persistence setup -->
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<context:component-scan base-package="org.lareferencia.backend" />
+
+	<!-- Persistence setup -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="org.lareferencia.backend" />
 		<property name="jpaVendorAdapter">
@@ -32,7 +31,7 @@
 			</bean>
 		</property>
 	</bean>
-	
+
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -40,22 +39,91 @@
 		<property name="username" value="backend" />
 		<property name="password" value="l210279" />
 	</bean>
-	
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
-	
-	<tx:annotation-driven transaction-manager="transactionManager" />
-	<!-- context:load-time-weaver/-->
-	
 
-	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
-	<task:scheduler id="taskScheduler" pool-size="5"/>
-	<task:executor  id="taskExecutor"  pool-size="5"/>
-	
-    <bean id="devMain" class="org.lareferencia.backend.DevMain"/>
-    
-    <bean id="snapshotManager" class="org.lareferencia.backend.tasks.SnapshotManager"/>
-    
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- context:load-time-weaver/ -->
+
+
+	<task:annotation-driven executor="taskExecutor"
+		scheduler="taskScheduler" />
+	<task:scheduler id="taskScheduler" pool-size="10" />
+	<task:executor id="taskExecutor" pool-size="10" />
+
+	<bean id="devMain" class="org.lareferencia.backend.DevMain" />
+
+	<bean id="snapshotManager" class="org.lareferencia.backend.tasks.SnapshotManager" />
+
+	<bean id="type_driver_rule"
+		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+		<property name="controlledValues">
+			<list>
+				<value>info:eu-repo/semantics/article</value>
+				<value>info:eu-repo/semantics/masterThesis</value>
+				<value>info:eu-repo/semantics/doctoralThesis</value>
+				<value>info:eu-repo/semantics/report</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="validator" class="org.lareferencia.backend.validator.ValidatorImpl">
+		<property name="fieldValidators">
+			<list>
+
+				<!-- DC:TYPE Validator -->
+				<bean class="org.lareferencia.backend.validator.FieldValidator">
+					<property name="fieldName" value="dc:type" />
+					<property name="mandatory" value="true" />
+					<property name="contentRules">
+						<list>
+							<!-- Driver type validator -->
+							<bean
+								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+								<property name="quantifier" value="1..1" />
+								<property name="controlledValues">
+									<list>
+										<value>info:eu-repo/semantics/article</value>
+										<value>info:eu-repo/semantics/masterThesis</value>
+										<value>info:eu-repo/semantics/doctoralThesis</value>
+										<value>info:eu-repo/semantics/report</value>
+									</list>
+								</property>
+							</bean>
+
+							<!-- Status type validator -->
+							<bean
+								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+								<property name="quantifier" value="1..1" />
+								<property name="controlledValues">
+									<list>
+										<value>info:eu-repo/semantics/draft</value>
+										<value>info:eu-repo/semantics/acceptedVersion</value>
+										<value>info:eu-repo/semantics/submittedVersion</value>
+										<value>info:eu-repo/semantics/publishedVersion</value>
+										<value>info:eu-repo/semantics/updatedVersion</value>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+
+			</list>
+
+		</property>
+
+
+	</bean>
+
+
+
+
+
+
 
 </beans>

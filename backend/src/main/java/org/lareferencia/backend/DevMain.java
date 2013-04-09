@@ -46,17 +46,18 @@ public  class DevMain {
 		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
-/*
+
 		DevMain dao =  context.getBean("devMain",DevMain.class);
 		
+		/**
 		NationalNetworkRepository nrepo = dao.getRepository();
-		NationalNetwork network = nrepo.findOne(1L);
+		NationalNetwork network = nrepo.findOne(6L);
 		
 		ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
 		processor.setNetworkID(network.getId());
 	
 		processor.run();
-*/
+**/
 		
 		SnapshotManager snapshotManager =  context.getBean("snapshotManager",SnapshotManager.class);
 		snapshotManager.refresh();

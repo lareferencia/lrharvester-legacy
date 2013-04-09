@@ -22,6 +22,7 @@ import org.lareferencia.backend.validator.IContentValidationRule;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.RegexContentValidationRule;
 import org.lareferencia.backend.validator.ValidatorImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
@@ -39,6 +40,42 @@ public class ValidatorTests {
 			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/publishedVersion</dc:type>" +
 			"</oai_dc:dc>" +
 			"</metadata>";
+	
+	
+	static String validRecord = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
+			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
+			"<dc:creator xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Grieco y Bavio, Alfredo</dc:creator>" +
+			"<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Nec Substantiam sed Culpam : el cervantismo alegórico de Alicia Parodi y el caso del Licenciado Vidriera</dc:title>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Humanidades</dc:subject>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Letras</dc:subject>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Literatura</dc:subject>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Crítica literaria</dc:subject>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Cervantes; novelas ejemplares; alegoría; crítica textual</dc:subject>" +
+			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Cervantes; allegory; text critique</dc:subject>" +
+			"<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">es</dc:language>" +
+			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>" +
+			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://sedici.unlp.edu.ar/handle/10915/12185</dc:identifier>" +
+			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://hdl.handle.net/10915/12185</dc:identifier>" +
+			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://www.memoria.fahce.unlp.edu.ar/art_revistas/pr.3374/pr.3374.pdf</dc:identifier>" +
+			"<dc:relation xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Olivar</dc:relation>" +
+			"<dc:relation xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">vol. 6, no. 6</dc:relation>" +
+			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Alicia Parodi encuentra en el sentido alegórico de Cervantes la historia de la salvación. Su crítica se define como alegórica. No obstante, el interés y la preocupación por la crítica textual está presente en todos sus textos.</dc:description>" +
+			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Número monográfico. El cervantismo argentino : una historia tentativa</dc:description>" +
+			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Monographic issue. El cervantismo argentino : una historia tentativa</dc:description>" +
+			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Volume monográfico. El cervantismo argentino : una historia tentativa</dc:description>" +
+			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Centro de Estudios de Teoría y Crítica Literaria</dc:description>" +
+			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/article</dc:type>" +
+			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">artículo</dc:type>" +
+			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/publishedVersion</dc:type>" +
+			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Articulo</dc:type>" +
+			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>" +
+			"<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/openAccess</dc:rights>" +
+			"<dc:format xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">p. 115-134</dc:format>" +
+			"</oai_dc:dc>" +
+			"</metadata>";
+	
+	@Autowired
+	IValidator validator;
 	
 	@Test
 	public void testLengthRule() throws Exception {
@@ -133,12 +170,14 @@ public class ValidatorTests {
 		ArrayList<String> typeList2 = new ArrayList<String>();
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
-		FieldValidator fvalidator = new FieldValidator("dc:type");
-		fvalidator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList1));
-		fvalidator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList2));
+		FieldValidator fvalidator = new FieldValidator("dc:type",true);
+		fvalidator.getContentRules().add(  new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		fvalidator.getContentRules().add(  new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
 	
 		System.out.println( fvalidator.validate(record) );		
 	}
+	
+
 	
 	@Test
 	public void testRecordValidator() throws Exception {
@@ -152,18 +191,27 @@ public class ValidatorTests {
 		ArrayList<String> typeList2 = new ArrayList<String>();
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
-		FieldValidator type_validator = new FieldValidator("dc:type");
-		type_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList1));
-		type_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList2));
+		FieldValidator type_validator = new FieldValidator("dc:type",true);
+		type_validator.getContentRules().add( new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		type_validator.getContentRules().add( new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE));
 	
-		FieldValidator identifier_validator = new FieldValidator("dc:identifier");
-		identifier_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new RegexContentValidationRule("^http.*") );
+		FieldValidator identifier_validator = new FieldValidator("dc:identifier",true);
+		identifier_validator.getContentRules().add( new RegexContentValidationRule("^http.*",IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
 		
 		
 		IValidator validator = new ValidatorImpl();
-		validator.addFieldValidator("dc:type", type_validator, true);
-		validator.addFieldValidator("dc:identifier", identifier_validator, true);
+		validator.getFieldValidators().add( type_validator );
+		validator.getFieldValidators().add(identifier_validator);
 
+		
+		System.out.println( validator.validate(record) );		
+	}
+	
+	@Test
+	public void testRecordWiredDriverValidator() throws Exception {
+		
+		Document doc = MedatadaDOMHelper.parseXML(validRecord);
+		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
 		
 		System.out.println( validator.validate(record) );		
 	}

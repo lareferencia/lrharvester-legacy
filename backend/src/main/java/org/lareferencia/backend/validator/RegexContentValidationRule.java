@@ -24,6 +24,14 @@ public class RegexContentValidationRule extends BaseContentValidationRule {
 		this.pattern = Pattern.compile(regexString);
 	}
 	
+	public RegexContentValidationRule(String regexString, String quantifier) {
+		super();
+		this.regexString = regexString;
+		this.pattern = Pattern.compile(regexString);
+		this.quantifier = quantifier;
+
+	}
+	
 	public void setRegexString(String reString) {
 		this.regexString = reString;
 		this.pattern = Pattern.compile(reString);

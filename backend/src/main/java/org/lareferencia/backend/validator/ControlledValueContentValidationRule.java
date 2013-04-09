@@ -26,6 +26,12 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 		super();
 		this.controlledValues = controlledValues;
 	}
+	
+	public ControlledValueContentValidationRule(List<String> controlledValues, String quantifier) {
+		super();
+		this.controlledValues = controlledValues;
+		this.quantifier = quantifier;
+	}
 
 	@Override
 	public ContentValidationResult validate(String content) {

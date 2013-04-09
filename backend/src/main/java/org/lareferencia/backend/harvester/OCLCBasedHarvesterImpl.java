@@ -16,6 +16,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.xml.utils.DOMHelper;
+import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
@@ -181,9 +183,18 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		//System.out.println( listRecords.toString() );
 				
 		for (int i=0; i<nodes.getLength(); i++) {
-			Node node = nodes.item(i);			
-			String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
-			result.add(new HarvesterRecord(identifier, getMetadataNode(node) ));				
+			
+
+			Node node = nodes.item(i);
+
+			try {
+				//TODO: Hay que tratar aparte los casos deleted que pueden generar exceptions al no tener metadata
+				String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
+				result.add(new HarvesterRecord(identifier, getMetadataNode(node) ));	
+			} catch (Exception e){
+				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
+				System.err.println("Error en el parse de registro: " + MedatadaDOMHelper.Node2XMLString(node) );
+			}
 		}		
 		
 		return result;
@@ -195,8 +206,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException 
 	 */
-	private Node getMetadataNode(Node node) throws TransformerException, NoSuchFieldException {
-		
+	private Node getMetadataNode(Node node) throws TransformerException, NoSuchFieldException {		
 		
 		/**
 		 *  TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta implementado sobre nodos individaules
@@ -211,7 +221,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				metadataNode = childs.item(i);
 
 		if (metadataNode == null) 
-			throw new NoSuchFieldException(METADATA_NODE_NAME);
+			throw new NoSuchFieldException( "No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" +  MedatadaDOMHelper.Node2XMLString(node));
 		
 		
 		return metadataNode;

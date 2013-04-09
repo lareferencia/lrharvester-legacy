@@ -25,7 +25,12 @@ public class SnapshotCronTrigger implements Trigger {
 		this.network = network;
 		
 		if ( network.getSchedule() != null ) {
-			cronTrigger = new CronTrigger( network.getSchedule().getCronExpression() );
+			try {
+				cronTrigger = new CronTrigger( network.getSchedule().getCronExpression() );
+			} catch (java.lang.IllegalArgumentException e) {
+				// TODO: handle exception
+				System.out.println("Problemas con el trigger de:" + network.getName() );
+			}
 		}
 		
 	}
@@ -34,10 +39,11 @@ public class SnapshotCronTrigger implements Trigger {
 	public Date nextExecutionTime(TriggerContext ctx) {
 		
 		Date execTime = null;
-		System.out.println( network.getName()  + " next exec: " + cronTrigger.nextExecutionTime(ctx) );
 		
-		if ( cronTrigger != null )
+		if ( cronTrigger != null ) {
+			System.out.println( network.getName()  + " next exec: " + cronTrigger.nextExecutionTime(ctx) );
 			execTime = cronTrigger.nextExecutionTime(ctx);
+		}
 		// Si retorna null entonce 
 		
 		
