@@ -4,12 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import org.hibernate.validator.constraints.br.CNPJ;
 import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @ToString
 public class LengthContentValidationRule extends BaseContentValidationRule {
+	
+	public static String RULE_ID="Length";
 	
 	public LengthContentValidationRule() {
 		super();
@@ -18,19 +21,29 @@ public class LengthContentValidationRule extends BaseContentValidationRule {
 	private Integer minLength = 0;
 	private Integer maxLength = Integer.MAX_VALUE;
 
-	public LengthContentValidationRule(Integer min,  Integer max, boolean isMadatory) {
-		super(isMadatory);
+	public LengthContentValidationRule(Integer min,  Integer max) {
+		super();
 		this.maxLength = max;
 		this.minLength = min;
 	}
 
 	@Override
-	public boolean validate(String content) {
+	public ContentValidationResult validate(String content) {
 		
-		if (content == null)
-			return false;
+		ContentValidationResult result = new ContentValidationResult();
+		result.setRuleID(RULE_ID);
 		
-		return (content.length() >= minLength && content.length() <= maxLength);
+		result.setExpectedValue( minLength.toString() + " >= Length >= " + maxLength.toString()) ;
+		
+		if (content == null) {
+			result.setReceivedValue("NULL");
+			result.setValid(false);
+		} else {
+			result.setReceivedValue( new Integer(content.length()).toString() );
+			result.setValid( content.length() >= minLength && content.length() <= maxLength );
+		}
+			
+		return result;
 	}
 	
 }

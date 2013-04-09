@@ -12,6 +12,9 @@ import lombok.ToString;
 @ToString
 public class ControlledValueContentValidationRule extends BaseContentValidationRule {
 	
+	
+	public static String RULE_ID="ControlledValue";
+	
 	private List<String> controlledValues;
 	
 	public ControlledValueContentValidationRule() {
@@ -19,15 +22,30 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 		controlledValues = new ArrayList<String>();
 	}
 
-	public ControlledValueContentValidationRule(List<String> controlledValues, boolean isMadatory) {
-		super(isMadatory);
+	public ControlledValueContentValidationRule(List<String> controlledValues) {
+		super();
 		this.controlledValues = controlledValues;
 	}
 
 	@Override
-	public boolean validate(String content) {
-		if (content == null) return false;
-		return this.controlledValues.contains(content);
+	public ContentValidationResult validate(String content) {
+		
+		ContentValidationResult result = new ContentValidationResult();
+		result.setRuleID(RULE_ID);
+		
+		// Se recorta el diccionario si resulta muy grande, enumerando solo los primeros 255 chars
+		String expected = controlledValues.toString();
+		result.setExpectedValue( expected.length() > MAX_EXPECTED_LENGTH ? expected.substring(0, MAX_EXPECTED_LENGTH) : expected ) ;
+		
+		if (content == null) {
+			result.setReceivedValue("NULL");
+			result.setValid(false);
+		} else {
+			result.setReceivedValue(content);
+			result.setValid( this.controlledValues.contains(content) );
+		}
+			
+		return result;
 	}
 
 

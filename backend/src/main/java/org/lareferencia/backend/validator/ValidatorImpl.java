@@ -1,5 +1,6 @@
 package org.lareferencia.backend.validator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,21 +14,50 @@ import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.w3c.dom.NodeList;
 
-@Getter
-@Setter
 public class ValidatorImpl implements IValidator {
 	
-	Map<String, List<IContentValidationRule>> rulesPerField;
+	Map<String, FieldValidator> validatorsByFieldName;
+	Map<String, Boolean> isMandatoryByFieldName;
+	
+	
+	public ValidatorImpl() {
+		super();
+		validatorsByFieldName = new HashMap<String, FieldValidator>();
+		isMandatoryByFieldName = new HashMap<String, Boolean>();
+		
+	}
+
+	public void addFieldValidator(String fieldName, FieldValidator validator, boolean isMandatory) {
+		
+		validator.setFieldName(fieldName);
+		validatorsByFieldName.put(fieldName, validator);
+		isMandatoryByFieldName.put(fieldName, isMandatory);
+		
+	}
 	
 	@Override
 	public ValidationResult validate(HarvesterRecord record) {
 	
+		ValidationResult result = new ValidationResult();
 		boolean isRecordValid = true;
 		
 		
+		for (Entry<String, FieldValidator> entry:validatorsByFieldName.entrySet() ) {
+			
+			String fieldName = entry.getKey();
+			
+			FieldValidationResult fieldResult = entry.getValue().validate(record);
+			result.getFieldResults().put( fieldName, fieldResult );
+			
+			isRecordValid &= ( fieldResult.isValid() || !isMandatoryByFieldName.get(fieldName) );
+		}
 		
-		return new ValidationResult(isRecordValid);
+		result.setValid(isRecordValid);
+		
+		return result;
 	}
+
+
 
 	/**
 	 * La función validate para BaseContentVRule implementa el esquema común de evaluación de contenidos de campos

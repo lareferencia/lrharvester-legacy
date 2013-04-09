@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
+import org.lareferencia.backend.validator.FieldValidator;
 import org.lareferencia.backend.validator.LengthContentValidationRule;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validator.IContentValidationRule;
@@ -53,11 +54,14 @@ public class ValidatorTests {
 	
 		
 		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + clrule, clrule.validate(content) == content.length() >= 2 && content.length() <= 100  );
+			assertTrue("dc:type  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
+			System.out.println( clrule.validate(content) );
 		}
 		
 		for (String content: record.getFieldOcurrences("dc:title")) {	
-			assertTrue("dc:title  " + clrule, clrule.validate(content) == content.length() >= 2 && content.length() <= 100  );
+			assertTrue("dc:title  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
+			System.out.println( clrule.validate(content) );
+
 		}
 	
 	}
@@ -80,18 +84,21 @@ public class ValidatorTests {
 		
 		ccrule.setControlledValues(cclist);
 		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + ccrule, ccrule.validate(content)  );
+			assertTrue("dc:type  " + ccrule, ccrule.validate(content).isValid()  );
+			System.out.println( ccrule.validate(content) );
+
 		}
 		
 		for (String content: record.getFieldOcurrences("dc:title")) {	
-			assertFalse("dc:type  " + ccrule, ccrule.validate(content)  );
+			assertFalse("dc:type  " + ccrule, ccrule.validate(content).isValid()  );
+			System.out.println( ccrule.validate(content) );
+
 		}
 	}
 	
 	@Test
 	public void testRegexRule() throws Exception {
-		
-		
+			
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
 		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
@@ -100,54 +107,65 @@ public class ValidatorTests {
 
 		rerule.setRegexString("info.*");
 		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + rerule, rerule.validate(content)  );
+			assertTrue("dc:type  " + rerule, rerule.validate(content).isValid()  );
+			System.out.println( rerule.validate(content) );
+
+			
 		}
 		
 		rerule.setRegexString("noamatchexpresion");
 		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertFalse("dc:type  " + rerule, rerule.validate(content)  );
+			assertFalse("dc:type  " + rerule, rerule.validate(content).isValid()  );
+			System.out.println( rerule.validate(content) );
+
 		}
 	}
 	
 	@Test
-	public void testValidator() throws Exception {
+	public void testFieldValidator() throws Exception {
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
 	
-		ValidatorImpl validator = new ValidatorImpl();
+		ArrayList<String> typeList1 = new ArrayList<String>();
+		typeList1.add("info:eu-repo/semantics/article");
 		
-		Map<String, List<IContentValidationRule>> rulesPerField = new HashMap<String, List<IContentValidationRule>>();
+		ArrayList<String> typeList2 = new ArrayList<String>();
+		typeList2.add("info:eu-repo/semantics/publishedVersion");
+				
+		FieldValidator fvalidator = new FieldValidator("dc:type");
+		fvalidator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList1));
+		fvalidator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList2));
+	
+		System.out.println( fvalidator.validate(record) );		
+	}
+	
+	@Test
+	public void testRecordValidator() throws Exception {
 		
-		ArrayList<String> cclist = new ArrayList<String>();
-		cclist.add("info:eu-repo/semantics/publishedVersion");
+		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
+		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+	
+		ArrayList<String> typeList1 = new ArrayList<String>();
+		typeList1.add("info:eu-repo/semantics/article");
 		
-		ArrayList<IContentValidationRule> type_rules = new ArrayList<IContentValidationRule>(); 
+		ArrayList<String> typeList2 = new ArrayList<String>();
+		typeList2.add("info:eu-repo/semantics/publishedVersion");
+				
+		FieldValidator type_validator = new FieldValidator("dc:type");
+		type_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList1));
+		type_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new ControlledValueContentValidationRule(typeList2));
+	
+		FieldValidator identifier_validator = new FieldValidator("dc:identifier");
+		identifier_validator.addRule( FieldValidator.QUANTIFIER_ONE_OR_MORE, new RegexContentValidationRule("^http.*") );
 		
-		IContentValidationRule cvrule = new ControlledValueContentValidationRule(cclist,true);
-		IContentValidationRule clrule = new LengthContentValidationRule(1, 255, true);
 		
-		type_rules.add(cvrule);
-		type_rules.add(clrule);
-		
-		rulesPerField.put("dc:type", type_rules);
-		
-		validator.setRulesPerField(rulesPerField);
-		
-		// dc:type tiene un valor que no esta dentro de los controlados
-		assertFalse( validator.validate(record).isValid() );
-		
-		// dc:type ahora no es requerido
-		cvrule.setMandatory(false);
-		assertTrue( validator.validate(record).isValid() );
+		IValidator validator = new ValidatorImpl();
+		validator.addFieldValidator("dc:type", type_validator, true);
+		validator.addFieldValidator("dc:identifier", identifier_validator, true);
 
-		// agregado del valor faltante y vuelve a ser requerido
-		cvrule.setMandatory(true);
-		cclist.add("info:eu-repo/semantics/article");
-		assertTrue( validator.validate(record).isValid() );
-
 		
-		
+		System.out.println( validator.validate(record) );		
 	}
 	
 }
