@@ -47,7 +47,7 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(content);
+			result.setReceivedValue( content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
 			result.setValid( this.controlledValues.contains(content) );
 		}
 			

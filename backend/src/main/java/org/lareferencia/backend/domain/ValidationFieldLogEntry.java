@@ -31,40 +31,36 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class OAIRecord extends AbstractEntity {
+public class ValidationFieldLogEntry extends AbstractEntity {
+		
+	@Column(nullable = false)
+	private ValidationType type;
 	
 	@Column(nullable = false)
-	private String identifier;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
-	private Date datestamp;
-	
-	@Lob @Basic(fetch=FetchType.LAZY)
-	private String originalXML;
-	
-	@Lob @Basic(fetch=FetchType.LAZY)
-	private String publishedXML;
+	private Long recordID;
 	
 	@Column(nullable = false)
-	private RecordStatus status;
+	private String fieldName;
 	
-	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
-	@JoinColumn(name="snapshot_id")
-	private NetworkSnapshot snapshot;
+	@Column(nullable = false)
+	private boolean valid;
+	
+	@Column(nullable = false)
+	private boolean mandatory;
 
-	public OAIRecord() {
+	public ValidationFieldLogEntry() {
 		super();
-		this.status = RecordStatus.UNTESTED;
 	}
 	
-	public OAIRecord(String identifier, String xmlstring) {
+
+	public ValidationFieldLogEntry(ValidationType type, Long recordID,
+			String fieldName, boolean valid, boolean mandatory) {
 		super();
-		this.status = RecordStatus.UNTESTED;
-		this.identifier = identifier;
-		this.datestamp = new DateTime().toDate();
-		this.originalXML = xmlstring;
-		
+		this.type = type;
+		this.recordID = recordID;
+		this.fieldName = fieldName;
+		this.valid = valid;
+		this.mandatory = mandatory;
 	}
 		
 }

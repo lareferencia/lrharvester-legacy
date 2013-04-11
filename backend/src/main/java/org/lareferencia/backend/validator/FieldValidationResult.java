@@ -2,6 +2,7 @@ package org.lareferencia.backend.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class FieldValidationResult {
 	private boolean mandatory;
 	private boolean valid;
 	private List<ContentValidationResult> contentResults;
+	//private Map<Integer,List<ContentValidationResult>> contentResultsByOccurrenceNumber;
 
 
 	public FieldValidationResult() {

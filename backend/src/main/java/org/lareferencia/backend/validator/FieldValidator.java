@@ -35,6 +35,8 @@ public class FieldValidator {
 		result.setFieldName(fieldName);
 		result.setMandatory(mandatory ); 
 		
+		
+		
 		// Se obtienen todas las ocurrencias de ese campo en el registro
 		List<String> occurrences = record.getFieldOcurrences(fieldName);
 		

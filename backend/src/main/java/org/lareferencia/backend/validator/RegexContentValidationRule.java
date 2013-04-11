@@ -51,7 +51,7 @@ public class RegexContentValidationRule extends BaseContentValidationRule {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(content);
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
 			result.setValid( pattern.matcher(content).matches() );
 		}
 			
