@@ -1,7 +1,9 @@
 package org.lareferencia.backend.validator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,24 +37,39 @@ public class FieldValidator {
 		result.setFieldName(fieldName);
 		result.setMandatory(mandatory ); 
 		
-		
-		
-		// Se obtienen todas las ocurrencias de ese campo en el registro
 		List<String> occurrences = record.getFieldOcurrences(fieldName);
 		
+		/** Inicializa un diccionarios para registrar las ocurrencias válidas para alguna regla
+		 *  y los resultados para ocurrencias inválidas.
+		 */
+		Map<Integer, Boolean> validByOccurrenceIndex = new HashMap<Integer, Boolean>(occurrences.size());
+		Map<Integer, List<ContentValidationResult>> resultByInvalidOccurrenceIndex = new HashMap<Integer, List<ContentValidationResult>>(occurrences.size());
+		for (int i=0; i<occurrences.size(); i++) {
+			validByOccurrenceIndex.put(i, false);
+			resultByInvalidOccurrenceIndex.put(i, new ArrayList<ContentValidationResult>());
+		}
+			
 		boolean isFieldValid = true;
 	
 		for (IContentValidationRule rule:contentRules) {
 			
 			int validOccurrencesCount = 0;
 			
-			for (String content:  occurrences) {	
+			for (int i=0; i<occurrences.size(); i++) {	
 				
-				ContentValidationResult ruleResult = rule.validate(content);
+				ContentValidationResult ruleResult = rule.validate( occurrences.get(i) );
 				boolean validOccurence = ruleResult.isValid();
 				validOccurrencesCount += validOccurence ? 1:0;
 				
-				result.getContentResults().add(ruleResult);
+				/** actualiza el diccionario de validez de cada ocurrencia si es valida
+				 * y registra el resultado de la regla sólo en caso de evaluar válida
+				 */
+				if (validOccurence) {
+					validByOccurrenceIndex.put(i, true);
+					result.getContentResults().add(ruleResult);
+				} else {
+					resultByInvalidOccurrenceIndex.get(i).add(ruleResult);
+				}
 			}
 			
 			boolean isRuleValid; 
@@ -69,6 +86,16 @@ public class FieldValidator {
 			isFieldValid &= isRuleValid;	
 		}
 		
+		/** En caso de campo inválido 
+		 * solo se registran resultados de reglas inválidas para aquellas ocurrencias que no hayan resultado 
+		 * válidas para ninguna regla (evita que ocurrencias válidas aparezcan como errores en otra regla) **/
+		if ( !isFieldValid )
+			for (int i=0; i<occurrences.size(); i++) {	
+				if (!validByOccurrenceIndex.get(i)) {
+					result.getContentResults().addAll( resultByInvalidOccurrenceIndex.get(i) );
+				}
+			}
+			
 		result.setValid(isFieldValid);
 		
 		return result;

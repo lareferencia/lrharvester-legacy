@@ -13,19 +13,14 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ValidationRuleLogEntry extends AbstractEntity {
-		
-	@Column(nullable = false)
-	private ValidationType type;
+public class InvalidOccurrenceLogEntry extends AbstractEntity {
+
 	
 	@Column(nullable = false)
-	private Long recordID;
+	private Long snapID;
 	
 	@Column(nullable = false)
 	private String fieldName;
-	
-	@Column(nullable = false)
-	private boolean valid;
 	
 	@Column(nullable = false)
 	private String expected;
@@ -33,19 +28,15 @@ public class ValidationRuleLogEntry extends AbstractEntity {
 	@Column(nullable = false)
 	private String received;
 
-	
-
-	public ValidationRuleLogEntry() {
+	public InvalidOccurrenceLogEntry() {
 		super();
 	}
 
-	public ValidationRuleLogEntry(ValidationType type, Long recordID,
-			String fieldName, boolean valid, String expected, String received) {
+	public InvalidOccurrenceLogEntry(Long snapID,
+			String fieldName, String expected, String received) {
 		super();
-		this.type = type;
-		this.recordID = recordID;
+		this.snapID = snapID;
 		this.fieldName = fieldName;
-		this.valid = valid;
 		this.expected = expected;
 		this.received = received;
 	}	

@@ -192,9 +192,13 @@ public class ValidatorTests {
 		}
 		
 		
-		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789$)[a-zA-Z0-9/\\-\\.\\_\\?])+");
+		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789$)[a-zA-Z0-9/\\-\\.\\_\\?\\&\\;\\=])+");
 		assertTrue(rerule.validate("http://hdl.handle.net/10915/12185").isValid()  );
+		assertTrue(rerule.validate("http://patrimonio.bibliotecapiloto.gov.co/janium-bin/janium_zui.pl?jzd=/janium/fotos/bpp-f-009/0502.jzd&amp;amp;fn=8502").isValid());
+		
+			
 		assertFalse(rerule.validate("http://hdl.handle.net/123456789").isValid()  );
+		
 		
 				
 		rerule.setRegexString("(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");

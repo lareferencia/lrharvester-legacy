@@ -33,7 +33,11 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 	private static final int STANDARD_RECORD_SIZE = 100;
 	private static final String METADATA_NODE_NAME = "metadata";
-	int MAX_RETRIES = 3;
+	private static int MAX_RETRIES = 15;
+	private static int INITIAL_SECONDS_TO_RETRY = 3;
+	private static int RETRY_FACTOR = 2;
+
+	
 	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
 	public OCLCBasedHarvesterImpl() {
@@ -49,7 +53,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 		int batchIndex = 0;
 		int actualRetry = 0;
-		int secondsToNextRetry = 5;
+		int secondsToNextRetry = INITIAL_SECONDS_TO_RETRY;
 
 		// La condición es que sea la primera corrida o que no sea null el
 		// resumption (caso de fin)
@@ -73,7 +77,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 					batchIndex++;
 					actualRetry = 0;
-					secondsToNextRetry = 5;
+					secondsToNextRetry = INITIAL_SECONDS_TO_RETRY;
 					break;
 
 				}
@@ -91,7 +95,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 						
 					// Se incrementa el retry y se duplica el tiempo de espera
 					actualRetry++;
-					secondsToNextRetry = secondsToNextRetry * 2;
+					secondsToNextRetry = secondsToNextRetry * RETRY_FACTOR;
 				}
 				
 			} while (actualRetry < MAX_RETRIES);

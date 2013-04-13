@@ -1,27 +1,21 @@
 package org.lareferencia.backend;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.validation.ReportAsSingleViolation;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.domain.RecordStatus;
-import org.lareferencia.backend.domain.ValidationFieldLogEntry;
-import org.lareferencia.backend.domain.ValidationRuleLogEntry;
+import org.lareferencia.backend.domain.InvalidOccurrenceLogEntry;
 import org.lareferencia.backend.domain.ValidationType;
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.repositories.ValidationFieldLogRepository;
-import org.lareferencia.backend.repositories.ValidationRuleLogRepository;
-import org.lareferencia.backend.tasks.ISnapshotWorker;
-import org.lareferencia.backend.tasks.SnapshotManager;
+import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
+import org.lareferencia.backend.stats.StatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.ContentValidationResult;
@@ -33,9 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.xml.sax.SAXException;
 
 @Component
 public  class OfflineValidator {
@@ -48,17 +40,14 @@ public  class OfflineValidator {
 	@Autowired
 	public OAIRecordRepository recordRepository;
 	
-	@Autowired
-	public ValidationFieldLogRepository flogRepository;
 	
 	@Autowired
-	public ValidationRuleLogRepository rlogRepository;
+	public InvalidOccurrenceLogRepository rlogRepository;
 	
 	
 	public OfflineValidator() {
 		
 	}
-	
 	
 	public OAIRecordRepository getRecordRepository() {
 		return recordRepository;
@@ -79,7 +68,17 @@ public  class OfflineValidator {
 		OfflineValidator m = context.getBean("offlineValidator",OfflineValidator.class);
 		IValidator validator = context.getBean("validator", IValidator.class);
 		ITransformer trasnformer = context.getBean("transformer", ITransformer.class);
-
+		
+		
+		Map<Long, String> networksBySnap = new HashMap<Long, String>();
+		for (NationalNetwork network: m.repository.findAll() ) {
+			for (NetworkSnapshot snapshot: network.getSnapshots() ) {
+				networksBySnap.put(snapshot.getId(), network.getName());
+			}
+		}
+		
+	
+		StatsManager stats = new StatsManager(networksBySnap);
 		
 		Page<OAIRecord> page = m.recordRepository.findAll( new PageRequest(0, PAGE_SIZE) ); 
 		int totalPages = page.getTotalPages();
@@ -96,68 +95,45 @@ public  class OfflineValidator {
 					HarvesterRecord hrecord = new HarvesterRecord(orecord.getIdentifier(), 
 							MedatadaDOMHelper.parseXML(orecord.getOriginalXML().replace("&#", "#")));
 					
-
 					// Log de la prevalidación
 					ValidationResult result = validator.validate(hrecord);
-
-					for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
-						
-						String fname = entry.getKey();
-						FieldValidationResult fvresult = entry.getValue();
-						
-						// Loguea solo los campos invalidos
-						if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
-							m.flogRepository.save( 
-									new ValidationFieldLogEntry(ValidationType.PREVALIDATION, orecord.getId(), fname, fvresult.isValid(), fvresult.isMandatory() ) );
-						
-							
-							// Loguea solo las ocurrencias invalidas
-							for (ContentValidationResult cvr: fvresult.getContentResults() ) {
-								
-								if ( !cvr.isValid()  )
-									m.rlogRepository.save( 
-											new ValidationRuleLogEntry(ValidationType.PREVALIDATION, orecord.getId(), fname, cvr.isValid(), cvr.getExpectedValue(), cvr.getReceivedValue()));
-							}
-						}
-					} // fin de prevalidacion
+					
+					stats.addToStats(orecord, hrecord, result, ValidationType.PREVALIDATION);
 					
 					if ( !result.isValid() ) {
 						hrecord = trasnformer.transform(hrecord);
-						orecord.setPublishedXML( MedatadaDOMHelper.Node2XMLString(hrecord.getMetadataDOMnode() ));
 					}
 					
 					// Log de la postvalidación
 					result = validator.validate(hrecord);
+					stats.addToStats(orecord, hrecord, result, ValidationType.POSTVALIDATION);
+					
+					/** En caso de no se válido loguea las reglas de los campos responsables */
+					if ( !result.isValid() ) {
+						
+						for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
 
-					for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
-						
-						String fname = entry.getKey();
-						FieldValidationResult fvresult = entry.getValue();
-						
-						// Loguea solo los campos invalidos
-						if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
-							m.flogRepository.save( 
-									new ValidationFieldLogEntry(ValidationType.POSTVALIDATION, orecord.getId(), fname, fvresult.isValid(), fvresult.isMandatory() ) );
-						
-							
-							// Loguea solo las ocurrencias invalidas
-							for (ContentValidationResult cvr: fvresult.getContentResults() ) {
+							String fname = entry.getKey();
+							FieldValidationResult fvresult = entry.getValue();
+
+							// Loguea solo los campos invalidos
+							if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
 								
-								if ( !cvr.isValid()  )
-									m.rlogRepository.save( 
-											new ValidationRuleLogEntry(ValidationType.POSTVALIDATION, orecord.getId(), fname, cvr.isValid(), cvr.getExpectedValue(), cvr.getReceivedValue()));
+								// Loguea solo las ocurrencias invalidas
+								for (ContentValidationResult cvr: fvresult.getContentResults() ) {
+									if ( !cvr.isValid()  )
+										m.rlogRepository.save( 
+												new InvalidOccurrenceLogEntry( snap.getId(), fname, cvr.getExpectedValue(), cvr.getReceivedValue()));
+								}
 							}
-						}
-					} // fin de postvalidacion
+						} 
+					}
 					
-				
-					if ( result.isValid() )
-						orecord.setStatus( RecordStatus.VALID );
-					else
-						orecord.setStatus( RecordStatus.INVALID );
 					
-					m.recordRepository.save(orecord);
-				
+					/*if (!result.isValid() && snap.getId().equals(1L))
+						System.out.println(orecord.getIdentifier());*/
+
+
 				
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -167,12 +143,10 @@ public  class OfflineValidator {
 				//System.out.println( orecord.getIdentifier() ); 			
 			}
 				
-			m.recordRepository.flush();
-			m.flogRepository.flush();
 			m.rlogRepository.flush();
 		}
 		
-	
+		System.out.print( stats.toString() );
 	}	
 
 
