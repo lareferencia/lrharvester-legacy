@@ -15,6 +15,11 @@ import org.lareferencia.backend.validator.FieldValidationResult;
 import org.lareferencia.backend.validator.ValidationResult;
 
 public class StatsManager {
+	
+	/** TODO
+	 *  Esta es la clase que centralizará el cálculo de estadísticas por red, de momento es muy sencilla y 
+	 *  estática, acotada a las necesidades de dignóstico planificadas para el milestone1
+	 */
 
 	
 	Map<Long, Map<String,Integer>> validationMap;
@@ -27,6 +32,9 @@ public class StatsManager {
 	List<String> acceptedByDriverTypeMapKeys;
 	Map<Long, Map<String,Integer>> acceptedByDriverTypePreMap;
 	Map<Long, Map<String,Integer>> acceptedByDriverTypePosMap;
+	
+	List<String> occurrencesByFieldMapKeys;
+	Map<Long, Map<String,Integer>> occurrencesByFieldMap;
 
 
 	Map<Long, Map<String, Map<String, Integer>>> examplesByField;
@@ -48,6 +56,25 @@ public class StatsManager {
 		acceptedByDriverTypePreMap = new HashMap<Long, Map<String,Integer>>();
 		acceptedByDriverTypeMapKeys = new ArrayList<String>( Arrays.asList("info:eu-repo/semantics/article","info:eu-repo/semantics/masterThesis","info:eu-repo/semantics/doctoralThesis","info:eu-repo/semantics/report"));
 		
+		occurrencesByFieldMapKeys = new ArrayList<String>( Arrays.asList(
+				"dc:contributor",
+				"dc:coverage",
+				"dc:creator",
+				"dc:date",
+				"dc:description",
+				"dc:format",
+				"dc:identifier",
+				"dc:language",
+				"dc:publisher",
+				"dc:relation",
+				"dc:rights",
+				"dc:source",
+				"dc:subject",
+				"dc:title",
+				"dc:type"
+		));
+		occurrencesByFieldMap = new HashMap<Long, Map<String,Integer>>();
+		
 		examplesByField = new HashMap<Long, Map<String,Map<String,Integer>>>();
 		
 		for (Long snapId:networkNamesBySnapId.keySet()) {
@@ -58,6 +85,8 @@ public class StatsManager {
 			
 			initMap(snapId, acceptedByDriverTypePreMap, acceptedByDriverTypeMapKeys);
 			initMap(snapId, acceptedByDriverTypePosMap, acceptedByDriverTypeMapKeys);
+			
+			initMap(snapId, occurrencesByFieldMap, occurrencesByFieldMapKeys);
 			
 			/*
 			Map<String,Map<String,Integer>> aux = new HashMap<String, Map<String,Integer>>();
@@ -128,6 +157,10 @@ public class StatsManager {
 				}
 				acceptedByDriverTypePosMap.get(snapId).put(driverResult.getReceivedValue(), acceptedByDriverTypePosMap.get(snapId).get(driverResult.getReceivedValue()) + 1);
 
+				// occurrences by field
+				for (String field:occurrencesByFieldMapKeys) {
+					occurrencesByFieldMap.get(snapId).put(field, occurrencesByFieldMap.get(snapId).get(field) + hrecord.getFieldOcurrences(field).size() );
+				}
 				
 			}
 			else {
@@ -191,6 +224,9 @@ public class StatsManager {
 		result += "\n\n";
 		result += "Registros aceptados por Red Nacional S/tipo driver (Postvalidación)\n";
 		result += printMap(acceptedByDriverTypePosMap, acceptedByDriverTypeMapKeys);
+		result += "\n\n";
+		result += "Cantidad de ocurrencias de cada metadato por Red Nacional (válidos Postvalidación)\n";
+		result += printMap(occurrencesByFieldMap, occurrencesByFieldMapKeys);
 		
 		return result;
 	}

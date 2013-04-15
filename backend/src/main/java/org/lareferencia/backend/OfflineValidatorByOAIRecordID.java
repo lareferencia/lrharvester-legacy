@@ -30,7 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
-public  class OfflineValidator {
+public  class OfflineValidatorByOAIRecordID {
 
 	private static final int PAGE_SIZE = 250;
 
@@ -45,7 +45,7 @@ public  class OfflineValidator {
 	public InvalidOccurrenceLogRepository rlogRepository;
 	
 	
-	public OfflineValidator() {
+	public OfflineValidatorByOAIRecordID() {
 		
 	}
 	
@@ -60,12 +60,17 @@ public  class OfflineValidator {
 	
 	public static void main(String[] args) {
 		
+		if (args.length != 1) {
+			System.out.println("command IDRegistro(Long)");
+			System.exit(1);
+		}
+		
 		Logger.getRootLogger().setLevel(Level.INFO);
 		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
-		OfflineValidator m = context.getBean("offlineValidator",OfflineValidator.class);
+		OfflineValidatorByOAIRecordID m = context.getBean("offlineValidatorByOAIRecordID",OfflineValidatorByOAIRecordID.class);
 		IValidator validator = context.getBean("validator", IValidator.class);
 		ITransformer trasnformer = context.getBean("transformer", ITransformer.class);
 		
@@ -76,79 +81,43 @@ public  class OfflineValidator {
 				networksBySnap.put(snapshot.getId(), network.getName());
 			}
 		}
+					
+		OAIRecord orecord = m.recordRepository.findOne( Long.parseLong( args[0]) );	
+		NetworkSnapshot snap = orecord.getSnapshot();
 		
-	
-		StatsManager stats = new StatsManager(networksBySnap);
-		
-		Page<OAIRecord> page = m.recordRepository.findAll( new PageRequest(0, PAGE_SIZE) ); 
-		int totalPages = page.getTotalPages();
-		
-		for (int i=0; i<totalPages; i++) {
-			page =  m.recordRepository.findAll( new PageRequest(i, PAGE_SIZE) );
-			System.out.println( "Página: " + i + " de: " + totalPages);
+		System.out.println("\n*********************************** registro Original\n");
+		System.out.println(orecord.getOriginalXML());
+		System.out.println("\n*********************************** fin - registro Original\n");
+		try {
+			HarvesterRecord hrecord = new HarvesterRecord(orecord.getIdentifier(), 
+					MedatadaDOMHelper.parseXML(orecord.getOriginalXML().replace("&#", "#")));
 			
-			for (OAIRecord orecord:page.getContent() ) {
+			// Log de la prevalidación
+			ValidationResult result = validator.validate(hrecord);
+			
+			System.out.println("\n *********************************** validación registro Original\n");
+			System.out.println(result);
+			System.out.println("\n *********************************** fin validación registro Original\n");
+			
+			if ( !result.isValid() ) {
+				hrecord = trasnformer.transform(hrecord);
+			
+				// Log de la postvalidación
+				result = validator.validate(hrecord);		
+					
+				System.out.println("\n *********************************** registro trasnformado\n");
+				System.out.println(hrecord.getMetadataXmlString());
+				System.out.println("\n *********************************** fin - registro trasformado\n");
 				
-				NetworkSnapshot snap = orecord.getSnapshot();
-				
-				try {
-					HarvesterRecord hrecord = new HarvesterRecord(orecord.getIdentifier(), 
-							MedatadaDOMHelper.parseXML(orecord.getOriginalXML().replace("&#", "#")));
-					
-					// Log de la prevalidación
-					ValidationResult result = validator.validate(hrecord);
-					
-					stats.addToStats(orecord, hrecord, result, ValidationType.PREVALIDATION);
-					
-					if ( !result.isValid() ) {
-						hrecord = trasnformer.transform(hrecord);
-					}
-					
-					// Log de la postvalidación
-					result = validator.validate(hrecord);
-					stats.addToStats(orecord, hrecord, result, ValidationType.POSTVALIDATION);
-					
-					/** En caso de no se válido loguea las reglas de los campos responsables */
-					/*
-					if ( !result.isValid() ) {
-						
-						for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
-
-							String fname = entry.getKey();
-							FieldValidationResult fvresult = entry.getValue();
-
-							// Loguea solo los campos invalidos
-							if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
-								
-								// Loguea solo las ocurrencias invalidas
-								for (ContentValidationResult cvr: fvresult.getContentResults() ) {
-									if ( !cvr.isValid()  )
-										m.rlogRepository.save( 
-												new InvalidOccurrenceLogEntry( snap.getId(), fname, cvr.getExpectedValue(), cvr.getReceivedValue()));
-								}
-							}
-						} 
-					}*/
-					
-					
-					/*if (!result.isValid() && snap.getId().equals(1L))
-						System.out.println(orecord.getIdentifier());*/
-
-
-				
-				} catch (Exception e) {
-					e.printStackTrace();
-					System.exit(0); // Si hay un error no continua
-				} 
-				
-				//System.out.println( orecord.getIdentifier() ); 			
+				System.out.println("\n *********************************** validación registro trasnformado\n");
+				System.out.println(result);
+				System.out.println("\n *********************************** fin validación registro transformado\n");
 			}
-				
-			m.rlogRepository.flush();
-		}
 		
-		System.out.print( stats.toString() );
-	}	
-
-
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0); // Si hay un error no continua
+		} 
+		
+	}
 }

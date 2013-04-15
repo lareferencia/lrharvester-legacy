@@ -1,7 +1,9 @@
 package org.lareferencia.backend.transformer;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.validator.ContentValidationResult;
@@ -28,9 +30,12 @@ public class TransformerImpl implements ITransformer {
 	private IContentValidationRule langRule;
 
 	private static Map<String, String> statusTypeMapper;
+
+	
 	static {
 		
-		statusTypeMapper = new HashMap<String, String>();
+		// TODO: CaseInsensitive
+		statusTypeMapper = 	new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 		statusTypeMapper.put("draft","info:eu-repo/semantics/draft");
 		statusTypeMapper.put("info:eu-repo/semantics/draftVersion","info:eu-repo/semantics/draft");  
 		statusTypeMapper.put("accepted","info:eu-repo/semantics/acceptedVersion");
@@ -46,8 +51,8 @@ public class TransformerImpl implements ITransformer {
 	
 	private static Map<String,String> driverTypeMapper;
 	static {
-		
-		driverTypeMapper = new HashMap<String, String>();
+		//TODO CaseInsensitive
+		driverTypeMapper = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 		driverTypeMapper.put("article","info:eu-repo/semantics/article");
 		driverTypeMapper.put("artículo de revista","info:eu-repo/semantics/article");
 		driverTypeMapper.put("Artículo Internacional","info:eu-repo/semantics/article");
@@ -171,6 +176,15 @@ public class TransformerImpl implements ITransformer {
 	}
 	
 	
+		static class CaseInsensitiveComparator implements Comparator<String> {
+		    public static final CaseInsensitiveComparator INSTANCE = 
+		           new CaseInsensitiveComparator();
+
+		    public int compare(String first, String second) {
+		         // some null checks
+		         return first.compareToIgnoreCase(second);
+		    }
+		}
 }	
 
 
