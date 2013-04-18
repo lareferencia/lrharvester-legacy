@@ -55,8 +55,8 @@ public class ValidatorTests {
 			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Cervantes; allegory; text critique</dc:subject>" +
 			"<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">es</dc:language>" +
 			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>" +
-			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://sedici.unlp.edu.ar/handle/10915/12185</dc:identifier>" +
-			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://hdl.handle.net/10915/12185</dc:identifier>" +
+			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://sedici.unlp.edu.ar:8080/handle/10915/12185</dc:identifier>" +
+			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://hdl.handle.net/10915/12185@5</dc:identifier>" +
 			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://www.memoria.fahce.unlp.edu.ar/art_revistas/pr.3374/pr.3374.pdf</dc:identifier>" +
 			"<dc:relation xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Olivar</dc:relation>" +
 			"<dc:relation xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">vol. 6, no. 6</dc:relation>" +
@@ -193,14 +193,11 @@ public class ValidatorTests {
 		}
 		
 		
-		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789$)[a-zA-Z0-9/\\-\\.\\_\\?\\&\\;\\=])+");
+		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789$)[a-zA-Z0-9/\\-\\.\\_\\?\\=\\&\\;\\:\\@])+");
 		assertTrue(rerule.validate("http://hdl.handle.net/10915/12185").isValid()  );
-		assertTrue(rerule.validate("http://patrimonio.bibliotecapiloto.gov.co/janium-bin/janium_zui.pl?jzd=/janium/fotos/bpp-f-009/0502.jzd&amp;amp;fn=8502").isValid());
-		
-			
+		assertTrue(rerule.validate("https://server.com:8080/janium-bin/janium_zui.pl?jzd=/janium/fotos/bpp-f-009/0502.jzd&amp;amp;fn=8502").isValid());
 		assertFalse(rerule.validate("http://hdl.handle.net/123456789").isValid()  );
-		
-		
+		assertTrue(rerule.validate("http://www.maxwell.lambda.ele.puc-rio.br/Busca_etds.php?strSecao=resultado&nrSeq=11212@1").isValid());
 				
 		rerule.setRegexString("(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
 		assertTrue(rerule.validate("2000").isValid()  );
@@ -208,6 +205,10 @@ public class ValidatorTests {
 		assertTrue(rerule.validate("2000-02-02").isValid()  );
 		assertFalse(rerule.validate("200").isValid()  );
 		assertFalse(rerule.validate("200a-02-02").isValid()  );	
+		
+		
+		
+		
 	}
 	
 	@Test

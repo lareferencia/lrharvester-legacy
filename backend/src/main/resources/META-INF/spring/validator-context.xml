@@ -78,7 +78,7 @@
 							<bean
 								class="org.lareferencia.backend.validator.RegexContentValidationRule">
 								<property name="quantifier" value="1..*" />
-								<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789$)[a-zA-Z0-9/\-\.\_\?\=\&amp;\;])+"/>
+								<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789$)[a-zA-Z0-9/\-\.\_\?\=\&amp;\;\:\@])+"/>
 							</bean>
 						</list>
 					</property>
