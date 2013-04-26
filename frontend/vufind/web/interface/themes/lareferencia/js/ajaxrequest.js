@@ -21,7 +21,7 @@ else{
 if(params)url+="?"+ params;
 req.open(method,url,false);
 //alert(method);
-//alert(url);
+//alert("************ "+url);
 req.send(null);
 //alert(req);
 //var t=req.responseText;
@@ -52,18 +52,23 @@ function record_outbound(target) {
  var req = new AjaxRequest();
  var params = "src=" + encodeURIComponent(location.href) + "&target=" + encodeURIComponent(target); 
 //alert(params);
-req.loadXMLDoc('http://200.0.206.180/vufind/record_outbound.php', params); 
+req.loadXMLDoc('http://localhost/vufind/record_outbound.php', params); 
 } 
 return true; 
 }
 
-function add_record_event() { var links = document.getElementsByTagName('a'); 
+function add_record_event() { 
+var links = document.getElementsByTagName('a'); 
 for(var i=0; i < links.length; i++) 
 { 
-//if(links[i].className == 'external') 
-//	{ 
-	links[i].onclick = function() { return record_outbound(this.href); 
-//	} 
-} 
+
+// if(!links[i].href.match(/vufind/)) {
+// 	{ 
+	//alert("link"+i);
+	links[i].onclick = function() { 
+				//alert("link "+this.href); 
+				return record_outbound(this.href); 
+				} 
+// } 
 } 
 }

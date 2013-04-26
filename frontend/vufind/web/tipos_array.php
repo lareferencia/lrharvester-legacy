@@ -37,13 +37,21 @@ echo 'graph = Flotr.draw(container, [ ',PHP_EOL;
 foreach ($xml2->xpath("//lst[@name='format']/int") as $tipo) 
     {
       $cuenta++;
+	  		if (strcmp($tipo['name'],"info:eu-repo/semantics/article")==0)
+	$tipos="Art&iacute;culo";
+		if (strcmp($tipo['name'],"info:eu-repo/semantics/masterThesis")==0)
+	$tipos="Tesis de Maestr&iacute;a";
+		if (strcmp($tipo['name'],"info:eu-repo/semantics/doctoralThesis")==0)
+	$tipos="Tesis de Doctorado";
+			if (strcmp($tipo['name'],"info:eu-repo/semantics/report")==0)
+	$tipos="Reporte";
      if ($first)
 	{
-         echo '{ data:d',$cuenta,',label:"',$tipo['name'],'"}',PHP_EOL;
+         echo '{ data:d',$cuenta,',label:"',$tipos,'"}',PHP_EOL;
 	$first=false;
 	}
 	else
-         echo ',{ data:d',$cuenta,',label:"',$tipo['name'],'"}',PHP_EOL;
+         echo ',{ data:d',$cuenta,',label:"',$tipos,'"}',PHP_EOL;
     }
     echo '],'; 
 }
