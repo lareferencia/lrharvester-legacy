@@ -1,5 +1,6 @@
 package org.lareferencia.backend.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -11,10 +12,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.xml.utils.DefaultErrorHandler;
 import org.apache.xpath.XPathAPI;
@@ -107,6 +110,19 @@ public abstract class MedatadaDOMHelper  {
 		idTransformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		idTransformer.transform(new DOMSource(node), output);
 		return sw.toString();
+	}
+	
+	public static Transformer buildXSLTTransformer(String xlstString) throws TransformerConfigurationException {
+		
+		StringReader reader = new StringReader(xlstString);
+		StreamSource stylesource = new StreamSource(reader); 
+        return xformFactory.newTransformer(stylesource);
+	}
+	
+	public static Transformer buildXSLTTransformer(File stylefile) throws TransformerConfigurationException {
+		
+		StreamSource stylesource = new StreamSource(stylefile); 
+        return xformFactory.newTransformer(stylesource);
 	}
 
 }

@@ -1,6 +1,11 @@
 package org.lareferencia.backend.repositories;
 
+import java.util.List;
+
+import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /** 
@@ -13,4 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * 
  */
 public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> { 
+	
+	Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
+	
 }

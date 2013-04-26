@@ -1,8 +1,20 @@
 package org.lareferencia.backend;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -28,9 +40,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @Component
-public  class OfflineValidator {
+public  class OfflineIndexer {
 
 	private static final int PAGE_SIZE = 250;
 
@@ -45,7 +59,7 @@ public  class OfflineValidator {
 	public InvalidOccurrenceLogRepository rlogRepository;
 	
 	
-	public OfflineValidator() {
+	public OfflineIndexer() {
 		
 	}
 	
@@ -58,38 +72,22 @@ public  class OfflineValidator {
 	}
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws TransformerConfigurationException {
 		
 		Logger.getRootLogger().setLevel(Level.INFO);
 		
 		ApplicationContext context = 
 	             new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
+		
+		File stylesheet = new File("indexer.xsl");
+		Transformer trf = MedatadaDOMHelper.buildXSLTTransformer(stylesheet);
 
-		OfflineValidator m = context.getBean("offlineValidator",OfflineValidator.class);
+		OfflineIndexer m = context.getBean("offlineIndexer",OfflineIndexer.class);
+		
 		IValidator validator = context.getBean("validator", IValidator.class);
 		ITransformer trasnformer = context.getBean("transformer", ITransformer.class);
 		
-		
-		Map<Long,NetworkSnapshot> snapshotByID = new HashMap<Long, NetworkSnapshot>();
-		
-		Map<Long, String> networksBySnap = new HashMap<Long, String>();
-		for (NationalNetwork network: m.repository.findAll() ) {
-			for (NetworkSnapshot snapshot: network.getSnapshots() ) {
-				networksBySnap.put(snapshot.getId(), network.getName());
-				snapshotByID.put(snapshot.getId(), snapshot);
-			}
-		}
-		
-	
-		StatsManager stats = new StatsManager(networksBySnap);
-		
-		Page<OAIRecord> page;
-		
-		if (args.length == 1) 
-			page = m.recordRepository.findBySnapshot( snapshotByID.get( Long.parseLong(args[0]) ) , new PageRequest(0, PAGE_SIZE) );
-		else
-			page = m.recordRepository.findAll( new PageRequest(0, PAGE_SIZE) );
-		
+		Page<OAIRecord> page = m.recordRepository.findAll( new PageRequest(0, PAGE_SIZE) ); 
 		int totalPages = page.getTotalPages();
 		
 		for (int i=0; i<totalPages; i++) {
@@ -98,68 +96,40 @@ public  class OfflineValidator {
 			
 			for (OAIRecord orecord:page.getContent() ) {
 				
-				NetworkSnapshot snap = orecord.getSnapshot();
-				
-				
 				try {
+					
 					HarvesterRecord hrecord = new HarvesterRecord(orecord.getIdentifier(), 
 							MedatadaDOMHelper.parseXML(orecord.getOriginalXML().replace("&#", "#")));
 					
-					// Log de la prevalidación
-					ValidationResult result = validator.validate(hrecord);
+					hrecord.addFieldOcurrence("identifier", orecord.getIdentifier());
 					
-					stats.addToStats(orecord, hrecord, result, ValidationType.PREVALIDATION);
+					System.out.println( hrecord.getMetadataXmlString() );
 					
-					if ( !result.isValid() ) {
-						hrecord = trasnformer.transform(hrecord);
-					}
-					
-					// Log de la postvalidación
-					result = validator.validate(hrecord);
-					stats.addToStats(orecord, hrecord, result, ValidationType.POSTVALIDATION);
-					
-					/** En caso de no se válido loguea las reglas de los campos responsables */
-					
-					if ( !result.isValid() ) {
-						
-						for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
-
-							String fname = entry.getKey();
-							FieldValidationResult fvresult = entry.getValue();
-
-							// Loguea solo los campos invalidos
-							if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
-								
-								// Loguea solo las ocurrencias invalidas
-								for (ContentValidationResult cvr: fvresult.getContentResults() ) {
-									if ( !cvr.isValid()  )
-										m.rlogRepository.save( 
-												new InvalidOccurrenceLogEntry( snap.getId(), fname, cvr.getExpectedValue(), cvr.getReceivedValue()));
-								}
-							}
-						} 
-					}
+					StringWriter sw = new StringWriter();
+					Result output = new StreamResult(sw);
+					trf.transform( new DOMSource(hrecord.getMetadataDOMnode()), output);
+					System.out.println(sw.toString());
 					
 					
-					/*if (!result.isValid() && snap.getId().equals(1L))
-						System.out.println(orecord.getIdentifier());*/
-
-
-				
-				} catch (Exception e) {
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
-					System.exit(0); // Si hay un error no continua
-				} 
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TransformerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				
 				
-				//System.out.println( orecord.getIdentifier() ); 			
 			}
-				
-			m.rlogRepository.flush();
 		}
 		
-		System.out.print( stats.toString() );
 	}	
 
 
