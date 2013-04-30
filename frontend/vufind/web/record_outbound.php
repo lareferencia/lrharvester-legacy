@@ -1,7 +1,23 @@
 <?
  
+    
+function getRealIP() {
+	if (!empty($_SERVER['HTTP_CLIENT_IP']))
+		return $_SERVER['HTTP_CLIENT_IP'];
+	   
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+   
+	return $_SERVER['REMOTE_ADDR'];
+}
+
+ if (strpos($_GET['target'],'http://200.0.206.214/vufind/') === false) {
+
+$getip=getRealIP();
+	
 //Escribe en un archivo, las solicitudes de informacion para obtener una base
 $registro = "";
+
 $file = "/registro_click.csv";
 $fp = fopen("/usr/local/vufind/web".$file, "a+");
 
@@ -9,7 +25,8 @@ $fp = fopen("/usr/local/vufind/web".$file, "a+");
 $registro .= date("j/n/Y - h:i:s A") . ",";
 
 $registro .= $_GET['src'] . ",";
-$registro .= $_GET['target'] . "\n";
+$registro .= $_GET['target'] . ",";
+$registro .= $getip. "\n";
 
 fwrite($fp,$registro);
 fclose($fp);
@@ -20,7 +37,7 @@ $con = mysql_connect("localhost","vufind","vufind");
 	die('Could not connect: ' . mysql_error());
 	}
 	mysql_select_db("vufind", $con);
-	$cadena="INSERT INTO record (fecha,pagina,url) VALUES ('".date("j/n/Y - h:i:s A")."','".$_GET['src']."','".$_GET['target']."')";
+	$cadena="INSERT INTO record (ipaddress,fecha,pagina,url) VALUES('".$getip."','".date("j/n/Y - h:i:s A")."','".$_GET['src']."','".$_GET['target']."')";
 	echo $cadena."<br>";
 	//mysql_query("INSERT INTO archivos (FirstName, LastName, Age) VALUES ($anombre, 'Griffin', '35')");
 	//mysql_query($cadena);
@@ -30,7 +47,7 @@ $con = mysql_connect("localhost","vufind","vufind");
 	}
 	echo "Se agrego un registro a la base de datos <br>";
 	mysql_close($con);
-
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

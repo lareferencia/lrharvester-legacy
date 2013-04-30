@@ -104,21 +104,26 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   </form>
   </div>
 
-<div class="clear"></div>Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
+<div class="clear"></div>		Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
  </div>
 
 <div class="main">
-<div style="margin: 20px 70px ;">
-<h2>Consultoría para el Desarrollo e implementación de las soluciones de la prueba piloto del Componente III</h2>
-<br/>
-El objetivo del componente es poner a prueba y retroalimentar los acuerdos y estándares definidos en el componente anterior a través de un piloto operacional. 
- <br/><br/>
-Esta etapa comprende cuatro tareas que permitirán construir un piloto de la infraestructura federada de los repositorios, conforme a las mejores prácticas identificadas y los acuerdos logrados.
-<br/><br/>
-Este es el sitio piloto del proyecto <a href="http://lareferencia.redclara.net/rfr/">La Referencia. </a> 
-</div>
+<div class="searchHomeBrowse">
+	<h2 class="span-5"><a id="registros"></a>Registros m&aacute;s consultados</h2> 
+	<h2 class="span-5"><a id="busquedas"></a>B&uacute;squedas m&aacute;s frecuentes</h2> 
+
+	<h2 class="span-5"><a id="rrecientes"></a>Consultas m&aacute;s <br/>recientes</h2>
+	<h2 class="span-5"><a id="brecientes"></a>Material m&aacute;s <br/> consultado </h2>
+
+	<div class="span-14 last"><!-- pad out header row --></div>
+	<?php include 'registros_frecuentes_min.php'; ?>
+	<?php include 'busquedas_frecuentes_min.php'; ?>
+	<?php include 'registros_recientes_min.php'; ?>
+	<?php include 'registros_material_min.php'; ?>
+
 	<div class="clear"></div>
 </div>	
+</div>
 
 	  <div class="footer">
 		<div class="span-5"><p><strong>Opciones de Búsqueda</strong></p>

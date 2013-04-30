@@ -10,7 +10,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     
-    <title>Estad&iacute;sticas de LA-Referencia</title>
+    <title>Colecciones de LA-Referencia</title>
 
         <link rel="search" type="application/opensearchdescription+xml" title="Library Catalog Search" href="http://200.0.206.214/vufind/Search/OpenSearch?method=describe" />
     
@@ -46,8 +46,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
       <style type="text/css">
  
       #container {
-        width : 250px;
-        height: 300px;
+        width : 450px;
+        height: 350px;
         margin: 8px auto;
       }
 	        #container2 {
@@ -104,21 +104,72 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   </form>
   </div>
 
-<div class="clear"></div>Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
+<div class="clear"></div>		Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
  </div>
 
 <div class="main">
-<div style="margin: 20px 70px ;">
-<h2>Consultoría para el Desarrollo e implementación de las soluciones de la prueba piloto del Componente III</h2>
-<br/>
-El objetivo del componente es poner a prueba y retroalimentar los acuerdos y estándares definidos en el componente anterior a través de un piloto operacional. 
- <br/><br/>
-Esta etapa comprende cuatro tareas que permitirán construir un piloto de la infraestructura federada de los repositorios, conforme a las mejores prácticas identificadas y los acuerdos logrados.
-<br/><br/>
-Este es el sitio piloto del proyecto <a href="http://lareferencia.redclara.net/rfr/">La Referencia. </a> 
-</div>
+
+<div class="searchHomeBrowse">
+	<h2 class="span-5"><a id="tipos"></a>Tipo de Material</h2> 
+	<h2 class="span-5"><a id="grafica"></a>Gr&aacute;fica</h2> 
+
+
+	<div class="span-14 last"><!-- pad out header row --></div>
+<?php include 'frecuencia_formato_min.php'; ?>
+<div class="span-5" id="container"></div> 
+   <script type="text/javascript" src="flotr2.min.js"></script>
+    <script type="text/javascript">
+			function addCommas(nStr)
+		{
+		nStr += '';
+		x = nStr.split('.');
+		x1 = x[0];
+		x2 = x.length > 1 ? '.' + x[1] : '';
+		var rgx = /(\d+)(\d{3})/;
+		while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+		}
+		return x1 + x2;
+		}
+		
+		(
+		
+		function basic_pie(container) {
+		 <?php include 'tipos_array.php'; ?>
+		  {
+			HtmlText : true,
+			grid : {
+			  verticalLines : false,
+			  horizontalLines : false
+			},
+			xaxis : { showLabels : false },
+			yaxis : { showLabels : false },
+			pie : {
+			  show : true,
+				labelFormatter: function(total, value) {                            
+                            return addCommas(value);
+                          },			  
+			  explode : 10
+			},
+			 legend : { position : "so"},
+		  });
+		})
+		( container=document.getElementById("container")
+		);
+			</script>
 	<div class="clear"></div>
-</div>	
+		<h2 class="span-5"><a id="materias"></a>Materias</h2>
+				<div class="clear"></div>
+				<div class="clear"></div>
+	<?php include 'subjects_top_min.php'; ?>
+		<div class="clear"></div>
+				<h2 class="span-10"><a id="materialred"></a>Material por Red</h2>
+				<div class="clear"></div>
+	<?php include 'frecuencia_pais_material_min.php'; ?>
+		<div class="clear"></div>
+</div>
+	
+</div>
 
 	  <div class="footer">
 		<div class="span-5"><p><strong>Opciones de Búsqueda</strong></p>

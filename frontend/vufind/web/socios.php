@@ -10,7 +10,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     
-    <title>Estad&iacute;sticas de LA-Referencia</title>
+    <title>Socios de LA-Referencia</title>
 
         <link rel="search" type="application/opensearchdescription+xml" title="Library Catalog Search" href="http://200.0.206.214/vufind/Search/OpenSearch?method=describe" />
     
@@ -104,22 +104,96 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   </form>
   </div>
 
-<div class="clear"></div>Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
+<div class="clear"></div>		Bienvenido : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
  </div>
 
 <div class="main">
 <div style="margin: 20px 70px ;">
-<h2>Consultoría para el Desarrollo e implementación de las soluciones de la prueba piloto del Componente III</h2>
-<br/>
-El objetivo del componente es poner a prueba y retroalimentar los acuerdos y estándares definidos en el componente anterior a través de un piloto operacional. 
- <br/><br/>
-Esta etapa comprende cuatro tareas que permitirán construir un piloto de la infraestructura federada de los repositorios, conforme a las mejores prácticas identificadas y los acuerdos logrados.
-<br/><br/>
-Este es el sitio piloto del proyecto <a href="http://lareferencia.redclara.net/rfr/">La Referencia. </a> 
-</div>
-	<div class="clear"></div>
-</div>	
+<h1>Socios</h1>
+<h2><i>(datos preliminares)</i></h2>
 
+<h2><a id="mapa">Mapa de pa&iacute;ses socios</a></h2>
+ </div>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	
+	<script type="text/javascript">
+    google.load('visualization', '1', {packages: ['geomap']});
+
+    function drawVisualization() {
+      var data = google.visualization.arrayToDataTable([
+        ['Pais', 'Registros'],
+        ['Mexico', 1757],
+        ['El Salvador', 138],
+        ['Brazil', 17762],
+        ['Colombia', 840],
+        ['Argentina', 10144],
+        ['Venezuela ', 807],
+        ['Ecuador', 7135],
+        ['Chile', 15947],
+		['Peru', 0]
+      ]);
+    
+	var options = {};
+      options['region'] = '005';
+      options['colors'] = [0xFF8747, 0xFFB581, 0xc06000]; //orange colors
+	  
+      var geomap = new google.visualization.GeoMap(
+          document.getElementById('visualization'));
+      geomap.draw(data, options);
+    }
+    
+
+    google.setOnLoadCallback(drawVisualization);
+  </script>
+  <div id="visualization" style="width: 100px; height: 100px;margin-left:70px;"></div>
+<br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+ <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	
+	<script type="text/javascript">
+    google.load('visualization', '1', {packages: ['geomap']});
+
+    function drawVisualization() {
+      var data = google.visualization.arrayToDataTable([
+        ['Pais', 'Registros'],
+        ['Mexico', 1757],
+        ['El Salvador', 138],
+        ['Brazil', 17762],
+        ['Colombia', 840],
+        ['Argentina', 10144],
+        ['Venezuela ', 807],
+        ['Ecuador', 7135],
+        ['Chile', 15947],
+		['Peru', 0]
+      ]);
+    
+	var options = {};
+      options['region'] = '013';
+      options['colors'] = [0xFF8747, 0xFFB581, 0xc06000]; //orange colors
+	  
+      var geomap = new google.visualization.GeoMap(
+          document.getElementById('visualization2'));
+      geomap.draw(data, options);
+    }
+    
+
+    google.setOnLoadCallback(drawVisualization);
+  </script>
+  <div id="visualization2" style="width: 100px; height: 100px;margin-left:70px;"></div>
+<br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+<div class="searchHomeBrowse">
+	<h2 class="span-4"><a id="paises"></a>Registros por Pa&iacute;s</h2> 
+	<h2 class="span-6"><a id="instituciones"></a>Registros por Instituci&oacute;n</h2> 
+
+
+	<div class="span-14 last"><!-- pad out header row --></div>
+	<?php include 'frecuencia_pais_min.php'; ?>
+	<?php include 'frecuencia_institucion_min.php'; ?>
+<div class="clear"></div>
+</div>
+</div>
 	  <div class="footer">
 		<div class="span-5"><p><strong>Opciones de Búsqueda</strong></p>
   <ul>
