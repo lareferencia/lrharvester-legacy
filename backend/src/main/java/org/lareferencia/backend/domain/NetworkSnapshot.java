@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -48,6 +49,10 @@ public class NetworkSnapshot extends AbstractEntity {
 	//@OneToMany(cascade=CascadeType.ALL)
 	//@JoinColumn(name="snapshot_id"/*, nullable=false*/)
 	//private Collection<OAIRecord> records = new LinkedHashSet<OAIRecord>();
+	
+	@ManyToOne()
+	@JoinColumn(name="network_id"/*, nullable=false*/)
+	private NationalNetwork network;
 	
 	public NetworkSnapshot() {
 		super();

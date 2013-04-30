@@ -23,6 +23,7 @@ import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
@@ -38,7 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 @Component
-public class OfflineIndexerByNetwork {
+public class OfflineIndexerBySnapshot {
 
 	private static final int PAGE_SIZE = 1000;
 	private static final int SOLR_FILE_SIZE = 1000;
@@ -47,8 +48,6 @@ public class OfflineIndexerByNetwork {
 	private static DocumentBuilderFactory factory;
 	private static DocumentBuilder docBuilder;
 
-
-	
 	static {
 		try {
 			toStringTransformer = TransformerFactory.newInstance().newTransformer();
@@ -74,19 +73,14 @@ public class OfflineIndexerByNetwork {
 
 	@Autowired
 	public OAIRecordRepository recordRepository;
-
-	public OfflineIndexerByNetwork() {
-
-	}
-
-	public OAIRecordRepository getRecordRepository() {
-		return recordRepository;
-	}
-
-	public NationalNetworkRepository getRepository() {
-		return repository;
-	}
 	
+	@Autowired
+	public NetworkSnapshotRepository snapshotRepository;
+
+	public OfflineIndexerBySnapshot() {
+
+	}
+
 	public static Document createSolrDocument() {
 		
 		Document doc = docBuilder.newDocument();
@@ -129,82 +123,95 @@ public class OfflineIndexerByNetwork {
 
 	public static void main(String[] args) throws TransformerConfigurationException, TransformerFactoryConfigurationError {
 
-		Logger.getRootLogger().setLevel(Level.INFO);
+		System.out.println("Iniciando ...");
+		Logger.getRootLogger().setLevel(Level.OFF);
+		
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				"META-INF/spring/app-context.xml");
 
-		OfflineIndexerByNetwork m = context.getBean("offlineIndexerByNetwork",
-				OfflineIndexerByNetwork.class);
+		OfflineIndexerBySnapshot m = context.getBean("offlineIndexerBySnapshot",
+				OfflineIndexerBySnapshot.class);
 
 		IValidator validator = context.getBean("validator", IValidator.class);
 		ITransformer trasnformer = context.getBean("transformer",ITransformer.class);
 		IIndexer indexer = context.getBean("indexer", IIndexer.class);
-
-		for (NationalNetwork network : m.repository.findAll()) {
+		
+		if ( args.length != 1 ) {
 			
-			System.out.println( "Procesando RED: " + network.getName() );
+			System.out.println( "command [snapshotID]" );
+
+			
+			for (NationalNetwork network : m.repository.findAll()) {
+				for (NetworkSnapshot snapshot : network.getSnapshots()) {
+					System.out.println( "Red: " + network.getName() + " \t\tSnapID: " + snapshot.getId() + "\t Records: " + snapshot.getSize() + "\tFinalizado en: " + snapshot.getEndTime() + " Status: " + snapshot.getStatus() );
+				}
+			}
+			
+		}
+		else {
+		
+			
+			Long snapID = Long.parseLong( args[0] );	
+			NetworkSnapshot snapshot = m.snapshotRepository.findOne(snapID);
+			NationalNetwork network = snapshot.getNetwork();
+			
 			
 			int actualRecordCount = 0;
 			int actualPacket = 0;
 			Document actualDocument = createSolrDocument();
 			
-			for (NetworkSnapshot snapshot : network.getSnapshots()) {
+			
+			Page<OAIRecord> page = m.recordRepository.findBySnapshot(snapshot, new PageRequest(0, PAGE_SIZE));
+			int totalPages = page.getTotalPages();
+
+			for (int i = 0; i < totalPages; i++) {
 				
-				// cuenta los registros acumulados
-				
-				Page<OAIRecord> page = m.recordRepository.findBySnapshot(snapshot, new PageRequest(0, PAGE_SIZE));
-				int totalPages = page.getTotalPages();
+				System.out.println( "Procesando Snapshot/Red: " + snapID + " / " + network.getName() + " paquete: " + i+1 + " de " + totalPages + " " + actualRecordCount);
 
-				for (int i = 0; i < totalPages; i++) {
-					
-					System.out.println( "Procesando RED: " + network.getName() + " paquete: " + i + " de " + totalPages + " " + actualRecordCount);
+				page = m.recordRepository.findBySnapshot(snapshot,
+						new PageRequest(i, PAGE_SIZE));
 
-					page = m.recordRepository.findBySnapshot(snapshot,
-							new PageRequest(i, PAGE_SIZE));
+				for (OAIRecord orecord : page.getContent()) {
 
-					for (OAIRecord orecord : page.getContent()) {
+					try {
+						HarvesterRecord hrecord = new HarvesterRecord(
+								orecord.getIdentifier(),
+								MedatadaDOMHelper.parseXML(orecord
+										.getOriginalXML()
+										.replace("&#", "#")));
 
-						try {
-							HarvesterRecord hrecord = new HarvesterRecord(
-									orecord.getIdentifier(),
-									MedatadaDOMHelper.parseXML(orecord
-											.getOriginalXML()
-											.replace("&#", "#")));
+						// Si no es válido trata de transformarlo
+						if (!validator.validate(hrecord).isValid())
+							hrecord = trasnformer.transform(hrecord);
 
-							// Si no es válido trata de transformarlo
-							if (!validator.validate(hrecord).isValid())
-								hrecord = trasnformer.transform(hrecord);
-
-							if (validator.validate(hrecord).isValid()) {
-								orecord.setPublishedXML(hrecord.getMetadataXmlString());
-								addSolrDocToSolrAdd(indexer.transform(orecord, network),actualDocument);
-								actualRecordCount++;
-								
-								if ( actualRecordCount == SOLR_FILE_SIZE ) {
-									saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
-									actualDocument = createSolrDocument();
-									actualRecordCount = 0;
-								}
-								
+						if (validator.validate(hrecord).isValid()) {
+							orecord.setPublishedXML(hrecord.getMetadataXmlString());
+							addSolrDocToSolrAdd(indexer.transform(orecord, network),actualDocument);
+							actualRecordCount++;
+							
+							if ( actualRecordCount == SOLR_FILE_SIZE ) {
+								saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
+								actualDocument = createSolrDocument();
+								actualRecordCount = 0;
 							}
-
-						} catch (Exception e) {
-							e.printStackTrace();
-							System.exit(0); // Si hay un error no continua
+							
 						}
 
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(0); // Si hay un error no continua
 					}
-
-				 }
-				
-				// Grabación de la cola de registros de la red actual que no alcanzó SOLR_FILE_SIZE
-				if (actualRecordCount != 0) {
-					saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
 				}
-
 			}
+			
+			// Grabación de la cola de registros de la red actual que no alcanzó SOLR_FILE_SIZE
+			if (actualRecordCount != 0) {
+				saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
+			}
+			
 		}
+		
 
 	}
 
