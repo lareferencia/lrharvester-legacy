@@ -42,7 +42,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private IHarvester harvester;
 	
 	private Long _network_id;
-
+	
 	private NationalNetwork network;
 
 	private NetworkSnapshot snapshot;
@@ -74,7 +74,11 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		
 		network = networkRepository.findOne( _network_id );
 		
-		launchInicialization();
+		snapshot = new NetworkSnapshot();
+		snapshot.setNetwork(network);
+		
+		snapshotRepository.save(snapshot);
+		
 		launchHarvesting();
 		
 		// Cierre del Snapshot
@@ -83,21 +87,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		snapshotRepository.save(snapshot);
 		
 		// Flush y llamados al GC
-		networkRepository.flush();
 		snapshotRepository.flush();
 		System.gc();
-	}
-	
-	/********************* Inicialization ************************/
-	
-	private void launchInicialization() {
-		
-		snapshot = new NetworkSnapshot();
-		network.getSnapshots().add(snapshot);
-	
-		snapshotRepository.save(snapshot);
-		networkRepository.save(network);
-		
 	}
 	
 	/*************************************************************/
