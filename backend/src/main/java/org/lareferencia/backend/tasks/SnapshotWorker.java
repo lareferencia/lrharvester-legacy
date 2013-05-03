@@ -10,14 +10,17 @@ import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
+import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
-import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
+import org.lareferencia.backend.transformer.ITransformer;
+import org.lareferencia.backend.validator.IValidator;
+import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -41,6 +44,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	private IHarvester harvester;
 	
+	@Autowired
+	private IValidator validator;
+	
+	@Autowired
+	private ITransformer transformer;
+	
 	private Long _network_id;
 	
 	private NationalNetwork network;
@@ -52,16 +61,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 
 	public SnapshotWorker() {
-		
-		/** 
-		 * TODO: // El domHelper es el encargado de interpretar el dom de acuerdo a cada
-		 * schema de metadatatos, puede implementarse un factory en spring para crearlos
-		 * e injectarlos. Solo se haría necesario para soportar otros schemas de metadatos.
-		 * Incluso puede definirse en runtime para cada red, permitiendo distintas redes
-		 * con distintos metadatos.
-		 * Al ser un requerimiento de baja prioridad queda para el final o futuras implementaciones.
-		 * 
-		 * **/
 	};
 	
 	
@@ -74,78 +73,13 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		
 		network = networkRepository.findOne( _network_id );
 		
+		// Crea el snapshot de la red
 		snapshot = new NetworkSnapshot();
 		snapshot.setNetwork(network);
-		
+		snapshot.setStatus( SnapshotStatus.PROCESSING );
 		snapshotRepository.save(snapshot);
-		
-		launchHarvesting();
-		
-		// Cierre del Snapshot
-		snapshot.setStatus( SnapshotStatus.FINISHED );
-		snapshot.setEndTime( new Date() );
-		snapshotRepository.save(snapshot);
-		
-		// Flush y llamados al GC
-		snapshotRepository.flush();
-		System.gc();
-	}
-	
-	/*************************************************************/
-	
-	/********************* Harvesting ************************/
-	
-	@Autowired
-	public void setHarvester(IHarvester harvester) {
-		this.harvester = harvester;
-		harvester.addEventListener(this);		
-	}
-	
-	
-	@Override
-	@Transactional
-	public void harvestingEventOccurred(HarvestingEvent event) {
-		
-		System.out.println( network.getName() + "Evento recibido: " + event.getStatus() );
-			
-		switch ( event.getStatus() ) {
-			case OK:			
-				// Agrega los records al snapshot actual			
-				for (HarvesterRecord  hRecord:event.getRecords() ) {
-					OAIRecord record = new OAIRecord(hRecord.getIdentifier(), hRecord.getMetadataXmlString() );
-					record.setSnapshot(snapshot);		
-					recordDAO.store(record);
-				}
-								
-				snapshot.setSize( snapshot.getSize() + event.getRecords().size() );	
-				snapshot.setEndTime( new Date() );
-				snapshotRepository.save(snapshot);
-								                       
-				System.out.println( network.getName() + ":" + snapshot.getSize() );
-			break;
-			
-			case ERROR_RETRY:
-				System.out.println( event.getMessage() );
-			break;
-			
-			case ERROR_FATAL:
-				System.out.println( event.getMessage() );
-			break;
 
-			default:
-				/**
-				 * TODO: Definir que se hace en caso de eventos sin status conocido
-				 */	
-			break;
-		}	
-	}
-	
-	private void launchHarvesting() {
-		
-		// pasa el estado del snapshot a harvesting
-		snapshot.setStatus( SnapshotStatus.HARVESTING );
-		snapshotRepository.save(snapshot);
-		
+		// Ciclo principal de procesamiento, dado por la estructura de la red nacional
 		// Se recorren los orígenes 
 		for ( OAIOrigin origin:network.getOrigins() ) {
 			
@@ -160,8 +94,115 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			else {
 				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix());
 			}	
+		}
+		
+		// Cierre del Snapshot
+		// Si no generó errores terminó exitoso
+		if ( snapshot.getStatus() != SnapshotStatus.FINISHED_ERROR )
+			snapshot.setStatus( SnapshotStatus.FINISHED_VALID );
+		
+		
+		snapshot.setEndTime( new Date() );
+		snapshotRepository.save(snapshot);
+		
+		// Flush y llamados al GC
+		snapshotRepository.flush();
+		System.gc();
+	}
+	
+	/*************************************************************/
+	
+	
+	@Autowired
+	public void setHarvester(IHarvester harvester) {
+		this.harvester = harvester;
+		harvester.addEventListener(this);		
+	}
+	
+	
+	@Override
+	@Transactional
+	public void harvestingEventOccurred(HarvestingEvent event) {
+		
+		System.out.println( network.getName() + "  HarvestingEvent recibido: " + event.getStatus() );
+			
+		switch ( event.getStatus() ) {
+			case OK:			
+				
+				
+				// Agrega los records al snapshot actual			
+				for (OAIRecord  record:event.getRecords() ) {
+					
+					try {
+					
+						// registra el snapshot al que pertenece
+						record.setSnapshot(snapshot);
+						snapshot.incrementSize();
+						
+						// prevalidación
+						ValidationResult validationResult = validator.validate(record);
+							
+						if ( validationResult.isValid() ) {
+							
+							// registra si es válido sin necesitad de transformar
+							record.setStatus( RecordStatus.VALID_PRE );
+						}	
+						else {	
+							// si no es válido lo transforma
+							transformer.transform(record);
+							
+							// lo vuelve a validar
+							validationResult = validator.validate(record);
+							
+							// registra si resultó válido o es irrecuperable (inválido)
+							if ( validationResult.isValid() ) {
+								record.setStatus( RecordStatus.VALID_POS );
+							} else {					
+								record.setStatus( RecordStatus.INVALID );
+							}
+						}
+		
+						// Si resultó valido incrementa la cuenta del snapshot
+						if ( record.getStatus() != RecordStatus.INVALID )
+							snapshot.incrementValidSize();
+						
+						recordDAO.store(record);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				snapshot.setStatus( SnapshotStatus.PROCESSING );
+				snapshot.setEndTime( new Date() );
+				snapshotRepository.save(snapshot);
+								                       
+				//System.out.println( network.getName() + ":" + snapshot.getSize() );
+			break;
+			
+			case ERROR_RETRY:
+				System.out.println( event.getMessage() );
+				
+				snapshot.setStatus( SnapshotStatus.RETRYING );
+				snapshot.setEndTime( new Date() );
+				snapshotRepository.save(snapshot);
+			break;
+			
+			case ERROR_FATAL:
+				System.out.println( event.getMessage() );
+
+				snapshot.setStatus( SnapshotStatus.FINISHED_ERROR );
+				snapshotRepository.save(snapshot);
+			break;
+
+			default:
+				/**
+				 * TODO: Definir que se hace en caso de eventos sin status conocido
+				 */	
+			break;
 		}	
 	}
+	
 	/******************** Fin Harvesting *********************/
 	
 }

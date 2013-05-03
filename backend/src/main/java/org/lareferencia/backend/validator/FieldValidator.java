@@ -8,7 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.harvester.HarvesterRecord;
+import org.lareferencia.backend.domain.OAIRecord;
 
 @Getter
 @Setter
@@ -31,7 +31,7 @@ public class FieldValidator {
 		this.contentRules = new ArrayList<IContentValidationRule>();
 	}
 
-	public FieldValidationResult validate(HarvesterRecord record) {
+	public FieldValidationResult validate(OAIRecord record) {
 		
 		FieldValidationResult result = new FieldValidationResult();
 		result.setFieldName(fieldName);

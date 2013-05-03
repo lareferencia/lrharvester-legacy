@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.harvester.HarvesterRecord;
+import org.lareferencia.backend.domain.OAIRecord;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class ValidatorImpl implements IValidator {
 	}
 	
 	@Override
-	public ValidationResult validate(HarvesterRecord record) {
+	public ValidationResult validate(OAIRecord record) {
 	
 		ValidationResult result = new ValidationResult();
 		boolean isRecordValid = true;

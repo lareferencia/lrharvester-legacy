@@ -1,8 +1,6 @@
 package org.lareferencia.backend;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,10 +49,8 @@ public class SnapshotPersistenceTests {
 		NetworkSnapshot ns = new NetworkSnapshot();
 		nn.getSnapshots().add(ns);
 		
-		OAIRecord record = new OAIRecord();
-		record.setIdentifier("oai:test/0001");
-		record.setOriginalXML("<xml/>");
-		record.setPublishedXML("<xml/>");
+		OAIRecord record = new OAIRecord("oai:test/0001", "<xml/>");
+
 	
 		record.setSnapshot(ns);
 		

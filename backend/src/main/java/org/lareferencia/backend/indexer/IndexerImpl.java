@@ -2,24 +2,20 @@ package org.lareferencia.backend.indexer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.DOMException;
@@ -55,8 +51,7 @@ public class IndexerImpl implements IIndexer{
 		Document dstDocument = builder.newDocument();
 
 		try {
-			srcDocument = MedatadaDOMHelper.parseXML(record.getPublishedXML());
-			trf.transform( new DOMSource(srcDocument), new DOMResult(dstDocument));
+			trf.transform( new DOMSource(record.getMetadataDOMnode()), new DOMResult(dstDocument));
 			
 			Country country = network.getCountry();
 		    addSolrField(dstDocument, "country", country.getName());
@@ -64,12 +59,7 @@ public class IndexerImpl implements IIndexer{
 		    addSolrField(dstDocument, "id", country.getIso() + "_" + record.getSnapshot().getId() + "_" + record.getId() );		
 			
 			
-		} catch (ParserConfigurationException e) {
-			throw new IndexerException(e.getMessage(), e.getCause());
-		} catch (SAXException e) {
-			throw new IndexerException(e.getMessage(), e.getCause());
-		} catch (IOException e) {
-			throw new IndexerException(e.getMessage(), e.getCause());
+
 		} catch (TransformerException e) {
 			throw new IndexerException(e.getMessage(), e.getCause());
 		}

@@ -17,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.xml.utils.DOMHelper;
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -71,8 +72,11 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					 * TODO: Baja prioridad. Dado que dos llamadas no se superponen puede reutilizarse el mismo evento dentro
 					 * de esta función
 					 */
+					
+					List<OAIRecord> parsedRecords = parseRecords(actualListRecords);
+					
 					fireHarvestingEvent(new HarvestingEvent(
-							parseRecords(actualListRecords),
+							parsedRecords,
 							HarvestingEventStatus.OK));
 
 					batchIndex++;
@@ -161,9 +165,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private List<HarvesterRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
+	private List<OAIRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
-		List<HarvesterRecord> result = new ArrayList<HarvesterRecord>(STANDARD_RECORD_SIZE);
+		List<OAIRecord> result = new ArrayList<OAIRecord>(STANDARD_RECORD_SIZE);
 		/**
 		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
 		 * objetos de registro, habría que evaluarlo cuidadosamente
@@ -194,7 +198,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			try {
 				//TODO: Hay que tratar aparte los casos deleted que pueden generar exceptions al no tener metadata
 				String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
-				result.add(new HarvesterRecord(identifier, getMetadataNode(node) ));	
+				result.add(new OAIRecord(identifier, getMetadataNode(node) ));	
 			} catch (Exception e){
 				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
 				System.err.println("Error en el parse de registro: " + MedatadaDOMHelper.Node2XMLString(node) );

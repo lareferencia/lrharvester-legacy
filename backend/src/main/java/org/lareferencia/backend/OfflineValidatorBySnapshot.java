@@ -1,32 +1,21 @@
 package org.lareferencia.backend;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.InvalidOccurrenceLogEntry;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.ValidationType;
-import org.lareferencia.backend.harvester.HarvesterRecord;
-import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
@@ -44,9 +33,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 @Component
 public class OfflineValidatorBySnapshot {
@@ -135,27 +121,22 @@ public class OfflineValidatorBySnapshot {
 				page = m.recordRepository.findBySnapshot(snapshot,
 						new PageRequest(i, PAGE_SIZE));
 
-				for (OAIRecord orecord : page.getContent()) {
+				for (OAIRecord record : page.getContent()) {
 
 					try {
-						HarvesterRecord hrecord = new HarvesterRecord(
-								orecord.getIdentifier(),
-								MedatadaDOMHelper.parseXML(orecord
-										.getOriginalXML()
-										.replace("&#", "#")));
-				
-						// Log de la prevalidación
-						ValidationResult result = validator.validate(hrecord);
 						
-						stats.addToStats(orecord, hrecord, result, ValidationType.PREVALIDATION);
+						// Log de la prevalidación
+						ValidationResult result = validator.validate(record);
+						
+						stats.addToStats(record, result, ValidationType.PREVALIDATION);
 						
 						if ( !result.isValid() ) {
-							hrecord = trasnformer.transform(hrecord);
+							trasnformer.transform(record);
 						}
 						
 						// Log de la postvalidación
-						result = validator.validate(hrecord);
-						stats.addToStats(orecord, hrecord, result, ValidationType.POSTVALIDATION);
+						result = validator.validate(record);
+						stats.addToStats(record, result, ValidationType.POSTVALIDATION);
 						
 						/** En caso de no se válido loguea las reglas de los campos responsables */
 						

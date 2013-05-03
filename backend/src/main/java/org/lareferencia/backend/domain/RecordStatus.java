@@ -1,9 +1,9 @@
 package org.lareferencia.backend.domain;
 
-public enum RecordStatus {
-	
+public enum RecordStatus {	
 	INVALID,
-	VALID,
+	VALID_PRE,
+	VALID_POS,
 	UNTESTED
 }
 

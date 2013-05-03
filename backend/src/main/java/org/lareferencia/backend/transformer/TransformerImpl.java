@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.lareferencia.backend.harvester.HarvesterRecord;
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.validator.ContentValidationResult;
 import org.lareferencia.backend.validator.IContentValidationRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import org.w3c.dom.Node;
 
 @Component
@@ -97,7 +96,7 @@ public class TransformerImpl implements ITransformer {
 	 * en futuras iteraciones.
 	 */
 	@Override
-	public HarvesterRecord transform(HarvesterRecord record) {
+	public void transform(OAIRecord record) {
 			
 		boolean driverFound = false;
 		boolean statusFound = false;
@@ -172,7 +171,6 @@ public class TransformerImpl implements ITransformer {
 			record.addFieldOcurrence("dc:language", "spa");
 				
 		
-		return record;
 	}
 	
 	

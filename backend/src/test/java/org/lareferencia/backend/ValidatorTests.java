@@ -3,31 +3,24 @@ package org.lareferencia.backend;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.harvester.HarvesterRecord;
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
-import org.lareferencia.backend.validator.FieldValidator;
-import org.lareferencia.backend.validator.LengthContentValidationRule;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validator.FieldValidator;
 import org.lareferencia.backend.validator.IContentValidationRule;
 import org.lareferencia.backend.validator.IValidator;
+import org.lareferencia.backend.validator.LengthContentValidationRule;
 import org.lareferencia.backend.validator.RegexContentValidationRule;
 import org.lareferencia.backend.validator.ValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -121,7 +114,7 @@ public class ValidatorTests {
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 		
 		LengthContentValidationRule clrule = new LengthContentValidationRule();
 		clrule.setMinLength(2);
@@ -148,7 +141,7 @@ public class ValidatorTests {
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 		
 		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
 
@@ -176,7 +169,7 @@ public class ValidatorTests {
 			
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 		
 		RegexContentValidationRule rerule = new RegexContentValidationRule();
 
@@ -217,7 +210,7 @@ public class ValidatorTests {
 	public void testFieldValidator() throws Exception {
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 	
 		ArrayList<String> typeList1 = new ArrayList<String>();
 		typeList1.add("info:eu-repo/semantics/article");
@@ -238,7 +231,7 @@ public class ValidatorTests {
 	public void testRecordValidator() throws Exception {
 		
 		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 	
 		ArrayList<String> typeList1 = new ArrayList<String>();
 		typeList1.add("info:eu-repo/semantics/article");
@@ -266,7 +259,7 @@ public class ValidatorTests {
 	public void testRecordWiredDriverValidator() throws Exception {
 		
 		Document doc = MedatadaDOMHelper.parseXML(validRecord);
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 		
 		System.out.println( validator.validate(record) );	
 		assertTrue( validator.validate(record).isValid() );		
@@ -277,17 +270,17 @@ public class ValidatorTests {
 	public void testRecordWiredDriverTransformer() throws Exception {
 		
 		Document doc = MedatadaDOMHelper.parseXML(invalidRecord);
-		HarvesterRecord record = new HarvesterRecord("dumyid",doc);
+		OAIRecord record = new OAIRecord("dumyid",doc);
 		
 		assertFalse( validator.validate(record).isValid() );		
 		
-		record = transformer.transform(record);
+		transformer.transform(record);
 		
 		System.out.println( validator.validate(record) );	
 
 		assertTrue( validator.validate(record).isValid() );		
 		
-		System.out.println( MedatadaDOMHelper.Node2XMLString(record.getMetadataDOMnode()) );
+		System.out.println( record.getPublishedXML() );
 		
 	}
 	

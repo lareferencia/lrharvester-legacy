@@ -40,6 +40,9 @@ public class NetworkSnapshot extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private Integer size;
+	
+	@Column(nullable = false)
+	private Integer validSize;
 
 	
 	/** Atención, las one2many con colecciones grandes generan problemas con el flush/clean durante bulk inserts 
@@ -59,7 +62,18 @@ public class NetworkSnapshot extends AbstractEntity {
 		this.status = SnapshotStatus.INITIALIZED;
 		startTime = new DateTime().toDate();
 		this.size = 0;
+		this.validSize = 0;;
 	}
+	
+	public void incrementSize() {
+		size++;
+	}
+	
+	public void incrementValidSize() {
+		validSize++;
+	}
+	
+	
 	
 	
 }

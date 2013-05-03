@@ -20,13 +20,11 @@ import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.transformer.ITransformer;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -172,22 +170,17 @@ public class OfflineIndexerBySnapshot {
 				page = m.recordRepository.findBySnapshot(snapshot,
 						new PageRequest(i, PAGE_SIZE));
 
-				for (OAIRecord orecord : page.getContent()) {
+				for (OAIRecord record : page.getContent()) {
 
 					try {
-						HarvesterRecord hrecord = new HarvesterRecord(
-								orecord.getIdentifier(),
-								MedatadaDOMHelper.parseXML(orecord
-										.getOriginalXML()
-										.replace("&#", "#")));
+						
 
 						// Si no es válido trata de transformarlo
-						if (!validator.validate(hrecord).isValid())
-							hrecord = trasnformer.transform(hrecord);
+						if (!validator.validate(record).isValid())
+							trasnformer.transform(record);
 
-						if (validator.validate(hrecord).isValid()) {
-							orecord.setPublishedXML(hrecord.getMetadataXmlString());
-							addSolrDocToSolrAdd(indexer.transform(orecord, network),actualDocument);
+						if (validator.validate(record).isValid()) {
+							addSolrDocToSolrAdd(indexer.transform(record, network),actualDocument);
 							actualRecordCount++;
 							
 							if ( actualRecordCount == SOLR_FILE_SIZE ) {

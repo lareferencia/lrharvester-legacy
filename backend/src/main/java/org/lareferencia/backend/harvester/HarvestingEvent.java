@@ -6,16 +6,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import org.lareferencia.backend.domain.OAIRecord;
+
 @Getter
 @Setter
 @ToString
 public class HarvestingEvent {
 	
 	private String message;
-	private List<HarvesterRecord> records;
+	private List<OAIRecord> records;
 	private HarvestingEventStatus status;
 	
-	public HarvestingEvent(List<HarvesterRecord> records,
+	public HarvestingEvent(List<OAIRecord> records,
 			HarvestingEventStatus status) {
 		this.records = records;
 		this.status = status;

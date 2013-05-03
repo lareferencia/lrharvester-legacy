@@ -1,38 +1,19 @@
 package org.lareferencia.backend;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.harvester.HarvesterRecord;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
-import org.lareferencia.backend.validator.FieldValidator;
-import org.lareferencia.backend.validator.LengthContentValidationRule;
-import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
-import org.lareferencia.backend.validator.IContentValidationRule;
 import org.lareferencia.backend.validator.IValidator;
-import org.lareferencia.backend.validator.RegexContentValidationRule;
-import org.lareferencia.backend.validator.ValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -78,9 +59,7 @@ public class IndexerTests {
 	@Test
 	public void testRecordWiredDriverTransformer() throws Exception {
 		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
 		OAIRecord orecord = new OAIRecord("dummy", xmlstring);
-		orecord.setPublishedXML(xmlstring);
 
 		NationalNetwork network = new NationalNetwork();
 		Country country = new Country();
