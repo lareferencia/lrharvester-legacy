@@ -49,7 +49,7 @@
     {* Load common javascript functions *}
     {js filename="common.js"}
 
-	    {* Load click registration *}
+	{* Load click registration *}
     {js filename="ajaxrequest.js"}
 	
     {* Load VuFind specific stylesheets *}
@@ -58,7 +58,7 @@
     <!--[if lt IE 8]><link rel="stylesheet" href="{$url}/interface/themes/blueprint/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
   </head>
 
-  <body onload="add_record_event()">
+  <body >
     <div class="container">
 	  <div class="header">
 		{include file="header.tpl"}

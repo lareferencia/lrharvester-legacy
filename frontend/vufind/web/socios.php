@@ -10,7 +10,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     
-    <title>Socios de LA-Referencia</title>
+    <title>Paises Socios de LA-Referencia</title>
 
         <link rel="search" type="application/opensearchdescription+xml" title="Library Catalog Search" href="http://200.0.206.214/vufind/Search/OpenSearch?method=describe" />
     
@@ -110,7 +110,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <div class="main">
 <div style="margin: 20px 70px ;">
 <h1>Socios</h1>
-<h2><i>(datos preliminares)</i></h2>
+<h2><i>(datos al 28 de abril de 2013)</i></h2>
 
 <h2><a id="mapa">Mapa de pa&iacute;ses socios</a></h2>
  </div>
@@ -121,21 +121,13 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 
     function drawVisualization() {
       var data = google.visualization.arrayToDataTable([
-        ['Pais', 'Registros'],
-        ['Mexico', 1757],
-        ['El Salvador', 138],
-        ['Brazil', 17762],
-        ['Colombia', 840],
-        ['Argentina', 10144],
-        ['Venezuela ', 807],
-        ['Ecuador', 7135],
-        ['Chile', 15947],
-		['Peru', 0]
+	<?php include 'tabla_pais_min.php'; ?>
+		
       ]);
     
 	var options = {};
       options['region'] = '005';
-      options['colors'] = [0xFF8747, 0xFFB581, 0xc06000]; //orange colors
+      options['colors'] = [0xFFB581, 0xc06000]; //orange colors
 	  
       var geomap = new google.visualization.GeoMap(
           document.getElementById('visualization'));
@@ -155,21 +147,13 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 
     function drawVisualization() {
       var data = google.visualization.arrayToDataTable([
-        ['Pais', 'Registros'],
-        ['Mexico', 1757],
-        ['El Salvador', 138],
-        ['Brazil', 17762],
-        ['Colombia', 840],
-        ['Argentina', 10144],
-        ['Venezuela ', 807],
-        ['Ecuador', 7135],
-        ['Chile', 15947],
-		['Peru', 0]
+	<?php include 'tabla_pais_min.php'; ?>
+
       ]);
     
 	var options = {};
       options['region'] = '013';
-      options['colors'] = [0xFF8747, 0xFFB581, 0xc06000]; //orange colors
+      options['colors'] = [0xFFB581, 0xc06000]; //orange colors
 	  
       var geomap = new google.visualization.GeoMap(
           document.getElementById('visualization2'));
@@ -184,13 +168,14 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <div class="searchHomeBrowse">
-	<h2 class="span-4"><a id="paises"></a>Registros por Pa&iacute;s</h2> 
-	<h2 class="span-6"><a id="instituciones"></a>Registros por Instituci&oacute;n</h2> 
-
+	<h2 class="span-4"><a id="paises"></a>Registros <br/>por Pa&iacute;s</h2> 
+	<h2 class="span-10"><a id="instituciones"></a>Registros <br/>por Instituci&oacute;n <i> (instname) </i></h2> 
 
 	<div class="span-14 last"><!-- pad out header row --></div>
 	<?php include 'frecuencia_pais_min.php'; ?>
-	<?php include 'frecuencia_institucion_min.php'; ?>
+	<?php include 'frecuencia_pais_institucion_min.php'; ?>
+	    <i> El dc:source instname es parte de los acuerdos acerca del uso de DRIVER, sin embargo actualmente solo México lo está cumpliendo, a medida que ese acuerdo se cumpla, se agregarán más instituciones</i>
+
 <div class="clear"></div>
 </div>
 </div>

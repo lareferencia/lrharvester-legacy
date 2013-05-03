@@ -25,6 +25,7 @@ req.open(method,url,false);
 req.send(null);
 //alert(req);
 //var t=req.responseText;
+//alert(t);
 }
 return true;
 }
@@ -46,13 +47,13 @@ break;case'setstyle':var target=getNodeValue(commands[i],'target');var property=
 break;case'setproperty':var target=getNodeValue(commands[i],'target');var property=getNodeValue(commands[i],'property');var value=getNodeValue(commands[i],'value');if(value=="true")value=true;if(value=="false")value=false;if(target&&document.getElementById(target)){document.getElementById(target)[property]=value;}
 break;default:window.console.log("Error: unrecognised method '"+ method+"' in processReqChange()");}}}}}
 
-function record_outbound(target) {
+function record_outbound(target,oid) {
 
  if(encodeURIComponent) {
  var req = new AjaxRequest();
- var params = "src=" + encodeURIComponent(location.href) + "&target=" + encodeURIComponent(target); 
+ var params = "src=" + encodeURIComponent(location.href) + "&target=" + encodeURIComponent(target)+ "&oid=" + encodeURIComponent(oid); 
 //alert(params);
-req.loadXMLDoc('http://localhost/vufind/record_outbound.php', params); 
+req.loadXMLDoc('http://200.0.206.214/vufind/record_outbound.php', params); 
 } 
 return true; 
 }

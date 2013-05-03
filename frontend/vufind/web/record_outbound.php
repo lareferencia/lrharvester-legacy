@@ -26,6 +26,7 @@ $registro .= date("j/n/Y - h:i:s A") . ",";
 
 $registro .= $_GET['src'] . ",";
 $registro .= $_GET['target'] . ",";
+$registro .= $_GET['oid'] . ",";
 $registro .= $getip. "\n";
 
 fwrite($fp,$registro);
@@ -37,7 +38,7 @@ $con = mysql_connect("localhost","vufind","vufind");
 	die('Could not connect: ' . mysql_error());
 	}
 	mysql_select_db("vufind", $con);
-	$cadena="INSERT INTO record (ipaddress,fecha,pagina,url) VALUES('".$getip."','".date("j/n/Y - h:i:s A")."','".$_GET['src']."','".$_GET['target']."')";
+	$cadena="INSERT INTO record (ipaddress,fecha,pagina,url,oid) VALUES('".$getip."','".date("j/n/Y - h:i:s A")."','".$_GET['src']."','".$_GET['target']."','".$_GET['oid']."')";
 	echo $cadena."<br>";
 	//mysql_query("INSERT INTO archivos (FirstName, LastName, Age) VALUES ($anombre, 'Griffin', '35')");
 	//mysql_query($cadena);

@@ -46,8 +46,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
       <style type="text/css">
  
       #container {
-        width : 450px;
-        height: 350px;
+        width : 500px;
+        height: 400px;
         margin: 8px auto;
       }
 	        #container2 {

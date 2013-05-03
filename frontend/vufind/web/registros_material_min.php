@@ -1,6 +1,6 @@
 
 <?php
-$url = 'http://200.0.206.214:8080/solr/stats/select?q='.urlencode('recordId:[* TO *]').'&wt=xml&fl='.urlencode('recordId,datestamp').'&sort='.urlencode('datestamp desc').'&rows=1000';
+$url = 'http://localhost:8080/solr/stats/select?q='.urlencode('recordId:[* TO *]').'&wt=xml&fl='.urlencode('recordId,datestamp').'&rows=1000';
 //echo $url;
 $xml = simpleXML_load_file($url,"SimpleXMLElement",LIBXML_NOCDATA);
 $tipoa=0;
@@ -17,24 +17,22 @@ else { //do stuff
 
 //echo '<ul class="span-5">';
 foreach ($xml->xpath("//str[@name='recordId']") as $busqueda) {
-
-$url2 = 'http://localhost:8080/solr/biblio/select?facet=true&facet.field=format&fl=format&q=id:"'.urlencode($busqueda).'".'&facet.limit=5&rows=0&facet.sort=count';
-
-//$url2 = 'http://200.0.206.214:8080/solr/biblio/select?q=id:"'.urlencode($busqueda).'"';
+$url2 = 'http://localhost:8080/solr/biblio/select?q=id:"'.urlencode($busqueda).'"&fl='.urlencode('type');
+//echo $url2;
 $xml2 = simpleXML_load_file($url2,"SimpleXMLElement",LIBXML_NOCDATA);
 if($xml2 ===  FALSE)
 {
    //deal with error
 }
 else { //do stuff 
-foreach ($xml2->xpath("//arr[@name='format']/str") as $title) {
-    		if (strcmp($title,"info:eu-repo/semantics/article")==0)
+foreach ($xml2->xpath("//str[@name='type']") as $title) {
+    		if (strcmp($title,"Artículo")==0)
 	$tipoa++;
-		if (strcmp($title,"info:eu-repo/semantics/masterThesis")==0)
+		if (strcmp($title,"Tesis de Maestría")==0)
 	$tipom++;
-		if (strcmp($title,"info:eu-repo/semantics/doctoralThesis")==0)
+		if (strcmp($title,"Tesis de Doctorado")==0)
 	$tipod++;
-			if (strcmp($title,"info:eu-repo/semantics/report")==0)
+			if (strcmp($title,"Reporte")==0)
 	$tipor++;
 	
 	
