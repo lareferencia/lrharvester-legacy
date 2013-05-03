@@ -11,7 +11,7 @@
 	<xsl:variable name="type_list">info:eu-repo/semantics/article,info:eu-repo/semantics/masterThesis,info:eu-repo/semantics/doctoralThesis,info:eu-repo/semantics/report</xsl:variable>
 	<xsl:variable name="status_list">info:eu-repo/semantics/draft,info:eu-repo/semantics/acceptedVersion,info:eu-repo/semantics/submittedVersion,info:eu-repo/semantics/publishedVersion,info:eu-repo/semantics/updatedVersion</xsl:variable>
 	   
-	<!-- Aquí se definen los prefijos utilizados para detectar contenidos con trato diferencial -->   
+	<!--  Aquí se definen los prefijos utilizados para detectar contenidos con trato diferencial -->   
 	<xsl:variable name="driver_prefix">info:eu-repo/semantics/</xsl:variable> 
 	<xsl:variable name="reponame_prefix">reponame:</xsl:variable>  
 	<xsl:variable name="instname_prefix">instname:</xsl:variable>  
