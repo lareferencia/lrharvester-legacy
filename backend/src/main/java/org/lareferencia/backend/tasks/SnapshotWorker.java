@@ -127,6 +127,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		System.out.println( network.getName() + "  HarvestingEvent recibido: " + event.getStatus() );
 			
 		switch ( event.getStatus() ) {
+			
+		
 			case OK:			
 				
 				
@@ -146,6 +148,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							// registra si es válido sin necesitad de transformar
 							record.setStatus( RecordStatus.VALID_PRE );
+						
+							
 						}	
 						else {	
 							// si no es válido lo transforma
@@ -162,6 +166,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							}
 						}
 		
+						
+						//System.out.println(validationResult);
+						
 						// Si resultó valido incrementa la cuenta del snapshot
 						if ( record.getStatus() != RecordStatus.INVALID )
 							snapshot.incrementValidSize();

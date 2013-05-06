@@ -232,6 +232,6 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			throw new NoSuchFieldException( "No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" +  MedatadaDOMHelper.Node2XMLString(node));
 		
 		
-		return metadataNode;
+		return metadataNode.cloneNode(true);
 	}
 }
