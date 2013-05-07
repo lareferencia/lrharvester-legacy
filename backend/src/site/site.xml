@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Spring Batch: ${project.name}">
+<project name="Spring: ${project.name}">
 
 	<bannerLeft>
 		<name>Spring Batch: ${project.name}</name>
