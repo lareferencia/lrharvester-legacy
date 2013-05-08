@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnapshotManager {
 	
-	@Autowired
 	private NationalNetworkRepository networkRepository;
 	
 	@Autowired
@@ -27,6 +26,15 @@ public class SnapshotManager {
 	public SnapshotManager() {
 		activeProcessors = new ConcurrentLinkedQueue<ISnapshotWorker>();
 	}
+	
+	@Autowired 
+	public void setNationalNetworkRepository(NationalNetworkRepository networkRepository) {
+		this.networkRepository = networkRepository;
+		
+		refresh();
+	}
+	
+	
 	
 	/**
 	 * Consulta el repositorio, obtiene las redes, y actualiza el estado de los procesos
