@@ -1,4 +1,4 @@
-package org.lareferencia.backend;
+package org.lareferencia.backend.rest;
 
 import java.text.DateFormat;
 import java.util.Date;

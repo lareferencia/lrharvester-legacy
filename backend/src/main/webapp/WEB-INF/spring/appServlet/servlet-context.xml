@@ -21,7 +21,7 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="org.lareferencia.backend" />
+	<context:component-scan base-package="org.lareferencia.backend.rest" />
 	
 	
 	
