@@ -21,10 +21,11 @@ public class SnapshotManager {
 	@Autowired 
 	private ApplicationContext applicationContext;
 	
-	private ConcurrentLinkedQueue<ISnapshotWorker> activeProcessors;
+	private ConcurrentLinkedQueue<ISnapshotWorker> workers;
+	
 	
 	public SnapshotManager() {
-		activeProcessors = new ConcurrentLinkedQueue<ISnapshotWorker>();
+		workers = new ConcurrentLinkedQueue<ISnapshotWorker>();
 	}
 	
 	@Autowired 
@@ -35,6 +36,10 @@ public class SnapshotManager {
 	}
 	
 	
+	public Collection<ISnapshotWorker> getWorkers() {
+		return workers;
+	}
+
 	
 	/**
 	 * Consulta el repositorio, obtiene las redes, y actualiza el estado de los procesos
@@ -48,11 +53,12 @@ public class SnapshotManager {
 		Collection<NationalNetwork> storedNetworks = networkRepository.findAll();
 		
 		for ( NationalNetwork storedNetwork:storedNetworks ) {
-			ISnapshotWorker processor = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
-			processor.setNetworkID(storedNetwork.getId());
-			activeProcessors.add(processor);
-			scheduler.schedule(processor, new SnapshotCronTrigger(storedNetwork) );
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+			worker.setNetworkID(storedNetwork.getId());
+			workers.add(worker);
+			scheduler.schedule(worker, new SnapshotCronTrigger(storedNetwork) );
 		}
-		
 	}
+	
+	
 }

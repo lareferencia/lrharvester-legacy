@@ -50,20 +50,24 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private ITransformer transformer;
 	
-	private Long _network_id;
+	private Long networkID;
 	
 	private NationalNetwork network;
 
 	private NetworkSnapshot snapshot;
 
 	public void setNetworkID(Long networkID) {
-		this._network_id = networkID;
+		this.networkID = networkID;
 	}
 
 	public SnapshotWorker() {
 	};
 	
 	
+	public NetworkSnapshot getSnapshot() {
+		return snapshot;
+	}
+
 	/**
 	 * TODO: Podría ser Async, pero no tiene sentido empezar un nuevo proceso de harvesting para una misma red si el anterior
 	 * no terminó. Hay que cuidar los bloqueos!!! TODO: Podría implemetarse la limpieza de procesos inactivos para evitar problemas
@@ -71,7 +75,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Override
 	public void run() {
 		
-		network = networkRepository.findOne( _network_id );
+		network = networkRepository.findOne( networkID );
 		
 		// Crea el snapshot de la red
 		snapshot = new NetworkSnapshot();
@@ -188,8 +192,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			break;
 			
 			case ERROR_RETRY:
-				System.out.println( event.getMessage() );
-				
+				System.out.println( event.getMessage() );			
 				snapshot.setStatus( SnapshotStatus.RETRYING );
 				snapshot.setEndTime( new Date() );
 				snapshotRepository.save(snapshot);
@@ -197,7 +200,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 			case ERROR_FATAL:
 				System.out.println( event.getMessage() );
-
 				snapshot.setStatus( SnapshotStatus.FINISHED_ERROR );
 				snapshotRepository.save(snapshot);
 			break;

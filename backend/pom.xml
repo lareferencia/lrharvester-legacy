@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
 	<artifactId>lareferencia-backend</artifactId>
-	<version>1.0.0.CI-SNAPSHOT</version>
+	<version>0.1.M2</version>
 	<packaging>jar</packaging>
 	<name>LaReferencia Backend</name>
 	<url></url>
@@ -17,7 +17,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.framework.version>3.2.0.RELEASE</spring.framework.version>
 		<hibernate.version>4.1.9.Final</hibernate.version>
-		<jackson.version>2.1.4</jackson.version>	
+		<jackson.version>2.1.4</jackson.version>
+		<spring.data.rest>1.1.0.M1</spring.data.rest>
+			
 	</properties>
 	 
 	<dependencies>
@@ -68,32 +70,19 @@
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.framework.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.framework.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.framework.version}</version>
+		<dependency> 
+     		<groupId>org.springframework</groupId> 
+     		<artifactId>spring-aspects</artifactId> 
+     		<version>${spring.framework.version}</version> 
 		</dependency>
 		
-		<dependency>
+		
+		<!--  dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-oxm</artifactId>
 			<version>${spring.framework.version}</version>
 		</dependency>
-		
-		
-		<!--dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.6.12</version>
@@ -108,16 +97,18 @@
 			<groupId>org.springframework</groupId> 
 			<artifactId>spring-instrument</artifactId> 
 			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-webmvc</artifactId> 
+			<version>${spring.framework.version}</version>
 		</dependency-->
+		
+		<!-- Spring Data y Data REST -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.framework.version}</version>
-		</dependency>
-		<dependency> 
-     		<groupId>org.springframework</groupId> 
-     		<artifactId>spring-aspects</artifactId> 
-     		<version>${spring.framework.version}</version> 
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -125,20 +116,17 @@
 			<version>1.3.0.RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.hateoas</groupId>
-			<artifactId>spring-hateoas</artifactId>
-			<version>0.4.0.RELEASE</version>
-		</dependency>
-		<dependency> 
-			<groupId>org.springframework</groupId> 
-			<artifactId>spring-webmvc</artifactId> 
-			<version>${spring.framework.version}</version>
-		</dependency>
-		<dependency> 
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.framework.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<version>${spring.data.rest}</version>
+		</dependency>
+		
+		
 		
 		<!-- Web -->
 		<dependency>
@@ -236,17 +224,21 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
-				<!-- configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration-->
 			</plugin>
-
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>8.1.9.v20130131</version>
+				<configuration>
+	                <systemProperties>                        
+                        <systemProperty>
+                            <name>jetty.port</name>
+                            <value>8090</value>
+                        </systemProperty>                        
+                    </systemProperties>
+        		</configuration>
+		       
 			</plugin>
-			
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
@@ -314,13 +306,7 @@
 
  	
 	<repositories>
-		
-	    <repository>
-        	<id>jboss thirdparty</id>
-       	 	<name>JBoss Thirdparty Uploads</name>
-        	<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
-      	</repository>
-    
+	
 		<repository>
 			<id>org.jboss.repository.releases</id>
 			<name>JBoss Maven Release Repository</name>
@@ -329,6 +315,20 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		
+	    <repository>
+        	<id>jboss thirdparty</id>
+       	 	<name>JBoss Thirdparty Uploads</name>
+        	<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+      	</repository>
+      	
+      	<repository>
+			<id>spring-milestone</id>
+			<name>Spring Maven MILESTONE Repository</name>
+			<url>http://repo.springsource.org/libs-milestone</url>
+		</repository>
+    
+		
 	</repositories>
 	
 </project>
