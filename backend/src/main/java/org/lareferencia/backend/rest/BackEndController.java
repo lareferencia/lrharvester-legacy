@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.tasks.ISnapshotWorker;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -44,15 +46,21 @@ public class BackEndController {
 		return "home";
 	}
 	
-	@RequestMapping(value = "/harvest", method = RequestMethod.GET)
-	public String harvesting(Locale locale, Model model) {
-		
+	@RequestMapping(value="/harvester/{networkID}", method=RequestMethod.GET)
+	public String harvesting(@PathVariable Long networkID, Model model) {
+		//TODO: debiera chequear la existencia de la red
 		
 		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
 		
+		manager.lauchHarvesting(networkID);
+
 		model.addAttribute("workersSize", manager.getWorkers().size() );
 
+		
 		return "harvest";
 	}
+	
+	
+	
 	
 }

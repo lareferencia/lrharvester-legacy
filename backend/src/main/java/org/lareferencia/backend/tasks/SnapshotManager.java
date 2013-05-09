@@ -1,6 +1,7 @@
 package org.lareferencia.backend.tasks;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.lareferencia.backend.domain.NationalNetwork;
@@ -44,7 +45,7 @@ public class SnapshotManager {
 	/**
 	 * Consulta el repositorio, obtiene las redes, y actualiza el estado de los procesos
 	 */	
-	public synchronized void refresh() {
+	private synchronized void refresh() {
 		
 		/** TODO: Hay que implementar una política de refresh más completa,
 		 *  Son varios los casos a analizar e iran siendo contemplados en futuras
@@ -58,6 +59,14 @@ public class SnapshotManager {
 			workers.add(worker);
 			scheduler.schedule(worker, new SnapshotCronTrigger(storedNetwork) );
 		}
+	}
+	
+	public synchronized void lauchHarvesting(Long networkD) {
+		//TODO: debiera chequear la existencia de la red
+
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+		worker.setNetworkID(networkD);
+		scheduler.schedule(worker, new Date());
 	}
 	
 	

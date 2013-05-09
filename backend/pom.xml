@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
 	<artifactId>lareferencia-backend</artifactId>
@@ -10,17 +10,16 @@
 	<name>LaReferencia Backend</name>
 	<url></url>
 	<description>
-		<![CDATA[LaReferencia backend pom.]]>
+		<![CDATA[LaReferencia backend]]>
 	</description>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.framework.version>3.2.0.RELEASE</spring.framework.version>
 		<hibernate.version>4.1.9.Final</hibernate.version>
 		<jackson.version>2.1.4</jackson.version>
 		<spring.data.rest>1.1.0.M1</spring.data.rest>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-			
+		<logback.version>1.0.6</logback.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>			
 	</properties>
 	<dependencies>
 
@@ -119,6 +118,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.framework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -166,6 +171,27 @@
     	</dependency>
 		
 		
+		<!-- Logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		 <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.4</version>
+            <type>jar</type>
+            <scope>runtime</scope>
+        </dependency>
+		
+		
 		<!-- Common -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -177,25 +203,13 @@
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
-		</dependency>		
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>0.11.4</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.4</version>
-            <type>jar</type>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -206,7 +220,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-            
+        <dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.1.2</version>
+		</dependency>    
 	</dependencies>
 
 	<build>
@@ -215,6 +233,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>	
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
