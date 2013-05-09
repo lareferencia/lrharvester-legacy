@@ -52,7 +52,5 @@
 	<task:scheduler id="taskScheduler" pool-size="10" />
 	<task:executor id="taskExecutor" pool-size="10" />
 
-	<bean id="snapshotManager" class="org.lareferencia.backend.tasks.SnapshotManager" />
-
 	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
 </beans>
