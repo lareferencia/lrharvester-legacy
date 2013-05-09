@@ -19,9 +19,9 @@
 		<hibernate.version>4.1.9.Final</hibernate.version>
 		<jackson.version>2.1.4</jackson.version>
 		<spring.data.rest>1.1.0.M1</spring.data.rest>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 			
 	</properties>
-	 
 	<dependencies>
 
 		<!-- Hibernate -->
