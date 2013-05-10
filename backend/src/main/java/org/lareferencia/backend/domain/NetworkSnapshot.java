@@ -17,6 +17,8 @@ import javax.persistence.TemporalType;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +28,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({"network"})
+
 public class NetworkSnapshot extends AbstractEntity {
 	
 	@Column(nullable = false)
