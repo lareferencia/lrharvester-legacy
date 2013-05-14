@@ -13,7 +13,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -201,6 +203,7 @@ public class OAIRecord extends AbstractEntity {
 	}
 	
 	 /************************ Manejo de la coherencia entre el dom y xmlstring       */ 
+     @PreUpdate
 	 @PrePersist
 	 protected void prePersist() { 
 		 try {
@@ -211,9 +214,19 @@ public class OAIRecord extends AbstractEntity {
 		}	 
      }
 	
+     @PostLoad
 	 private void parseNodeXml() {
+    	 
+    	String xmlstring = null;
+    	
+    	if (this.publishedXML != null )
+    		xmlstring = this.publishedXML;
+    	else
+    		xmlstring = this.originalXML;  	
+    	 
 		try {
-			this.metadataDOMnode = MedatadaDOMHelper.parseXML( this.originalXML.replace("&#", "#")  /*TODO: Esto hay que revisarlo*/ );
+			/*TODO: Esto hay que revisarlo*/
+			this.metadataDOMnode = MedatadaDOMHelper.parseXML( xmlstring.replace("&#", "#")).getFirstChild() ;
 		} catch (ParserConfigurationException e) {
 			//TODO: Manejar esta exception
 			e.printStackTrace();

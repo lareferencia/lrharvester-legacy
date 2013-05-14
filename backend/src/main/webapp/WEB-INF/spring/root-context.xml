@@ -13,4 +13,7 @@
 
 	<import resource="classpath:/META-INF/spring/app-context.xml"/>
 	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
+	
+	<bean id="snapshotManager" class="org.lareferencia.backend.task.SnapshotManager"/>
+	
 </beans>

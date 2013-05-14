@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-@Component
 public class SnapshotManager {
 	
 	private NationalNetworkRepository networkRepository;
