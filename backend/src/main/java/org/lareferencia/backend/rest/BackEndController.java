@@ -94,6 +94,18 @@ public class BackEndController {
 		return response;
 	}
 	
+	
+	@RequestMapping(value="/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
+			
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
+			snapshot,
+			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
+		);
+		return response;
+	}
+	
 	@RequestMapping(value="/listNetworks", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 				
@@ -110,6 +122,7 @@ public class BackEndController {
 			NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 			
 			if ( snapshot != null) {
+				
 				ninfo.snapshotID = snapshot.getId();
 				ninfo.datestamp = dateFormater.format( snapshot.getEndTime() );
 				ninfo.size = snapshot.getSize();
