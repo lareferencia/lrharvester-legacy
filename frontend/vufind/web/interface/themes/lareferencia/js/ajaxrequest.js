@@ -59,7 +59,7 @@ return true;
 }
 
 function add_record_event() { 
-var links = document.getElementsByTagName('a'); 
+/*var links = document.getElementsByTagName('a'); 
 for(var i=0; i < links.length; i++) 
 { 
 
@@ -71,5 +71,5 @@ for(var i=0; i < links.length; i++)
 				return record_outbound(this.href); 
 				} 
 // } 
-} 
+} */
 }

@@ -62,7 +62,7 @@
     <div class="container">
 	  <div class="header">
 		{include file="header.tpl"}
-		Bienvenidos : <a href="http://200.0.206.214/vufind">Principal</a> - <a href="http://200.0.206.214/vufind/socios.php">Socios</a> - <a href="http://200.0.206.214/vufind/material.php">Material</a> - <a href="http://200.0.206.214/vufind/estadisticas.php"> Estad&iacute;sticas</a> - <a href="http://200.0.206.214/vufind/about.php">Acerca de  </a> 
+		Bienvenidos : <a href="{$url}">Principal</a> - <a href="{$url}/Laref/Socios">Socios</a> - <a href="{$url}/Laref/Material">Material</a> - <a href="{$url}/Laref/Estadisticas"> Estad&iacute;sticas</a> - <a href="{$url}/about.php">Acerca de  </a> 
 	  </div>
 
 	  {if $showTopSearchBox}

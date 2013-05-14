@@ -35,9 +35,6 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
         <script type="text/javascript" src="/vufind/interface/themes/lareferencia/js/lightbox.js"></script>
 
         <script type="text/javascript" src="/vufind/interface/themes/lareferencia/js/common.js"></script>
-
-			        <script type="text/javascript" src="/vufind/interface/themes/lareferencia/js/ajaxrequest.js"></script>
-
 		
         <link rel="stylesheet" type="text/css" media="screen, projection" href="/vufind/interface/themes/lareferencia/css/styles.css" />
     <link rel="stylesheet" type="text/css" media="print" href="/vufind/interface/themes/lareferencia/css/print.css" />
@@ -64,7 +61,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
   
   </head>
 
-  <body onload="add_record_event()">
+  <body >
     <div class="container">
 	  <div class="header">
 	  <script type="text/javascript" src="/vufind/interface/themes/lareferencia/js/jquery.cookie.js"></script>
