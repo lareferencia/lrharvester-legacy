@@ -10,6 +10,8 @@
 	<logger name="org.lareferencia.backend" level="info" />
 	<logger name="org.springframework" level="info" />
 	<logger name="org.hibernate" level="info" />
+	<logger name="org.lareferencia.backend" level="info" />
+	<logger name="ORG.oclc.oai" level="debug" />
 	
 	
 

@@ -1,18 +1,28 @@
 package org.lareferencia.backend.rest;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import org.hibernate.criterion.Order;
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.tasks.ISnapshotWorker;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +45,14 @@ public class BackEndController {
 	@Autowired
 	private NationalNetworkRepository nationalNetworkRepository;
 	
+	@Autowired
+	private NetworkSnapshotRepository networkSnapshotRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
+	
+	private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+	
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -68,9 +85,10 @@ public class BackEndController {
 		return "harvest";
 	}
 	
+	
+	
 	@RequestMapping(value="/network/{id}", method=RequestMethod.GET)
-	//@ResponseBody 
-	public ResponseEntity<NationalNetwork> listNetworks(@PathVariable Long id) {
+	public ResponseEntity<NationalNetwork> getNetwork(@PathVariable Long id) {
 			
 		NationalNetwork network = nationalNetworkRepository.findOne(id);
 		ResponseEntity<NationalNetwork> response = new ResponseEntity<NationalNetwork>(
@@ -80,7 +98,46 @@ public class BackEndController {
 		return response;
 	}
 	
+	@RequestMapping(value="/listNetworks", method=RequestMethod.GET)
+	public ResponseEntity<List<NetworkInfo>> listNetworks() {
+				
+		List<NationalNetwork> allNetworks = nationalNetworkRepository.findAll();
+		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
+
+		for (NationalNetwork network:allNetworks) {
+			
+			NetworkInfo ninfo = new NetworkInfo();
+			ninfo.networkID = network.getId();
+			ninfo.country = network.getCountry().getIso();
+			ninfo.name = network.getName();
+			
+			NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+			
+			if ( snapshot != null) {
+				ninfo.snapshotID = snapshot.getId();
+				ninfo.datestamp = dateFormater.format( snapshot.getEndTime() );
+				ninfo.size = snapshot.getSize();
+				ninfo.validSize = snapshot.getValidSize();
+				
+			}
+			NInfoList.add( ninfo );		
+		}
 	
+		ResponseEntity<List<NetworkInfo>> response = new ResponseEntity<List<NetworkInfo>>(NInfoList, HttpStatus.OK);
+		
+		return response;
+	}
 	
-	
+	@Getter
+	@Setter
+	class NetworkInfo {	
+		private Long   networkID;
+		private String country;
+		private String name;
+		
+		private Long snapshotID;
+		private String datestamp;
+		private int size;
+		private int validSize;
+	}
 }

@@ -149,11 +149,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						ValidationResult validationResult = validator.validate(record);
 							
 						if ( validationResult.isValid() ) {
-							
 							// registra si es válido sin necesitad de transformar
-							record.setStatus( RecordStatus.VALID_PRE );
-						
-							
+							record.setStatus( RecordStatus.VALID_PRE );	
 						}	
 						else {	
 							// si no es válido lo transforma
@@ -169,10 +166,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setStatus( RecordStatus.INVALID );
 							}
 						}
-		
-						
-						//System.out.println(validationResult);
-						
+								
 						// Si resultó valido incrementa la cuenta del snapshot
 						if ( record.getStatus() != RecordStatus.INVALID )
 							snapshot.incrementValidSize();

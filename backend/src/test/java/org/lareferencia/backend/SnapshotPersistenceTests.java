@@ -2,6 +2,8 @@ package org.lareferencia.backend;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.domain.Country;
@@ -11,10 +13,12 @@ import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,6 +27,9 @@ public class SnapshotPersistenceTests {
 
 	@Autowired
 	NationalNetworkRepository repository;
+	
+	@Autowired
+	NetworkSnapshotRepository nsrepository;
 
 	@Test
 	@Transactional
@@ -55,11 +62,24 @@ public class SnapshotPersistenceTests {
 		record.setSnapshot(ns);
 		
 		repository.save(nn);
-		assertNotNull(ns.getId());
-
-		
-		
+		assertNotNull(ns.getId());	
 	}
+	
+	/*
+	@Test
+	@Transactional
+	public void testLGK() throws Exception {
+
+		NetworkSnapshot ns = nsrepository.findLastGoodKnowByNetworkID(4L);
+		System.out.println(ns.getId());
+		
+		
+		assertNotNull(ns);	
+
+	}
+	
+	*/
+	
 /*
 	@Test
 	@Transactional
