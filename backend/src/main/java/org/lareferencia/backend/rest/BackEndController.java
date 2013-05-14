@@ -72,17 +72,13 @@ public class BackEndController {
 	}
 	
 	@RequestMapping(value="/harvester/{networkID}", method=RequestMethod.GET)
-	public String harvesting(@PathVariable Long networkID, Model model) {
+	public ResponseEntity<String> harvesting(@PathVariable Long networkID) {
 		//TODO: debiera chequear la existencia de la red
 		
 		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
-		
 		manager.lauchHarvesting(networkID);
-
-		model.addAttribute("workersSize", manager.getWorkers().size() );
-
 		
-		return "harvest";
+		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
 	}
 	
 	
