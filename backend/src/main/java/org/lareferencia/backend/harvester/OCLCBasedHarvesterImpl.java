@@ -9,9 +9,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -38,10 +40,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	}
 
 	public void harvest(String uri, String from, String until, String setname,
-			String metadataPrefix) {
+			String metadataPrefix, String resumptionToken) {
 
 		ListRecords actualListRecords = null;
-		String resumptionToken = null;
 
 		int batchIndex = 0;
 		int actualRetry = 0;
@@ -59,16 +60,13 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					actualListRecords = listRecords(uri, setname, metadataPrefix, batchIndex, resumptionToken);
 					resumptionToken = actualListRecords.getResumptionToken();
 					
-					/**
-					 * TODO: Baja prioridad. Dado que dos llamadas no se superponen puede reutilizarse el mismo evento dentro
-					 * de esta función
-					 */
+					// se crea un evento a partir del resultado de listRecords
+					HarvestingEvent event = createResultFromListRecords(actualListRecords);
+					event.setStatus(HarvestingEventStatus.OK);
+					event.setResumptionToken(resumptionToken);
 					
-					List<OAIRecord> parsedRecords = parseRecords(actualListRecords);
-					
-					fireHarvestingEvent(new HarvestingEvent(
-							parsedRecords,
-							HarvestingEventStatus.OK));
+					// se lanza el evento
+					fireHarvestingEvent(event);
 
 					batchIndex++;
 					actualRetry = 0;
@@ -156,9 +154,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private List<OAIRecord> parseRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
+	private HarvestingEvent createResultFromListRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 		
-		List<OAIRecord> result = new ArrayList<OAIRecord>(STANDARD_RECORD_SIZE);
+		
+		HarvestingEvent result = new HarvestingEvent();
 		/**
 		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
 		 * objetos de registro, habría que evaluarlo cuidadosamente
@@ -183,16 +182,19 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				
 		for (int i=0; i<nodes.getLength(); i++) {
 			
-
-			Node node = nodes.item(i);
+			String metadataString = getMetadataString(nodes.item(i));
+			String identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
 
 			try {
 				//TODO: Hay que tratar aparte los casos deleted que pueden generar exceptions al no tener metadata
-				String identifier = listRecords.getSingleString(node, namespace + ":header/" + namespace + ":identifier");						
-				result.add(new OAIRecord(identifier, getMetadataNode(node) ));	
-			} catch (Exception e){
+				result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString ));	
+			} catch (OAIRecordMetadataParseException e){
 				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
-				System.err.println("Error en el parse de registro: " + MedatadaDOMHelper.Node2XMLString(node) );
+				System.err.println("Error en el parseo de registro: " + identifier + '\n'+ metadataString );
+				result.setRecordMissing(true);
+			} catch (Exception e) {
+				System.err.println("Error desconocido procesando el registro: " + identifier + '\n'+ metadataString );
+				result.setRecordMissing(true);			
 			}
 		}		
 		
@@ -205,7 +207,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException 
 	 */
-	private Node getMetadataNode(Node node) throws TransformerException, NoSuchFieldException {		
+	private String getMetadataString(Node node) throws TransformerException, NoSuchFieldException {		
 		
 		/**
 		 *  TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta implementado sobre nodos individaules
@@ -222,7 +224,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		if (metadataNode == null) 
 			throw new NoSuchFieldException( "No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" +  MedatadaDOMHelper.Node2XMLString(node));
 		
-		
-		return metadataNode.cloneNode(true);
+		// TODO: Ver el tema del char &#56256;
+		return MedatadaDOMHelper.Node2XMLString( metadataNode );
 	}
 }

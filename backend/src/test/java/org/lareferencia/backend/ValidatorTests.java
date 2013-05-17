@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
@@ -112,9 +112,7 @@ public class ValidatorTests {
 	public void testLengthRule() throws Exception {
 		
 		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
 		
 		LengthContentValidationRule clrule = new LengthContentValidationRule();
 		clrule.setMinLength(2);
@@ -139,9 +137,8 @@ public class ValidatorTests {
 	public void testControlledValueRule() throws Exception {
 		
 		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+
 		
 		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
 
@@ -167,9 +164,8 @@ public class ValidatorTests {
 	@Test
 	public void testRegexRule() throws Exception {
 			
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+
 		
 		RegexContentValidationRule rerule = new RegexContentValidationRule();
 
@@ -209,8 +205,8 @@ public class ValidatorTests {
 	@Test
 	public void testFieldValidator() throws Exception {
 		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+
 	
 		ArrayList<String> typeList1 = new ArrayList<String>();
 		typeList1.add("info:eu-repo/semantics/article");
@@ -230,8 +226,8 @@ public class ValidatorTests {
 	@Test
 	public void testRecordValidator() throws Exception {
 		
-		Document doc = MedatadaDOMHelper.parseXML(xmlstring);
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+
 	
 		ArrayList<String> typeList1 = new ArrayList<String>();
 		typeList1.add("info:eu-repo/semantics/article");
@@ -258,8 +254,8 @@ public class ValidatorTests {
 	@Test
 	public void testRecordWiredDriverValidator() throws Exception {
 		
-		Document doc = MedatadaDOMHelper.parseXML(validRecord);
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
+
 		
 		System.out.println( validator.validate(record) );	
 		assertTrue( validator.validate(record).isValid() );		
@@ -269,8 +265,8 @@ public class ValidatorTests {
 	@Test
 	public void testRecordWiredDriverTransformer() throws Exception {
 		
-		Document doc = MedatadaDOMHelper.parseXML(invalidRecord);
-		OAIRecord record = new OAIRecord("dumyid",doc);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
+
 		
 		assertFalse( validator.validate(record).isValid() );		
 		
@@ -280,7 +276,7 @@ public class ValidatorTests {
 
 		assertTrue( validator.validate(record).isValid() );		
 		
-		System.out.println( record.getPublishedXML() );
+		System.out.println( record.toString() );
 		
 	}
 	

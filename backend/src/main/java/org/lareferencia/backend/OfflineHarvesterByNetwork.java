@@ -38,7 +38,7 @@ public  class OfflineHarvesterByNetwork {
 		OfflineHarvesterByNetwork ofh =  context.getBean("offlineHarvesterByNetwork",OfflineHarvesterByNetwork.class);
 		
 		
-		if ( args.length != 1 ) {
+		if ( args.length != 1 && args.length != 2 ) {
 			
 			System.out.println( "command [networkID]" );
 			
@@ -46,7 +46,7 @@ public  class OfflineHarvesterByNetwork {
 				System.out.println( "networkID: " + network.getId() + " name: " + network.getName() ); 
 			}
 				
-		} else {
+		} else if ( args.length == 1) {
 			
 			NationalNetwork network = ofh.networkRepository.findOne( Long.parseLong(args[0]) );
 			ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
@@ -54,6 +54,14 @@ public  class OfflineHarvesterByNetwork {
 			processor.run();
 			
 		}
+		else {
+			
+			ISnapshotWorker processor = context.getBean("snapshotWorker", ISnapshotWorker.class);
+			processor.setNetworkID(Long.parseLong(args[0]));
+			processor.setSnapshotID(Long.parseLong(args[1]));
+			processor.run();
+		}
+		
 		
 	}
 		

@@ -20,6 +20,7 @@ import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
@@ -174,12 +175,13 @@ public class OfflineIndexerBySnapshot {
 
 					try {
 						
-
+						OAIRecordMetadata metadata = new OAIRecordMetadata( record.getIdentifier(), record.getOriginalXML());
+						
 						// Si no es válido trata de transformarlo
-						if (!validator.validate(record).isValid())
-							trasnformer.transform(record);
+						if (!validator.validate(metadata).isValid())
+							trasnformer.transform(metadata);
 
-						if (validator.validate(record).isValid()) {
+						if (validator.validate(metadata).isValid()) {
 							addSolrDocToSolrAdd(indexer.transform(record, network),actualDocument);
 							actualRecordCount++;
 							

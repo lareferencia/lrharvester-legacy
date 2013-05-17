@@ -53,7 +53,6 @@ public class BackEndController {
 	private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 	
-	
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
@@ -108,6 +107,7 @@ public class BackEndController {
 	
 	@RequestMapping(value="/listNetworks", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
+		
 				
 		List<NationalNetwork> allNetworks = nationalNetworkRepository.findAll();
 		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
@@ -129,6 +129,7 @@ public class BackEndController {
 				ninfo.validSize = snapshot.getValidSize();
 				
 			}
+			
 			NInfoList.add( ninfo );		
 		}
 	

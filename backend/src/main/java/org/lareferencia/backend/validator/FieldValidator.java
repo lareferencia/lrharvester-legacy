@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 @Getter
 @Setter
@@ -31,13 +32,13 @@ public class FieldValidator {
 		this.contentRules = new ArrayList<IContentValidationRule>();
 	}
 
-	public FieldValidationResult validate(OAIRecord record) {
+	public FieldValidationResult validate(OAIRecordMetadata metadata) {
 		
 		FieldValidationResult result = new FieldValidationResult();
 		result.setFieldName(fieldName);
 		result.setMandatory(mandatory ); 
 		
-		List<String> occurrences = record.getFieldOcurrences(fieldName);
+		List<String> occurrences = metadata.getFieldOcurrences(fieldName);
 		
 		/** Inicializa un diccionarios para registrar las ocurrencias válidas para alguna regla
 		 *  y los resultados para ocurrencias inválidas.

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
 import org.lareferencia.backend.validator.IContentValidationRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,15 +97,16 @@ public class TransformerImpl implements ITransformer {
 	 * en futuras iteraciones.
 	 */
 	@Override
-	public void transform(OAIRecord record) {
+	public void transform(OAIRecordMetadata metadata) {
 			
 		boolean driverFound = false;
 		boolean statusFound = false;
 		
+		
 		ContentValidationResult result;
 		
 		// Ciclo de búsqueda
-		for (Node node: record.getFieldNodes("dc:type") ) {
+		for (Node node: metadata.getFieldNodes("dc:type") ) {
 			
 			String occr = node.getFirstChild().getNodeValue();
 			
@@ -121,7 +123,7 @@ public class TransformerImpl implements ITransformer {
 		
 		// ciclo de reemplazo
 		if ( !driverFound || !statusFound )
-			for (Node node: record.getFieldNodes("dc:type") ) {
+			for (Node node: metadata.getFieldNodes("dc:type") ) {
 				
 				String occr = node.getFirstChild().getNodeValue();
 				
@@ -138,13 +140,13 @@ public class TransformerImpl implements ITransformer {
 		
 		// creacion del status en caso de no haber sido encontrado
 		if ( !statusFound ) 
-			record.addFieldOcurrence("dc:type", "info:eu-repo/semantics/publishedVersion");
+			metadata.addFieldOcurrence("dc:type", "info:eu-repo/semantics/publishedVersion");
 		
 		
 		// test del idioma
 		boolean langFound = false;
 		// Ciclo de búsqueda
-		for (Node node: record.getFieldNodes("dc:language") ) {
+		for (Node node: metadata.getFieldNodes("dc:language") ) {
 			
 			String occr = node.getFirstChild().getNodeValue();
 			
@@ -155,7 +157,7 @@ public class TransformerImpl implements ITransformer {
 		
 		// ciclo de reemplazo
 		if ( !langFound )
-			for (Node node: record.getFieldNodes("dc:language") ) {
+			for (Node node: metadata.getFieldNodes("dc:language") ) {
 				
 				String occr = node.getFirstChild().getNodeValue();
 				
@@ -168,8 +170,7 @@ public class TransformerImpl implements ITransformer {
 
 		// creacion del status en caso de no haber sido encontrado
 		if ( !langFound ) 
-			record.addFieldOcurrence("dc:language", "spa");
-				
+			metadata.addFieldOcurrence("dc:language", "spa");
 		
 	}
 	
@@ -183,6 +184,9 @@ public class TransformerImpl implements ITransformer {
 		         return first.compareToIgnoreCase(second);
 		    }
 		}
+		
+		
+		
 }	
 
 

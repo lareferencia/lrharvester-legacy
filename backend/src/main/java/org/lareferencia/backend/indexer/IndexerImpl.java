@@ -1,7 +1,6 @@
 package org.lareferencia.backend.indexer;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,12 +15,13 @@ import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 @Component
 public class IndexerImpl implements IIndexer{
@@ -47,11 +47,18 @@ public class IndexerImpl implements IIndexer{
 	public Document transform(OAIRecord record, NationalNetwork network) throws IndexerException {
 		
 		
-		Document srcDocument;
 		Document dstDocument = builder.newDocument();
+		
+		if ( record.getPublishedXML() == null )
+			throw new IndexerException("El registro: " + record.getId() + "  no tiene publibledXML definido");
+		
+		
 
 		try {
-			trf.transform( new DOMSource(record.getMetadataDOMnode()), new DOMResult(dstDocument));
+			
+			OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
+			
+			trf.transform( new DOMSource(domRecord.getDOMDocument()), new DOMResult(dstDocument));
 			
 			Country country = network.getCountry();
 		    addSolrField(dstDocument, "country", country.getName());
@@ -62,6 +69,8 @@ public class IndexerImpl implements IIndexer{
 
 		} catch (TransformerException e) {
 			throw new IndexerException(e.getMessage(), e.getCause());
+		} catch (OAIRecordMetadataParseException e) {
+			e.printStackTrace();
 		}
 		
 		

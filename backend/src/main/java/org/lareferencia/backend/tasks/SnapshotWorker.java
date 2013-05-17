@@ -1,9 +1,13 @@
 package org.lareferencia.backend.tasks;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
@@ -15,9 +19,11 @@ import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
+import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
@@ -40,6 +46,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private NetworkSnapshotRepository snapshotRepository;
 	
 	@Autowired
+	private OAIRecordRepository recordRepository;
+	
+	@Autowired
 	private OAIRecordDAO recordDAO;
 	
 	private IHarvester harvester;
@@ -50,19 +59,18 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private ITransformer transformer;
 	
+	@Setter
 	private Long networkID;
 	
-	private NationalNetwork network;
+	@Setter
+	private Long snapshotID;
 
+	private NationalNetwork network;
 	private NetworkSnapshot snapshot;
 
-	public void setNetworkID(Long networkID) {
-		this.networkID = networkID;
-	}
-
+	
 	public SnapshotWorker() {
 	};
-	
 	
 	public NetworkSnapshot getSnapshot() {
 		return snapshot;
@@ -71,41 +79,57 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	/**
 	 * TODO: Podría ser Async, pero no tiene sentido empezar un nuevo proceso de harvesting para una misma red si el anterior
 	 * no terminó. Hay que cuidar los bloqueos!!! TODO: Podría implemetarse la limpieza de procesos inactivos para evitar problemas
+	 * @throws Exception 
 	 */
 	@Override
 	public void run() {
 		
-		network = networkRepository.findOne( networkID );
 		
-		// Crea el snapshot de la red
-		snapshot = new NetworkSnapshot();
-		snapshot.setNetwork(network);
+		boolean newSnapshotCreated = true;
+		
+		if ( snapshotID != null ) { // Este es el caso en que se retorma un snapshot bloqueado 
+	
+			snapshot = snapshotRepository.findOne( snapshotID );
+			
+			if ( snapshot != null && snapshot.getStatus().equals(SnapshotStatus.STOPPED) ) { // tiene que estar detenido
+				
+				network = snapshot.getNetwork(); 
+				newSnapshotCreated = false;
+				
+			} else {
+				System.err.println("El snapshot no existe o está ya está siendo procesado. El worker no puede continuar");
+				return;
+			}
+						
+	
+		} else { // este es el caso donde se inicia un nuevo snapshot
+			
+			network = networkRepository.findOne( networkID );
+				
+			if ( network != null ) {			
+				snapshot = new NetworkSnapshot();
+				snapshot.setNetwork(network);		
+			} else {
+				System.err.println("La Red no existe!! El worker no puede continuar");
+				return;
+			}
+				
+		}
+		
 		snapshot.setStatus( SnapshotStatus.PROCESSING );
 		snapshotRepository.save(snapshot);
 
-		// Ciclo principal de procesamiento, dado por la estructura de la red nacional
-		// Se recorren los orígenes 
-		for ( OAIOrigin origin:network.getOrigins() ) {
-			
-			// si tiene sets declarados solo va a cosechar 
-			if ( origin.getSets().size() > 0 ) {
-			
-				for ( OAISet set: origin.getSets() ) {
-					harvester.harvest(origin.getUri(), null, null, set.getSpec(), origin.getMetadataPrefix());
-				}
-			}
-			// si no hay set declarado cosecha todo
-			else {
-				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix());
-			}	
-		}
+		// harvest de la red
+		if ( newSnapshotCreated ) // caso de harvesting desde cero
+			harvestEntireNetwork();
+		else // caso de retomar desde un rt anterior
+			harvestNetworkFromRT(snapshot.getResumptionToken());
 		
 		// Cierre del Snapshot
 		// Si no generó errores terminó exitoso
 		if ( snapshot.getStatus() != SnapshotStatus.FINISHED_ERROR )
 			snapshot.setStatus( SnapshotStatus.FINISHED_VALID );
-		
-		
+			
 		snapshot.setEndTime( new Date() );
 		snapshotRepository.save(snapshot);
 		
@@ -116,6 +140,30 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	/*************************************************************/
 	
+	private void harvestNetworkFromRT(String resumptionToken) {	
+		// Se recorren los orígenes evaluando de cual era el rt TODO: Hay que guardar el origen corriente en el snapshot
+		for ( OAIOrigin origin:network.getOrigins() ) {
+			harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), resumptionToken);
+		}
+	}
+	
+	private void harvestEntireNetwork() {
+		// Ciclo principal de procesamiento, dado por la estructura de la red nacional
+		// Se recorren los orígenes 
+		for ( OAIOrigin origin:network.getOrigins() ) {
+			
+			// si tiene sets declarados solo va a cosechar 
+			if ( origin.getSets().size() > 0 ) {
+				for ( OAISet set: origin.getSets() ) {
+					harvester.harvest(origin.getUri(), null, null, set.getSpec(), origin.getMetadataPrefix(), null);
+				}
+			}
+			// si no hay set declarado cosecha todo
+			else {
+				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), null);
+			}	
+		}
+	}
 	
 	@Autowired
 	public void setHarvester(IHarvester harvester) {
@@ -136,17 +184,20 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			case OK:			
 				
 				
+				List<OAIRecord> records = new ArrayList<OAIRecord>(100);
+			
 				// Agrega los records al snapshot actual			
-				for (OAIRecord  record:event.getRecords() ) {
+				for (OAIRecordMetadata  metadata:event.getRecords() ) {
 					
 					try {
-					
+						OAIRecord record = new OAIRecord(metadata.getIdentifier(), metadata.toString());
 						// registra el snapshot al que pertenece
 						record.setSnapshot(snapshot);
+						
 						snapshot.incrementSize();
 						
 						// prevalidación
-						ValidationResult validationResult = validator.validate(record);
+						ValidationResult validationResult = validator.validate(metadata);
 							
 						if ( validationResult.isValid() ) {
 							// registra si es válido sin necesitad de transformar
@@ -154,10 +205,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						}	
 						else {	
 							// si no es válido lo transforma
-							transformer.transform(record);
+							transformer.transform(metadata);
 							
 							// lo vuelve a validar
-							validationResult = validator.validate(record);
+							validationResult = validator.validate(metadata);
 							
 							// registra si resultó válido o es irrecuperable (inválido)
 							if ( validationResult.isValid() ) {
@@ -171,16 +222,28 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						if ( record.getStatus() != RecordStatus.INVALID )
 							snapshot.incrementValidSize();
 						
-						recordDAO.store(record);
+						// Se almacena la metadata transformada para los registros válidos
+						if ( validationResult.isValid() ) 
+							record.setPublishedXML( metadata.toString() );
+						
+						records.add(record);
+						//recordDAO.store(record);
 					}
 					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				
+				recordRepository.save(records);
+
+				
 				snapshot.setStatus( SnapshotStatus.PROCESSING );
 				snapshot.setEndTime( new Date() );
+				snapshot.setResumptionToken( event.getResumptionToken() );
 				snapshotRepository.save(snapshot);
+				
+				recordRepository.flush();
+				snapshotRepository.flush();
 								                       
 				//System.out.println( network.getName() + ":" + snapshot.getSize() );
 			break;

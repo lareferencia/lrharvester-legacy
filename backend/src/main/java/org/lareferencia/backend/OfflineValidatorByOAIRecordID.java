@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
@@ -80,19 +81,21 @@ public  class OfflineValidatorByOAIRecordID {
 		System.out.println("\n*********************************** fin - registro Original\n");
 		try {
 		
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(),record.getOriginalXML());
+
 			
 			// Log de la prevalidación
-			ValidationResult result = validator.validate(record);
+			ValidationResult result = validator.validate(metadata);
 			
 			System.out.println("\n *********************************** validación registro Original\n");
 			System.out.println(result);
 			System.out.println("\n *********************************** fin validación registro Original\n");
 			
 			if ( !result.isValid() ) {
-				trasnformer.transform(record);
+				trasnformer.transform(metadata);
 			
 				// Log de la postvalidación
-				result = validator.validate(record);		
+				result = validator.validate(metadata);		
 					
 				System.out.println("\n *********************************** registro trasnformado\n");
 				System.out.println(record.getPublishedXML());

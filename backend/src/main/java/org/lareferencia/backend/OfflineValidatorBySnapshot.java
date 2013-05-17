@@ -16,6 +16,7 @@ import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.ValidationType;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
@@ -125,18 +126,21 @@ public class OfflineValidatorBySnapshot {
 
 					try {
 						
-						// Log de la prevalidación
-						ValidationResult result = validator.validate(record);
+						OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(),record.getOriginalXML());
+
 						
-						stats.addToStats(record, result, ValidationType.PREVALIDATION);
+						// Log de la prevalidación
+						ValidationResult result = validator.validate(metadata);
+						
+						stats.addToStats(record, metadata, result, ValidationType.PREVALIDATION);
 						
 						if ( !result.isValid() ) {
-							trasnformer.transform(record);
+							trasnformer.transform(metadata);
 						}
 						
 						// Log de la postvalidación
-						result = validator.validate(record);
-						stats.addToStats(record, result, ValidationType.POSTVALIDATION);
+						result = validator.validate(metadata);
+						stats.addToStats(record, metadata, result, ValidationType.POSTVALIDATION);
 						
 						/** En caso de no se válido loguea las reglas de los campos responsables */
 						

@@ -60,6 +60,8 @@ public class IndexerTests {
 	public void testRecordWiredDriverTransformer() throws Exception {
 		
 		OAIRecord orecord = new OAIRecord("dummy", xmlstring);
+		
+		orecord.setPublishedXML( orecord.getOriginalXML() );
 
 		NationalNetwork network = new NationalNetwork();
 		Country country = new Country();
@@ -72,7 +74,9 @@ public class IndexerTests {
 		
 		System.out.println( xmlstring );
 		
-		System.out.println( MedatadaDOMHelper.Node2XMLString(indexer.transform(orecord, network)) );
+		Document doc = indexer.transform(orecord, network);
+		
+		System.out.println( MedatadaDOMHelper.Node2XMLString(doc) );
 		
 	}
 	

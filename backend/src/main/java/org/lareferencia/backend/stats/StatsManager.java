@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.ValidationType;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
 import org.lareferencia.backend.validator.ValidationResult;
 
@@ -105,7 +106,7 @@ public class StatsManager {
 		map.put(snapId, aux);
 	}
 
-	public void addToStats(OAIRecord record, ValidationResult result, ValidationType type) {
+	public void addToStats(OAIRecord record, OAIRecordMetadata metadata, ValidationResult result, ValidationType type) {
 		
 		Long snapId = record.getSnapshot().getId();
 		
@@ -156,7 +157,7 @@ public class StatsManager {
 
 				// occurrences by field
 				for (String field:occurrencesByFieldMapKeys) {
-					occurrencesByFieldMap.get(snapId).put(field, occurrencesByFieldMap.get(snapId).get(field) + record.getFieldOcurrences(field).size() );
+					occurrencesByFieldMap.get(snapId).put(field, occurrencesByFieldMap.get(snapId).get(field) + metadata.getFieldOcurrences(field).size() );
 				}
 				
 			}

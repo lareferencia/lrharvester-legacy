@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 @Getter
 @Setter
@@ -20,7 +21,7 @@ public class ValidatorImpl implements IValidator {
 	}
 	
 	@Override
-	public ValidationResult validate(OAIRecord record) {
+	public ValidationResult validate(OAIRecordMetadata metadata) {
 	
 		ValidationResult result = new ValidationResult();
 		boolean isRecordValid = true;
@@ -29,7 +30,7 @@ public class ValidatorImpl implements IValidator {
 			
 			String fieldName = validator.getFieldName();
 			
-			FieldValidationResult fieldResult = validator.validate(record);
+			FieldValidationResult fieldResult = validator.validate(metadata);
 			result.getFieldResults().put( fieldName, fieldResult );
 			
 			isRecordValid &= ( fieldResult.isValid() || !validator.isMandatory() );

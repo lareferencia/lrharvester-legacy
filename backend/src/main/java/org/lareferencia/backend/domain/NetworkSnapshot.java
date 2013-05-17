@@ -47,6 +47,9 @@ public class NetworkSnapshot extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private Integer validSize;
+	
+	@Column
+	private String resumptionToken;
 
 	
 	/** Atención, las one2many con colecciones grandes generan problemas con el flush/clean durante bulk inserts 
