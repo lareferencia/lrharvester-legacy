@@ -63,8 +63,6 @@ public class OAIRecord extends AbstractEntity {
 	@JoinColumn(name="snapshot_id")
 	private NetworkSnapshot snapshot;
 	
-	
-
 	public OAIRecord() {
 		super();
 		this.status = RecordStatus.UNTESTED;

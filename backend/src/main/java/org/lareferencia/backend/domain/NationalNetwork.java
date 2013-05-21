@@ -28,6 +28,18 @@ public class NationalNetwork extends AbstractEntity {
 	@Column(nullable = false)
 	private String name;
 	
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="country_id")
+	private Country country;
+	
+	@Column(nullable = false)
+	private boolean published = false;
+		
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="schedule_id")
+	private Schedule schedule;
+	
+	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
@@ -37,18 +49,4 @@ public class NationalNetwork extends AbstractEntity {
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
-	
-	
-	/** TODO: Hay que revisar la regla cascade para pais, es debil o fuerte respecto de la red,
-	 *  Es decir, si sacamos la red, tiene sentido que exista el pais en nuestro dominio?
-	 */
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="country_id")
-	private Country country;
-	
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="schedule_id")
-	private Schedule schedule;
-    
-	
 }

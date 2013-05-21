@@ -201,7 +201,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 						if ( validationResult.isValid() ) {
 							// registra si es válido sin necesitad de transformar
-							record.setStatus( RecordStatus.VALID_PRE );	
+							record.setStatus( RecordStatus.VALID );	
 						}	
 						else {	
 							// si no es válido lo transforma
@@ -212,7 +212,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							// registra si resultó válido o es irrecuperable (inválido)
 							if ( validationResult.isValid() ) {
-								record.setStatus( RecordStatus.VALID_POS );
+								record.setStatus( RecordStatus.VALID );
 							} else {					
 								record.setStatus( RecordStatus.INVALID );
 							}

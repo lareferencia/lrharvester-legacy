@@ -80,6 +80,16 @@ public class IndexerTests {
 		
 	}
 	
+	@Test
+	public void testSolrIndexer() throws Exception {
+		
+		
+		indexer.index(null);
+		
+		
+	}
+	
+	
 	
 	
 }

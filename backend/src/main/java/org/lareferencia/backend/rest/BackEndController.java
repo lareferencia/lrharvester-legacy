@@ -4,8 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,10 +15,13 @@ import lombok.Setter;
 import org.hibernate.criterion.Order;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
+import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.tasks.ISnapshotWorker;
 import org.lareferencia.backend.tasks.SnapshotManager;
+import org.lareferencia.backend.util.JsonDateSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Handles requests for the application home page.
@@ -47,6 +54,9 @@ public class BackEndController {
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
+	
+	@Autowired
+	private OAIRecordRepository recordRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
@@ -70,7 +80,10 @@ public class BackEndController {
 		return "home";
 	}
 	
-	@RequestMapping(value="/harvester/{networkID}", method=RequestMethod.GET)
+	
+	/************************** Backend ************************************/
+	
+	@RequestMapping(value="/private/harvester/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> harvesting(@PathVariable Long networkID) {
 		//TODO: debiera chequear la existencia de la red
 		
@@ -80,6 +93,19 @@ public class BackEndController {
 		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
 	}
 	
+	
+	@RequestMapping(value="/private/deleteRecordsBySnapshotID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<Map<String,String>> deleteRecordsBySnapshotID(@PathVariable Long id) {
+		
+		recordRepository.deleteBySnapshotID(id);
+		
+		Map<String,String> result = new HashMap<String, String>();
+		result.put("result", "OK");
+		
+		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
+		
+		return response;
+	}
 	
 	
 	@RequestMapping(value="/network/{id}", method=RequestMethod.GET)
@@ -94,7 +120,10 @@ public class BackEndController {
 	}
 	
 	
-	@RequestMapping(value="/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
+	
+	/**************************** FrontEnd ************************************/
+	
+	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
 			
 		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
@@ -105,11 +134,11 @@ public class BackEndController {
 		return response;
 	}
 	
-	@RequestMapping(value="/listNetworks", method=RequestMethod.GET)
+	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 		
 				
-		List<NationalNetwork> allNetworks = nationalNetworkRepository.findAll();
+		List<NationalNetwork> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
 
 		for (NationalNetwork network:allNetworks) {
@@ -124,12 +153,11 @@ public class BackEndController {
 			if ( snapshot != null) {
 				
 				ninfo.snapshotID = snapshot.getId();
-				ninfo.datestamp = dateFormater.format( snapshot.getEndTime() );
+				ninfo.datestamp = snapshot.getEndTime();
 				ninfo.size = snapshot.getSize();
 				ninfo.validSize = snapshot.getValidSize();
 				
-			}
-			
+			}		
 			NInfoList.add( ninfo );		
 		}
 	
@@ -137,6 +165,29 @@ public class BackEndController {
 		
 		return response;
 	}
+	
+	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
+	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
+		
+		List<NationalNetwork> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<NetworkHistory> NHistoryList = new ArrayList<NetworkHistory>();
+
+		for (NationalNetwork network:allNetworks) {	
+			NetworkHistory nhistory = new NetworkHistory();
+			nhistory.networkID = network.getId();
+			nhistory.country = network.getCountry().getIso();
+			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.FINISHED_VALID);
+			NHistoryList.add( nhistory );		
+		}
+	
+		ResponseEntity<List<NetworkHistory>> response = new ResponseEntity<List<NetworkHistory>>(NHistoryList, HttpStatus.OK);
+		
+		return response;
+	}
+	
+	
+	
+	/**************  Clases de retorno de resultados *******************/
 	
 	@Getter
 	@Setter
@@ -146,8 +197,20 @@ public class BackEndController {
 		private String name;
 		
 		private Long snapshotID;
-		private String datestamp;
+		
+		@JsonSerialize(using=JsonDateSerializer.class)
+		private Date datestamp;
 		private int size;
 		private int validSize;
 	}
+	
+	@Getter
+	@Setter
+	class NetworkHistory {	
+		private Long   networkID;
+		private String country;
+		private List<NetworkSnapshot> validSnapshots;
+	}
+	
+	
 }

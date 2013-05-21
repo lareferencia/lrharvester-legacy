@@ -190,7 +190,25 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <type>jar</type>
             <scope>runtime</scope>
         </dependency>
-		
+        
+        <!-- SolrJ -->
+		<dependency>
+               <artifactId>solr-solrj</artifactId>
+               <groupId>org.apache.solr</groupId>
+               <version>3.6.2</version>
+               <type>jar</type>
+               <scope>compile</scope>
+        </dependency>
+        <dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.2.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpmime</artifactId>
+		    <version>4.2.1</version>
+		</dependency>
 		
 		<!-- Common -->
 		<dependency>

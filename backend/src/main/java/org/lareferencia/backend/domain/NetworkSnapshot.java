@@ -1,65 +1,62 @@
 
 package org.lareferencia.backend.domain;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.joda.time.DateTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import org.joda.time.DateTime;
+import org.lareferencia.backend.util.JsonDateSerializer;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
  */
 @Entity
-@Getter
-@Setter
 @JsonIgnoreProperties({"network"})
-
+@JsonAutoDetect
 public class NetworkSnapshot extends AbstractEntity {
 	
+	@Getter
+	@Setter
 	@Column(nullable = false)
 	private SnapshotStatus status;
 	
+	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private java.util.Date startTime;
-	
+
+	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	private java.util.Date endTime;
 	
+	@Getter
+	@Setter
 	@Column(nullable = false)
 	private Integer size;
 	
+	@Getter
+	@Setter
 	@Column(nullable = false)
 	private Integer validSize;
 	
+	@Getter
+	@Setter
 	@Column
 	private String resumptionToken;
-
 	
-	/** Atención, las one2many con colecciones grandes generan problemas con el flush/clean durante bulk inserts 
-	 *  en los casos donde conviven en la misma session. La pertenencia al set evita que sean detacheados.
-	 *  Por eso se evita el uso de la relación con los registros aquí, esto es un problema que hay que resolver. TODO  
-	 **/
-	//@OneToMany(cascade=CascadeType.ALL)
-	//@JoinColumn(name="snapshot_id"/*, nullable=false*/)
-	//private Collection<OAIRecord> records = new LinkedHashSet<OAIRecord>();
-	
+	@Getter
+	@Setter
 	@ManyToOne()
 	@JoinColumn(name="network_id"/*, nullable=false*/)
 	private NationalNetwork network;
@@ -80,7 +77,15 @@ public class NetworkSnapshot extends AbstractEntity {
 		validSize++;
 	}
 	
-	
+	@JsonSerialize(using=JsonDateSerializer.class)
+	public java.util.Date getStartTime() {
+		return startTime;
+	}
+
+	@JsonSerialize(using=JsonDateSerializer.class)
+	public java.util.Date getEndTime() {
+		return endTime;
+	}
 	
 	
 }
