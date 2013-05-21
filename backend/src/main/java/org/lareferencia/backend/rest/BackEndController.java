@@ -16,6 +16,7 @@ import org.hibernate.criterion.Order;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
@@ -57,6 +58,9 @@ public class BackEndController {
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	IIndexer indexer;
 	
 	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
@@ -106,6 +110,25 @@ public class BackEndController {
 		
 		return response;
 	}
+	
+	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<Map<String,String>> indexRecordsBySnapshotID(@PathVariable Long id) {
+		
+		Map<String,String> result = new HashMap<String, String>();
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+	
+		if ( indexer.index(snapshot) ) {
+			result.put("result", "OK");
+		}
+		else {
+			result.put("result", "ERROR");
+		}	
+		
+		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
+		
+		return response;
+	}
+	
 	
 	
 	@RequestMapping(value="/network/{id}", method=RequestMethod.GET)

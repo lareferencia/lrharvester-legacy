@@ -15,6 +15,7 @@ import org.lareferencia.backend.domain.InvalidOccurrenceLogEntry;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.ValidationType;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
@@ -77,10 +78,8 @@ public class OfflineValidatorBySnapshot {
 				OfflineValidatorBySnapshot.class);
 
 		IValidator validator = context.getBean("validator", IValidator.class);
-		ITransformer trasnformer = context.getBean("transformer",ITransformer.class);
-		
-		
-		
+		ITransformer transformer = context.getBean("transformer",ITransformer.class);
+	
 		if ( args.length != 1 ) {
 			
 			System.out.println( "command [snapshotID]" );
@@ -94,7 +93,6 @@ public class OfflineValidatorBySnapshot {
 		}
 		else {
 		
-			
 			
 			Long snapID = Long.parseLong( args[0] );	
 			NetworkSnapshot snapshot = m.snapshotRepository.findOne(snapID);
@@ -128,48 +126,69 @@ public class OfflineValidatorBySnapshot {
 						
 						OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(),record.getOriginalXML());
 
+						// prevalidación
+						ValidationResult validationResult = validator.validate(metadata);
 						
-						// Log de la prevalidación
-						ValidationResult result = validator.validate(metadata);
-						
-						stats.addToStats(record, metadata, result, ValidationType.PREVALIDATION);
-						
-						if ( !result.isValid() ) {
-							trasnformer.transform(metadata);
+						//stats.addToStats(record, metadata, validationResult, ValidationType.PREVALIDATION);
+
+							
+						if ( validationResult.isValid() ) {
+							// registra si es válido sin necesitad de transformar
+							record.setStatus( RecordStatus.VALID );	
+						}	
+						else {	
+							// si no es válido lo transforma
+							transformer.transform(metadata);
+							
+							// lo vuelve a validar
+							validationResult = validator.validate(metadata);
+							//stats.addToStats(record, metadata, validationResult, ValidationType.POSTVALIDATION);
+							
+							// registra si resultó válido o es irrecuperable (inválido)
+							if ( validationResult.isValid() ) {
+								record.setStatus( RecordStatus.VALID );
+							} else {					
+								record.setStatus( RecordStatus.INVALID );
+							}
 						}
+								
 						
-						// Log de la postvalidación
-						result = validator.validate(metadata);
-						stats.addToStats(record, metadata, result, ValidationType.POSTVALIDATION);
+						// Se almacena la metadata transformada para los registros válidos
+						if ( validationResult.isValid() ) 
+							record.setPublishedXML( metadata.toString() );
+						
+						m.recordRepository.save(record);
+						
 						
 						/** En caso de no se válido loguea las reglas de los campos responsables */
-						
-						if ( !result.isValid() ) {
-							
-							
-							for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
-
-								String fname = entry.getKey();
-								FieldValidationResult fvresult = entry.getValue();
-
-								// Loguea solo los campos invalidos
-								if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
-									
-									// Loguea solo las ocurrencias invalidas
-									for (ContentValidationResult cvr: fvresult.getContentResults() ) {
-										if ( !cvr.isValid()  )
-											m.rlogRepository.save( 
-													new InvalidOccurrenceLogEntry( snapshot.getId(), fname, cvr.getExpectedValue(), cvr.getReceivedValue()));
-									}
-								}
-							} 
-						}			
+//						if ( !result.isValid() ) {
+//							
+//							
+//							for ( Entry<String, FieldValidationResult> entry:result.getFieldResults().entrySet() ) {
+//
+//								String fname = entry.getKey();
+//								FieldValidationResult fvresult = entry.getValue();
+//
+//								// Loguea solo los campos invalidos
+//								if ( (!fvresult.isValid() && fvresult.isMandatory()) ) {
+//									
+//									// Loguea solo las ocurrencias invalidas
+//									for (ContentValidationResult cvr: fvresult.getContentResults() ) {
+//										if ( !cvr.isValid()  )
+//											m.rlogRepository.save( 
+//													new InvalidOccurrenceLogEntry( snapshot.getId(), fname, cvr.getExpectedValue(), cvr.getReceivedValue()));
+//									}
+//								}
+//							} 
+//						}			
 						
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(0); // Si hay un error no continua
 					}
 				}
+				
+				m.recordRepository.flush();
 			}
 			
 			m.rlogRepository.flush();

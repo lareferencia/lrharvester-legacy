@@ -241,7 +241,6 @@
 	
 	<bean id="transformer" class="org.lareferencia.backend.transformer.TransformerImpl"/>
 	
-	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl"/>
-	
+    	
 
 </beans>

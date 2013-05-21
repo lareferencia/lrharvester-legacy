@@ -7,6 +7,7 @@ import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.indexer.IIndexer;
+import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.IValidator;
@@ -55,6 +56,9 @@ public class IndexerTests {
 	@Autowired
 	IIndexer indexer;
 
+	@Autowired
+	NetworkSnapshotRepository networkSnapshotRepository;
+
 	
 	@Test
 	public void testRecordWiredDriverTransformer() throws Exception {
@@ -84,7 +88,7 @@ public class IndexerTests {
 	public void testSolrIndexer() throws Exception {
 		
 		
-		indexer.index(null);
+		indexer.index(networkSnapshotRepository.findOne(8L));
 		
 		
 	}

@@ -2,8 +2,6 @@ package org.lareferencia.backend.indexer;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,12 +12,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.DirectXmlRequest;
-import org.apache.solr.common.SolrDocument;
 import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
@@ -34,16 +29,17 @@ import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@Component
 public class IndexerImpl implements IIndexer{
 
 	private File stylesheet; 
 	private Transformer trf; 
+	
+	private static final int PAGE_SIZE = 100;
+
 	
 	private DocumentBuilder builder; 
 	
@@ -53,9 +49,14 @@ public class IndexerImpl implements IIndexer{
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
 	
-	public IndexerImpl() throws IndexerException {
+	private HttpSolrServer server;
+
+	
+	public IndexerImpl(String xslFileName, String solrURL) throws IndexerException {
 		
-		stylesheet = new File("indexer.xsl");
+		stylesheet = new File(xslFileName);
+		server = new HttpSolrServer(solrURL);
+
 		try {
 			trf = MedatadaDOMHelper.buildXSLTTransformer(stylesheet);
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -67,43 +68,57 @@ public class IndexerImpl implements IIndexer{
 	}
 	
 	
-	public void index(NetworkSnapshot snapshot) {
+	public boolean index(NetworkSnapshot snapshot) {
 		
-		 snapshot = networkSnapshotRepository.findOne(16L);	
-		 String url = "http://localhost:8983/solr/core0";
-		 
-		 
-		 try {
-			HttpSolrServer server = new HttpSolrServer(url);
-		
-			Page<OAIRecord> records = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(1, 100));
-			
-			DirectXmlRequest request;
-			
-			request = new DirectXmlRequest("/update", "<delete><query>*:*</query></delete>");
-			server.request(request);
+		DirectXmlRequest request;
 
-			for (OAIRecord record : records.getContent()) {
-				System.out.println( record.getId() );
+		 try {
+			
+			// Borrado de los docs del país del snapshot
+			request = new DirectXmlRequest("/update", "<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
+			server.request(request);
+		
+			// Update de los registros de a 100
+			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
+			int totalPages = page.getTotalPages();
+
+			for (int i = 0; i < totalPages; i++) {
+				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
 				
-				request = new DirectXmlRequest("/update", "<add>" + MedatadaDOMHelper.Node2XMLString(this.transform(record, snapshot.getNetwork()))  + "</add>");
+				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
+
+
+				String xmlSolrDocsString = "";
+				
+				for (OAIRecord record : page.getContent()) {
+					xmlSolrDocsString += MedatadaDOMHelper.Node2XMLString(this.transform(record, snapshot.getNetwork()));
+				}
+				
+				request = new DirectXmlRequest("/update", "<add>" + xmlSolrDocsString + "</add>");
 				server.request(request);
-				
 			}
 			
+			// commit de los cambios
 			request = new DirectXmlRequest("/update", "<commit/>");
 			server.request(request);
-
 			
-
+			System.gc();
 				 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			try {
+				server.rollback();
+			} catch (SolrServerException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return false;
 		}
 
-		
-		
+		return true;
 	}
 	
 	public Document transform(OAIRecord record, NationalNetwork network) throws IndexerException {
@@ -123,8 +138,8 @@ public class IndexerImpl implements IIndexer{
 			trf.transform( new DOMSource(domRecord.getDOMDocument()), new DOMResult(dstDocument));
 			
 			Country country = network.getCountry();
-		    //addSolrField(dstDocument, "country", country.getName());
-		    //addSolrField(dstDocument, "country_iso", country.getIso());
+		    addSolrField(dstDocument, "country", country.getName());
+		    addSolrField(dstDocument, "country_iso", country.getIso());
 		    addSolrField(dstDocument, "id", country.getIso() + "_" + record.getSnapshot().getId() + "_" + record.getId()  );		
 			
 			

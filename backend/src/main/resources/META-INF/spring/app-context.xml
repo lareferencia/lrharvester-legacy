@@ -53,5 +53,7 @@
 	<task:executor id="taskExecutor" pool-size="10" />
 
 	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
+	<import resource="classpath:/META-INF/spring/indexer-context.xml"/>
+	
 	
 </beans>

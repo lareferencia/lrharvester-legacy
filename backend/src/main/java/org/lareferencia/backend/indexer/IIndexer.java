@@ -8,7 +8,7 @@ import org.w3c.dom.Document;
 public interface IIndexer {
 	
 	
-	public void index(NetworkSnapshot snapshot);
+	public boolean index(NetworkSnapshot snapshot);
 	public Document transform(OAIRecord record, NationalNetwork network) throws IndexerException;
 
 }
