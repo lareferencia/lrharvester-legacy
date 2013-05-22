@@ -39,7 +39,7 @@ public class IndexerImpl implements IIndexer{
 	private File stylesheet; 
 	private Transformer trf; 
 	
-	private static final int PAGE_SIZE = 100;
+	private static final int PAGE_SIZE = 1000;
 
 	
 	private DocumentBuilder builder; 
@@ -79,7 +79,7 @@ public class IndexerImpl implements IIndexer{
 			request = new DirectXmlRequest("/update", "<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
 			server.request(request);
 		
-			// Update de los registros de a 100
+			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
