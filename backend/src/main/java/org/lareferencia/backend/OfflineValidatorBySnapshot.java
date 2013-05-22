@@ -124,6 +124,8 @@ public class OfflineValidatorBySnapshot {
 
 					try {
 						
+						
+					
 						OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(),record.getOriginalXML());
 
 						// prevalidación
@@ -184,7 +186,7 @@ public class OfflineValidatorBySnapshot {
 						
 					} catch (Exception e) {
 						e.printStackTrace();
-						System.exit(0); // Si hay un error no continua
+						//System.exit(0); // Si hay un error no continua
 					}
 				}
 				

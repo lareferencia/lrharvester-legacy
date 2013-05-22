@@ -29,6 +29,7 @@ import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,7 +68,7 @@ public class IndexerImpl implements IIndexer{
 		}
 	}
 	
-	
+	@Transactional(readOnly = true)
 	public boolean index(NetworkSnapshot snapshot) {
 		
 		DirectXmlRequest request;
@@ -96,6 +97,8 @@ public class IndexerImpl implements IIndexer{
 				
 				request = new DirectXmlRequest("/update", "<add>" + xmlSolrDocsString + "</add>");
 				server.request(request);
+				
+				recordRepository.flush();
 			}
 			
 			// commit de los cambios
