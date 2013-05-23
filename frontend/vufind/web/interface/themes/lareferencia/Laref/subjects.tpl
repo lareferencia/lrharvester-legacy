@@ -1,7 +1,11 @@
-
-
-<div class="span-18 last">
-  <h1>{translate text="Material"}</h1>
+<div class="span-12" >
+<h1 >Materias</h1>
+<div class="span-12" style="word-wrap:break-word;">
+{$output}
+</div>
+</div>
+<div class="span-10 last">
+  <h1>{translate text="Recursos en la colecci&oacute;n"}</h1>
   <table class="citation">
   <tr>
     <th>{translate text="Tipo de Material"}</th>
@@ -17,20 +21,14 @@
       </ul>
     </td>
 	</tr>
-  </table>
-</div>
-<div class="clear"></div>
-<h2 class="span-10"><a id="instituciones"></a>Material por Red</h2> 
-<div class="clear"></div>
-	{$output2}
-<div class="clear"></div>
+  </table> 
   {literal}
        <style type="text/css">
 
       #container {
-        width : 500px;
-        height: 400px;
-        margin: 8px auto;
+        width : 400px;
+        height: 300px;
+        margin: 1px auto;
       }
 
     </style>
@@ -90,11 +88,7 @@ graph = Flotr.draw(container, [
 		);
 {/literal} 
 			</script>
-	<div class="clear"></div>
-<h2 class="span-10"><a id="materias"></a>Materias </h2> 
-	<div class="clear"></div>
-	{$output4}
-		<div class="clear"></div>
+</div>
 
 
-<div class="clear"></div>
+	<div class="clear"></div>

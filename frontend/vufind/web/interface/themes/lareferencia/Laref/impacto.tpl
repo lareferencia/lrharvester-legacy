@@ -20,14 +20,13 @@
     };
 	{/literal} 
     </script>
-
-<h2 class="span-10"><a id="materias"></a>Consulta de Registros por Pa&iacute;s</h2> 
-	<div class="clear"></div>
-    <div id="chart_div" style="width: 700px; height: 400px; margin:auto;"></div>
+   <div id="chart_div" style="width: 700px; height: 400px; margin:auto;"></div>
+<h2 class="span-10"><a id="materias"></a>Impacto por Pa&iacute;s Visitante</h2> 
 {$table}
-<h2 class="span-10"><a id="materias"></a>Enlaces a Redes Nacionales</h2> 
-	<div class="clear"></div>
+<h2 class="span-10"><a id="materias"></a>Impacto por Pa&iacute;s por Tipo de Material</h2> 
 	{$output6}
+<h2 class="span-10"><a id="materias"></a>Impacto por Tipo de Material por Pa&iacute;s</h2> 
+	{$output8}	
 <div class="span-18 last">
   <h1>{translate text="Estad&iacute;sticas"}</h1>
 
@@ -53,15 +52,6 @@
     <li><a href="{$url}/Search/Results?&type=AllFields&submit=Buscar&lookfor={$term.0|escape}">({$term.1}) {$term.0|escape}</a></li>
   {foreachelse}
     <li>{translate text="No Searches"}</li>
-  {/foreach}
-  </ul>
-
-  <h2>{translate text="Registros m&aacute;s consultados"}</h2>
-  <ul>
-  {foreach from=$recordList item=term}
-    <li><a href="{$url}/Record/{$term.0|escape}">({$term.1}) {$term.0|escape}</a></li>
-  {foreachelse}
-    <li>{translate text="No Record Views"}</li>
   {/foreach}
   </ul>
   

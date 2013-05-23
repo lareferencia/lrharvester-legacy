@@ -62,7 +62,7 @@
     <div class="container">
 	  <div class="header">
 		{include file="header.tpl"}
-		Bienvenidos : <a href="{$url}">Principal</a> - <a href="{$url}/Laref/Socios">Socios</a> - <a href="{$url}/Laref/Material">Material</a> - <a href="{$url}/Laref/Estadisticas"> Estad&iacute;sticas</a> - <a href="{$url}/about.php">Acerca de  </a> 
+		Bienvenidos : <a href="{$url}">Principal</a> - <a href="{$url}/Laref/Paises">Paises</a> - <a href="{$url}/Laref/Material">Material</a> - <a href="{$url}/Laref/Impacto"> Impacto</a> - <a href="{$url}/Laref/About">Acerca de  </a> 
 	  </div>
 
 	  {if $showTopSearchBox}
