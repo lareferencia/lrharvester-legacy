@@ -25,11 +25,39 @@ class Estadisticas extends Action
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
 
+	$output1="";
+	$output2="";	
+	$output3="";	
+	$output4="";
+	$output5="";
+	$output6="";		
+		 
+	// Make a MySQL Connection
+	mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
+	mysql_select_db("vufind") or die(mysql_error());
 
-// Make a MySQL Connection
-mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
-mysql_select_db("vufind") or die(mysql_error());
-
+	// Get all the data from the "example" table
+	$result = mysql_query("SELECT count(*) as acceso,ccode FROM record WHERE ccode<>'' GROUP BY ccode ORDER BY ccode ") 
+	or die(mysql_error());  
+	$table="";
+	$list="";
+	$list.="['Country', 'Accesos']";
+	$table.= "<table border='1'>";
+	$table.=  "<tr> <th>ccode</th> <th>acceso</th></tr>";
+	// keeps getting the next row until there are no more to get
+	while($row = mysql_fetch_array( $result )) {
+		// Print out the contents of each row into a table
+		$table.=  "<tr><td>"; 
+		$table.=  $row['ccode'];
+		$table.=  "</td><td>"; 
+		$table.=  $row['acceso'];
+		$table.=  "</td>"; 
+		$table.=  "</td></tr>"; 
+		$list.=",['".$row['ccode']."',".$row['acceso']."]";
+	}	
+	$list.="]);";
+	$table.=  "</table>";			 
+		 
 // Get all the data from the "example" table
 $result = mysql_query("SELECT count(*) as total,ccode,type from record group by ccode,type order by ccode") 
 or die(mysql_error());  
@@ -129,7 +157,7 @@ foreach ($xml2->xpath("//lst[@name='country']/int") as $country)
 	
 	$pais=$country['name'];
 	
-    $output2 .='<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pai.'%22">'.$pais.'</a> - '.$num.'</li>';
+    $output2 .='<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pais.'%22">'.$pais.'</a> - '.$num.'</li>';
 		$sum+=$country;
 
 $tipoa=0;
@@ -268,7 +296,8 @@ foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
                 'recordList', $result['facet_counts']['facet_fields']['recordId']
             );
         }
-		
+		$interface->assign('list',$list);
+		$interface->assign('table',$table);		
 		$interface->assign('output',$output);
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);

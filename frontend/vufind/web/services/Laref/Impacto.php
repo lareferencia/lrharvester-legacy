@@ -5,16 +5,10 @@
 require_once 'Action.php';
 
 /**
- * Socios action for Admin module
+ * Impacto action for LaRef module
  *
- * @category VuFind
- * @package  Controller_Admin
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_module Wiki
  */
-class Socios extends Action
+class Impacto extends Action
 {
     /**
      * Process parameters and display the page.
@@ -30,6 +24,80 @@ class Socios extends Action
 		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
+
+	$output1="";
+	$output2="";	
+	$output3="";	
+	$output4="";
+	$output5="";
+	$output6="";		
+	$output8="";
+	
+	// Make a MySQL Connection
+	mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
+	mysql_select_db("vufind") or die(mysql_error());
+
+	// Get all the data from the "example" table
+	$result = mysql_query("SELECT count(*) as acceso,ccode FROM record WHERE ccode<>'' GROUP BY ccode ORDER BY ccode ") 
+	or die(mysql_error());  
+	$table="";
+	$list="";
+	$list.="['Country', 'Consultas']";
+	$table.= "<table border='1'>";
+	$table.=  "<tr> <th>Pa&iacute;s</th> <th>Consultas</th></tr>";
+	// keeps getting the next row until there are no more to get
+	while($row = mysql_fetch_array( $result )) {
+		// Print out the contents of each row into a table
+		$table.=  "<tr><td>"; 
+		$table.=  $row['ccode'];
+		$table.=  "</td><td>"; 
+		$table.=  $row['acceso'];
+		$table.=  "</td>"; 
+		$table.=  "</td></tr>"; 
+		$list.=",['".$row['ccode']."',".$row['acceso']."]";
+	}	
+	$list.="]);";
+	$table.=  "</table>";			 
+		 
+// Get all the data from the "example" table
+$result = mysql_query("SELECT count(*) as total,ccode,type from record group by ccode,type order by ccode") 
+or die(mysql_error());  
+
+$output6.="<table border='1' >";
+$output6.="<tr> <th>Pa&iacute;s</th> <th>Material</th> <th>Consultas</th></tr>";
+// keeps getting the next row until there are no more to get
+while($row = mysql_fetch_array( $result )) {
+	// Print out the contents of each row into a table
+	$output6.="<tr><td>"; 
+	$output6.=$row['ccode'];
+	$output6.="</td><td>"; 
+	$output6.=$row['type'];
+	$output6.="</td><td>"; 
+	$output6.=$row['total'];
+		$output6.="</td><td>"; 	 
+}
+		 $output6.="</table>";	
+
+// Get all the data from the "example" table
+$result = mysql_query("SELECT count(*) as total,red,type from record group by red,type order by total desc") 
+or die(mysql_error());  
+
+$output8.="<table border='1' >";
+$output8.="<tr>Material<th></th> <th>Pa&iacute;s</th> <th>Consultas</th></tr>";
+// keeps getting the next row until there are no more to get
+while($row = mysql_fetch_array( $result )) {
+	// Print out the contents of each row into a table
+	$output8.="<tr><td>"; 
+	$output8.=$row['red'];
+	$output8.="</td><td>"; 
+	$output8.=$row['type'];
+	$output8.="</td><td>"; 
+	$output8.=$row['total'];
+		$output8.="</td><td>"; 	 
+}
+		 $output8.="</table>";			 
+		 
+		 
 		 
 		$output = '<ul>';
 
@@ -112,7 +180,7 @@ foreach ($xml2->xpath("//lst[@name='country']/int") as $country)
 	
 	$pais=$country['name'];
 	
-    $output2 .='<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pai.'%22">'.$pais.'</a> - '.$num.'</li>';
+    $output2 .='<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pais.'%22">'.$pais.'</a> - '.$num.'</li>';
 		$sum+=$country;
 
 $tipoa=0;
@@ -251,12 +319,15 @@ foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
                 'recordList', $result['facet_counts']['facet_fields']['recordId']
             );
         }
-		
+		$interface->assign('list',$list);
+		$interface->assign('table',$table);		
 		$interface->assign('output',$output);
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
-        $interface->setTemplate('socios.tpl');
-        $interface->setPageTitle('Paises Socios');
+		$interface->assign('output6',$output6);
+		$interface->assign('output8',$output8);
+        $interface->setTemplate('impacto.tpl');
+        $interface->setPageTitle('Impacto');
         $interface->display('layout.tpl');
     }
 }
