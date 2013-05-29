@@ -20,6 +20,7 @@ import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
@@ -126,14 +127,10 @@ public class OfflineIndexerBySnapshot {
 		Logger.getRootLogger().setLevel(Level.OFF);
 		
 		
-		ApplicationContext context = new ClassPathXmlApplicationContext(
-				"META-INF/spring/app-context.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
-		OfflineIndexerBySnapshot m = context.getBean("offlineIndexerBySnapshot",
-				OfflineIndexerBySnapshot.class);
+		OfflineIndexerBySnapshot m = context.getBean("offlineIndexerBySnapshot", OfflineIndexerBySnapshot.class);
 
-		IValidator validator = context.getBean("validator", IValidator.class);
-		ITransformer trasnformer = context.getBean("transformer",ITransformer.class);
 		IIndexer indexer = context.getBean("indexer", IIndexer.class);
 		
 		if ( args.length != 1 ) {
@@ -161,38 +158,28 @@ public class OfflineIndexerBySnapshot {
 			Document actualDocument = createSolrDocument();
 			
 			
-			Page<OAIRecord> page = m.recordRepository.findBySnapshot(snapshot, new PageRequest(0, PAGE_SIZE));
+			Page<OAIRecord> page = m.recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID,new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
 			for (int i = 0; i < totalPages; i++) {
 				
 				System.out.println( "Procesando Snapshot/Red: " + snapID + " / " + network.getName() + " paquete: " + i+1 + " de " + totalPages + " " + actualRecordCount);
 
-				page = m.recordRepository.findBySnapshot(snapshot,
-						new PageRequest(i, PAGE_SIZE));
+				page = m.recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
 
 				for (OAIRecord record : page.getContent()) {
 
 					try {
 						
-						OAIRecordMetadata metadata = new OAIRecordMetadata( record.getIdentifier(), record.getOriginalXML());
+						//addSolrDocToSolrAdd(indexer.transform(record, network),actualDocument);
+						actualRecordCount++;
 						
-						// Si no es válido trata de transformarlo
-						if (!validator.validate(metadata).isValid())
-							trasnformer.transform(metadata);
-
-						if (validator.validate(metadata).isValid()) {
-							addSolrDocToSolrAdd(indexer.transform(record, network),actualDocument);
-							actualRecordCount++;
-							
-							if ( actualRecordCount == SOLR_FILE_SIZE ) {
-								saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
-								actualDocument = createSolrDocument();
-								actualRecordCount = 0;
-							}
-							
+						if ( actualRecordCount == SOLR_FILE_SIZE ) {
+							saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
+							actualDocument = createSolrDocument();
+							actualRecordCount = 0;
 						}
-
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(0); // Si hay un error no continua

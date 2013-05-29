@@ -182,12 +182,19 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				
 		for (int i=0; i<nodes.getLength(); i++) {
 			
-			String metadataString = getMetadataString(nodes.item(i));
-			String identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
-
+			
+			String identifier = "unknown";
+			String metadataString = "unknown";
+				
+				
 			try {
+				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
+				metadataString = getMetadataString(nodes.item(i));
+		
 				//TODO: Hay que tratar aparte los casos deleted que pueden generar exceptions al no tener metadata
 				result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString ));	
+				
+				
 			} catch (OAIRecordMetadataParseException e){
 				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
 				System.err.println("Error en el parseo de registro: " + identifier + '\n'+ metadataString );

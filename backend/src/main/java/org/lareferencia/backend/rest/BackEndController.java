@@ -33,6 +33,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -97,11 +98,16 @@ public class BackEndController {
 		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
 	}
 	
-	
+	@Transactional
 	@RequestMapping(value="/private/deleteRecordsBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Map<String,String>> deleteRecordsBySnapshotID(@PathVariable Long id) {
 		
 		recordRepository.deleteBySnapshotID(id);
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		snapshot.setDeleted(true);
+		networkSnapshotRepository.save(snapshot);
+		
 		
 		Map<String,String> result = new HashMap<String, String>();
 		result.put("result", "OK");
@@ -124,6 +130,7 @@ public class BackEndController {
 			result.put("result", "ERROR");
 		}	
 		
+		System.gc();
 		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
 		
 		return response;

@@ -78,9 +78,9 @@ public class IndexerTests {
 		
 		System.out.println( xmlstring );
 		
-		Document doc = indexer.transform(orecord, network);
+		//Document doc = indexer.transform(orecord, network);
 		
-		System.out.println( MedatadaDOMHelper.Node2XMLString(doc) );
+		//System.out.println(indexer.transform(orecord, network) /* MedatadaDOMHelper.Node2XMLString(doc)*/ );
 		
 	}
 	
@@ -88,7 +88,7 @@ public class IndexerTests {
 	public void testSolrIndexer() throws Exception {
 		
 		
-		indexer.index(networkSnapshotRepository.findOne(8L));
+		indexer.index(networkSnapshotRepository.findOne(7L));
 		
 		
 	}

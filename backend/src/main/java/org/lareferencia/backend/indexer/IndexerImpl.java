@@ -2,15 +2,22 @@ package org.lareferencia.backend.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -36,12 +43,12 @@ import org.w3c.dom.Element;
 
 public class IndexerImpl implements IIndexer{
 
-	private File stylesheet; 
-	private Transformer trf; 
+	private File stylesheet;
 	
+	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
+
 	private static final int PAGE_SIZE = 1000;
 
-	
 	private DocumentBuilder builder; 
 	
 	@Autowired
@@ -52,33 +59,61 @@ public class IndexerImpl implements IIndexer{
 	
 	private HttpSolrServer server;
 
+	private String solrURL;
+
 	
 	public IndexerImpl(String xslFileName, String solrURL) throws IndexerException {
 		
-		stylesheet = new File(xslFileName);
-		server = new HttpSolrServer(solrURL);
+		this.stylesheet = new File(xslFileName);
+		this.solrURL = solrURL;
+		
+	}
+	
+	
+	private Transformer buildTransformer() throws IndexerException {
+		
+		Transformer trf; 
 
+		
 		try {
+		
+			StreamSource stylesource = new StreamSource(stylesheet); 
+	        trf = xformFactory.newTransformer(stylesource);
+			
 			trf = MedatadaDOMHelper.buildXSLTTransformer(stylesheet);
+			trf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			trf.setOutputProperty(OutputKeys.INDENT, "no");
+			trf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+			
+			
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (TransformerConfigurationException e) {
 			throw new IndexerException(e.getMessage(), e.getCause());
 		} catch (ParserConfigurationException e) {
 			throw new IndexerException(e.getMessage(), e.getCause());
 		}
+		
+		
+		return trf;
+		
 	}
+	
 	
 	@Transactional(readOnly = true)
 	public boolean index(NetworkSnapshot snapshot) {
 		
-		DirectXmlRequest request;
-
+		 DirectXmlRequest request;
+		 server = new HttpSolrServer(solrURL);
+		 
 		 try {
 			
+			Transformer trf = buildTransformer();
+ 
+			 
 			// Borrado de los docs del país del snapshot
-			request = new DirectXmlRequest("/update", "<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
-			server.request(request);
-		
+			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
+			
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
@@ -88,24 +123,35 @@ public class IndexerImpl implements IIndexer{
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
 
-
-				String xmlSolrDocsString = "";
-				
+				String xmlSolrDocsString = null;
+								
 				for (OAIRecord record : page.getContent()) {
-					xmlSolrDocsString += MedatadaDOMHelper.Node2XMLString(this.transform(record, snapshot.getNetwork()));
+					//xmlSolrDocsString += MedatadaDOMHelper.Node2XMLString(this.transform(record, snapshot.getNetwork()));
+					
+					
+					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
+					StringWriter stringWritter = new StringWriter();
+					Result output = new StreamResult(stringWritter);
+					
+
+					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
+
+					xmlSolrDocsString = stringWritter.toString();
+					
+					this.sendUpdateToSolr("<add>" + xmlSolrDocsString + "</add>");
+					//System.out.println(record.getIdentifier());
+
 				}
 				
-				request = new DirectXmlRequest("/update", "<add>" + xmlSolrDocsString + "</add>");
-				server.request(request);
+				//this.sendUpdateToSolr("<add>" + xmlSolrDocsString + "</add>");
 				
-				recordRepository.flush();
+				//recordRepository.flush();
+
 			}
 			
-			// commit de los cambios
-			request = new DirectXmlRequest("/update", "<commit/>");
-			server.request(request);
 			
-			System.gc();
+			// commit de los cambios
+			this.sendUpdateToSolr("<commit/>");			
 				 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -124,26 +170,37 @@ public class IndexerImpl implements IIndexer{
 		return true;
 	}
 	
-	public Document transform(OAIRecord record, NationalNetwork network) throws IndexerException {
+	
+	private void sendUpdateToSolr(String data) throws SolrServerException, IOException {
+		DirectXmlRequest request = new DirectXmlRequest("/update", data);
+		server.request(request);
+		
+	}
+	
+	/*
+	
+	public String transform(OAIRecord record, NationalNetwork network) throws IndexerException {
 		
 		
-		Document dstDocument = builder.newDocument();
+		//Document dstDocument = builder.newDocument();
+		StringWriter stringWritter = new StringWriter();
+		Result output = new StreamResult(stringWritter);
+		
+		
 		
 		if ( record.getPublishedXML() == null )
 			throw new IndexerException("El registro: " + record.getId() + "  no tiene publibledXML definido");
 		
-		
-
 		try {
 			
 			OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 			
-			trf.transform( new DOMSource(domRecord.getDOMDocument()), new DOMResult(dstDocument));
+			trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 			
 			Country country = network.getCountry();
-		    addSolrField(dstDocument, "country", country.getName());
-		    addSolrField(dstDocument, "country_iso", country.getIso());
-		    addSolrField(dstDocument, "id", country.getIso() + "_" + record.getSnapshot().getId() + "_" + record.getId()  );		
+		   // addSolrField(dstDocument, "country", country.getName());
+		   // addSolrField(dstDocument, "country_iso", country.getIso());
+		   // addSolrField(dstDocument, "id", country.getIso() + "_" + record.getSnapshot().getId() + "_" + record.getId()  );		
 			
 			
 
@@ -154,7 +211,8 @@ public class IndexerImpl implements IIndexer{
 		}
 		
 		
-		return dstDocument;
+		return stringWritter.toString();
+
 		
 	}
 	
@@ -166,5 +224,5 @@ public class IndexerImpl implements IIndexer{
 		XPathAPI.selectSingleNode(document, "//doc").appendChild(elem);
 	}
 	
-	
+	*/
 }

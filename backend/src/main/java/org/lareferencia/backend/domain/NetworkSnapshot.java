@@ -61,12 +61,17 @@ public class NetworkSnapshot extends AbstractEntity {
 	@JoinColumn(name="network_id"/*, nullable=false*/)
 	private NationalNetwork network;
 	
+	@Getter
+	@Setter
+	boolean deleted;
+	
 	public NetworkSnapshot() {
 		super();
 		this.status = SnapshotStatus.INITIALIZED;
 		startTime = new DateTime().toDate();
 		this.size = 0;
-		this.validSize = 0;;
+		this.validSize = 0;
+		this.deleted = false;
 	}
 	
 	public void incrementSize() {
