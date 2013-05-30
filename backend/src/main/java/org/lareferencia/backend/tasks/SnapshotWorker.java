@@ -20,6 +20,7 @@ import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordDAO;
@@ -59,6 +60,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private ITransformer transformer;
 	
+	@Autowired
+	private IIndexer indexer;
+	
 	@Setter
 	private Long networkID;
 	
@@ -91,7 +95,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 			snapshot = snapshotRepository.findOne( snapshotID );
 			
-			if ( snapshot != null && snapshot.getStatus().equals(SnapshotStatus.STOPPED) ) { // tiene que estar detenido
+			if ( snapshot != null && snapshot.getStatus().equals(SnapshotStatus.HARVESTING_STOPPED) ) { // tiene que estar detenido
 				
 				network = snapshot.getNetwork(); 
 				newSnapshotCreated = false;
@@ -116,7 +120,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				
 		}
 		
-		snapshot.setStatus( SnapshotStatus.PROCESSING );
+		snapshot.setStatus( SnapshotStatus.HARVESTING );
 		snapshotRepository.save(snapshot);
 
 		// harvest de la red
@@ -124,12 +128,28 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			harvestEntireNetwork();
 		else // caso de retomar desde un rt anterior
 			harvestNetworkFromRT(snapshot.getResumptionToken());
+
 		
-		// Cierre del Snapshot
-		// Si no generó errores terminó exitoso
-		if ( snapshot.getStatus() != SnapshotStatus.FINISHED_ERROR )
-			snapshot.setStatus( SnapshotStatus.FINISHED_VALID );
+		// Si no generó errores terminó exitoso la cosecha
+		if ( snapshot.getStatus() != SnapshotStatus.HARVESTING_FINISHED_ERROR ) {
 			
+			// Lo setea como cosechado exitosamente
+			snapshot.setStatus( SnapshotStatus.HARVESTING_FINISHED_VALID );
+			snapshot.setStatus( SnapshotStatus.INDEXING );
+			
+			snapshot.setEndTime( new Date() );
+			snapshotRepository.save(snapshot);
+			
+			// Indexa
+			boolean isSuccesfullyIndexed = indexer.index(snapshot);
+			
+			// Si el indexado es exitoso marca el snap válido
+			if ( isSuccesfullyIndexed )
+				snapshot.setStatus( SnapshotStatus.VALID );
+			else
+				snapshot.setStatus( SnapshotStatus.INDEXING_FINISHED_ERROR );
+		}
+	
 		snapshot.setEndTime( new Date() );
 		snapshotRepository.save(snapshot);
 		
@@ -237,7 +257,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				recordRepository.save(records);
 
 				
-				snapshot.setStatus( SnapshotStatus.PROCESSING );
+				snapshot.setStatus( SnapshotStatus.HARVESTING );
 				snapshot.setEndTime( new Date() );
 				snapshot.setResumptionToken( event.getResumptionToken() );
 				snapshotRepository.save(snapshot);
@@ -257,7 +277,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 			case ERROR_FATAL:
 				System.out.println( event.getMessage() );
-				snapshot.setStatus( SnapshotStatus.FINISHED_ERROR );
+				snapshot.setStatus( SnapshotStatus.HARVESTING_FINISHED_ERROR );
 				snapshotRepository.save(snapshot);
 			break;
 

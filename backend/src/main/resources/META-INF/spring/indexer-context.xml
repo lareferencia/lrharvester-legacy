@@ -14,8 +14,12 @@
 
 	
 	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">
-		<constructor-arg><value>/Users/lmatas/Source/LaReferencia/main/backend/indexer.xsl</value></constructor-arg>
-		<constructor-arg><value>http://localhost:8983/solr/core0</value></constructor-arg>
+	
+	    <constructor-arg><value>/home/lmatas/milestone2/main/backend/indexer.xsl</value></constructor-arg>
+		<!--  constructor-arg><value>/Users/lmatas/Source/LaReferencia/main/backend/indexer.xsl</value></constructor-arg-->
+		<!--  constructor-arg><value>http://localhost:8983/solr/core0</value></constructor-arg-->
+	    <constructor-arg><value>http://localhost:8080/solr/biblio</value></constructor-arg>
+		
 	</bean>
 	
 

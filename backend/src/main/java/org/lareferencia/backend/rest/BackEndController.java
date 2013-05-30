@@ -206,7 +206,7 @@ public class BackEndController {
 			NetworkHistory nhistory = new NetworkHistory();
 			nhistory.networkID = network.getId();
 			nhistory.country = network.getCountry().getIso();
-			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.FINISHED_VALID);
+			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
 			NHistoryList.add( nhistory );		
 		}
 	
