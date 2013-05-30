@@ -15,12 +15,28 @@
 	<xsl:variable name="driver_prefix">info:eu-repo/semantics/</xsl:variable> 
 	<xsl:variable name="reponame_prefix">reponame:</xsl:variable>  
 	<xsl:variable name="instname_prefix">instname:</xsl:variable>  
+	
+	<xsl:param name="country" />
+	<xsl:param name="country_iso" />
+	<xsl:param name="register_id" />
 	 
     <xsl:template match="oai_dc:dc">
             <doc>
-                <!-- ID es agregado desde java -->
-                <!-- COUNTRY es agregado desde java -->
-                <!-- COUNTRY_ISO es agregado desde java -->
+                <!-- ID es parámetro -->
+                <field name="id">
+                	<xsl:value-of select="$register_id"/>
+                </field>         
+	
+                <!-- COUNTRY es parámetro -->
+                <field name="country">
+                	<xsl:value-of select="$country"/>
+                </field>         
+	
+                <!-- COUNTRY_ISO es parámetro -->
+                <field name="country_iso">
+                	<xsl:value-of select="$country_iso"/>
+                </field>        
+                
                 <!-- FULLRECORD Puede ser agregado desde java, pero hay que evaluar el peso para SolR -->
                      
                 <!-- RECORDTYPE -->

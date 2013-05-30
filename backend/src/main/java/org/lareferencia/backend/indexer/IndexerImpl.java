@@ -74,7 +74,6 @@ public class IndexerImpl implements IIndexer{
 		
 		Transformer trf; 
 
-		
 		try {
 		
 			StreamSource stylesource = new StreamSource(stylesheet); 
@@ -84,8 +83,6 @@ public class IndexerImpl implements IIndexer{
 			trf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 			trf.setOutputProperty(OutputKeys.INDENT, "no");
 			trf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-			
 			
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (TransformerConfigurationException e) {
@@ -109,7 +106,8 @@ public class IndexerImpl implements IIndexer{
 		 try {
 			
 			Transformer trf = buildTransformer();
- 
+			trf.setParameter("country_iso", snapshot.getNetwork().getCountry().getIso() );
+			trf.setParameter("country", snapshot.getNetwork().getCountry().getName() );
 			 
 			// Borrado de los docs del país del snapshot
 			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
@@ -133,7 +131,7 @@ public class IndexerImpl implements IIndexer{
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
 					
-
+					trf.setParameter("register_id", record.getSnapshot().getId() + "_" + record.getIdentifier()  );
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 
 					xmlSolrDocsString = stringWritter.toString();
