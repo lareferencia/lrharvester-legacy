@@ -1,0 +1,7 @@
+<request#if($Parameters.verb) verb="$Parameters.verb"#end
+#if($Parameters.from) from="$Parameters.from"#end
+#if($Parameters.until) until="$Parameters.until"#end
+#if($Parameters.metadataPrefix) metadataPrefix="$Parameters.metadataPrefix"#end
+#if($Parameters.set) set="$Parameters.set"#end
+#if($Parameters.identifier) identifier="$Parameters.identifier"#end
+#if($Parameters.resumptionToken) resumptionToken="$Parameters.resumptionToken"#end>$!{RequestURL}</request>

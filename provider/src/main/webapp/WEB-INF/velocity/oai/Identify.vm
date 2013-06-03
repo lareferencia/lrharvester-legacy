@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2002-02-08T12:00:01Z</responseDate>
+  #parse("oai/common/Request.vm")
+  <Identify>
+    <repositoryName>Library of Congress Open Archive Initiative Repository 1</repositoryName>
+    <baseURL>$!{RequestURL}</baseURL>
+    <protocolVersion>2.0</protocolVersion>
+    <adminEmail>administrator@vtls.com</adminEmail>
+    <adminEmail>administrator@vtls.com</adminEmail>
+    <earliestDatestamp>$!{EarliestDatestamp}</earliestDatestamp>
+    <deletedRecord>transient</deletedRecord>
+    <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+    <compression>deflate</compression>
+    <!--
+    <description>
+      <oai-identifier 
+        xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation=
+            "http://www.openarchives.org/OAI/2.0/oai-identifier
+        http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+        <scheme>oai</scheme>
+        <repositoryIdentifier>lcoa1.loc.gov</repositoryIdentifier>
+        <delimiter>:</delimiter>
+        <sampleIdentifier>oai:lcoa1.loc.gov:loc.music/musdi.002</sampleIdentifier>
+      </oai-identifier>
+    </description>
+    -->
+ </Identify>
+</OAI-PMH>
