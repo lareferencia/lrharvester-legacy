@@ -11,7 +11,7 @@ public interface NationalNetworkRepository extends JpaRepository<NationalNetwork
 	
 	  List<NationalNetwork> findByPublishedOrderByNameAsc(boolean published);
 	  
-	  @Query("select nn from NationalNetwork nn, Country co where co.iso = ?1 and nn.country_id = co.id")
+	  @Query("select nn from NationalNetwork nn where nn.country.iso = ?1")
 	  NationalNetwork findByCountryISO(String iso);
 	  
 
