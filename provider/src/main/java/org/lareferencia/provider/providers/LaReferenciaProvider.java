@@ -1,25 +1,9 @@
-/*
-* Copyright 2008 the original author or authors.
-* 
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/ 
 
 package org.lareferencia.provider.providers;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.SSLEngineResult.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,10 +29,10 @@ public class LaReferenciaProvider implements IProvider
 {
    private static final int PAGE_SIZE = 300;;
 
+   private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+   
+   private Log log = LogFactory.getLog(getClass());	
 
-private Log log = LogFactory.getLog(getClass());	
-
-  
   
    /****************/
    @Autowired 
@@ -64,13 +48,11 @@ private Log log = LogFactory.getLog(getClass());
 
    /* Constructors
    ***************************************************************************/
-   
    public LaReferenciaProvider()
    {
       
      
    }
-   
   
    /* Provider Methods
    ***************************************************************************/
@@ -87,7 +69,7 @@ private Log log = LogFactory.getLog(getClass());
     	  final SetMembership setMembership = new SetMembership();
           setMembership.setSetSpec(network.getCountry().getIso());
           setMembership.setSetName(network.getName());
-          // TODO: setMembership.setSetDescription();
+          setMembership.setSetDescription( "Set of: " + network.getName() + "national network");
           setMemberships.add(setMembership);
     	  
       }
@@ -114,7 +96,7 @@ private Log log = LogFactory.getLog(getClass());
        
        // Identifier.
        record.setIdentifier( buildIdentifier(oairecord) );
-       record.setDate( oairecord.getDatestamp().toString() );
+       record.setDate(dateFormat.format(oairecord.getDatestamp()) );
        record.setDeleted(false);
        record.addSet( oairecord.getSnapshot().getNetwork().getCountry().getIso() );
        record.setMetadata( oairecord.getPublishedXML() );
@@ -122,7 +104,7 @@ private Log log = LogFactory.getLog(getClass());
        return record;
    }
    
-   public List<Record> listRecords(String set, StateHolder state) throws CannotDisseminateFormatException, NoRecordsMatchException
+   public List<Record> listRecords(String set, StateHolder state, boolean includeMetadata) throws CannotDisseminateFormatException, NoRecordsMatchException
    {
       if(oaiRecordRepository == null)
          throw new IllegalStateException("listRecords() expects a non-null oairecord repository");
@@ -159,7 +141,7 @@ private Log log = LogFactory.getLog(getClass());
 	  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(state.obtainActualPage(), PAGE_SIZE));
 
 	  // actualiza el estado
-	  state.next();
+	  state.update();
    
       /**   
       // Dates.
@@ -197,10 +179,12 @@ private Log log = LogFactory.getLog(getClass());
             
             // Identifier.
             record.setIdentifier( buildIdentifier(oairecord) );
-            record.setDate( oairecord.getDatestamp().toString() );
+            record.setDate( dateFormat.format(oairecord.getDatestamp()) );
             record.setDeleted(false);
             record.addSet( oairecord.getSnapshot().getNetwork().getCountry().getIso() );
-            record.setMetadata( oairecord.getPublishedXML() );
+            
+            if (includeMetadata)
+            	record.setMetadata( oairecord.getPublishedXML() );
             
             records.add(record);
          }
@@ -212,7 +196,7 @@ private Log log = LogFactory.getLog(getClass());
        
       return records;
    }
-   
+   /*
    public byte[] getRecordMetadata(final String identifier, final MetadataFormat metadataFormat) throws IdDoesNotExistException
    {
 	   OAIRecord oairecord = loadRecordFromIdentifier(identifier);
@@ -220,7 +204,7 @@ private Log log = LogFactory.getLog(getClass());
        return oairecord.getPublishedXML().getBytes() ;
 	   
    }
-   
+   */
    /* Local Methods
    ***************************************************************************/
 

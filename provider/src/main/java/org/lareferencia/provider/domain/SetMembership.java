@@ -24,16 +24,28 @@ public class SetMembership
    private Log log = LogFactory.getLog(getClass());	
    private String setSpec = null;
    private String setName = null;
+   private String description = null;
+   
    
    /* Constructors
    ***************************************************************************/
-
    public SetMembership()
    {
    }
 
+
+
    /* Accessors/Mutators
    ***************************************************************************/
+   
+   public void setSetDescription(String description) {
+		this.description = description;
+	}
+
+   public String getSetDescription() {
+	return description;
+}
+	
 
    public void setSetSpec(final String setSpec)
    {
@@ -54,6 +66,7 @@ public class SetMembership
    {
       return this.setName;
    }
+
 
   /* Local Methods
    ***************************************************************************/

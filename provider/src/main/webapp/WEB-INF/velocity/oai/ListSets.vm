@@ -10,7 +10,7 @@
   <set>
     <setSpec>$!{set.setSpec}</setSpec>
     <setName>$!{set.setName}</setName>
-    <setDescription></setDescription>
+    <setDescription>$!{set.setDescription}</setDescription>
    </set>
 #end
 #if($ListRecords.resumptionToken)

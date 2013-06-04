@@ -178,8 +178,12 @@ public class ProviderController extends MultiActionController implements Message
 
             model.put("GetRecord", provider.getRecord(arguments.getIdentifier(), format));
          }
-         else if(verb.equals("ListRecords") || verb.equals("ListIdentifiers"))
+         else if(verb.equals("ListRecords") || verb.equals("ListIdentifiers"))	 
          {
+        	 
+        	 log.info("ListRecords/ListIdentifiers Request / RT: " + arguments.getResumptionToken());
+        	 System.out.println("ListRecords/ListIdentifiers Request / RT: " + arguments.getResumptionToken());
+        	 
             // Check unsupported arguments.
             if(arguments.getIdentifier() != null)
                throw new BadArgumentException("The 'identifier' argument is not valid for this verb.");
@@ -191,7 +195,7 @@ public class ProviderController extends MultiActionController implements Message
                if(arguments.getFrom() != null || arguments.getUntil() != null || arguments.getIdentifier() != null || arguments.getSet() != null || arguments.getMetadataPrefix() != null)
                   throw new BadArgumentException("A 'resumptionToken' argument cannot be used in conjunction with any others.");
 
-               state = new StateHolder(arguments.getResumptionToken());
+               state = new StateHolder(arguments.getResumptionToken()); // el estado se obtiene del RT
             }
             else
             {
@@ -199,38 +203,11 @@ public class ProviderController extends MultiActionController implements Message
                if(StringUtils.isEmpty(arguments.getMetadataPrefix()))
                   throw new BadArgumentException("A 'metadataPrefix' argument is required for this verb."); 
                
-               state = new StateHolder();
+               state = new StateHolder(); // si no hay rt  es un estado inicial
             }
 
-            List<Record> records = provider.listRecords(arguments.getSet(), state);
-            
-            /*
-            // Obtain metadata for this List of Records.
-            if(verb.equals("ListRecords"))
-            {
-               final String metadataPrefix = session.getMetadataPrefix();
-            
-               final MetadataFormat format = this.metadataFormatMap.get(metadataPrefix);
-               if(format == null)
-                  throw new CannotDisseminateFormatException();
-
-               for(Record record : records)
-               {
-                  if(record.getMetadata() != null)
-                     continue;
-
-                  try
-                  {
-                     final byte[] metadata = provider.getRecordMetadata(record.getIdentifier(), format);
-                     if(metadata != null)
-                        record.setMetadata(IOUtils.toString(metadata));
-                  }
-                  catch(Exception e)
-                  {
-                     log.error("There was a problem obtaining metadata for '" + record.getIdentifier() + "'.", e);
-                  }
-               }
-            }*/
+            // list records actualiza el state, que queda conteniendo la información para generar RT
+            List<Record> records = provider.listRecords(arguments.getSet(), state, !verb.equals("ListIdentifiers"));
 
             model.put("ResumptionToken", state.getResumptionToken());
             model.put("ListRecords", records);
@@ -258,6 +235,7 @@ public class ProviderController extends MultiActionController implements Message
 
             // Get the list of allowed metadata formats.
             List<MetadataFormat> formats = null;
+            /*
             if(arguments.getIdentifier() != null)
             {
                formats = new ArrayList<MetadataFormat>();
@@ -272,7 +250,7 @@ public class ProviderController extends MultiActionController implements Message
                      formats.add(format);
                }
             }
-            else
+            else*/
                formats = this.getMetadataFormats();
                
             if(formats != null && formats.size() == 0)
@@ -289,9 +267,13 @@ public class ProviderController extends MultiActionController implements Message
       }
       catch(ProtocolException e)
       {
+    	  
+    	 log.warn("Protocol error", e);
+ 
          model.put("ErrorCode", e.getCode());
          model.put("ErrorMessage", e.getMessage());
-   		return new ModelAndView("oai/Error", model);
+   		 return new ModelAndView("oai/Error", model);
+   		 
       }
       catch(ServerException e)
       {
