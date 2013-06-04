@@ -2,8 +2,6 @@ package org.lareferencia.backend;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerConfigurationException;
@@ -11,12 +9,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.lareferencia.backend.domain.InvalidOccurrenceLogEntry;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
-import org.lareferencia.backend.domain.ValidationType;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
@@ -24,9 +20,6 @@ import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.stats.StatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
-import org.lareferencia.backend.validator.ContentValidationResult;
-import org.lareferencia.backend.validator.FieldValidationResult;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;

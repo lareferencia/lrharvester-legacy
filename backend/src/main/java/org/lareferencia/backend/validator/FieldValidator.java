@@ -8,7 +8,6 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 @Getter

@@ -9,12 +9,10 @@ import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.transformer.ITransformer;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.w3c.dom.Document;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.lareferencia.backend.domain.OAIRecord;
-
 @Getter
 @Setter
 @ToString

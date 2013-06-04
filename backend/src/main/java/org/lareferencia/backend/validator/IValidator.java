@@ -2,7 +2,6 @@ package org.lareferencia.backend.validator;
 
 import java.util.List;
 
-import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 

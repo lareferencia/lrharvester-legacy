@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.transformer.ITransformer;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validator.FieldValidator;
 import org.lareferencia.backend.validator.IContentValidationRule;
@@ -20,7 +19,6 @@ import org.lareferencia.backend.validator.ValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.w3c.dom.Document;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)

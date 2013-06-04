@@ -2,8 +2,6 @@ package org.lareferencia.backend;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.domain.Country;
