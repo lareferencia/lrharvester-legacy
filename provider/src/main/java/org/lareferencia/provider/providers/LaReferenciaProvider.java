@@ -116,22 +116,46 @@ public class LaReferenciaProvider implements IProvider
     	  List<Long>    snapshotIdList = new ArrayList<Long>();
     	  List<Integer> totalPageList = new ArrayList<Integer>();
     	  
-    	  // Se recorren todas las redes publicadas
-    	  for (NationalNetwork network:nationalNetworkRepository.findByPublishedOrderByNameAsc(true)) {
+    	  // CASO DE SET DEFINIDO
+    	  if ( set != null ) {
     		  
-    		  NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+    		  NationalNetwork network = nationalNetworkRepository.findByCountryISO(set);
     		  
-    		  if ( snapshot != null ) {
-    			  
-    			  // obtiene la primera página de cada snapshot 
-    			  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
-    			  
-    			  // agrega los datos del snapshot a la lista
-    			  snapshotIdList.add( snapshot.getId() );
-    			  totalPageList.add( page.getTotalPages() );
+    		  if ( network == null ) {
+    			  throw new NoRecordsMatchException("Set don´t exist");
     		  }
+    		  else {
+	    		  NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+	    		  
+	    		  if ( snapshot != null ) {
+	    			  
+	    			  // obtiene la primera página de cada snapshot 
+	    			  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
+	    			  
+	    			  // agrega los datos del snapshot a la lista
+	    			  snapshotIdList.add( snapshot.getId() );
+	    			  totalPageList.add( page.getTotalPages() );
+	    		  }
+    		  }
+    		  
     	  }
-    	  
+    	  else { // CASO DE SET NULL
+	    	  // Se recorren todas las redes publicadas
+	    	  for (NationalNetwork network:nationalNetworkRepository.findByPublishedOrderByNameAsc(true)) {
+	    		  
+	    		  NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+	    		  
+	    		  if ( snapshot != null ) {
+	    			  
+	    			  // obtiene la primera página de cada snapshot 
+	    			  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
+	    			  
+	    			  // agrega los datos del snapshot a la lista
+	    			  snapshotIdList.add( snapshot.getId() );
+	    			  totalPageList.add( page.getTotalPages() );
+	    		  }
+	    	  }
+    	  }
     	  // se inicializa el estado
     	  state.initialize(snapshotIdList, totalPageList);
       } 

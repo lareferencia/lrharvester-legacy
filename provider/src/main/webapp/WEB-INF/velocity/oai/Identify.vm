@@ -12,7 +12,7 @@
     <adminEmail>emarmonti@gmail.com</adminEmail>
     <adminEmail>emarmonti@gmail.com</adminEmail>
     <earliestDatestamp>$!{EarliestDatestamp}</earliestDatestamp>
-    <deletedRecord>transient</deletedRecord>
+    <deletedRecord>no</deletedRecord>
     <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
     <compression>deflate</compression>
     <!--
