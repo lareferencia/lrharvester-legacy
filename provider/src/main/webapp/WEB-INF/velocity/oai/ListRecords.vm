@@ -16,7 +16,7 @@
 #if(!$record.isDeleted())
 #if(${record.metadata})
       ${record.metadata}
-∫#end
+#end
 #end
     </record>
 #end
