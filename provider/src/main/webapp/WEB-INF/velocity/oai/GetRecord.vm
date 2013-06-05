@@ -13,9 +13,7 @@
       </header>
 #if(!$GetRecord.isDeleted())
 #if(${GetRecord.metadata})
-      <metadata>
       ${GetRecord.metadata}
-      </metadata>
 #end
 #end
     </record>
