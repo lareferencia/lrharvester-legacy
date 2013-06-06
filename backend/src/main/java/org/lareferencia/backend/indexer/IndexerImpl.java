@@ -3,6 +3,7 @@ package org.lareferencia.backend.indexer;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
@@ -45,8 +46,7 @@ public class IndexerImpl implements IIndexer{
 	
 	public IndexerImpl(String xslFileName, String solrURL) throws IndexerException {
 		this.stylesheet = new File(xslFileName);
-		this.solrURL = solrURL;
-		
+		this.solrURL = solrURL;	
 	}
 	
 	private Transformer buildTransformer() throws IndexerException {
