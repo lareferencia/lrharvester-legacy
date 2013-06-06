@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
@@ -46,10 +45,8 @@ public class SnapshotPersistenceTests {
 		
 		o.getSets().add(s);
 	
-		Country c = new Country();
-		c.setIso("AR");
-		c.setName("Argentina");
-		nn.setCountry(c);
+
+		nn.setCountryISO("AR");
 		
 		NetworkSnapshot ns = new NetworkSnapshot();
 		nn.getSnapshots().add(ns);

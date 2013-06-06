@@ -2,7 +2,6 @@ package org.lareferencia.backend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -66,10 +65,9 @@ public class IndexerTests {
 		orecord.setPublishedXML( orecord.getOriginalXML() );
 
 		NationalNetwork network = new NationalNetwork();
-		Country country = new Country();
-		country.setIso("MX");
-		country.setName("México");
-		network.setCountry(country);
+		
+		network.setCountryISO("MX");
+		network.setName("Mexico");
 		
 		NetworkSnapshot snapshot = new NetworkSnapshot();
 		orecord.setSnapshot(snapshot);

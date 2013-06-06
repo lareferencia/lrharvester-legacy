@@ -170,7 +170,7 @@ public class BackEndController {
 			
 			NetworkInfo ninfo = new NetworkInfo();
 			ninfo.networkID = network.getId();
-			ninfo.country = network.getCountry().getIso();
+			ninfo.country = network.getCountryISO();
 			ninfo.name = network.getName();
 			
 			NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
@@ -200,7 +200,7 @@ public class BackEndController {
 		for (NationalNetwork network:allNetworks) {	
 			NetworkHistory nhistory = new NetworkHistory();
 			nhistory.networkID = network.getId();
-			nhistory.country = network.getCountry().getIso();
+			nhistory.country = network.getCountryISO();
 			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
 			NHistoryList.add( nhistory );		
 		}

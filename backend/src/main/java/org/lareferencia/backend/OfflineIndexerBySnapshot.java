@@ -172,7 +172,7 @@ public class OfflineIndexerBySnapshot {
 						actualRecordCount++;
 						
 						if ( actualRecordCount == SOLR_FILE_SIZE ) {
-							saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
+							saveXmlDocument(actualDocument, network.getCountryISO() + "_" + actualPacket++ + ".solr.xml");
 							actualDocument = createSolrDocument();
 							actualRecordCount = 0;
 						}
@@ -186,7 +186,7 @@ public class OfflineIndexerBySnapshot {
 			
 			// Grabación de la cola de registros de la red actual que no alcanzó SOLR_FILE_SIZE
 			if (actualRecordCount != 0) {
-				saveXmlDocument(actualDocument, network.getCountry().getIso() + "_" + actualPacket++ + ".solr.xml");
+				saveXmlDocument(actualDocument, network.getCountryISO() + "_" + actualPacket++ + ".solr.xml");
 			}
 			
 		}

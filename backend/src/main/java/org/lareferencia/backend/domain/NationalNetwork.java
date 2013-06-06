@@ -27,9 +27,8 @@ public class NationalNetwork extends AbstractEntity {
 	@Column(nullable = false)
 	private String name;
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="country_id")
-	private Country country;
+	@Column(nullable = false, length = 2)
+	private String countryISO;
 	
 	@Column(nullable = false)
 	private boolean published = false;

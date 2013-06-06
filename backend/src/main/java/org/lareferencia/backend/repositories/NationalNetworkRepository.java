@@ -9,10 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface NationalNetworkRepository extends JpaRepository<NationalNetwork, Long> { 
 	
-	  List<NationalNetwork> findByPublishedOrderByNameAsc(boolean published);
-	  
-	  @Query("select nn from NationalNetwork nn where nn.country.iso = ?1")
+	  List<NationalNetwork> findByPublishedOrderByNameAsc(boolean published);	  
 	  NationalNetwork findByCountryISO(String iso);
-	  
-
 }

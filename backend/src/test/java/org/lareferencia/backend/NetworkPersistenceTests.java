@@ -3,10 +3,8 @@ package org.lareferencia.backend;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.Country;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAISet;
@@ -41,10 +39,8 @@ public class NetworkPersistenceTests {
 		
 		o.getSets().add(s);
 	
-		Country c = new Country();
-		c.setIso("AR");
-		c.setName("Argentina");
-		nn.setCountry(c);
+		
+		nn.setCountryISO("AR");
 		
 		repository.save(nn);
 		
@@ -68,10 +64,7 @@ public class NetworkPersistenceTests {
 		
 		o.getSets().add(s);
 		
-		Country c = new Country();
-		c.setIso("AR");
-		c.setName("Argentina");
-		nn.setCountry(c);
+	
 		
 		repository.saveAndFlush(nn);
 	
@@ -84,7 +77,6 @@ public class NetworkPersistenceTests {
 		
 		assertEquals(s, loadedNN.getOrigins().iterator().next().getSets().iterator().next());	
 		
-		assertEquals(c, loadedNN.getCountry());
 		
 	}
 

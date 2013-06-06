@@ -81,11 +81,11 @@ public class IndexerImpl implements IIndexer{
 		 try {
 			
 			Transformer trf = buildTransformer();
-			trf.setParameter("country_iso", snapshot.getNetwork().getCountry().getIso() );
-			trf.setParameter("country", snapshot.getNetwork().getCountry().getName() );
+			trf.setParameter("country_iso", snapshot.getNetwork().getCountryISO() );
+			trf.setParameter("country", snapshot.getNetwork().getName() );
 			 
 			// Borrado de los docs del país del snapshot
-			this.sendUpdateToSolr(server, "<delete><query>country_iso:" + snapshot.getNetwork().getCountry().getIso() +"</query></delete>");
+			this.sendUpdateToSolr(server, "<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
