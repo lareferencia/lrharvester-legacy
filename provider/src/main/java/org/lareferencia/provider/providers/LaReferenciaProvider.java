@@ -30,6 +30,10 @@ public class LaReferenciaProvider implements IProvider
    private static final int PAGE_SIZE = 300;;
 
    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+   private static final String DRIVER_SET_NAME = "DRIVER";
+   
+   
    
    private Log log = LogFactory.getLog(getClass());	
 
@@ -67,7 +71,7 @@ public class LaReferenciaProvider implements IProvider
       for (NationalNetwork network:networks) {
     	  
     	  final SetMembership setMembership = new SetMembership();
-          setMembership.setSetSpec(network.getCountry().getIso());
+          setMembership.setSetSpec(network.getCountryISO());
           setMembership.setSetName(network.getName());
           setMembership.setSetDescription( "Set of: " + network.getName() + "national network");
           setMemberships.add(setMembership);
@@ -98,7 +102,7 @@ public class LaReferenciaProvider implements IProvider
        record.setIdentifier( buildIdentifier(oairecord) );
        record.setDate(dateFormat.format(oairecord.getDatestamp()) );
        record.setDeleted(false);
-       record.addSet( oairecord.getSnapshot().getNetwork().getCountry().getIso() );
+       record.addSet( oairecord.getSnapshot().getNetwork().getCountryISO() );
        record.setMetadata( oairecord.getPublishedXML() );
     
        return record;
@@ -117,7 +121,7 @@ public class LaReferenciaProvider implements IProvider
     	  List<Integer> totalPageList = new ArrayList<Integer>();
     	  
     	  // CASO DE SET DEFINIDO
-    	  if ( set != null ) {
+    	  if ( set != null && !set.toUpperCase().equals( DRIVER_SET_NAME ) ) {
     		  
     		  NationalNetwork network = nationalNetworkRepository.findByCountryISO(set);
     		  
@@ -205,7 +209,7 @@ public class LaReferenciaProvider implements IProvider
             record.setIdentifier( buildIdentifier(oairecord) );
             record.setDate( dateFormat.format(oairecord.getDatestamp()) );
             record.setDeleted(false);
-            record.addSet( oairecord.getSnapshot().getNetwork().getCountry().getIso() );
+            record.addSet( oairecord.getSnapshot().getNetwork().getCountryISO() );
             
             if (includeMetadata)
             	record.setMetadata( oairecord.getPublishedXML() );
