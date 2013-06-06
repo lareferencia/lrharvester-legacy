@@ -81,7 +81,10 @@ public class IndexerImpl implements IIndexer{
 		 try {
 			
 			Transformer trf = buildTransformer();
-			trf.setParameter("country_iso", snapshot.getNetwork().getCountryISO() );
+			
+			String countryISO = snapshot.getNetwork().getCountryISO();
+			
+			trf.setParameter("country_iso", countryISO);
 			trf.setParameter("country", snapshot.getNetwork().getName() );
 			 
 			// Borrado de los docs del país del snapshot
@@ -90,6 +93,8 @@ public class IndexerImpl implements IIndexer{
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
+			
+			
 
 			for (int i = 0; i < totalPages; i++) {
 				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
@@ -104,7 +109,7 @@ public class IndexerImpl implements IIndexer{
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
 					
-					trf.setParameter("register_id", record.getSnapshot().getId() + "_" + record.getId()  );
+					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier()  );
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 					
 					solrRecordsXmlString += stringWritter.toString();
