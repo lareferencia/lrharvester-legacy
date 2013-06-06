@@ -7,6 +7,12 @@
  #parse("oai/common/Request.vm")
  <ListSets>
 #foreach($set in $ListSets)
+
+  <set>
+    <setSpec>DRIVER</setSpec>
+    <setName>DRIVER</setName>
+    <setDescription><![CDATA[ DRIVER Set ]]></setDescription>
+   </set>
   <set>
     <setSpec>$!{set.setSpec}</setSpec>
     <setName>$!{set.setName}</setName>
