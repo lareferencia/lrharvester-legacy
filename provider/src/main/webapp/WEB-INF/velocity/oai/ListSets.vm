@@ -6,13 +6,16 @@
  <responseDate>2002-08-11T07:21:33Z</responseDate>
  #parse("oai/common/Request.vm")
  <ListSets>
+	<set>
+	    <setSpec>driver</setSpec>
+	    <setName>DRIVER</setName>
+	    <setDescription><![CDATA[ DRIVER Set ]]></setDescription>
+	   </set>
+
+
 #foreach($set in $ListSets)
 
-  <set>
-    <setSpec>DRIVER</setSpec>
-    <setName>DRIVER</setName>
-    <setDescription><![CDATA[ DRIVER Set ]]></setDescription>
-   </set>
+  
   <set>
     <setSpec>$!{set.setSpec}</setSpec>
     <setName>$!{set.setName}</setName>

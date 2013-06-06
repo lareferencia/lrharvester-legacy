@@ -73,7 +73,7 @@ public class LaReferenciaProvider implements IProvider
     	  final SetMembership setMembership = new SetMembership();
           setMembership.setSetSpec(network.getCountryISO());
           setMembership.setSetName(network.getName());
-          setMembership.setSetDescription( "Set of: " + network.getName() + "national network");
+          setMembership.setSetDescription( "Set of: " + network.getName() + " national network");
           setMemberships.add(setMembership);
     	  
       }
