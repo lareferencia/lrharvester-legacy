@@ -15,9 +15,7 @@
       </header>
 #if(!$record.isDeleted())
 #if(${record.metadata})
-      <metadata>
       ${record.metadata}
-      </metadata>
 #end
 #end
     </record>
