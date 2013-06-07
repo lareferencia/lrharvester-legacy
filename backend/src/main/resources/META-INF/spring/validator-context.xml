@@ -16,6 +16,7 @@
 	<!-- Driver type validator -->
 	<bean id="driverTypeRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+		<property name="name" value="type:driver"/>
 		<property name="quantifier" value="1..1" />
 		<property name="controlledValues">
 			<list>
@@ -30,6 +31,7 @@
 	<!-- Status type validator -->	
 	<bean id="statusTypeRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+		<property name="name" value="type:status"/>
 		<property name="quantifier" value="1..1" />
 		<property name="controlledValues">
 			<list>
@@ -45,6 +47,7 @@
 	<!-- 3 >= Length >= 3 validator -->
 	<bean id="langRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
+		<property name="name" value="language:lenght:3"/>
 		<property name="quantifier" value="1..*" />
 		<property name="minLength" value="3"/>
 		<property name="maxLength" value="3"/>
@@ -59,7 +62,7 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:type" />
 					<property name="mandatory" value="true" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<ref bean="driverTypeRule" />
 							<ref bean="statusTypeRule" />	
@@ -71,11 +74,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:identifier" />
 					<property name="mandatory" value="true" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Regex valid url validator -->
 							<bean
 								class="org.lareferencia.backend.validator.RegexContentValidationRule">
+								<property name="name" value="identifier:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789$)[a-zA-Z0-9/\-\.\_\?\=&amp;\;\:\@])+"/>
 							</bean>
@@ -88,11 +92,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:title" />
 					<property name="mandatory" value="true" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="title:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>
@@ -104,11 +109,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:creator" />
 					<property name="mandatory" value="true" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="creator:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>
@@ -120,11 +126,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:date" />
 					<property name="mandatory" value="true" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Regex date validator -->
 							<bean
 								class="org.lareferencia.backend.validator.RegexContentValidationRule">
+								<property name="name" value="date:regex"/>
 								<property name="quantifier" value="1..*" />
 								<property name="regexString" value="(^\d{4}$)|(^\d{4}-\d{2}$)|(^\d{4}-\d{2}-\d{2}$)|(^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
 							</bean>
@@ -138,7 +145,7 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:language" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<ref bean="langRule"/>
 						</list>
@@ -149,11 +156,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:rights" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Controlled Values Rights -->
 							<bean
 								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+								<property name="name" value="rights:driver"/>
 								<property name="quantifier" value="1..1" />
 								<property name="controlledValues">
 									<list>
@@ -172,11 +180,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:subject" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="subject:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>
@@ -188,11 +197,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:description" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="description:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>
@@ -204,11 +214,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:relation" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="relation:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>
@@ -221,11 +232,12 @@
 				<bean class="org.lareferencia.backend.validator.FieldValidator">
 					<property name="fieldName" value="dc:format" />
 					<property name="mandatory" value="false" />
-					<property name="contentRules">
+					<property name="rules">
 						<list>
 							<!-- Length > 1 validator -->
 							<bean
 								class="org.lareferencia.backend.validator.LengthContentValidationRule">
+								<property name="name" value="format:not_empty"/>
 								<property name="quantifier" value="1..*" />
 								<property name="minLength" value="1"/>
 							</bean>

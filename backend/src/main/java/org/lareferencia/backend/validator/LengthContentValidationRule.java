@@ -28,9 +28,10 @@ public class LengthContentValidationRule extends BaseContentValidationRule {
 	public ContentValidationResult validate(String content) {
 		
 		ContentValidationResult result = new ContentValidationResult();
-		result.setRuleID(RULE_ID);
+		//result.setRuleID(RULE_ID);		
+		//result.setExpectedValue( minLength.toString() + " >= Length >= " + maxLength.toString()) ;
 		
-		result.setExpectedValue( minLength.toString() + " >= Length >= " + maxLength.toString()) ;
+		result.setRuleName(this.name);
 		
 		if (content == null) {
 			result.setReceivedValue("NULL");

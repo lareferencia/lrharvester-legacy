@@ -41,12 +41,14 @@ public class RegexContentValidationRule extends BaseContentValidationRule {
 	public ContentValidationResult validate(String content) {
 	
 		ContentValidationResult result = new ContentValidationResult();
-		result.setRuleID(RULE_ID);
+		//result.setRuleID(RULE_ID);
 		
 		// Se recorta el diccionario si resulta muy grande, enumerando solo los primeros 255 chars
-		String expected = regexString;
-		result.setExpectedValue( expected.length() > MAX_EXPECTED_LENGTH ? expected.substring(0, MAX_EXPECTED_LENGTH) : expected ) ;
+		//String expected = regexString;
+		//result.setExpectedValue( expected.length() > MAX_EXPECTED_LENGTH ? expected.substring(0, MAX_EXPECTED_LENGTH) : expected ) ;
 		
+		result.setRuleName(this.name);
+
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);

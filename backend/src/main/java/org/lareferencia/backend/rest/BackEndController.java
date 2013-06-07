@@ -14,13 +14,18 @@ import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
+import org.lareferencia.backend.validator.IValidator;
+import org.lareferencia.backend.validator.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +62,10 @@ public class BackEndController {
 	
 	@Autowired
 	IIndexer indexer;
+	
+	@Autowired
+	IValidator validator;
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
@@ -127,6 +136,19 @@ public class BackEndController {
 		
 		System.gc();
 		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
+		
+		return response;
+	}
+	
+	@RequestMapping(value="/private/validateRecordByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<ValidationResult> validateRecordByID(@PathVariable Long id) throws OAIRecordMetadataParseException {
+		
+		
+		OAIRecord record = recordRepository.findOne( id );	
+		OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+		ValidationResult result = validator.validate(metadata);
+		
+		ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
 		
 		return response;
 	}

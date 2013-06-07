@@ -10,19 +10,19 @@ import lombok.ToString;
 public class ContentValidationResult {
 	
 	private boolean valid;
-	private String ruleID;
-	private String expectedValue;
+	private String ruleName;
+	//private String expectedValue;
 	private String receivedValue;
 
 	public ContentValidationResult() {
 	}
 
-	public ContentValidationResult(boolean valid, String ruleID,
-			String expectedValue, String receivedValue) {
+	public ContentValidationResult(boolean valid, String name,
+			/*String expectedValue*/ String receivedValue) {
 		super();
 		this.valid = valid;
-		this.ruleID = ruleID;
-		this.expectedValue = expectedValue;
+		this.ruleName = name;
+		//this.expectedValue = expectedValue;
 		this.receivedValue = receivedValue;
 	}
 }

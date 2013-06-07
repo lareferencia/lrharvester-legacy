@@ -17,18 +17,18 @@ public class FieldValidator {
 
 	private String fieldName;
 	private boolean mandatory;
-	private List<IContentValidationRule> contentRules;
+	private List<IContentValidationRule> rules;
 
 	public FieldValidator(String fieldName, boolean isMandatory) {
 		super();
-		this.contentRules = new ArrayList<IContentValidationRule>();
+		this.rules = new ArrayList<IContentValidationRule>();
 		this.fieldName = fieldName;
 		this.mandatory = isMandatory;
 	}
 
 	public FieldValidator() {
 		super();
-		this.contentRules = new ArrayList<IContentValidationRule>();
+		this.rules = new ArrayList<IContentValidationRule>();
 	}
 
 	public FieldValidationResult validate(OAIRecordMetadata metadata) {
@@ -51,7 +51,7 @@ public class FieldValidator {
 			
 		boolean isFieldValid = true;
 	
-		for (IContentValidationRule rule:contentRules) {
+		for (IContentValidationRule rule:rules) {
 			
 			int validOccurrencesCount = 0;
 			
@@ -66,7 +66,7 @@ public class FieldValidator {
 				 */
 				if (validOccurence) {
 					validByOccurrenceIndex.put(i, true);
-					result.getContentResults().add(ruleResult);
+					result.getResults().add(ruleResult);
 				} else {
 					resultByInvalidOccurrenceIndex.get(i).add(ruleResult);
 				}
@@ -92,7 +92,7 @@ public class FieldValidator {
 		if ( !isFieldValid )
 			for (int i=0; i<occurrences.size(); i++) {	
 				if (!validByOccurrenceIndex.get(i)) {
-					result.getContentResults().addAll( resultByInvalidOccurrenceIndex.get(i) );
+					result.getResults().addAll( resultByInvalidOccurrenceIndex.get(i) );
 				}
 			}
 			

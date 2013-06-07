@@ -12,12 +12,12 @@ public class FieldValidationResult {
 	private String fieldName;
 	private boolean mandatory;
 	private boolean valid;
-	private List<ContentValidationResult> contentResults;
+	private List<ContentValidationResult> results;
 	//private Map<Integer,List<ContentValidationResult>> contentResultsByOccurrenceNumber;
 
 
 	public FieldValidationResult() {
-		contentResults = new ArrayList<ContentValidationResult>();
+		results = new ArrayList<ContentValidationResult>();
 	}
 
 	public FieldValidationResult(boolean idValid, boolean isMandatory, String fieldName,
@@ -26,7 +26,7 @@ public class FieldValidationResult {
 		this.valid = idValid;
 		this.mandatory = isMandatory;
 		this.fieldName = fieldName;
-		this.contentResults = contentResults;
+		this.results = contentResults;
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class FieldValidationResult {
 		
 		String toStr = "\tfield valid=" + valid + "\tmandatory:" + mandatory + "\n";
 
-		for ( ContentValidationResult cr: contentResults ) {
+		for ( ContentValidationResult cr: results ) {
 			toStr += "\t" + cr.toString() + ":\n";
 		}
 		

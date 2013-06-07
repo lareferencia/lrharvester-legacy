@@ -18,6 +18,7 @@ public abstract class BaseContentValidationRule implements IContentValidationRul
 	protected static int MAX_EXPECTED_LENGTH = 255; 
 	
 	protected String quantifier = IContentValidationRule.QUANTIFIER_ZERO_OR_MORE;
+	protected String name = "";
 	
 	public BaseContentValidationRule() {
 	}

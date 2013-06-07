@@ -122,7 +122,7 @@ public class StatsManager {
 				
 				// accepted by driver
 				ContentValidationResult driverResult = null;
-				for ( ContentValidationResult cr: result.getFieldResults().get("dc:type").getContentResults() ) {
+				for ( ContentValidationResult cr: result.getFieldResults().get("dc:type").getResults() ) {
 					if ( acceptedByDriverTypeMapKeys.contains( cr.getReceivedValue() ) )
 						driverResult = cr;
 				}
@@ -149,7 +149,7 @@ public class StatsManager {
 				
 				// accepted by driver
 				ContentValidationResult driverResult = null;
-				for ( ContentValidationResult cr: result.getFieldResults().get("dc:type").getContentResults() ) {
+				for ( ContentValidationResult cr: result.getFieldResults().get("dc:type").getResults() ) {
 					if ( acceptedByDriverTypeMapKeys.contains( cr.getReceivedValue() ) )
 						driverResult = cr;
 				}

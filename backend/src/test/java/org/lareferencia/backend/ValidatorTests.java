@@ -213,8 +213,8 @@ public class ValidatorTests {
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
 		FieldValidator fvalidator = new FieldValidator("dc:type",true);
-		fvalidator.getContentRules().add(  new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
-		fvalidator.getContentRules().add(  new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
 	
 		System.out.println( fvalidator.validate(record) );		
 	}
@@ -234,11 +234,11 @@ public class ValidatorTests {
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
 		FieldValidator type_validator = new FieldValidator("dc:type",true);
-		type_validator.getContentRules().add( new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
-		type_validator.getContentRules().add( new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE));
+		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE));
 	
 		FieldValidator identifier_validator = new FieldValidator("dc:identifier",true);
-		identifier_validator.getContentRules().add( new RegexContentValidationRule("^http.*",IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		identifier_validator.getRules().add( new RegexContentValidationRule("^http.*",IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
 		
 		
 		IValidator validator = new ValidatorImpl();

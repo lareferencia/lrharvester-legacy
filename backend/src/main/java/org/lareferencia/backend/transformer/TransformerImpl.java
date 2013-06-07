@@ -29,11 +29,8 @@ public class TransformerImpl implements ITransformer {
 	private IContentValidationRule langRule;
 
 	private static Map<String, String> statusTypeMapper;
-
-	
 	static {
 		
-		// TODO: CaseInsensitive
 		statusTypeMapper = 	new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 		statusTypeMapper.put("draft","info:eu-repo/semantics/draft");
 		statusTypeMapper.put("info:eu-repo/semantics/draftVersion","info:eu-repo/semantics/draft");  
