@@ -73,7 +73,6 @@ public class IndexerImpl implements IIndexer{
 	
 	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	@Transactional(readOnly = true)
 	public synchronized boolean index(NetworkSnapshot snapshot) {
 		
 		 HttpSolrServer server = new HttpSolrServer(solrURL);
@@ -89,6 +88,8 @@ public class IndexerImpl implements IIndexer{
 			int totalPages = page.getTotalPages();
 
 			for (int i = 0; i < totalPages; i++) {
+				
+				server = new HttpSolrServer(solrURL);
 				
 				// Se crea un trf por paquete (memmory issues) TODO
 				Transformer trf = buildTransformer();
@@ -118,6 +119,7 @@ public class IndexerImpl implements IIndexer{
 				
 				trf = null;
 				page = null;
+				server = null;
 				
 				System.gc();
 				
