@@ -81,16 +81,12 @@ public class IndexerImpl implements IIndexer{
 		 try {
 			String countryISO = snapshot.getNetwork().getCountryISO();
 			
-		
-			 
 			// Borrado de los docs del país del snapshot
 			this.sendUpdateToSolr(server, "<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
-			
-			
 
 			for (int i = 0; i < totalPages; i++) {
 				
@@ -118,7 +114,7 @@ public class IndexerImpl implements IIndexer{
 
 				}
 				
-				this.sendUpdateToSolr(server, "<add>" + solrRecordsXmlString + "</add>");
+				//this.sendUpdateToSolr(server, "<add>" + solrRecordsXmlString + "</add>");
 
 			}
 			
