@@ -79,18 +79,18 @@ public class IndexerImpl implements IIndexer{
 		 try {	
 			// Borrado de los docs del país del snapshot
 			String countryISO = snapshot.getNetwork().getCountryISO();
-
-			Transformer trf = buildTransformer();
-			trf.setParameter("country_iso", countryISO);
-			trf.setParameter("country", snapshot.getNetwork().getName() );
-			
+	
 			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
-			for (int i = 0; i < totalPages; i++) {		
+			for (int i = 0; i < totalPages; i++) {
+							
+				Transformer trf = buildTransformer();
+				trf.setParameter("country_iso", countryISO);
+				trf.setParameter("country", snapshot.getNetwork().getName() );
 				
 				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
 				
@@ -104,7 +104,7 @@ public class IndexerImpl implements IIndexer{
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
 					
-					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier().replace("/", "__").replace(":", "_") );
+					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier().replace("/", "__").replace(":", "") );
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 				
 					strBuf.append(stringWritter.toString());
@@ -112,7 +112,9 @@ public class IndexerImpl implements IIndexer{
 				
 				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
 				
-				System.gc();
+				trf = null;
+				page = null;
+				
 			}
 			
 			// commit de los cambios
