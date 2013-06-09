@@ -75,34 +75,28 @@ public class IndexerImpl implements IIndexer{
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
 	public synchronized boolean index(NetworkSnapshot snapshot) {
 		
-		 HttpSolrServer server = new HttpSolrServer(solrURL);
 		 
-		 try {
-			String countryISO = snapshot.getNetwork().getCountryISO();
-			
+		 try {	
 			// Borrado de los docs del país del snapshot
-			this.sendUpdateToSolr(server, "<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
+			String countryISO = snapshot.getNetwork().getCountryISO();
+
+			Transformer trf = buildTransformer();
+			trf.setParameter("country_iso", countryISO);
+			trf.setParameter("country", snapshot.getNetwork().getName() );
+			
+			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
 			// Update de los registros de a 1000
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
-			for (int i = 0; i < totalPages; i++) {
-				
-				server = new HttpSolrServer(solrURL);
-				
-				// Se crea un trf por paquete (memmory issues) TODO
-				Transformer trf = buildTransformer();
-				trf.setParameter("country_iso", countryISO);
-				trf.setParameter("country", snapshot.getNetwork().getName() );
+			for (int i = 0; i < totalPages; i++) {		
 				
 				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
 								
-				//String solrRecordsXmlString = "";
 				StringBuffer strBuf = new StringBuffer();
-
 				
 				for (OAIRecord record : page.getContent()) {
 					
@@ -110,31 +104,24 @@ public class IndexerImpl implements IIndexer{
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
 					
-					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier()  );
+					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier().replace("/", "__").replace(":", "_") );
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 				
 					strBuf.append(stringWritter.toString());
-					//solrRecordsXmlString += stringWritter.toString();
-
 				}
 				
-				this.sendUpdateToSolr(server, "<add>" + strBuf.toString()  + "</add>");
-
-				trf = null;
-				page = null;
-				server = null;
+				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
 				
 				System.gc();
-				
 			}
 			
 			// commit de los cambios
-			server.commit();		
+			this.sendUpdateToSolr("<commit/>");
 				 
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
-				server.rollback();
+				this.sendUpdateToSolr("<rollback/>");
 			} catch (SolrServerException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -149,9 +136,11 @@ public class IndexerImpl implements IIndexer{
 	}
 	
 	
-	private void sendUpdateToSolr(HttpSolrServer server, String data) throws SolrServerException, IOException {
+	private void sendUpdateToSolr(String data) throws SolrServerException, IOException {
+		HttpSolrServer server = new HttpSolrServer(solrURL);
 		DirectXmlRequest request = new DirectXmlRequest("/update", data);
 		server.request(request);
+		server = null;
 		
 	}
 	
