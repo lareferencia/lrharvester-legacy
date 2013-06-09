@@ -101,6 +101,8 @@ public class IndexerImpl implements IIndexer{
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
 								
 				//String solrRecordsXmlString = "";
+				StringBuffer strBuf = new StringBuffer();
+
 				
 				for (OAIRecord record : page.getContent()) {
 					
@@ -111,12 +113,13 @@ public class IndexerImpl implements IIndexer{
 					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier()  );
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 				
-					this.sendUpdateToSolr(server, "<add>" + stringWritter.toString() + "</add>");
-
+					strBuf.append(stringWritter.toString());
 					//solrRecordsXmlString += stringWritter.toString();
 
 				}
 				
+				this.sendUpdateToSolr(server, "<add>" + strBuf.toString()  + "</add>");
+
 				trf = null;
 				page = null;
 				server = null;
