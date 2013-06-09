@@ -34,7 +34,7 @@ public class IndexerImpl implements IIndexer{
 	
 	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
-	private static final int PAGE_SIZE = 100;
+	private static final int PAGE_SIZE = 500;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
@@ -79,13 +79,9 @@ public class IndexerImpl implements IIndexer{
 		 HttpSolrServer server = new HttpSolrServer(solrURL);
 		 
 		 try {
-			
-			Transformer trf = buildTransformer();
-			
 			String countryISO = snapshot.getNetwork().getCountryISO();
 			
-			trf.setParameter("country_iso", countryISO);
-			trf.setParameter("country", snapshot.getNetwork().getName() );
+		
 			 
 			// Borrado de los docs del país del snapshot
 			this.sendUpdateToSolr(server, "<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
@@ -97,6 +93,12 @@ public class IndexerImpl implements IIndexer{
 			
 
 			for (int i = 0; i < totalPages; i++) {
+				
+				// Se crea un trf por paquete (memmory issues) TODO
+				Transformer trf = buildTransformer();
+				trf.setParameter("country_iso", countryISO);
+				trf.setParameter("country", snapshot.getNetwork().getName() );
+				
 				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
