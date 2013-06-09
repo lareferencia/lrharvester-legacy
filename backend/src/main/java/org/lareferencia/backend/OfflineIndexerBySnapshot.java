@@ -38,160 +38,33 @@ import org.w3c.dom.Node;
 @Component
 public class OfflineIndexerBySnapshot {
 
-	private static final int PAGE_SIZE = 1000;
-	private static final int SOLR_FILE_SIZE = 1000;
-	private static Transformer toStringTransformer;
-	
-	private static DocumentBuilderFactory factory;
-	private static DocumentBuilder docBuilder;
-
-	static {
-		try {
-			toStringTransformer = TransformerFactory.newInstance().newTransformer();
-			toStringTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			toStringTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			toStringTransformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			
-			factory = DocumentBuilderFactory.newInstance();
-			docBuilder = factory.newDocumentBuilder();
-
-			
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Autowired
-	public NationalNetworkRepository repository;
+	public NationalNetworkRepository nationalNetworkRepository;
 
 	@Autowired
-	public OAIRecordRepository recordRepository;
+	public OAIRecordRepository oaiRecordRepository;
 	
 	@Autowired
-	public NetworkSnapshotRepository snapshotRepository;
+	public NetworkSnapshotRepository networkSnapshotRepository;
 
 	public OfflineIndexerBySnapshot() {
 
 	}
 
-	public static Document createSolrDocument() {
-		
-		Document doc = docBuilder.newDocument();
-		doc.appendChild( doc.createElement("add") );
-		
-		return doc;
-	}
-	
-	public static void addSolrDocToSolrAdd(Document solrDoc, Document solrAdd) {
-		
-		try {
-			
-			Node solrDocNode = XPathAPI.selectSingleNode(solrDoc, "//doc");
-			solrAdd.adoptNode(solrDocNode);
-			
-			Node solrAddNode = XPathAPI.selectSingleNode(solrAdd, "//add");
-			solrAddNode.appendChild(solrDocNode);
-			
-			
-		} catch (DOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public static void saveXmlDocument(Document document, String filename) {
-		try {
-			StreamResult result = new StreamResult(new File(filename));
-			toStringTransformer.transform(new DOMSource(document), result);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}	
-		
-	}
-	
 
 	public static void main(String[] args) throws TransformerConfigurationException, TransformerFactoryConfigurationError {
 
 		System.out.println("Iniciando ...");
 		Logger.getRootLogger().setLevel(Level.OFF);
-		
-		
+			
 		ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/spring/app-context.xml");
 
 		OfflineIndexerBySnapshot m = context.getBean("offlineIndexerBySnapshot", OfflineIndexerBySnapshot.class);
 
 		IIndexer indexer = context.getBean("indexer", IIndexer.class);
 		
-		if ( args.length != 1 ) {
-			
-			System.out.println( "command [snapshotID]" );
-
-			
-			for (NationalNetwork network : m.repository.findAll()) {
-				for (NetworkSnapshot snapshot : network.getSnapshots()) {
-					System.out.println( "Red: " + network.getName() + " \t\tSnapID: " + snapshot.getId() + "\t Records: " + snapshot.getSize() + "\tFinalizado en: " + snapshot.getEndTime() + " Status: " + snapshot.getStatus() );
-				}
-			}
-			
-		}
-		else {
-		
-			
-			Long snapID = Long.parseLong( args[0] );	
-			NetworkSnapshot snapshot = m.snapshotRepository.findOne(snapID);
-			NationalNetwork network = snapshot.getNetwork();
-			
-			
-			int actualRecordCount = 0;
-			int actualPacket = 0;
-			Document actualDocument = createSolrDocument();
-			
-			
-			Page<OAIRecord> page = m.recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID,new PageRequest(0, PAGE_SIZE));
-			int totalPages = page.getTotalPages();
-
-			for (int i = 0; i < totalPages; i++) {
-				
-				System.out.println( "Procesando Snapshot/Red: " + snapID + " / " + network.getName() + " paquete: " + i+1 + " de " + totalPages + " " + actualRecordCount);
-
-				page = m.recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
-
-				for (OAIRecord record : page.getContent()) {
-
-					try {
-						
-						//addSolrDocToSolrAdd(indexer.transform(record, network),actualDocument);
-						actualRecordCount++;
-						
-						if ( actualRecordCount == SOLR_FILE_SIZE ) {
-							saveXmlDocument(actualDocument, network.getCountryISO() + "_" + actualPacket++ + ".solr.xml");
-							actualDocument = createSolrDocument();
-							actualRecordCount = 0;
-						}
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.exit(0); // Si hay un error no continua
-					}
-				}
-			}
-			
-			// Grabación de la cola de registros de la red actual que no alcanzó SOLR_FILE_SIZE
-			if (actualRecordCount != 0) {
-				saveXmlDocument(actualDocument, network.getCountryISO() + "_" + actualPacket++ + ".solr.xml");
-			}
-			
-		}
-		
-
+		indexer.index( m.networkSnapshotRepository.findOne( Long.parseLong(args[0])) );
 	}
 
 }
