@@ -34,7 +34,7 @@ public class IndexerImpl implements IIndexer{
 	
 	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
-	private static final int PAGE_SIZE = 500;
+	private static final int PAGE_SIZE = 100;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
