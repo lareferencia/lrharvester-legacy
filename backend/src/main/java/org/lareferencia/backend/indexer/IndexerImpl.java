@@ -1,8 +1,10 @@
 package org.lareferencia.backend.indexer;
 
 import java.io.File;
+import org.apache.commons.codec.digest.DigestUtils;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.MessageDigest;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -26,7 +28,6 @@ import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 public class IndexerImpl implements IIndexer{
 
@@ -78,11 +79,13 @@ public class IndexerImpl implements IIndexer{
 		 
 		 try {	
 			// Borrado de los docs del país del snapshot
-			String countryISO = snapshot.getNetwork().getCountryISO();
+			
+			 MessageDigest md = MessageDigest.getInstance("MD5");
+			 String countryISO = snapshot.getNetwork().getCountryISO();
 	
 			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
-			// Update de los registros de a 1000
+			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
@@ -103,8 +106,16 @@ public class IndexerImpl implements IIndexer{
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
+								
+					// id unico pero mutable para solr
+					trf.setParameter("solr_id", countryISO + "_" + snapshot.getId().toString() + "_" + record.getId().toString()  );
 					
-					trf.setParameter("register_id", countryISO + "_" + record.getIdentifier().replace("/", "__").replace(":", "") );
+					// id permantente para vufind
+					trf.setParameter("vufind_id", countryISO + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
+					
+					// header id para staff
+					trf.setParameter("header_id", record.getIdentifier() );
+					
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 				
 					strBuf.append(stringWritter.toString());
@@ -114,6 +125,7 @@ public class IndexerImpl implements IIndexer{
 				
 				trf = null;
 				page = null;
+				strBuf = null;
 				
 			}
 			
@@ -143,7 +155,7 @@ public class IndexerImpl implements IIndexer{
 		DirectXmlRequest request = new DirectXmlRequest("/update", data);
 		server.request(request);
 		server = null;
-		
+		//System.out.println(data);
 	}
 	
 	

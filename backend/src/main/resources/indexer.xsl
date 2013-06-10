@@ -18,15 +18,29 @@
 	
 	<xsl:param name="country" />
 	<xsl:param name="country_iso" />
-	<xsl:param name="register_id" />
+	
+	<xsl:param name="solr_id" />
+	<xsl:param name="vufind_id" />
+	<xsl:param name="header_id" />
+	
 	 
     <xsl:template match="oai_dc:dc">
             <doc>
                 <!-- ID es parámetro -->
                 <field name="id">
-                	<xsl:value-of select="$register_id"/>
+                	<xsl:value-of select="$solr_id"/>
+                </field>
+                
+                <!-- ID es parámetro -->
+                <field name="oid">
+                	<xsl:value-of select="$vufind_id"/>
+                </field>
+                
+                <!-- ID es parámetro -->
+                <field name="oai_identifier">
+                	<xsl:value-of select="$header_id"/>
                 </field>         
-	
+	         
                 <!-- COUNTRY es parámetro -->
                 <field name="country">
                 	<xsl:value-of select="$country"/>

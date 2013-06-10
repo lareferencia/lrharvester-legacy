@@ -1,7 +1,6 @@
 package org.lareferencia.backend.rest;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class BackEndController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
-	private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	//private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 	
 	/**

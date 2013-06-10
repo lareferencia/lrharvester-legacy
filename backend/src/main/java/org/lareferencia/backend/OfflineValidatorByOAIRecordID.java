@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public  class OfflineValidatorByOAIRecordID {
 
-	private static final int PAGE_SIZE = 250;
+	//private static final int PAGE_SIZE = 250;
 
 	@Autowired
 	public NationalNetworkRepository repository;
@@ -74,7 +74,7 @@ public  class OfflineValidatorByOAIRecordID {
 		}
 					
 		OAIRecord record = m.recordRepository.findOne( Long.parseLong( args[0]) );	
-		NetworkSnapshot snap = record.getSnapshot();
+		//NetworkSnapshot snap = record.getSnapshot();
 		
 		System.out.println("\n*********************************** registro Original\n");
 		System.out.println(record.getOriginalXML());

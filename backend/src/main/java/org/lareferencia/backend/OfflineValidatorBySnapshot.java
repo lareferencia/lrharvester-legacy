@@ -2,8 +2,6 @@ package org.lareferencia.backend;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
@@ -33,8 +31,6 @@ import org.springframework.stereotype.Component;
 public class OfflineValidatorBySnapshot {
 
 	
-	private static DocumentBuilderFactory factory;
-	private static DocumentBuilder docBuilder;
 
 	private static final int PAGE_SIZE = 1000;
 

@@ -3,8 +3,6 @@ package org.lareferencia.backend.harvester;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
@@ -20,14 +18,14 @@ import ORG.oclc.oai.harvester2.verb.ListRecords;
 public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		IHarvester {
 
-	private static final int STANDARD_RECORD_SIZE = 100;
+	//private static final int STANDARD_RECORD_SIZE = 100;
 	private static final String METADATA_NODE_NAME = "metadata";
 	private static int MAX_RETRIES = 15;
 	private static int INITIAL_SECONDS_TO_RETRY = 3;
 	private static int RETRY_FACTOR = 2;
 
 	
-	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
+	//private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
 	public OCLCBasedHarvesterImpl() {
 		super();

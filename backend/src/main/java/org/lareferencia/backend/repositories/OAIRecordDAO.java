@@ -75,7 +75,7 @@ public class OAIRecordDAO {
     }
     @Transactional(readOnly = true)
     public List<OAIRecord> findAll() {
-        Query query = entityManager.createQuery("from OAIRecord");
+        Query query = entityManager.createQuery("from OAIRecord",OAIRecord.class);
         return query.getResultList();
     }
 }
