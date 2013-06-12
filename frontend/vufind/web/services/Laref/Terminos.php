@@ -9,7 +9,7 @@ require_once 'Action.php';
  *
 
  */
-class Material extends Action
+class Terminos extends Action
 {
     /**
      * Process parameters and display the page.
@@ -303,8 +303,8 @@ else
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
 		$interface->assign('output9',$output9);
-        $interface->setTemplate('material.tpl');
-        $interface->setPageTitle('Material');
+        $interface->setTemplate('terminos.tpl');
+        $interface->setPageTitle('T&eacute;rminos');
         $interface->display('layout.tpl');
     }
 }

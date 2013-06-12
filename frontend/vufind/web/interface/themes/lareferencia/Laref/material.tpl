@@ -1,42 +1,20 @@
-
-
 <div class="span-18 last">
   <h1>{translate text="Material"}</h1>
-  <table class="citation">
-  <tr>
-    <th>{translate text="Tipo de Material"}</th>
-	</tr>
-  <tr>
-    <td>
-      <ul>
-      {foreach from=$typeList item=term}
-        <li><a href="{$url}/Search/Results?lookfor=&type=AllFields&filter%5B%5D=type%3A%22{$term.0|escape}%22">{$term.0|escape}</a> - {$term.1|number_format:0:".":","}</li>
-      {assign var="sum2" value="`$sum2+$term.1`"}
-	  {/foreach}
-	  <li>Total - {$sum2|number_format:0:".":","}</li>
-      </ul>
-    </td>
-	</tr>
-  </table>
-</div>
-<div class="clear"></div>
-<h2 class="span-10"><a id="instituciones"></a>Material por Red</h2> 
-<div class="clear"></div>
-	{$output2}
-<div class="clear"></div>
+  <h2>{translate text="Distribuci&oacute;n de Material"}</h2>
+  <script type="text/javascript" src="{$url}/flotr2.min.js"></script>
+  <div class="clear"></div>
   {literal}
        <style type="text/css">
 
       #container {
-        width : 500px;
-        height: 400px;
-        margin: 8px auto;
+        width : 600px;
+        height: 300px;
+        margin: 8px 100px;
       }
 
     </style>
   	{/literal} 
   <div class="span-5" id="container"></div> 
-   <script type="text/javascript" src="{$url}/flotr2.min.js"></script>
     <script type="text/javascript">
 {literal}		
 		function addCommas(nStr)
@@ -89,12 +67,28 @@ graph = Flotr.draw(container, [
 		( container=document.getElementById("container")
 		);
 {/literal} 
-			</script>
-	<div class="clear"></div>
-<h2 class="span-10"><a id="materias"></a>Materias </h2> 
-	<div class="clear"></div>
-	{$output4}
-		<div class="clear"></div>
+</script>
+<div class="clear"></div>
 
-
+  <table class="citation">
+  <tr>
+    <th>{translate text="Tipo de Material"}</th>
+	</tr>
+  <tr>
+    <td>
+      <ul>
+      {foreach from=$typeList item=term}
+        <li><a href="{$url}/Search/Results?lookfor=&type=AllFields&filter%5B%5D=type%3A%22{$term.0|escape}%22">{$term.0|escape}</a> - {$term.1|number_format:0:".":","}</li>
+      {assign var="sum2" value="`$sum2+$term.1`"}
+	  {/foreach}
+	  <li>Total - {$sum2|number_format:0:".":","}</li>
+      </ul>
+    </td>
+	</tr>
+  </table>
+</div>
+<div class="clear"></div>
+<h2 class="span-10"><a id="instituciones"></a>Material por Red</h2> 
+<div class="clear"></div>
+	{$output2}
 <div class="clear"></div>

@@ -139,6 +139,45 @@ class IndexRecord implements RecordInterface
         return $this->getShortTitle();
     }
 
+	    /**
+     * Get text that can be displayed to represent this record in
+     * breadcrumbs.
+     *
+     * @return string Breadcrumb text to represent this record.
+     * @access public
+     */
+    public function getAPA()
+    {
+       // Build author list:
+        $authors = array();
+        $primary = $this->getPrimaryAuthor();
+        if (!empty($primary)) {
+            $authors[] = $primary;
+        }
+        $authors = array_unique(
+            array_merge($authors, $this->getSecondaryAuthors())
+        );
+         $elurl=$this->getURLs();
+        // Collect all details for citation builder:
+        $publishers = $this->getPublishers();
+        $pubDates = $this->getPublicationDates();
+        $pubPlaces = $this->getPlacesOfPublication();
+        $details = array(
+            'authors' => $authors,
+            'title' => $this->getShortTitle(),
+            'subtitle' => $this->getSubtitle(),
+            'pubPlace' => count($pubPlaces) > 0 ? $pubPlaces[0] : null,
+            'pubName' => count($publishers) > 0 ? $publishers[0] : null,
+            'pubDate' => count($pubDates) > 0 ? $pubDates[0] : null,
+            'edition' => array($this->getEdition()),
+			'elurl'=> $elurl[0]
+        );
+
+        // Build the citation:
+        $citation = new CitationBuilder($details);
+		return $citation->getAPA_T();
+    }
+	
     /**
      * Assign necessary Smarty variables and return a template name
      * to load in order to display the requested citation format.
@@ -333,7 +372,7 @@ class IndexRecord implements RecordInterface
             }
 
             // Assemble the query parts and filter out current record:
-            $query = '(' . implode(' OR ', $parts) . ') NOT id:' .
+            $query = '(' . implode(' OR ', $parts) . ') NOT oid:' .
                 $this->getUniqueID();
 
             // Perform the search and return either results or an error:
@@ -551,6 +590,20 @@ class IndexRecord implements RecordInterface
         // Extract bibliographic metadata from the record:
         $id = $this->getUniqueID();
         $interface->assign('listId', $id);
+
+		// PAISES Y ZOTERO AR LAREFERENCIA JUNIO 02
+        $interface->assign('summCountry', $this->getCountry());
+		$interface->assign('summCountryISO', $this->getCountryISO());
+        // Only display OpenURL link if the option is turned on and we have
+        // an ISSN.  We may eventually want to make this rule more flexible,
+        // but for now the ISSN restriction is designed to be consistent with
+        // the way we display items on the search results list.
+        $hasOpenURL = ($this->openURLActive('results') && $issn);
+        $openURL = $this->getOpenURL();
+        $interface->assign('summOpenUrl', $hasOpenURL ? $openURL : false);
+        // Always provide an OpenURL for COinS purposes:
+        $interface->assign('summCOinS', $openURL);
+		
         $interface->assign('listFormats', $this->getFormats());
         $interface->assign('listTitle', $this->getTitle());
         $interface->assign('listAuthor', $this->getPrimaryAuthor());
@@ -844,7 +897,7 @@ class IndexRecord implements RecordInterface
      */
     public function getUniqueID()
     {
-        return $this->fields['id'];
+        return $this->fields['oid']; //LAREFERENCIA
     }
 
     /**  AR

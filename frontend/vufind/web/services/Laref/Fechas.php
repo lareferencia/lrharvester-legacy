@@ -5,11 +5,11 @@
 require_once 'Action.php';
 
 /**
- * Material action for LaRef module
+ * Fechas action for LaRef module
  *
 
  */
-class Material extends Action
+class Fechas extends Action
 {
     /**
      * Process parameters and display the page.
@@ -303,8 +303,8 @@ else
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
 		$interface->assign('output9',$output9);
-        $interface->setTemplate('material.tpl');
-        $interface->setPageTitle('Material');
+        $interface->setTemplate('fechas.tpl');
+        $interface->setPageTitle('Fechas');
         $interface->display('layout.tpl');
     }
 }

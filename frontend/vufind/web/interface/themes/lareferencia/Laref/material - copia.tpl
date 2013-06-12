@@ -1,11 +1,7 @@
-<div class="span-12" >
-<h1 >Nube de T&eacute;rminos</h1>
-<div class="span-12" style="word-wrap:break-word;">
-{$output}
-</div>
-</div>
-<div class="span-10 last">
-  <h1>{translate text="Recursos en la colecci&oacute;n"}</h1>
+
+
+<div class="span-18 last">
+  <h1>{translate text="Material"}</h1>
   <table class="citation">
   <tr>
     <th>{translate text="Tipo de Material"}</th>
@@ -21,20 +17,89 @@
       </ul>
     </td>
 	</tr>
-  </table> 
+  </table>
+</div>
+<div class="clear"></div>
+<h2>Material por Fecha de Publicaci&oacute;n</h2> 
+{literal}
+      <style type="text/css">
+ 
+	        #container3 {
+        width : 600px;
+        height: 384px;
+        margin: 8px auto;
+      }
+    </style>
+{/literal}
+<div id="container3"> </div>
+ <script type="text/javascript" src="{$url}/flotr2.min.js"></script>
+{literal}
+
+
+<script type="text/javascript">
+(
+function basic_time(container) {
+{/literal} 
+{$output9}
+{literal}
+    options = {
+        xaxis: {
+            title: 'Fecha',
+            labelsAngle: 0,
+		noTicks: 17,
+		mode:"time",
+		timeformat: "%y"
+        },
+        yaxis: {
+            title: 'Registros',
+        },	
+        selection: {
+            mode: 'x'
+        },
+        HtmlText: false,
+        title: 'Registros por Fecha'
+    };
+
+    // Draw graph with default options, overwriting with passed options
+
+
+    function drawGraph(opts) {
+
+        // Clone the options, so the 'options' variable always keeps intact.
+        o = Flotr._.extend(Flotr._.clone(options), opts || {});
+
+        // Return a new graph.
+        return Flotr.draw(
+        container, [d1], o);
+    }
+
+    graph = drawGraph();
+
+  })
+( container=document.getElementById("container3")
+);
+    </script>
+{/literal} 
+
+
+
+<div class="clear"></div>
+<h2 class="span-10"><a id="instituciones"></a>Material por Red</h2> 
+<div class="clear"></div>
+	{$output2}
+<div class="clear"></div>
   {literal}
        <style type="text/css">
 
       #container {
-        width : 400px;
-        height: 300px;
-        margin: 1px auto;
+        width : 500px;
+        height: 400px;
+        margin: 8px auto;
       }
 
     </style>
   	{/literal} 
   <div class="span-5" id="container"></div> 
-   <script type="text/javascript" src="{$url}/flotr2.min.js"></script>
     <script type="text/javascript">
 {literal}		
 		function addCommas(nStr)
@@ -88,7 +153,11 @@ graph = Flotr.draw(container, [
 		);
 {/literal} 
 			</script>
-</div>
-
-
 	<div class="clear"></div>
+<h2 class="span-10"><a id="materias"></a>Materias </h2> 
+	<div class="clear"></div>
+	{$output4}
+		<div class="clear"></div>
+
+
+<div class="clear"></div>

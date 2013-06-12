@@ -36,14 +36,14 @@
     {if !empty($coreMainAuthor)}
     <tr valign="top">
       <th>{translate text='Main Author'}: </th>
-      <td><a href="{$url}/Author/Home?author={$coreMainAuthor|escape:"url"}">{$coreMainAuthor|escape}</a></td>
+      <td><a href="{$url}/Search/Results?lookfor=%22{$coreMainAuthor|escape:"url"}%22">{$coreMainAuthor|escape}</a></td>
     </tr>
     {/if}
 
     {if !empty($coreCorporateAuthor)}
     <tr valign="top">
       <th>{translate text='Corporate Author'}: </th>
-      <td><a href="{$url}/Author/Home?author={$coreCorporateAuthor|escape:"url"}">{$coreCorporateAuthor|escape}</a></td>
+      <td><a href="{$url}/Search/Results?lookfor=%22{$coreCorporateAuthor|escape:"url"}%22">{$coreCorporateAuthor|escape}</a></td>
     </tr>
     {/if}
 
@@ -52,12 +52,11 @@
       <th>{translate text='Other Authors'}: </th>
       <td>
         {foreach from=$coreContributors item=field name=loop}
-          <a href="{$url}/Author/Home?author={$field|escape:"url"}">{$field|escape}</a>{if !$smarty.foreach.loop.last}, {/if}
+          <a href="{$url}/Search/Results?lookfor=%22{$field|escape:"url"}%22">{$field|escape}</a>{if !$smarty.foreach.loop.last}, {/if}
         {/foreach}
       </td>
     </tr>
     {/if}
-
     <tr valign="top">
       <th>{translate text='Format'}: </th>
       <td>

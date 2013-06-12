@@ -90,6 +90,9 @@
  <fields>
    <!-- Core Fields  -->
    <field name="id" type="string" indexed="true" stored="true"/>
+   <field name="oid" type="string" indexed="true" stored="true"/>
+   <field name="oai_identifier" type="string" indexed="true" stored="true"/>
+   
    <field name="fullrecord" type="string" indexed="false" stored="true"/>
    <field name="marc_error" type="string" indexed="false" stored="true" multiValued="true"/>
    <field name="allfields" type="text" indexed="true" stored="false"/>

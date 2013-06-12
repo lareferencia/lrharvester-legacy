@@ -56,14 +56,15 @@
     {css media="screen, projection" filename="styles.css"}
     {css media="print" filename="print.css"}
     <!--[if lt IE 8]><link rel="stylesheet" href="{$url}/interface/themes/blueprint/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
-  </head>
+
+ </head>
 
   <body >
     <div class="container">
 	  <div class="header">
 		{include file="header.tpl"}
-		Bienvenidos : <a href="{$url}">Principal</a> - <a href="{$url}/Laref/Paises">Paises</a> - <a href="{$url}/Laref/Material">Material</a> - <a href="{$url}/Laref/Impacto"> Impacto</a> - <a href="{$url}/Laref/About">Acerca de  </a> 
-	  </div>
+
+		</div>
 
 	  {if $showTopSearchBox}
 	  <div class="searchbox">

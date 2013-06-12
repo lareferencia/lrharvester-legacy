@@ -5,11 +5,16 @@
 require_once 'Action.php';
 
 /**
- * Material action for LaRef module
+ * Paises action for Laref module
  *
-
+ * @category VuFind
+ * @package  Controller_Admin
+ * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/building_a_module Wiki
  */
-class Material extends Action
+class Instituciones extends Action
 {
     /**
      * Process parameters and display the page.
@@ -25,52 +30,112 @@ class Material extends Action
 		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
+	$sum=0;
 	$output1="";
 	$output2="";	
 	$output3="";	
-	$output4="";	
-	$output9="";
+	$output4="";
+		$output7="";
+		$output8="";
+		$output9="";		
+		
+		$url="http://lareferencia.shell.la:8090/public/listNetworks";
+		$json = file_get_contents($url);
+		$data = json_decode($json, TRUE);
 
-$url9 = $vbiblio.'/biblio/select?facet=true&facet.field=publishDate&fl=publishDate&q=publishDate'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
-$xml9 = simpleXML_load_file($url9,"SimpleXMLElement",LIBXML_NOCDATA);
+	$output1.= "<table border='1'>";
+	$output1.=  "<tr> <th>Red</th> <th>Fecha de &uacute;ltima actualizaci&oacute;n</th><th>Registros incorporados</th></tr>";
+		foreach($data as $red){
+			foreach($red as $key => $value){
+			  if ($key==="name")
+				$output1 .=  "<tr> <td><a href='http://200.0.206.214/vufind/Search/Results?lookfor=&type=AllFields&filter[]=country%3A%22".$value."%22'>$value</a> </td>";
+			  if ($key==="datestamp")
+				$output1 .= "<td>".substr($value,0,10)."</td>";
+			  /*if ($key==="size")
+				$output1 .= "<td>".number_format((int)$value)."</td>";*/
+			  if ($key==="validSize")
+			  {
+				$output1 .= "<td> ".number_format((int)$value)."</td></tr>";
+				$sum+=$value;
+				}
+			}
+		}
+			$output1.=  "<tr> <th></th> <th></th><th>".number_format((int)$sum)."</th></tr>";
 
+		 $output1 .= '</table>';
 
-if($xml9 ===  FALSE)
-{
-   //deal with error
-echo 'ERROR';
-}
-else 
-{ 
+		$url2="http://lareferencia.shell.la:8090/public/listNetworksHistory";
+		$json2 = file_get_contents($url2);
+		$data2 = json_decode($json2, TRUE);
 
-//do stuff 
-	//echo date("Y"); 
-$output9.='var d1 = [';
-  $first=true;
-  $cuenta=0;
-foreach ($xml9->xpath("//lst[@name='publishDate']/int") as $date) 
-    {
-      $cuenta++;
-    if ($cuenta>50)
-    {
-
-
-	//echo $date['name'];
-	//if ((int)$date['name']<=date("Y"))
-     if ($first)
-	{
-         $output9.='[new Date("'.$date['name'].'/01/01 01:00").getTime(),'.$date.']';
-	$first=false;
-	}
-	else
-         $output9.=',[new Date("'.$date['name'].'/01/01 01:00").getTime(),'.$date.']';
-    }
-    }
-   $output9.='];';
- 
-}
-
+	$countr="";
+    $countn=0;	
+    $ni="";	
 	
+
+	$output8.="var ";
+	$output7.= "<table border='1'>";
+	$output7.=  "<tr> <th>Red</th><th>Pa&iacute;s</th><th>ID</th><th>Fecha de actualizaci&oacute;n</th><th>Registros incorporados</th></tr>";
+		foreach($data2 as $red){
+			foreach($red as $key => $value){
+				if ($key==="networkID")
+				{
+				    $ni=$value;
+				}	
+				if ($key==="country")
+				{	$countr=$value;
+				}
+				if ($key==="validSnapshots")
+				{
+				
+
+						$countn++;
+						$first=true;
+						$output8.="d".$countn."=[";
+				  $datetemp="";
+				  $valtemp=0;
+				   foreach($value as $snap){
+				   foreach($snap as $key2 => $value2){
+					 { 
+					  if ($key2==="id")
+					{					
+					  	$output7 .=  "<tr><td>".$ni."</td>";
+						$output7 .=  "<td><a href='http://200.0.206.214/vufind/Search/Results?lookfor=&type=AllFields&filter[]=country_iso%3A%22".$countr."%22'>$countr</a> </td>";;
+						$output7 .= "<td>".$value2."</td>";
+						$valtem=$value2;
+					 }
+					  else if ($key2==="endTime")
+					  {
+						$output7 .= "<td>".substr($value2,0,10)."</td>";
+						$datetemp='new Date("'.str_replace('-','/',substr($value2,0,10)).' 01:00").getTime()';
+					 }
+					 else if ($key2==="validSize")
+					 {
+						$output7 .= "<td> ".number_format((int)$value2)."</td></tr>";
+						$valtemp=$value2;
+						if (!$first)
+							{
+								$output8.=',['.$datetemp.','.$valtemp.']';
+								
+							}
+							else
+							{
+								$first=false;
+								$output8.='['.$datetemp.','.$valtemp.']';
+							}
+						
+					   }
+					  }
+
+				    }
+			        }
+					
+					  $output8.='],';
+					  
+				  }
+				}
+			}
+		 $output7.= '</table>';		 
 		 
 		$output = '<ul>';
 
@@ -101,9 +166,8 @@ foreach ($xml9->xpath("//lst[@name='publishDate']/int") as $date)
 		 
 					$sum+=$country;
 
-		$url3 = $vbiblio.'/biblio/select?facet=true&facet.field=instname&fl=instname&q=country:'.urlencode('"'.$pais.'"').'&facet.limit=5&rows=0&facet.sort=index';
+		$url3 = $vbiblio.'/biblio/select?facet=true&facet.field=instname&fl=instname&q=country:'.urlencode('"'.$pais.'"').'&rows=0&facet.sort=index';
 	//$output .=$url3;
-	
 		
 		//echo $url3;
 		$xml3 = simpleXML_load_file($url3,"SimpleXMLElement",LIBXML_NOCDATA);
@@ -118,7 +182,7 @@ foreach ($xml9->xpath("//lst[@name='publishDate']/int") as $date)
 			{
 			$num=number_format((int)$inst);
 			if($inst>0)
-			$output .=  '<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=instname%3A%22'.$inst['name'].'%22">'.$inst['name'].'</a> - '.$inst.'</li>';
+			$output .=  '<li> <a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=instname%3A%22'.$inst['name'].'%22">'.$inst['name'].'</a> - '.number_format((int)$inst).'</li>';
 				$sum+=$inst;
 			}/**/
 		}
@@ -132,8 +196,8 @@ foreach ($xml9->xpath("//lst[@name='publishDate']/int") as $date)
 
 /////////////////////////////////////////////////////////////////////
 
-$output2 .=  '<table>';
-$url2 = $vbiblio.'/biblio/select?facet=true&facet.field=country&fl=country&q=type'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
+$output2 .=  '<ul>';
+$url2 = $vbiblio.'/biblio/select?facet=true&facet.field=country&fl=country&q=type'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=count';
 $xml2 = simpleXML_load_file($url2,"SimpleXMLElement",LIBXML_NOCDATA);
 
 //echo $url2;
@@ -146,14 +210,14 @@ else
 { //do stuff 
     $sum=0;
 	$num=0;
-	$output2 .='<tr><th>Pa&iacute;s</th><th>Total</th><th>Art&iacute;culos</th><th>Reporte</th><th>Tesis de Doctorado</th><th>Tesis de Maestr&iacute;a</th></tr>';
+	$output .='<ul>';
 foreach ($xml2->xpath("//lst[@name='country']/int") as $country) 
     {
 	$num=number_format((int)$country);
 	
 	$pais=$country['name'];
 	
-    $output2 .='<tr><td><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pais.'%22">'.$pais.'</a> <td>'.$num.'</td></td>';
+    $output2 .='<li><a href="'.$vurl.'/Search/Results?lookfor=&type=AllFields&filter%5B%5D=country%3A%22'.$pais.'%22">'.$pais.'</a> - '.$num.'</li>';
 		$sum+=$country;
 
 $tipoa=0;
@@ -167,8 +231,6 @@ $url3 = $vbiblio.'/biblio/select?facet=true&facet.field=type&fl=type&q=country:'
 	
 //echo $url3;
 $output2 .='<ul >';
-
-
 $xml3 = simpleXML_load_file($url3,"SimpleXMLElement",LIBXML_NOCDATA);
 if($xml3 ===  FALSE)
 {
@@ -183,21 +245,21 @@ foreach ($xml3->xpath("//lst[@name='type']/int") as $tipo) {
 
 	$tipos=$tipo['name'];
 	
-	$output2 .='<td>'.number_format((int)$tipo).' </td>';
+	$output2 .='<li>'.$tipos.': '.number_format((int)$tipo).' </li>';
 
 	}
 }
 
-$output2 .= '</tr>';	
+$output2 .= '</ul>';	
 }
 } 
-//$output2 .='<td>Total '.number_format($sum).'</td></tr>';
-$output2 .='</table>';
+$output2 .='<li>Total '.number_format($sum).'</li>';
+$output2 .='</ul>';
 
 
 ////////////////////////////////////////////////////////////////////		
 
-$url4 = $vbiblio.'/biblio/select?q='.urlencode('topic_browse:[* TO *]').'&wt=xml&facet=true&facet.field=topic_browse&fl=topic_browse&facet.limit=1000&rows=0&facet.mincount=400&facet.sort=index';
+$url4 = $vbiblio.'/biblio/select?q='.urlencode('topic_browse:[* TO *]').'&wt=xml&facet=true&facet.field=topic_browse&fl=topic_browse&facet.limit=1000&rows=0&facet.mincount=500&facet.sort=index';
 //$output4=$url4;
 $xml4 = simpleXML_load_file($url4,"SimpleXMLElement",LIBXML_NOCDATA);
 if($xml4 ===  FALSE)
@@ -210,17 +272,13 @@ else { //do stuff
 //echo $xml;
 
 foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
- if (($busqueda/100)>12)
-    $output4.="<a style='font-size:".($busqueda/100)."px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]."(".$busqueda.") </a>";
-else
-    $output4.="<a style='font-size:11px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]."(".$busqueda.") </a>";
-
-	}
+    $output4.="<a style='font-size:".($busqueda/80)."px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'> ".$busqueda["name"]."(".$busqueda.") </a>";
+}
 
 } 
 ////////////////////////////////////////////////////////////////////		
 		
-        // Load SOLR Socios
+        // Load SOLR Paises
         $solr = ConnectionManager::connectToIndex();
 
 		        // Paises Socios
@@ -298,13 +356,16 @@ else
                 'recordList', $result['facet_counts']['facet_fields']['recordId']
             );
         }
-		
+		$interface->assign('output1',$output1);		
 		$interface->assign('output',$output);
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
+		$interface->assign('output7',$output7);
+		$interface->assign('output8',$output8);
 		$interface->assign('output9',$output9);
-        $interface->setTemplate('material.tpl');
-        $interface->setPageTitle('Material');
+		
+		$interface->setTemplate('instituciones.tpl');
+        $interface->setPageTitle('Instituciones');
         $interface->display('layout.tpl');
     }
 }

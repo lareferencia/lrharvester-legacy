@@ -36,6 +36,8 @@ class Paises extends Action
 	$output3="";	
 	$output4="";
 		$output7="";
+		$output8="";
+		$output9="";		
 		
 		$url="http://lareferencia.shell.la:8090/public/listNetworks";
 		$json = file_get_contents($url);
@@ -66,8 +68,12 @@ class Paises extends Action
 		$json2 = file_get_contents($url2);
 		$data2 = json_decode($json2, TRUE);
 
-	$countr="";	
+	$countr="";
+    $countn=0;	
     $ni="";	
+	
+
+	$output8.="var ";
 	$output7.= "<table border='1'>";
 	$output7.=  "<tr> <th>Red</th><th>Pa&iacute;s</th><th>ID</th><th>Fecha de actualizaci&oacute;n</th><th>Registros incorporados</th></tr>";
 		foreach($data2 as $red){
@@ -82,27 +88,51 @@ class Paises extends Action
 				if ($key==="validSnapshots")
 				{
 				
+
+						$countn++;
+						$first=true;
+						$output8.="d".$countn."=[";
+				  $datetemp="";
+				  $valtemp=0;
 				   foreach($value as $snap){
 				   foreach($snap as $key2 => $value2){
 					 { 
 					  if ($key2==="id")
-					{
+					{					
 					  	$output7 .=  "<tr><td>".$ni."</td>";
 						$output7 .=  "<td><a href='http://200.0.206.214/vufind/Search/Results?lookfor=&type=AllFields&filter[]=country_iso%3A%22".$countr."%22'>$countr</a> </td>";;
 						$output7 .= "<td>".$value2."</td>";
-						
+						$valtem=$value2;
 					 }
 					  else if ($key2==="endTime")
+					  {
 						$output7 .= "<td>".substr($value2,0,10)."</td>";
-					  else if ($key2==="validSize")
+						$datetemp='new Date("'.str_replace('-','/',substr($value2,0,10)).' 01:00").getTime()';
+					 }
+					 else if ($key2==="validSize")
+					 {
 						$output7 .= "<td> ".number_format((int)$value2)."</td></tr>";
-
+						$valtemp=$value2;
+						if (!$first)
+							{
+								$output8.=',['.$datetemp.','.$valtemp.']';
+								
+							}
+							else
+							{
+								$first=false;
+								$output8.='['.$datetemp.','.$valtemp.']';
+							}
+						
+					   }
 					  }
 
 				    }
-					
 			        }
-		          }
+					
+					  $output8.='],';
+					  
+				  }
 				}
 			}
 		 $output7.= '</table>';		 
@@ -331,7 +361,10 @@ foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
 		$interface->assign('output7',$output7);
-        $interface->setTemplate('paises.tpl');
+		$interface->assign('output8',$output8);
+		$interface->assign('output9',$output9);
+		
+		$interface->setTemplate('paises.tpl');
         $interface->setPageTitle('Paises Socios');
         $interface->display('layout.tpl');
     }

@@ -1,6 +1,6 @@
 <?php
  $id=$_GET["id"];
-$url2 = 'http://200.0.206.214:8080/solr/biblio/select?q=id:"'.$id.'"&fl=title';
+$url2 = 'http://200.0.206.214:8080/solr/biblio/select?q=oid:"'.$id.'"&fl=title';
 $xml2 = simpleXML_load_file($url2,"SimpleXMLElement",LIBXML_NOCDATA);
 //echo $url2;
 if($xml2 ===  FALSE)
