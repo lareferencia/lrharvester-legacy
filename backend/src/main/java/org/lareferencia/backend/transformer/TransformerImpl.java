@@ -206,7 +206,7 @@ public class TransformerImpl implements ITransformer {
 				
 				try {
 					// Solo aplica la transformación si ese campo no resultó válido
-					if ( validationResult.getFieldResults().get( transformer.getFieldName() ).isValid() )
+					if ( !validationResult.getFieldResults().get( transformer.getFieldName() ).isValid() )
 						transformer.transform(metadata);
 				}
 				catch (Exception e) {

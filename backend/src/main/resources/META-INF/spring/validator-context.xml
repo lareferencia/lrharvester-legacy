@@ -251,7 +251,83 @@
 		</property>
 	</bean>
 	
-	<bean id="transformer" class="org.lareferencia.backend.transformer.TransformerImpl"/>
+	<bean id="transformer" class="org.lareferencia.backend.transformer.TransformerImpl">
+	
+		<property name="fieldTransformers">
+				<list>	
+					<!-- DC:TYPE Driver Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="driverTypeRule" />
+						<property name="translationMap">
+							<map>
+					            <entry key="article" value="info:eu-repo/semantics/article"/>
+								<entry key="artículo de revista" value="info:eu-repo/semantics/article"/>
+								<entry key="Artículo Internacional" value="info:eu-repo/semantics/article"/>
+								<entry key="Artículo revisado por pares" value="info:eu-repo/semantics/article"/>
+								<entry key="artículo" value="info:eu-repo/semantics/article"/>
+								<entry key="articulo" value="info:eu-repo/semantics/article"/>
+								<entry key="artigo" value="info:eu-repo/semantics/article"/>
+								<entry key="dissertação" value="info:eu-repo/semantics/masterThesis"/>
+								<entry key="doctoralThesis" value="info:eu-repo/semantics/doctoralThesis"/>
+								<entry key="informe técnico" value="info:eu-repo/semantics/report"/>
+								<entry key="journal article" value="info:eu-repo/semantics/article"/>
+								<entry key="masterThesis" value="info:eu-repo/semantics/masterThesis"/>
+								<entry key="relátorio técnico" value="info:eu-repo/semantics/report"/>
+								<entry key="tese" value="info:eu-repo/semantics/doctoralThesis"/>
+								<entry key="tesis de doctorado" value="info:eu-repo/semantics/doctoralThesis"/>
+								<entry key="tesis de maestría" value="info:eu-repo/semantics/masterThesis"/>
+								<entry key="tesis de maestria" value="info:eu-repo/semantics/masterThesis"/>
+								<entry key="tesis doctoral" value="info:eu-repo/semantics/doctoralThesis"/>
+								<entry key="trabajo de grado" value="info:eu-repo/semantics/masterThesis"/>
+					        </map> 
+						</property>
+					</bean>
+					
+					<!-- DC:TYPE Status Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="statusTypeRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
+						<property name="translationMap">
+							<map>
+								<entry key="draft" value="info:eu-repo/semantics/draft"/>
+								<entry key="info:eu-repo/semantics/draftVersion" value="info:eu-repo/semantics/draft"/>  
+								<entry key="accepted" value="info:eu-repo/semantics/acceptedVersion"/>
+								<entry key="info:eu-repo/semantics/accepted" value="info:eu-repo/semantics/acceptedVersion"/>
+								<entry key="submitted" value="info:eu-repo/semantics/submittedVersion"/>
+								<entry key="info:eu-repo/semantics/submitted" value="info:eu-repo/semantics/submittedVersion"/>
+								<entry key="published" value="info:eu-repo/semantics/publishedVersion"/>
+								<entry key="info:eu-repo/semantics/published" value="info:eu-repo/semantics/publishedVersion"/>
+								<entry key="updated" value="info:eu-repo/semantics/updatedVersion"/>
+								<entry key="info:eu-repo/semantics/updated" value="info:eu-repo/semantics/updatedVersion"/>
+					        </map> 
+						</property>
+					</bean>
+					
+					<!-- DC:LANGUAGE Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:language" />
+						<property name="validationRule" ref="langRule" />
+						<property name="defaultFieldValue" value="spa"/>
+						<property name="translationMap">
+							<map>
+								<entry key="de" value="deu"/>
+								<entry key="en" value="eng"/>
+								<entry key="en_us" value="eng"/>
+								<entry key="es" value="spa"/>
+								<entry key="esp" value="spa"/>
+								<entry key="fr" value="fra"/>
+								<entry key="fre" value="fra"/>
+								<entry key="it" value="ita"/>
+								<entry key="pt" value="por"/>
+								<entry key="Spanish" value="spa"/>
+					        </map> 
+						</property>
+					</bean>
+				</list>
+		</property>
+	</bean>
 	
     	
 

@@ -14,7 +14,6 @@
 
 	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
 	
-		<context:component-scan base-package="org.lareferencia.backend.transformer" />
 	
 
 </beans>

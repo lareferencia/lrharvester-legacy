@@ -52,7 +52,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		
 		// creacion del campo con el valor por defecto en caso de no haber sido encontrado
 		if ( !found && this.getDefaultFieldValue() != null ) 
-			metadata.addFieldOcurrence( fieldName, defaultFieldValue);
+			metadata.addFieldOcurrence(fieldName, defaultFieldValue);
 	}
 	
 	
