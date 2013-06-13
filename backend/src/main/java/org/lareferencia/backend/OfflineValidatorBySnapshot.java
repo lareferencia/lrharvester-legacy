@@ -129,7 +129,7 @@ public class OfflineValidatorBySnapshot {
 						}	
 						else {	
 							// si no es válido lo transforma
-							transformer.transform(metadata);
+							transformer.transform(metadata, validationResult);
 							
 							// lo vuelve a validar
 							validationResult = validator.validate(metadata);

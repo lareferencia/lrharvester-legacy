@@ -8,7 +8,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 public interface IValidator {
 	
 	public List<FieldValidator> getFieldValidators();
-	public void setFieldValidators( List<FieldValidator> validators);
+	public void setFieldValidators( List<FieldValidator> transformers);
 	public ValidationResult validate(OAIRecordMetadata metadata);
 
 }

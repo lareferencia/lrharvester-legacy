@@ -266,9 +266,11 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
 
 		
-		assertFalse( validator.validate(record).isValid() );		
+		assertFalse( validator.validate(record).isValid() );	
+		System.out.println( validator.validate(record) );	
+
 		
-		transformer.transform(record);
+		transformer.transform(record, validator.validate(record));
 		
 		System.out.println( validator.validate(record) );	
 

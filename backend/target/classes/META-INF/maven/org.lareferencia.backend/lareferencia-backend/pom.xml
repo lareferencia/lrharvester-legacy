@@ -1,55 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>1.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
 	<artifactId>lareferencia-backend</artifactId>
-	<version>1.0.0.CI-SNAPSHOT</version>
+	<version>0.1.M2</version>
 	<packaging>jar</packaging>
 	<name>LaReferencia Backend</name>
 	<url></url>
 	<description>
-		<![CDATA[LaReferencia backend pom.]]>
+		<![CDATA[LaReferencia backend]]>
 	</description>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<spring.framework.version>3.2.0.RELEASE</spring.framework.version>
+		<hibernate.version>4.1.9.Final</hibernate.version>
+		<jackson.version>2.1.4</jackson.version>
+		<spring.data.rest>1.1.0.M1</spring.data.rest>
+		<logback.version>1.0.6</logback.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>			
 	</properties>
-	 
 	<dependencies>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.10.Final</version>
-		</dependency>
+
+		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.1.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>4.1.0.Final</version>
+     		<groupId>org.hibernate</groupId>
+	     	<artifactId>hibernate-entitymanager</artifactId>
+	     	<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.1.Final</version>
 		</dependency>
-        <dependency>
+	    <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.10</version>
             <scope>runtime</scope>
         </dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
 		</dependency>
+    
+	
+		<!--  Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -66,15 +69,45 @@
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.framework.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.framework.version}</version>
-		</dependency>
 		<dependency> 
      		<groupId>org.springframework</groupId> 
      		<artifactId>spring-aspects</artifactId> 
      		<version>${spring.framework.version}</version> 
+		</dependency>
+		
+		
+		<!--  dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.12</version>
+			<scope>runtime</scope>
+		</dependency>
+			<dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.6.12</version>
+        </dependency>
+        <dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-instrument</artifactId> 
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-webmvc</artifactId> 
+			<version>${spring.framework.version}</version>
+		</dependency-->
+		
+		<!-- Spring Data y Data REST -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -82,35 +115,139 @@
 			<version>1.3.0.RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.2.2</version>
-		</dependency>		
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.framework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<version>${spring.data.rest}</version>
+		</dependency>
+		
+		
+		
+		<!-- Web -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		
+		
+		<!-- OCLC Harvester -->
+		<dependency>
+      		<groupId>org.dspace</groupId>
+      		<artifactId>oclc-harvester2</artifactId>
+      		<version>0.1.12</version>
+    	</dependency>
+    	<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		 <dependency>
+	      <groupId>apache-xerces</groupId>
+	      <artifactId>xercesImpl</artifactId>
+	      <version>2.9.1</version>
+    	</dependency>
+		
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>0.11.4</version>
-			<scope>provided</scope>
-		</dependency>
-		<!--  dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency-->
-        <dependency>
+		 <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.4</version>
             <type>jar</type>
             <scope>runtime</scope>
         </dependency>
+        
+        <!-- SolrJ -->
+		<dependency>
+               <artifactId>solr-solrj</artifactId>
+               <groupId>org.apache.solr</groupId>
+               <version>3.6.2</version>
+               <type>jar</type>
+               <scope>compile</scope>
+        </dependency>
+        <dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.2.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpmime</artifactId>
+		    <version>4.2.1</version>
+		</dependency>
+		
+		<!-- Common -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.2.2</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>0.11.4</version>
+			<scope>provided</scope>
+		</dependency>
+        <dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.1</version>
+		</dependency>
+    	<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>2.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.8</version>
+		</dependency>    
 	</dependencies>
 
 	<build>
@@ -119,24 +256,103 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>	
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+       				<encoding>UTF-8</encoding>
 				</configuration>
-			</plugin>		 
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.9.v20130131</version>
+				<configuration>
+	                <systemProperties>                        
+                        <systemProperty>
+                            <name>jetty.port</name>
+                            <value>8090</value>
+                        </systemProperty>                        
+                    </systemProperties>
+        		</configuration>
+		       
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+                    <ignorePackaging>true</ignorePackaging>
+                </configuration>    
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			      <execution>
+			        <id>copy-dependencies</id>
+			        <phase>package</phase>
+			        <goals>
+			          <goal>copy-dependencies</goal>
+			        </goals>
+			        <configuration>
+			          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+			          <overWriteReleases>true</overWriteReleases>
+			          <overWriteSnapshots>true</overWriteSnapshots>
+			          <overWriteIfNewer>true</overWriteIfNewer>
+			        </configuration>
+			      </execution>
+			    </executions>
+			  </plugin>		 
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.1,)
+										</versionRange>
+										<goals>
+											<goal>
+												copy-dependencies
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			
+			</plugins>
+		</pluginManagement>
 	</build>
 
- <!-- 	<pluginRepositories>
-		<pluginRepository>
-			<id>Codehaus</id>
-			<url>http://repository.codehaus.org/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+ 	
 	<repositories>
+	
 		<repository>
 			<id>org.jboss.repository.releases</id>
 			<name>JBoss Maven Release Repository</name>
@@ -145,22 +361,20 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
-	<distributionManagement>
-		<downloadUrl>http://www.springframework.org/download</downloadUrl>
-		<site>
-			<id>staging</id>
-			<url>file:///${user.dir}/target/staging/org.springframework.batch.archetype/${pom.artifactId}</url>
-		</site>
-		<repository>
-			<id>spring-release</id>
-			<name>Spring Release Repository</name>
-			<url>file:///${user.dir}/target/staging/release</url>
+		
+	    <repository>
+        	<id>jboss thirdparty</id>
+       	 	<name>JBoss Thirdparty Uploads</name>
+        	<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+      	</repository>
+      	
+      	<repository>
+			<id>spring-milestone</id>
+			<name>Spring Maven MILESTONE Repository</name>
+			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
-		<snapshotRepository>
-			<id>spring-snapshot</id>
-			<name>Spring Snapshot Repository</name>
-			<url>file:///${user.dir}/target/staging/snapshot</url>
-		</snapshotRepository>
-	</distributionManagement> -->
+    
+		
+	</repositories>
+	
 </project>

@@ -92,7 +92,7 @@ public  class OfflineValidatorByOAIRecordID {
 			System.out.println("\n *********************************** fin validación registro Original\n");
 			
 			if ( !result.isValid() ) {
-				trasnformer.transform(metadata);
+				trasnformer.transform(metadata, result);
 			
 				// Log de la postvalidación
 				result = validator.validate(metadata);		
