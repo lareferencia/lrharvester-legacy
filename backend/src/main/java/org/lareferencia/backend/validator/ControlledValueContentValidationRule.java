@@ -1,5 +1,9 @@
 package org.lareferencia.backend.validator;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,33 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 	public ControlledValueContentValidationRule(List<String> controlledValues) {
 		super();
 		this.controlledValues = controlledValues;
+	}
+	
+	public void setControlledValuesFileName(String filename) {
+		
+	    try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+	    	
+	        StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+
+	        while (line != null) {
+	        	
+	        	this.controlledValues.add(line);
+	        	
+	            line = br.readLine();
+	        }
+	        
+	        br.close();
+	  	  
+	    }
+	    catch  ( FileNotFoundException e ) {
+	    	System.err.println("!!!!!! No se encontró el archivo de valores controlados:" + filename);	   
+	    	e.printStackTrace();
+	    } 
+	    catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public ControlledValueContentValidationRule(List<String> controlledValues, String quantifier) {

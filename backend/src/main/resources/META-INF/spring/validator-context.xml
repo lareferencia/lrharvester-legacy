@@ -18,14 +18,7 @@
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:driver"/>
 		<property name="quantifier" value="1..1" />
-		<property name="controlledValues">
-			<list>
-				<value>info:eu-repo/semantics/article</value>
-				<value>info:eu-repo/semantics/masterThesis</value>
-				<value>info:eu-repo/semantics/doctoralThesis</value>
-				<value>info:eu-repo/semantics/report</value>
-			</list>
-		</property>
+		<property name="controlledValuesFileName" value="validator.datadir/dctype.driver.txt"/>
 	</bean>
 
 	<!-- Status type validator -->	
@@ -33,24 +26,14 @@
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:status"/>
 		<property name="quantifier" value="1..1" />
-		<property name="controlledValues">
-			<list>
-				<value>info:eu-repo/semantics/draft</value>
-				<value>info:eu-repo/semantics/acceptedVersion</value>
-				<value>info:eu-repo/semantics/submittedVersion</value>
-				<value>info:eu-repo/semantics/publishedVersion</value>
-				<value>info:eu-repo/semantics/updatedVersion</value>
-			</list>
-		</property>
+		<property name="controlledValuesFileName" value="validator.datadir/dctype.status.txt"/>
 	</bean>
 	
-	<!-- 3 >= Length >= 3 validator -->
+	<!-- iso639-3 -->
 	<bean id="langRule"
-		class="org.lareferencia.backend.validator.LengthContentValidationRule">
-		<property name="name" value="language:lenght:3"/>
-		<property name="quantifier" value="1..*" />
-		<property name="minLength" value="3"/>
-		<property name="maxLength" value="3"/>
+		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+		<property name="name" value="language:iso639-3"/>
+		<property name="controlledValuesFileName" value="validator.datadir/dclanguage.iso639-3.txt"/>
 	</bean>
 	
 	<bean id="validator" class="org.lareferencia.backend.validator.ValidatorImpl">
@@ -163,14 +146,7 @@
 								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 								<property name="name" value="rights:driver"/>
 								<property name="quantifier" value="1..1" />
-								<property name="controlledValues">
-									<list>
-									  <value>info:eu-repo/semantics/openAccess</value>
-									  <value>info:eu-repo/semantics/embargoedAccess</value>
-									  <value>info:eu-repo/semantics/closedAccess</value>
-									  <value>info:eu-repo/semantics/restrictedAccess</value>
-									</list>
-								</property>
+								<property name="controlledValuesFileName" value="validator.datadir/dcrights.driver.txt"/>
 							</bean>
 						</list>
 					</property>
@@ -234,12 +210,12 @@
 					<property name="mandatory" value="false" />
 					<property name="rules">
 						<list>
-							<!-- Length > 1 validator -->
+							<!-- Controlled Values Formats:mime types -->
 							<bean
-								class="org.lareferencia.backend.validator.LengthContentValidationRule">
-								<property name="name" value="format:not_empty"/>
+								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+								<property name="name" value="format:mime"/>
 								<property name="quantifier" value="1..*" />
-								<property name="minLength" value="1"/>
+								<property name="controlledValuesFileName" value="validator.datadir/dcformat.mime.txt"/>
 							</bean>
 						</list>
 					</property>
