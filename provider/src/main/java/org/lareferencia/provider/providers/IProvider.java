@@ -34,4 +34,5 @@ public interface IProvider
    public Record getRecord(final String identifier, final MetadataFormat metadataFormat) throws CannotDisseminateFormatException, IdDoesNotExistException;
    public String[] getMetadataPrefixes(final String identifier) throws IdDoesNotExistException;
    public List<SetMembership> listSets() throws NoSetHierarchyException;
+   public List<String> listOrigins();
 }

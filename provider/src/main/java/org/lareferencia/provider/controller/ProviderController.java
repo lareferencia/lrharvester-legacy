@@ -226,6 +226,8 @@ public class ProviderController extends MultiActionController implements Message
          {
             if(requestParameters.size() > 1)
                throw new BadArgumentException("No additional arguments are allowed for this verb.");
+            
+            model.put("Origins", provider.listOrigins());
          }
          else if(verb.equals("ListMetadataFormats"))
          {

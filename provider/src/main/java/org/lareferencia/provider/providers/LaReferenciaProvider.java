@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
@@ -224,6 +225,21 @@ public class LaReferenciaProvider implements IProvider
        
       return records;
    }
+   
+	@Override
+	public List<String> listOrigins() {
+		  final List<String> uris = new ArrayList<String>();
+	      
+	      List<NationalNetwork> networks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);
+	          
+	      for (NationalNetwork network:networks) {
+	    	  for (OAIOrigin origin:network.getOrigins()) {   		  
+	    		  uris.add(origin.getUri());
+	    	  }
+	      }
+	  
+	      return uris;
+	}
    /*
    public byte[] getRecordMetadata(final String identifier, final MetadataFormat metadataFormat) throws IdDoesNotExistException
    {
@@ -255,5 +271,7 @@ public class LaReferenciaProvider implements IProvider
 	   return record;
 	   
    }
+
+
    
 }
