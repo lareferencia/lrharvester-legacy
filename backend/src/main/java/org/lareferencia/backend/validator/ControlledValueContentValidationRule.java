@@ -1,9 +1,11 @@
 package org.lareferencia.backend.validator;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 	public void setControlledValuesFileName(String filename) {
 		
 	    try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
 	    	
 	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();

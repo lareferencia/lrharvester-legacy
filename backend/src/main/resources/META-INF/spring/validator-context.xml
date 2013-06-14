@@ -236,7 +236,6 @@
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="driverTypeRule" />
 						<property name="translationMapFileName"  value="validator.datadir/dctype.driver.translation.txt"/>
-							
 					</bean>
 					
 					<!-- DC:TYPE Status Transformer -->

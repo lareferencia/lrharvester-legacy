@@ -1,20 +1,18 @@
 package org.lareferencia.backend.transformer;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
-import org.lareferencia.backend.validator.FieldValidationResult;
 import org.w3c.dom.Node;
 
 public class TranslateContentFieldTransformer extends FieldTransformer {
@@ -30,7 +28,8 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	public void setTranslationMapFileName(String filename) {
 		
 	    try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
+
 	    	
 	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
@@ -45,6 +44,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	        	
 	        	this.translationMap.put( parsedLine[0], parsedLine[1]);
 	        	
+	        	System.out.println("cargado: " + line);
 	            line = br.readLine();
 	            lineNumber++;
 	        }

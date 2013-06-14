@@ -52,6 +52,11 @@ public class NetworkSnapshot extends AbstractEntity {
 	
 	@Getter
 	@Setter
+	@Column(nullable = false)
+	private Integer transformedSize;
+	
+	@Getter
+	@Setter
 	@Column
 	private String resumptionToken;
 	
@@ -71,6 +76,7 @@ public class NetworkSnapshot extends AbstractEntity {
 		startTime = new DateTime().toDate();
 		this.size = 0;
 		this.validSize = 0;
+		this.transformedSize = 0;
 		this.deleted = false;
 	}
 	
@@ -80,6 +86,10 @@ public class NetworkSnapshot extends AbstractEntity {
 	
 	public void incrementValidSize() {
 		validSize++;
+	}
+	
+	public void incrementTransformedSize() {
+		transformedSize++;
 	}
 	
 	@JsonSerialize(using=JsonDateSerializer.class)

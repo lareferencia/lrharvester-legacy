@@ -140,14 +140,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			snapshot.setEndTime( new Date() );
 			snapshotRepository.save(snapshot);
 			
-			// Indexa
-			boolean isSuccesfullyIndexed = indexer.index(snapshot);
-			
-			// Si el indexado es exitoso marca el snap válido
-			if ( isSuccesfullyIndexed )
-				snapshot.setStatus( SnapshotStatus.VALID );
-			else
-				snapshot.setStatus( SnapshotStatus.INDEXING_FINISHED_ERROR );
+			if ( network.isRunIndexing() ) {
+				
+				// Indexa
+				boolean isSuccesfullyIndexed = indexer.index(snapshot);
+				
+				// Si el indexado es exitoso marca el snap válido
+				if ( isSuccesfullyIndexed )
+					snapshot.setStatus( SnapshotStatus.VALID );
+				else
+					snapshot.setStatus( SnapshotStatus.INDEXING_FINISHED_ERROR );
+			}
 		}
 	
 		snapshot.setEndTime( new Date() );
@@ -216,38 +219,39 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						
 						snapshot.incrementSize();
 						
-						// prevalidación
-						ValidationResult validationResult = validator.validate(metadata);
+						if ( network.isRunValidation() ) {
+						
+							// prevalidación
+							ValidationResult validationResult = validator.validate(metadata);
 							
-						if ( validationResult.isValid() ) {
-							// registra si es válido sin necesitad de transformar
-							record.setStatus( RecordStatus.VALID );	
-						}	
-						else {	
 							// si no es válido lo transforma
-							transformer.transform(metadata, validationResult);
-							
-							// lo vuelve a validar
-							validationResult = validator.validate(metadata);
+							if ( !validationResult.isValid() && network.isRunTransformation() ) {
+								snapshot.incrementTransformedSize();
+								transformer.transform(metadata, validationResult);
+								// lo vuelve a validar
+								validationResult = validator.validate(metadata);
+							}
 							
 							// registra si resultó válido o es irrecuperable (inválido)
 							if ( validationResult.isValid() ) {
 								record.setStatus( RecordStatus.VALID );
-							} else {					
+								snapshot.incrementValidSize();
+							} else {
 								record.setStatus( RecordStatus.INVALID );
 							}
-						}
 								
-						// Si resultó valido incrementa la cuenta del snapshot
-						if ( record.getStatus() != RecordStatus.INVALID )
-							snapshot.incrementValidSize();
+							// Se almacena la metadata transformada para los registros válidos
+							if ( validationResult.isValid() ) 
+								record.setPublishedXML( metadata.toString() );
+						} 
 						
-						// Se almacena la metadata transformada para los registros válidos
-						if ( validationResult.isValid() ) 
+						else { // Si no se valida entonces todo puesto para publicación
+							// TODO: Chequear esto
+							record.setStatus( RecordStatus.UNTESTED );
 							record.setPublishedXML( metadata.toString() );
+						}
 						
 						records.add(record);
-						//recordDAO.store(record);
 					}
 					catch (Exception e) {
 						e.printStackTrace();

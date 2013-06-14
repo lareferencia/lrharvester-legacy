@@ -37,7 +37,6 @@ public class NationalNetwork extends AbstractEntity {
 	@JoinColumn(name="schedule_id")
 	private Schedule schedule;
 	
-	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
@@ -47,4 +46,13 @@ public class NationalNetwork extends AbstractEntity {
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
+	
+	@Column(nullable = false)
+	private boolean runIndexing = true;
+	
+	@Column(nullable = false)
+	private boolean runValidation = true;
+	
+	@Column(nullable = false)
+	private boolean runTransformation = true;
 }

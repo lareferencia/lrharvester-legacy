@@ -3,6 +3,7 @@ package org.lareferencia.backend.domain;
 public enum RecordStatus {	
 	INVALID,
 	VALID,
-	UNTESTED
+	UNTESTED,
+	INVALID_DRIVER_TYPE
 }
 

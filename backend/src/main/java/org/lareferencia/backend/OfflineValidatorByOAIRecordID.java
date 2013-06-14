@@ -98,7 +98,7 @@ public  class OfflineValidatorByOAIRecordID {
 				result = validator.validate(metadata);		
 					
 				System.out.println("\n *********************************** registro trasnformado\n");
-				System.out.println(record.getPublishedXML());
+				System.out.println(metadata.toString());
 				System.out.println("\n *********************************** fin - registro trasformado\n");
 				
 				System.out.println("\n *********************************** validación registro trasnformado\n");
