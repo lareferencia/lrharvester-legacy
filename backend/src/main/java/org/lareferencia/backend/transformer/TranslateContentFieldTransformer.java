@@ -1,5 +1,9 @@
 package org.lareferencia.backend.transformer;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +23,46 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	@Getter
 	Map<String,String> translationMap;
 	
-   
+	public TranslateContentFieldTransformer() {
+		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
+	}
+	
+	public void setTranslationMapFileName(String filename) {
+		
+	    try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+	    	
+	        StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+
+	        int lineNumber = 1;
+	        while (line != null) {
+	        	
+	        	String[] parsedLine = line.split("\\t"); 
+	        	
+	        	if ( parsedLine.length != 2)
+	        		throw new Exception("Formato de archivo " + filename + " incorrecto!! linea: " + lineNumber);
+	        	
+	        	this.translationMap.put( parsedLine[0], parsedLine[1]);
+	        	
+	            line = br.readLine();
+	            lineNumber++;
+	        }
+	        
+	        br.close();
+	  	  
+	    }
+	    catch  ( FileNotFoundException e ) {
+	    	System.err.println("!!!!!! No se encontró el archivo de valores controlados:" + filename);	   
+	    	e.printStackTrace();
+	    } 
+	    catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println( e.getMessage() );
+		}
+	}
+	
 	@Override
 	void transform(OAIRecordMetadata metadata) {
 		
