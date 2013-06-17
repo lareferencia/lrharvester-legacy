@@ -13,19 +13,20 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 public class ValidatorImpl implements IValidator {
 	
 	List<FieldValidator> fieldValidators;
+	List<FieldValidator> belongsToCollectionFieldValidators;
 	
 	public ValidatorImpl() {
 		super();
 		fieldValidators = new ArrayList<FieldValidator>();
+		belongsToCollectionFieldValidators = new ArrayList<FieldValidator>();
 	}
 	
-	@Override
-	public ValidationResult validate(OAIRecordMetadata metadata) {
+	private ValidationResult validate(OAIRecordMetadata metadata, List<FieldValidator> validators) {
 	
 		ValidationResult result = new ValidationResult();
 		boolean isRecordValid = true;
 		
-		for (FieldValidator validator:fieldValidators) {
+		for (FieldValidator validator:validators) {
 			
 			String fieldName = validator.getFieldName();
 			
@@ -38,6 +39,16 @@ public class ValidatorImpl implements IValidator {
 		result.setValid(isRecordValid);
 		
 		return result;
+	}
+	
+	@Override
+	public ValidationResult testIfBelongsToCollection(OAIRecordMetadata metadata) {
+		return validate(metadata, belongsToCollectionFieldValidators);
+	}
+	
+	@Override
+	public ValidationResult validate(OAIRecordMetadata metadata) {
+		return validate(metadata, fieldValidators);
 	}
 
 }

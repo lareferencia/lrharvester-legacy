@@ -37,6 +37,24 @@
 	</bean>
 	
 	<bean id="validator" class="org.lareferencia.backend.validator.ValidatorImpl">
+	
+	    <!-- Esta propiedad se usa para validar si es un registro de tipo válido LaReferencia  -->
+		<property name="belongsToCollectionFieldValidators">
+			<list>
+				<bean class="org.lareferencia.backend.validator.FieldValidator">
+					<property name="fieldName" value="dc:type" />
+					<property name="mandatory" value="true" />
+					<property name="rules">
+						<list>
+							<ref bean="driverTypeRule" /> <!-- NOTAR QUE SOLO SE USA LA VALIDACIÓN POR TIPO DRIVER -->
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	
+	
+	    <!-- Este propidad se usa para validar en forma completa cada un de los campos según los criterios LaReferencia  -->
 		<property name="fieldValidators">
 			<list>
 

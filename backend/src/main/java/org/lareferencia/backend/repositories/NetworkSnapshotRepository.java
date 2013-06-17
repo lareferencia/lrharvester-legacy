@@ -14,4 +14,7 @@ public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot
 	  NetworkSnapshot findLastGoodKnowByNetworkID(Long networkID);
 	  
 	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(NationalNetwork network, SnapshotStatus status);
+	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(NationalNetwork network);
+
+	  
 }

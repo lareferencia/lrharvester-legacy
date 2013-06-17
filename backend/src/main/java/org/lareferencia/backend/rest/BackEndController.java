@@ -180,6 +180,37 @@ public class BackEndController {
 		return response;
 	}
 	
+	@RequestMapping(value="/public/lastGoodKnowSnapshotByCountryISO/{iso}", method=RequestMethod.GET)
+	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String iso) throws Exception {
+		
+		NationalNetwork network = nationalNetworkRepository.findByCountryISO(iso);
+		if ( network == null ) // TODO: Implementar Exc
+			throw new Exception("No se encontró RED perteneciente a: " + iso);
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot válido de la RED: " + iso);
+		
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
+			snapshot,
+			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
+		);
+		return response;
+	}
+	
+	@RequestMapping(value="/public/listSnapshotsByCountryISO/{iso}", method=RequestMethod.GET)
+	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByCountryISO(@PathVariable String iso) throws Exception {
+		
+		NationalNetwork network = nationalNetworkRepository.findByCountryISO(iso);
+		if ( network == null )
+			throw new Exception("No se encontró RED perteneciente a: " + iso);
+		
+		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(networkSnapshotRepository.findByNetworkOrderByEndTimeAsc(network), HttpStatus.OK);
+		
+		return response;
+	}
+	
+	
 	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 		
@@ -230,6 +261,7 @@ public class BackEndController {
 		
 		return response;
 	}
+	
 	
 	
 	

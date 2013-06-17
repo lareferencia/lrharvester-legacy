@@ -243,6 +243,13 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							// Se almacena la metadata transformada para los registros válidos
 							if ( validationResult.isValid() ) 
 								record.setPublishedXML( metadata.toString() );
+							
+							///////// Test de pertenencia a la colección del registro final
+							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
+							
+							record.setBelongsToCollection( btcValidationResult.isValid() );
+							record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
+							
 						} 
 						
 						else { // Si no se valida entonces todo puesto para publicación
@@ -252,21 +259,20 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						}
 						
 						records.add(record);
+						recordRepository.save(records);
+						recordRepository.flush();
+
+
 					}
 					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-				
-				recordRepository.save(records);
-
-				
+			
 				snapshot.setStatus( SnapshotStatus.HARVESTING );
 				snapshot.setEndTime( new Date() );
 				snapshot.setResumptionToken( event.getResumptionToken() );
 				snapshotRepository.save(snapshot);
-				
-				recordRepository.flush();
 				snapshotRepository.flush();
 								                       
 				//System.out.println( network.getName() + ":" + snapshot.getSize() );
