@@ -102,6 +102,37 @@ public class BackEndController {
 	}
 	
 	@Transactional
+	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {
+		
+		NationalNetwork network = nationalNetworkRepository.findOne(id);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		
+		NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
+		
+		if ( lgkSnapshot != null) {
+		
+			for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
+				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() ) {
+					// borra los registros
+					recordRepository.deleteBySnapshotID(snapshot.getId());
+					// lo marca borrado
+					snapshot.setDeleted(true);
+					// almacena el estado del snap
+					networkSnapshotRepository.save(snapshot);
+				}
+			}
+		}
+		else
+			throw new Exception("No se encontró LGK Snapshot para esa red, no se realizaron cambios");
+
+		
+		return new ResponseEntity<String>("Borrados snapshots excedentes de:" + network.getName(), HttpStatus.OK);
+	}
+	
+	@Transactional
 	@RequestMapping(value="/private/deleteRecordsBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Map<String,String>> deleteRecordsBySnapshotID(@PathVariable Long id) {
 		
@@ -151,19 +182,7 @@ public class BackEndController {
 		
 		return response;
 	}
-	
-	
-	
-	@RequestMapping(value="/network/{id}", method=RequestMethod.GET)
-	public ResponseEntity<NationalNetwork> getNetwork(@PathVariable Long id) {
-			
-		NationalNetwork network = nationalNetworkRepository.findOne(id);
-		ResponseEntity<NationalNetwork> response = new ResponseEntity<NationalNetwork>(
-			network,
-			network == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
-		);
-		return response;
-	}
+
 	
 	
 	

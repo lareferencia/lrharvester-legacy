@@ -99,8 +99,8 @@ public class IndexerImpl implements IIndexer{
 				trf.setParameter("country_iso", countryISO);
 				trf.setParameter("country", snapshot.getNetwork().getName() );
 				
-				page = recordRepository.findBySnapshotIdAndStatusLimited(snapshot.getId(), RecordStatus.VALID, lastId, new PageRequest(0, PAGE_SIZE) );
-				//page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, );
+				//page = recordRepository.findBySnapshotIdAndStatusLimited(snapshot.getId(), RecordStatus.VALID, lastId, new PageRequest(0, PAGE_SIZE) );
+				page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
 								
@@ -127,7 +127,7 @@ public class IndexerImpl implements IIndexer{
 					strBuf.append(stringWritter.toString());
 					
 					// Se actualiza el lastID para permitir la paginación con offset 0
-					lastId = records.get( records.size()-1 ).getId();
+					//lastId = records.get( records.size()-1 ).getId();
 
 				}
 				
