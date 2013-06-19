@@ -2,6 +2,7 @@ package org.lareferencia.backend;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
@@ -12,7 +13,6 @@ import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.repositories.InvalidOccurrenceLogRepository;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
@@ -44,10 +44,6 @@ public class OfflineValidatorBySnapshot {
 	@Autowired
 	public NetworkSnapshotRepository snapshotRepository;
 		
-	
-	@Autowired
-	public InvalidOccurrenceLogRepository rlogRepository;
-	
 
 	public OfflineValidatorBySnapshot() {
 
@@ -88,7 +84,7 @@ public class OfflineValidatorBySnapshot {
 			NationalNetwork network = snapshot.getNetwork();
 			
 			System.out.println("Borrando registro de casos de rechazo por campo del snapshot: " + snapshot.getId());
-			m.rlogRepository.delete( m.rlogRepository.findBySnapID(snapshot.getId()) );
+			//m.rlogRepository.delete( m.rlogRepository.findBySnapID(snapshot.getId()) );
 
 			
 			Map<Long,NetworkSnapshot> snapshotByID = new HashMap<Long, NetworkSnapshot>();
@@ -182,7 +178,6 @@ public class OfflineValidatorBySnapshot {
 				m.recordRepository.flush();
 			}
 			
-			m.rlogRepository.flush();
 			System.out.print( stats.toString() );
 
 		}

@@ -23,7 +23,6 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
-import org.lareferencia.backend.repositories.OAIRecordDAO;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
@@ -49,8 +48,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private OAIRecordRepository recordRepository;
 	
-	@Autowired
-	private OAIRecordDAO recordDAO;
 	
 	private IHarvester harvester;
 	
@@ -245,10 +242,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setPublishedXML( metadata.toString() );
 							
 							///////// Test de pertenencia a la colección del registro final
-							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
-							
-							record.setBelongsToCollection( btcValidationResult.isValid() );
-							record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
+							//ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
+							//record.setBelongsToCollection( btcValidationResult.isValid() );
+							//record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
 							
 						} 
 						

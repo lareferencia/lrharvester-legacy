@@ -5,6 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.MessageDigest;
+import java.util.List;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -88,6 +89,9 @@ public class IndexerImpl implements IIndexer{
 			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
+			
+			Long lastId = -1L; // Aquí se guarda el ultimo id de cada página para ser usado en el la query optimizada
+			
 
 			for (int i = 0; i < totalPages; i++) {
 							
@@ -95,13 +99,17 @@ public class IndexerImpl implements IIndexer{
 				trf.setParameter("country_iso", countryISO);
 				trf.setParameter("country", snapshot.getNetwork().getName() );
 				
-				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE));
+				page = recordRepository.findBySnapshotIdAndStatusLimited(snapshot.getId(), RecordStatus.VALID, lastId, new PageRequest(0, PAGE_SIZE) );
+				//page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, );
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
 								
 				StringBuffer strBuf = new StringBuffer();
 				
-				for (OAIRecord record : page.getContent()) {
+				List<OAIRecord> records = page.getContent();
+
+				
+				for (OAIRecord record : records) {
 					
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 					StringWriter stringWritter = new StringWriter();
@@ -109,16 +117,18 @@ public class IndexerImpl implements IIndexer{
 								
 					// id unico pero mutable para solr
 					trf.setParameter("solr_id", countryISO + "_" + snapshot.getId().toString() + "_" + record.getId().toString()  );
-					
 					// id permantente para vufind
 					trf.setParameter("vufind_id", countryISO + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
-					
 					// header id para staff
 					trf.setParameter("header_id", record.getIdentifier() );
 					
+					// Se transforma y genera el string del registro
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
-				
 					strBuf.append(stringWritter.toString());
+					
+					// Se actualiza el lastID para permitir la paginación con offset 0
+					lastId = records.get( records.size()-1 ).getId();
+
 				}
 				
 				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
