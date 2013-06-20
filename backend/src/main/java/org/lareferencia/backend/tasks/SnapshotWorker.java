@@ -137,7 +137,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			snapshot.setEndTime( new Date() );
 			snapshotRepository.save(snapshot);
 			
-			if ( network.isRunIndexing() ) {
+			
+			// Si está publicada la red y es una red que se indexa
+			if ( network.isRunIndexing() && network.isPublished() ) {
 				
 				// Indexa
 				boolean isSuccesfullyIndexed = indexer.index(snapshot);
@@ -147,7 +149,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					snapshot.setStatus( SnapshotStatus.VALID );
 				else
 					snapshot.setStatus( SnapshotStatus.INDEXING_FINISHED_ERROR );
+			} 
+			else {
+				// si no está publicada o no se indexa la marca como válida sin indexar
+				snapshot.setStatus( SnapshotStatus.VALID );
 			}
+				
 		}
 	
 		snapshot.setEndTime( new Date() );
@@ -223,8 +230,11 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							// si no es válido lo transforma
 							if ( !validationResult.isValid() && network.isRunTransformation() ) {
-								snapshot.incrementTransformedSize();
-								transformer.transform(metadata, validationResult);
+								
+								// transforma y si hubo transformación la registra
+								if ( transformer.transform(metadata, validationResult) )
+									snapshot.incrementTransformedSize();
+								
 								// lo vuelve a validar
 								validationResult = validator.validate(metadata);
 							}
@@ -242,9 +252,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setPublishedXML( metadata.toString() );
 							
 							///////// Test de pertenencia a la colección del registro final
-							//ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
-							//record.setBelongsToCollection( btcValidationResult.isValid() );
-							//record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
+							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
+							record.setBelongsToCollection( btcValidationResult.isValid() );
+							record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
 							
 						} 
 						

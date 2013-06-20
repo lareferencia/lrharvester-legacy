@@ -87,7 +87,7 @@ public class IndexerImpl implements IIndexer{
 			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
 			
 			// Update de los registros de a PAGE_SIZE
-			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
+			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 			
 			Long lastId = -1L; // Aquí se guarda el ultimo id de cada página para ser usado en el la query optimizada

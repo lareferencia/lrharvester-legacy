@@ -64,7 +64,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	}
 	
 	@Override
-	void transform(OAIRecordMetadata metadata) {
+	public boolean transform(OAIRecordMetadata metadata) {
 		
 		ContentValidationResult result;
 		boolean found = false;
@@ -93,9 +93,11 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 				}	
 			}
 		
-		// creacion del campo con el valor por defecto en caso de no haber sido encontrado
+		// creación del campo con el valor por defecto en caso de no haber sido encontrado, solo cuando hay valor por defecto declarado
 		if ( !found && this.getDefaultFieldValue() != null ) 
 			metadata.addFieldOcurrence(fieldName, defaultFieldValue);
+		
+		return !found;
 	}
 	
 	

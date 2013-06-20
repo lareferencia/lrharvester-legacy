@@ -24,5 +24,10 @@ public abstract class FieldTransformer {
 		options = new HashMap<String, String>();
 	}
 
-	abstract void transform(OAIRecordMetadata metadata);
+	/**
+	 * 
+	 * @param metadata
+	 * @return Retorna true si fue necesario aplicar una transformación
+	 */
+	abstract boolean transform(OAIRecordMetadata metadata);
 }
