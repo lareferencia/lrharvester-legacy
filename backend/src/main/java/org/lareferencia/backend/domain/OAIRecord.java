@@ -16,11 +16,14 @@ import lombok.Setter;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * 
  */
 @Entity
 @Getter @Setter
+@JsonIgnoreProperties({"publishedXML","originalXML","snapshot","datestamp"})
 public class OAIRecord extends AbstractEntity {
 	
 	@Column(nullable = false)

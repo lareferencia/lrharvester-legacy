@@ -1,56 +1,29 @@
-/*
-* Derived from code included in the Fedora Repository System:
-*
-* <p>Copyright &copy; 2008 Fedora Commons, Inc.<br />
-* <p>Copyright &copy; 2002-2007 The Rector and Visitors of the University of 
-* Virginia and Cornell University<br /> 
-* All rights reserved.</p>
-* 
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/ 
 
 package org.lareferencia.provider.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.lareferencia.backend.stats.ProviderStatsManager;
 import org.lareferencia.provider.domain.MetadataFormat;
 import org.lareferencia.provider.domain.Record;
-import org.lareferencia.provider.domain.SetMembership;
 import org.lareferencia.provider.exceptions.BadArgumentException;
-import org.lareferencia.provider.exceptions.BadResumptionTokenException;
-import org.lareferencia.provider.exceptions.BadVerbException;
 import org.lareferencia.provider.exceptions.CannotDisseminateFormatException;
 import org.lareferencia.provider.exceptions.NoMetadataFormatsException;
 import org.lareferencia.provider.exceptions.ProtocolException;
 import org.lareferencia.provider.exceptions.ServerException;
 import org.lareferencia.provider.providers.IProvider;
 import org.lareferencia.provider.providers.StateHolder;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -60,7 +33,10 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class ProviderController extends MultiActionController implements MessageSourceAware
 {
-   private final Log log = LogFactory.getLog(getClass());
+   //private final Log log = LogFactory.getLog(getClass());
+	
+   @Autowired	
+   private ProviderStatsManager statsManager;	 
 
    private MessageSource messages = null;
    private IProvider provider = null;
@@ -127,6 +103,9 @@ public class ProviderController extends MultiActionController implements Message
 
       // Debugging.
       response.setContentType("text/xml; charset=UTF-8");
+      
+      // registro de la ip para estadísticas
+      statsManager.countIPAccess( request.getRemoteAddr() );
 
       // The OAI protocol includes the original HTTP request.
 		final String requestURL = request.getRequestURL().toString();
@@ -181,7 +160,7 @@ public class ProviderController extends MultiActionController implements Message
          else if(verb.equals("ListRecords") || verb.equals("ListIdentifiers"))	 
          {
         	 
-        	 log.info("ListRecords/ListIdentifiers Request / RT: " + arguments.getResumptionToken());
+        	 //log.info("ListRecords/ListIdentifiers Request / RT: " + arguments.getResumptionToken());
         	 System.out.println("ListRecords/ListIdentifiers Request / RT: " + arguments.getResumptionToken());
         	 
             // Check unsupported arguments.
@@ -270,7 +249,7 @@ public class ProviderController extends MultiActionController implements Message
       catch(ProtocolException e)
       {
     	  
-    	 log.warn("Protocol error", e);
+    	 //log.warn("Protocol error", e);
  
          model.put("ErrorCode", e.getCode());
          model.put("ErrorMessage", e.getMessage());
@@ -281,24 +260,24 @@ public class ProviderController extends MultiActionController implements Message
       {
          try
          {
-            log.warn("OAI Service Error: " + e.getMessage(), e);
+            //log.warn("OAI Service Error: " + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "OAI Service Error: " + e.getMessage());
          }
          catch(IOException ioe)
          {
-            log.warn("Could not send error to client", ioe);
+            //log.warn("Could not send error to client", ioe);
          }
       }
       catch(Throwable th)
       {
          try
          {
-            log.warn("Unexpected Error", th);
+            //log.warn("Unexpected Error", th);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error");
          }
          catch(IOException ioe)
          {
-            log.warn("Could not send error to client", ioe);
+            //log.warn("Could not send error to client", ioe);
          }
       }
 

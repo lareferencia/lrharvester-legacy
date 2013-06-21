@@ -52,6 +52,7 @@
        /WEB-INF/application-servlet.xml
        /WEB-INF/application-controllers.xml
        /WEB-INF/application-views.xml
+       
      </param-value>
   </context-param>
 

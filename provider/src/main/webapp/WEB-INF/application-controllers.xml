@@ -10,6 +10,8 @@
          </props>
       </property>
    </bean>
+   
+   <bean id="providerStatsManager" class="org.lareferencia.backend.stats.ProviderStatsManager"/>
 
    <bean id="oaiController" autowire="byName" class="org.lareferencia.provider.controller.ProviderController">
       <property name="metadataFormats">

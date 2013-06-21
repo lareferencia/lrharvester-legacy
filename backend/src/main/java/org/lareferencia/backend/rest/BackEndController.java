@@ -13,13 +13,16 @@ import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
+import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
@@ -29,6 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,6 +43,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -47,6 +55,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class BackEndController {
 	
 	
+	private static final int STATS_PAGE_SIZE = 100;
+
 	@Autowired 
 	private ApplicationContext applicationContext;
 	
@@ -59,6 +69,9 @@ public class BackEndController {
 	@Autowired
 	private OAIRecordRepository recordRepository;
 	
+	@Autowired 
+	private OAIProviderStatRepository oaiProviderStatRepository;
+	
 	@Autowired
 	IIndexer indexer;
 	
@@ -66,7 +79,7 @@ public class BackEndController {
 	IValidator validator;
 
 	
-	private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
+	//private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
 	//private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -76,7 +89,7 @@ public class BackEndController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+		//logger.info("Welcome home! The client locale is {}.", locale);
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -85,7 +98,7 @@ public class BackEndController {
 		
 		model.addAttribute("serverTime", formattedDate );
 		
-		return "home";
+		return "";
 	}
 	
 	
@@ -183,9 +196,6 @@ public class BackEndController {
 		return response;
 	}
 
-	
-	
-	
 	/**************************** FrontEnd ************************************/
 	
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
@@ -281,7 +291,38 @@ public class BackEndController {
 		return response;
 	}
 	
+	@RequestMapping(value="/public/listProviderStats", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIProviderStat> listProviderStats(@RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
+		
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIProviderStat> pageResult = oaiProviderStatRepository.findAll( new PageRequest(page, size, new Sort(Sort.Direction.DESC,"requestCount")));	
+		
+		return new PageResource<OAIProviderStat>(pageResult,"page","size");
+	}
 	
+	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listInvalidRecordsInfoBySnapshotID(@PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.INVALID, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
 	
 	
 	/**************  Clases de retorno de resultados *******************/
@@ -308,6 +349,17 @@ public class BackEndController {
 		private String country;
 		private List<NetworkSnapshot> validSnapshots;
 	}
+	
+	@Getter
+	@Setter
+	class OAIRecordValidationInfo {	
+		private Long   id;
+		private String originalHeaderId;
+		private boolean isValid;
+		private boolean isDriverType;
+		private String  dcTypeFieldContents;
+	}
+	
 	
 	
 }

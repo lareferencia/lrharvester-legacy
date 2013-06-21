@@ -20,6 +20,7 @@ public class StateHolder
    List<Integer> totalPagesList;
    Integer actualSnapshotIndex;
    Integer actualPage;
+   Long lastRecordId;
    
    boolean finished = false;
 
