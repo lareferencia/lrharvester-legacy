@@ -33,7 +33,7 @@ vufindString.bookbagStatusFull = "{translate text="bookbag_full"}";
   <div class="toolbar">
     <ul>
       <li><a href="{$url}/Record/{$id|escape:"url"}/Cite" class="citeRecord cite" id="citeRecord{$id|escape}" title="{translate text="Cite this"}">{translate text="Cite this"}</a></li>
-      <li><a href="{$url}/Record/{$id|escape:"url"}/Email" class="mailRecord mail" id="mailRecord{$id|escape}" title="{translate text="Email this"}">{translate text="Email this"}</a></li>
+      <li><div {if !$user} class="hide"{/if}><a href="{$url}/Record/{$id|escape:"url"}/Email" class="mailRecord mail" id="mailRecord{$id|escape}" title="{translate text="Email this"}">{translate text="Email this"}</a></div></li>
       {if is_array($exportFormats) && count($exportFormats) > 0}
       <li>
         <a href="{$url}/Record/{$id|escape:"url"}/Export?style={$exportFormats.0|escape:"url"}" class="export exportMenu">{translate text="Export Record"}</a>
@@ -127,20 +127,22 @@ vufindString.bookbagStatusFull = "{translate text="bookbag_full"}";
   
   <div id="tabnav">
     <ul>
+	   <li{if $tab == 'Description'} class="active"{/if}>
+        <a href="{$url}/Record/{$id|escape:"url"}/Description#tabnav">{translate text='Description'}</a>
+      </li>
       <li{if $tab == 'Holdings' || $tab == 'Hold'} class="active"{/if}>
         <a href="{$url}/Record/{$id|escape:"url"}/Holdings#tabnav">{translate text='Holdings'}</a>
-      </li>
-      <li{if $tab == 'Description'} class="active"{/if}>
-        <a href="{$url}/Record/{$id|escape:"url"}/Description#tabnav">{translate text='Description'}</a>
       </li>
       {if $hasTOC}
       <li{if $tab == 'TOC'} class="active"{/if}>
         <a href="{$url}/Record/{$id|escape:"url"}/TOC#tabnav">{translate text='Table of Contents'}</a>
       </li>
       {/if}
-      <li{if $tab == 'UserComments'} class="active"{/if}>
-        <a href="{$url}/Record/{$id|escape:"url"}/UserComments#tabnav">{translate text='Comments'}</a>
-      </li>
+	  <li{if $tab == 'UserComments'} class="active"{/if}>
+		  <div {if !$user} class="hide"{/if}>
+			<a href="{$url}/Record/{$id|escape:"url"}/UserComments#tabnav">{translate text='Comments'}</a>
+			</div>
+		  </li>
       {if $hasReviews}
       <li{if $tab == 'Reviews'} class="active"{/if}>
         <a href="{$url}/Record/{$id|escape:"url"}/Reviews#tabnav">{translate text='Reviews'}</a>
@@ -156,9 +158,9 @@ vufindString.bookbagStatusFull = "{translate text="bookbag_full"}";
           <a href="{$url}/Record/{$id|escape:"url"}/Map#tabnav" class="first"><span></span>{translate text='Map View'}</a>
         </li>
       {/if}
-      <li{if $tab == 'Details'} class="active"{/if}>
-        <a href="{$url}/Record/{$id|escape:"url"}/Details#tabnav">{translate text='Staff View'}</a>
-      </li>
+		  <li{if $tab == 'Details'} class="active"{/if}><div {if !$user} class="hide"{/if}>
+			<a href="{$url}/Record/{$id|escape:"url"}/Details#tabnav">{translate text='Staff View'}</a>
+		   </div></li>
     </ul>
     <div class="clear"></div>
     </div>

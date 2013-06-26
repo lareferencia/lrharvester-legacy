@@ -124,7 +124,8 @@ class CitationBuilder
             'authors' => $this->_getAPAAuthors(),
             'publisher' => $this->_getPublisher(),
             'year' => $this->_getYear(),
-            'edition' => $this->_getEdition()
+            'edition' => $this->_getEdition(),
+			'url'=> $this->_getURL()
         );
         // Show a period after the title if it does not already have punctuation
         // and is not followed by an edition statement:

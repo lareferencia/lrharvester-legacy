@@ -164,16 +164,20 @@
     <tr valign="top">
       <th>{translate text='Tags'}: </th>
       <td>
+	  <div {if !$user} class="hide"{/if}>	
         <span style="float:right;">
           <a href="{$url}/Record/{$id|escape:"url"}/AddTag" class="tool add tagRecord" title="{translate text='Add Tag'}" id="tagRecord{$id|escape}">{translate text='Add Tag'}</a>
         </span>
+		</div>
         <div id="tagList">
           {if $tagList}
             {foreach from=$tagList item=tag name=tagLoop}
           <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape:"html"}</a> ({$tag->cnt}){if !$smarty.foreach.tagLoop.last}, {/if}
             {/foreach}
           {else}
+		  <div {if !$user} class="hide"{/if}>	
             {translate text='No Tags'}, {translate text='Be the first to tag this record'}!
+		</div>
           {/if}
         </div>
       </td>

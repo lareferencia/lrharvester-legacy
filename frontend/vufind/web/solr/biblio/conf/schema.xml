@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <schema name="VuFind Bibliographic Index" version="1.2">
   <types>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
@@ -82,7 +82,7 @@
         <tokenizer class="solr.PatternTokenizerFactory" pattern="^(\S*)\s*.*$" group="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.PatternReplaceFilterFactory" pattern="[^0-9x]" replacement="" replace="all"/>
-        <filter class="solr.LengthFilterFactory" min="1" max="100" />
+        <filter class="solr.LengthFilterFactory" min="1" max="100"/>
       </analyzer>
     </fieldType>
     <fieldType name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
@@ -127,14 +127,16 @@
    <field name="edition" type="string" indexed="true" stored="true"/>
    <field name="description" type="text" indexed="true" stored="true"/>
    <field name="contents" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="url" type="string" indexed="false" stored="true" multiValued="true"/>
+      <!-- CAMBIOS LAREFERENCIA AR JUN19 -->
+   <field name="url" type="string" indexed="true" stored="true" multiValued="true"/>
+   
    <field name="thumbnail" type="string" indexed="false" stored="true"/>
    <!-- Catalog Specific Fields -->
    <field name="lccn" type="string" indexed="true" stored="true"/>
    <field name="ctrlnum" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="isbn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="issn" type="isn" indexed="true" stored="true" multiValued="true"/>
-   <field name="oclc_num" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="oclc_num" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="callnumber" type="string" indexed="true" stored="true"/>
    <field name="callnumber-a" type="string" indexed="true" stored="true"/>
    <field name="callnumber-first" type="string" indexed="true" stored="true"/>
@@ -146,12 +148,12 @@
    <field name="dewey-tens" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="dewey-sort" type="string" indexed="true" stored="true" />
-   <field name="dewey-raw" type="string" indexed="true" stored="true" />
+   <field name="dewey-sort" type="string" indexed="true" stored="true"/>
+   <field name="dewey-raw" type="string" indexed="true" stored="true"/>
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author_fuller" type="textProper" indexed="true" stored="true" />
+   <field name="author_fuller" type="textProper" indexed="true" stored="true"/>
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_additionalStr" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="title_alt" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -173,14 +175,20 @@
    <field name="era_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
    <field name="illustrated" type="string" indexed="true" stored="true" multiValued="false"/>
    <field name="long_lat" type="textFacet" indexed="true" stored="true" multiValued="false"/>
+
    <!-- CAMBIOS LAREFERENCIA AR ABR25 -->
+   <!-- CAMBIOS LAREFERENCIA AR JUN19 -->
    <field name="type" type="string" indexed="true" stored="true"/>
-   <field name="status" type="string" indexed="false" stored="true"/>
-      <field name="rights" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="status" type="string" indexed="true" stored="true"/>
+   
+   <field name="rights" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="eu_rights" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="identifier" type="string" indexed="true" stored="true" multiValued="true"/>  
+
    <field name="country" type="string" indexed="true" stored="true"/>
    <field name="country_iso" type="string" indexed="true" stored="true"/>
-   <field name="identifier" type="string" indexed="false" stored="true" multiValued="true"/>
-   <field name="eu_rights" type="string" indexed="false" stored="true"/>
+
+
    <field name="instname" type="string" indexed="true" stored="true"/>
    <field name="reponame" type="string" indexed="true" stored="true"/>
 
@@ -209,11 +217,11 @@
  <!-- ** Basic, single word spelling -->
  <copyField source="allfields" dest="spelling"/>
  <!-- ** Complex, Shingle spelling -->
- <copyField source="author"   dest="spellingShingle"/>
- <copyField source="title"    dest="spellingShingle"/>
+ <copyField source="author" dest="spellingShingle"/>
+ <copyField source="title" dest="spellingShingle"/>
  <copyField source="contents" dest="spellingShingle"/>
- <copyField source="series"   dest="spellingShingle"/>
- <copyField source="topic"    dest="spellingShingle"/>
+ <copyField source="series" dest="spellingShingle"/>
+ <copyField source="topic" dest="spellingShingle"/>
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
@@ -225,9 +233,9 @@
  <copyField source="allfields" dest="allfields_unstemmed"/>
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
  <!-- CopyFields for Alphabetic Browse -->
- <copyField source="topic"    dest="topic_browse"/>
- <copyField source="author"    dest="author_browse"/>
- <copyField source="author2"    dest="author_browse"/>
+ <copyField source="topic" dest="topic_browse"/>
+ <copyField source="author" dest="author_browse"/>
+ <copyField source="author2" dest="author_browse"/>
  <!-- Default Boolean Operator -->
  <solrQueryParser defaultOperator="AND"/>
 </schema>

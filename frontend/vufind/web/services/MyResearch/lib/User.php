@@ -63,7 +63,7 @@ class User extends DB_DataObject
     public $created;                         // datetime(19)  not_null binary
     public $laref_country;                    // string(2)
     public $laref_institution;                 // string(50)
-
+    public $admin_country;                    // string(2)
 	
     /* Static get */
     function staticGet($k,$v=NULL) { return DB_DataObject::staticGet('User',$k,$v); }
@@ -83,7 +83,7 @@ class User extends DB_DataObject
     {
         return array(
             'id', 'username', 'password', 'cat_username', 'cat_password',
-            'firstname', 'lastname', 'email', 'college', 'home_library', 'major','laref_country','laref_institution'
+            'firstname', 'lastname', 'email', 'college', 'home_library', 'major','laref_country','laref_institution','admin_country'
         );
     }
 

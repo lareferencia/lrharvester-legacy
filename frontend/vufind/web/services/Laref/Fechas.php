@@ -30,6 +30,7 @@ class Fechas extends Action
 	$output3="";	
 	$output4="";	
 	$output9="";
+	$output10="";
 
 $url9 = $vbiblio.'/biblio/select?facet=true&facet.field=publishDate&fl=publishDate&q=publishDate'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
 $xml9 = simpleXML_load_file($url9,"SimpleXMLElement",LIBXML_NOCDATA);
@@ -48,9 +49,11 @@ else
 $output9.='var d1 = [';
   $first=true;
   $cuenta=0;
+  
 foreach ($xml9->xpath("//lst[@name='publishDate']/int") as $date) 
     {
       $cuenta++;
+	  $output10.='<a href="http://200.0.206.214/vufind/Search/Results?join=AND&bool0[]=AND&lookfor0[]=&type0[]=AllFields&lookfor0[]=&type0[]=AllFields&lookfor0[]=&type0[]=AllFields&submit=Buscar&daterange[]=publishDate&publishDatefrom='.$date['name'].'&publishDateto='.$date['name'].'">'.$date['name'].'</a>('.$date.') ';
     if ($cuenta>50)
     {
 
@@ -303,6 +306,7 @@ else
 		$interface->assign('output2',$output2);
 		$interface->assign('output4',$output4);
 		$interface->assign('output9',$output9);
+		$interface->assign('output10',$output10);
         $interface->setTemplate('fechas.tpl');
         $interface->setPageTitle('Fechas');
         $interface->display('layout.tpl');

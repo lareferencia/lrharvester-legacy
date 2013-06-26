@@ -1,3 +1,7 @@
+<h1 class="span-10">Impacto</h1> 
+<div class="clear"></div>
+<h2 class="span-10">Impacto por Pa&iacute;s Visitante</h2> 
+<br/><br/>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
     <script type='text/javascript'>
 	{literal} 

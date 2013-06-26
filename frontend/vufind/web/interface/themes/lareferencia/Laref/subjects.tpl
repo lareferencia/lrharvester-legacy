@@ -8,7 +8,7 @@
   <h1>{translate text="Recursos en la colecci&oacute;n"}</h1>
   <table class="citation">
   <tr>
-    <th>{translate text="Tipo de Material"}</th>
+    <th>{translate text="Tipo de Materiales"}</th>
 	</tr>
   <tr>
     <td>
