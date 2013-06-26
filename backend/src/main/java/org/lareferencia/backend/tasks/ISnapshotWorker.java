@@ -6,5 +6,6 @@ public interface ISnapshotWorker extends Runnable{
     public void run();
     public void setNetworkID(Long networkID);
     public void setSnapshotID(Long snapshotID);
+    public void setHarvestBySet(boolean value);
 
 }

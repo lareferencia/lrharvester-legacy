@@ -5,14 +5,22 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 
 public class SnapshotManager {
 	
+	@Autowired
 	private NationalNetworkRepository networkRepository;
+	
+	@Autowired
+	private NetworkSnapshotRepository snapshotRepository;
+	
 	
 	@Autowired
 	private TaskScheduler scheduler;
@@ -63,8 +71,30 @@ public class SnapshotManager {
 		//TODO: debiera chequear la existencia de la red
 
 		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+		worker.setHarvestBySet(false);
 		worker.setNetworkID(networkD);
 		scheduler.schedule(worker, new Date());
+	}
+	
+	public synchronized void lauchSetBySetHarvesting(Long networkD) {
+		//TODO: debiera chequear la existencia de la red
+
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+		worker.setHarvestBySet(true);
+		worker.setNetworkID(networkD);
+		scheduler.schedule(worker, new Date());
+	}
+	
+	public synchronized void relauchHarvesting(Long snapshotID) {
+
+		NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
+		
+		if ( snapshot != null && snapshot.getStatus() == SnapshotStatus.HARVESTING_STOPPED ) {
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+			worker.setSnapshotID(snapshotID);
+			scheduler.schedule(worker, new Date());
+		}
+		//TODO: Hbaría que tirar una except acá
 	}
 	
 	

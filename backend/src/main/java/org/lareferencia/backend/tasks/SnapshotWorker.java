@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
@@ -36,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Scope(value="prototype")
 public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener {
 	
+	private static int MAX_RETRIES = 15;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
@@ -47,7 +50,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
-	
 	
 	private IHarvester harvester;
 	
@@ -69,6 +71,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private NationalNetwork network;
 	private NetworkSnapshot snapshot;
 
+	@Getter @Setter
+	private boolean harvestBySet = false;
 	
 	public SnapshotWorker() {
 	};
@@ -122,7 +126,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 
 		// harvest de la red
 		if ( newSnapshotCreated ) // caso de harvesting desde cero
-			harvestEntireNetwork();
+			
+			if ( harvestBySet )
+				harvestEntireNetworkBySet();
+			else
+				harvestEntireNetwork();
+		
 		else // caso de retomar desde un rt anterior
 			harvestNetworkFromRT(snapshot.getResumptionToken());
 
@@ -170,7 +179,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private void harvestNetworkFromRT(String resumptionToken) {	
 		// Se recorren los orígenes evaluando de cual era el rt TODO: Hay que guardar el origen corriente en el snapshot
 		for ( OAIOrigin origin:network.getOrigins() ) {
-			harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), resumptionToken);
+			harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), resumptionToken, MAX_RETRIES);
 		}
 	}
 	
@@ -182,15 +191,31 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			// si tiene sets declarados solo va a cosechar 
 			if ( origin.getSets().size() > 0 ) {
 				for ( OAISet set: origin.getSets() ) {
-					harvester.harvest(origin.getUri(), null, null, set.getSpec(), origin.getMetadataPrefix(), null);
+					harvester.harvest(origin.getUri(), null, null, set.getSpec(), origin.getMetadataPrefix(), null, MAX_RETRIES);
 				}
 			}
 			// si no hay set declarado cosecha todo
 			else {
-				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), null);
+				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), null, MAX_RETRIES);
 			}	
 		}
 	}
+	
+	private void harvestEntireNetworkBySet() {
+		// Ciclo principal de procesamiento, dado por la estructura de la red nacional
+		// Se recorren los orígenes 
+		for ( OAIOrigin origin:network.getOrigins() ) {
+			
+			List<String> setList = harvester.listSets( origin.getUri() ); 
+			
+				for ( String setName:setList) {
+					System.out.println( "Cosechando: " + origin.getName() + " set: " + setName); 
+					harvester.harvest(origin.getUri(), null, null, setName, origin.getMetadataPrefix(), null, 5);
+				}
+		}	
+		
+	}
+	
 	
 	@Autowired
 	public void setHarvester(IHarvester harvester) {

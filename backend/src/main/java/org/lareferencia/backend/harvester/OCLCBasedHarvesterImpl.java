@@ -1,6 +1,9 @@
 package org.lareferencia.backend.harvester;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
@@ -12,6 +15,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ORG.oclc.oai.harvester2.verb.ListRecords;
+import ORG.oclc.oai.harvester2.verb.ListSets;
 
 @Component
 @Scope(value = "prototype")
@@ -20,7 +24,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 	//private static final int STANDARD_RECORD_SIZE = 100;
 	private static final String METADATA_NODE_NAME = "metadata";
-	private static int MAX_RETRIES = 15;
+	//private static int MAX_RETRIES = 15;
 	private static int INITIAL_SECONDS_TO_RETRY = 3;
 	private static int RETRY_FACTOR = 2;
 
@@ -33,7 +37,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	}
 
 	public void harvest(String uri, String from, String until, String setname,
-			String metadataPrefix, String resumptionToken) {
+			String metadataPrefix, String resumptionToken, int maxRetries) {
 
 		ListRecords actualListRecords = null;
 
@@ -84,9 +88,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = secondsToNextRetry * RETRY_FACTOR;
 				}
 				
-			} while (actualRetry < MAX_RETRIES);
+			} while (actualRetry < maxRetries);
 			
-			if ( actualRetry == MAX_RETRIES ) {
+			if ( actualRetry == maxRetries ) {
 				String message = "Número de reintentos máximos alcanzados.  Abortando proceso de cosecha.";
 				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_FATAL) );
 				break;
@@ -226,5 +230,33 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		
 		// TODO: Ver el tema del char &#56256;
 		return MedatadaDOMHelper.Node2XMLString( metadataNode );
+	}
+
+	@Override
+	public List<String> listSets(String uri) {
+		
+		List<String> setList = new ArrayList<String>();
+		
+		try {
+			ListSets listSets =  new ListSets(uri);			
+			NodeList list = listSets.getDocument().getElementsByTagName("setSpec");
+
+			
+			for (int i=0; i<list.getLength(); i++) {
+				setList.add( list.item(i).getFirstChild().getNodeValue() );
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return setList;
 	}
 }

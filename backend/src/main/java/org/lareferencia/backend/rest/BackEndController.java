@@ -114,6 +114,34 @@ public class BackEndController {
 		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
 	}
 	
+	/**
+	 * Este servicio para cada origen explora los sets (no los almacenados sino los provistos por ListSets)
+	 * y para cada uno de ellos realiza una cosecha. Si los sets son disjuntos la coschecha final es completa y
+	 * sin repeticiones
+	 * @param networkID
+	 * @return
+	 */
+	@RequestMapping(value="/private/harvestSetBySet/{networkID}", method=RequestMethod.GET)
+	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) {
+		
+		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
+		manager.lauchSetBySetHarvesting(networkID);
+		
+		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
+	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) {
+		
+		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
+		manager.relauchHarvesting(snapshotID);
+		
+		return new ResponseEntity<String>("Relauch Havesting:" + snapshotID, HttpStatus.OK);
+	}
+	
+	
+	
+	
 	@Transactional
 	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {
