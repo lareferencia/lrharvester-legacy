@@ -150,6 +150,7 @@ class IndexRecord implements RecordInterface
     {
        // Build author list:
         $authors = array();
+		$elurl= array();
         $primary = $this->getPrimaryAuthor();
         if (!empty($primary)) {
             $authors[] = $primary;
@@ -157,7 +158,9 @@ class IndexRecord implements RecordInterface
         $authors = array_unique(
             array_merge($authors, $this->getSecondaryAuthors())
         );
-         $elurl=$this->getURLs();
+         //$elurl=$this->getURLs();
+		 //$elurl=array("http://google.com");
+		 
         // Collect all details for citation builder:
         $publishers = $this->getPublishers();
         $pubDates = $this->getPublicationDates();
@@ -170,7 +173,7 @@ class IndexRecord implements RecordInterface
             'pubName' => count($publishers) > 0 ? $publishers[0] : null,
             'pubDate' => count($pubDates) > 0 ? $pubDates[0] : null,
             'edition' => array($this->getEdition()),
-			'elurl'=> $elurl[0]
+			'elurl'=> $this->fields['url'][0]
         );
 
         // Build the citation:
@@ -191,6 +194,9 @@ class IndexRecord implements RecordInterface
      */
     public function getCitation($format)
     {
+	
+	     global $configArray;
+			
         // Build author list:
         $authors = array();
         $primary = $this->getPrimaryAuthor();
@@ -205,6 +211,25 @@ class IndexRecord implements RecordInterface
         $publishers = $this->getPublishers();
         $pubDates = $this->getPublicationDates();
         $pubPlaces = $this->getPlacesOfPublication();
+		
+		 /*       $hasOpenURL = ($this->openURLActive('record') && $this->getCleanISSN());
+
+				if ($hasOpenURL) {
+					$elurl=$this->getOpenURL();
+				}
+
+				// Only load URLs if we have no OpenURL or we are configured to allow
+				// URLs and OpenURLs to coexist:
+				if (!isset($configArray['OpenURL']['replace_other_urls'])
+					|| !$configArray['OpenURL']['replace_other_urls'] || !$hasOpenURL
+				) {
+					$elurl=$this->getURLs();
+				}*/
+				
+		$elurl=	array();	
+		 $elurl=$this->getURLs();
+		 $elurl=array("http://google.com");
+		 
         $details = array(
             'authors' => $authors,
             'title' => $this->getShortTitle(),
@@ -212,7 +237,8 @@ class IndexRecord implements RecordInterface
             'pubPlace' => count($pubPlaces) > 0 ? $pubPlaces[0] : null,
             'pubName' => count($publishers) > 0 ? $publishers[0] : null,
             'pubDate' => count($pubDates) > 0 ? $pubDates[0] : null,
-            'edition' => array($this->getEdition())
+            'edition' => array($this->getEdition()),
+			'elurl'=> $this->fields['url'][0]
         );
 
         // Build the citation:
@@ -1832,6 +1858,18 @@ class IndexRecord implements RecordInterface
         return $urls;
     }
 
+	    protected function getURLsT()
+    {
+        $urls = array();
+//        if (isset($this->fields['url']) && is_array($this->fields['url'])) {
+            foreach ($this->fields['url'] as $url) {
+                // The index doesn't contain descriptions for URLs, so we'll just
+                // use the URL itself as the description.
+                $urls[$url] = $url;
+            }
+  //      }
+        return $urls;
+    }
     /**
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?

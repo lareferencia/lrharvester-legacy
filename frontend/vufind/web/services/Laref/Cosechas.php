@@ -130,7 +130,7 @@ class Cosechas extends Action
 				    }
 			        }
 					
-					  $output8.='],';
+					  $output8.='];';
 					  
 				  }
 				}

@@ -62,5 +62,7 @@ function basic_time(container) {
 );
     </script>
 {/literal} 
-
+<div class="span-20" >
+{$output10}
+</div>
 <div class="clear"></div>

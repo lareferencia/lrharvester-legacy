@@ -68,7 +68,7 @@ class Record extends Action
 
         // Define Default Tab
         $defaultTab = isset($configArray['Site']['defaultRecordTab']) ?
-            $configArray['Site']['defaultRecordTab'] : 'Holdings';
+            $configArray['Site']['defaultRecordTab'] : 'Description';
         $tab = (isset($_GET['action'])) ? $_GET['action'] : $defaultTab;
         $interface->assign('tab', $tab);
 

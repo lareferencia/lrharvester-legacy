@@ -71,10 +71,10 @@ else { //do stuff
 
 //echo $xml;
 foreach ($xml->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
-    if (($busqueda/100)>12)
-    $output.="<a style='font-size:".($busqueda/100)."px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]." </a>";
+    if (($busqueda/200)>12)
+    $output.="<a style='font-size:".($busqueda/200)."px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]." </a>";
 	else 
-	    $output.="<a style='font-size:11px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]." </a>";
+	    $output.="<a style='font-size:12px;text-decoration:none;' href='".$vurl."/Search/Results?lookfor=%22".$busqueda["name"]."%22&type=topic_browse'>".$busqueda["name"]." </a>";
 
 }
 

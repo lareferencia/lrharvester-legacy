@@ -20,7 +20,7 @@
 function basic_time(container) {
 {/literal} 
 {$output8}
-{literal}ax;
+{literal}
     options = {
 	
         xaxis: {
@@ -37,6 +37,10 @@ function basic_time(container) {
         },	
         mouse: {
             track: true,
+			trackFormatter: function(obj) {
+            return obj.y;
+				},
+			trackDecimals: 0,			
             relative: true
         },
         HtmlText: false,
@@ -77,11 +81,11 @@ function basic_time(container) {
         label: 'MX'
     },{
         data: d8,
-        label: 'VE'
+        label: 'PE'
     },	
 	{
         data: d9,
-        label: 'PE'
+        label: 'VE'
     }],	
 		 o);
     }

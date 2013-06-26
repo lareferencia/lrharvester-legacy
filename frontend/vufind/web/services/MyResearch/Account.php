@@ -77,7 +77,10 @@ class Account extends Action
             if (PEAR::isError($result)) {
                 $interface->assign('message', $result->getMessage());
                 $interface->assign('formVars', $_POST);
-                $interface->setTemplate('account.tpl');
+				if (isset($_POST['type']))
+                $interface->setTemplate('accountadmin.tpl');
+				else
+				 $interface->setTemplate('account.tpl');
                 $interface->display('layout.tpl');
             } else {
                 // Now that the account is created, log the user in:
@@ -155,8 +158,17 @@ class Account extends Action
 					$user->firstname = $_POST['firstname'];
 					$user->lastname = $_POST['lastname'];
 					//$user->laref_country = $_POST['country'];
+					
+					if (isset($_POST['admin']))
+					$user->laref_country = $_POST['admin'];
+					else
 					$user->laref_country = $_POST['country'];
 					$user->laref_institution = $_POST['institution'];
+					
+					
+					if (isset($_POST['admin']))
+					$user->admin_country = $_POST['admin'];
+					
 					$user->created = date('Y-m-d h:i:s');
 					$user->insert();
 					$bienvenida="Datos de registro\nUsuario:".$user->username."\nContraseña:".$user->password."\nFecha:".date('Y-m-d h:i:s');

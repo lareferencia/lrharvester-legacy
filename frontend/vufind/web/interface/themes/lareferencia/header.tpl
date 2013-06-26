@@ -93,21 +93,58 @@ position: absolute; left: 100%; top:0;
             <li><a href="{$url}/Laref/Mapa">Mapa de la Red</a></li>
             <li><a href="{$url}/Laref/Instituciones">Listado de Instituciones 
               Cosechadas</a></li>
-            <li><a href="{$url}/Laref/Cosechas">Estad&iacute;stica de Cosechas</a> </li>
+            <li><a href="{$url}/Laref/Cosechas">Estad&iacute;stica de Cosechas</a>
+					<ul>
+						<li><a href="{$url}/Laref/CosechasAR">Argentina</a></li>
+						<li><a href="{$url}/Laref/CosechasBR">Brasil</a></li>
+						<li><a href="{$url}/Laref/CosechasCL">Chile</a></li>
+						<li><a href="{$url}/Laref/CosechasCO">Colombia</a></li>
+						<li><a href="{$url}/Laref/CosechasEC">Ecuador</a></li>
+						<li><a href="{$url}/Laref/CosechasSV">El Salvador</a></li>
+						<li><a href="{$url}/Laref/CosechasMX">M&eacute;xico</a></li>
+						<li><a href="{$url}/Laref/CosechasPE">Per&uacute;</a></li>
+						<li><a href="{$url}/Laref/CosechasVE">Venezuela</a></li>
+					</ul>	
+			</li>
           </ul>
         </li>
         <li><a href="#">Material</a>
           <ul>
             <li><a href="{$url}/Laref/Material">Distribuci&oacute;n del material</a></li>
             <li><a href="{$url}/Laref/Fechas">Distribuci&oacute;n del material cosechado por d&eacute;cada</a></li>
+			<li><a href="{$url}/Laref/Licencias">Distribuci&oacute;n de licencias por Pa&iacute;s</a></li>
             <li><a href="{$url}/Laref/Terminos">Nube de T&eacute;rminos </a></li>
           </ul>
         </li>
         <li><a href="#">Impacto</a>
           <ul>
-            <li><a href="{$url}/Laref/Impacto">Mapa de accesos - Pa&iacute;s del visitante</a></li>
-            <li><a href="{$url}/Laref/PorPais">Por Pa&iacute;s</a></li>
-            <li><a href="{$url}/Laref/PorMaterial">Por Material </a></li>
+            <li><a href="#">Mapa de accesos </a>
+				  <ul>
+					<li><a href="{$url}/Laref/Impacto">Pa&iacute;s del visitante</a></li>
+					<li><a href="{$url}/Laref/ImpactoRec">Pa&iacute;s del recolector</a></li>
+				  </ul>				
+			</li>
+            <li><a href="{$url}/Laref/PorPais">Por Pa&iacute;s Visitante</a>
+				  <ul>
+					<li><a href="{$url}/Laref/PorPaisA">Mapa por Art&iacute;culo</a></li>
+					<li><a href="{$url}/Laref/PorPaisR">Mapa por Reporte</a></li>
+					<li><a href="{$url}/Laref/PorPaisTD">Mapa por Tesis de Doctorado</a></li>
+					<li><a href="{$url}/Laref/PorPaisTM">Mapa por Tesis de Maestr&iacute;a</a></li>
+				  </ul>				
+			</li>
+            <li><a href="{$url}/Laref/PorMaterial">Por Tipo de Material </a>
+				  <ul>
+					<li><a href="{$url}/Laref/PorMaterialAR">Argentina</a></li>
+					<li><a href="{$url}/Laref/PorMaterialBR">Brasil</a></li>
+					<li><a href="{$url}/Laref/PorMaterialCL">Chile</a></li>
+					<li><a href="{$url}/Laref/PorMaterialCO">Colombia</a></li>
+					<li><a href="{$url}/Laref/PorMaterialEC">Ecuador</a></li>
+					<li><a href="{$url}/Laref/PorMaterialSV">El Salvador</a></li>
+					<li><a href="{$url}/Laref/PorMaterialMX">M&eacute;xico</a></li>
+					<li><a href="{$url}/Laref/PorMaterialPE">Per&uacute;</a></li>
+					<li><a href="{$url}/Laref/PorMaterialVE">Venezuela</a></li>
+					</ul>						
+			</li>
             <li><a href="{$url}/Laref/Busquedas">Ranking de b&uacute;squedas</a></li>
           </ul>
         </li>
@@ -123,11 +160,12 @@ position: absolute; left: 100%; top:0;
               <li><a href="{$url}/Help/Home?topic=search">{translate text='Search Tips'}</a></li>
           </ul>
         </li>
-		<li><a href="#">Usuarios</a>
+		<li>
+			<a href="#">Usuarios</a>
         <ul>
 		<li>
 			<div {if !$user} class="hide"{/if}>	
-				<a  href="{$path}/MyResearch/Home"> {translate text="Your Account"}</a>
+				<a  href="{$path}/MyResearch/Home"> {translate text="Your Account"} {$user->admin_country}</a>
 			</div>
 		</li>
 		<li>
@@ -149,8 +187,13 @@ position: absolute; left: 100%; top:0;
 				{if $authMethod == 'Shibboleth'}
 				<a  href="{$sessionInitiator}">{translate text="Institutional Login"}</a>
 				{else}
-				<a  href="{$path}/MyResearch/Account"> Registrarse </a>
+				<a  href="{$path}/MyResearch/Account">Registro como usuario</a>
 				{/if}
+			</div>
+		</li>
+		<li>
+			<div {if $user} class="hide"{/if}>
+				<a  href="{$path}/MyResearch/AccountAdmin">Registro como administrador</a>
 			</div>
 		</li>
 		</ul>
