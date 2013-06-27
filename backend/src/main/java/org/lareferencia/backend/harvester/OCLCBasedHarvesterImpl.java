@@ -243,7 +243,8 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 			
 			for (int i=0; i<list.getLength(); i++) {
-				setList.add( list.item(i).getFirstChild().getNodeValue() );
+				if ( list.item(i).getFirstChild() != null && list.item(i).getFirstChild().getNodeValue() != null )
+					setList.add( list.item(i).getFirstChild().getNodeValue() );
 			}
 			
 		} catch (IOException e) {
