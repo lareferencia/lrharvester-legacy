@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
@@ -24,6 +25,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 	//private static final int STANDARD_RECORD_SIZE = 100;
 	private static final String METADATA_NODE_NAME = "metadata";
+	private static final Object STATUS_DELETED = "deleted";
 	//private static int MAX_RETRIES = 15;
 	private static int INITIAL_SECONDS_TO_RETRY = 3;
 	private static int RETRY_FACTOR = 2;
@@ -182,15 +184,18 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			
 			String identifier = "unknown";
 			String metadataString = "unknown";
+			String status = "unknown";
 				
 				
 			try {
 				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
-				metadataString = getMetadataString(nodes.item(i));
-		
-				//TODO: Hay que tratar aparte los casos deleted que pueden generar exceptions al no tener metadata
-				result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString ));	
+				status = listRecords.getSingleString(nodes.item(i), namespace + ":header/@status");						
+
+				if ( ! status.equals(STATUS_DELETED) ) {
 				
+					metadataString = getMetadataString(nodes.item(i));	
+					result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString ));	
+				}
 				
 			} catch (OAIRecordMetadataParseException e){
 				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
@@ -198,7 +203,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				result.setRecordMissing(true);
 			} catch (Exception e) {
 				System.err.println("Error desconocido procesando el registro: " + identifier + '\n'+ metadataString );
+				System.err.println("Exception:" + e.getMessage() );
 				result.setRecordMissing(true);			
+				//e.printStackTrace();
 			}
 		}		
 		
@@ -222,7 +229,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		NodeList childs = node.getChildNodes();
 		Node metadataNode = null;
 		for (int i=0; i < childs.getLength(); i++)
-			if ( childs.item(i).getNodeName().equals(METADATA_NODE_NAME) )  
+			if ( childs.item(i).getNodeName().contains(METADATA_NODE_NAME) )  
 				metadataNode = childs.item(i);
 
 		if (metadataNode == null) 
