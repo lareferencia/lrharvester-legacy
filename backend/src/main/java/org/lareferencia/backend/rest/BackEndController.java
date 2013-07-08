@@ -211,20 +211,23 @@ public class BackEndController {
 		return response;
 	}
 	
-	@RequestMapping(value="/private/validateRecordByID/{id}", method=RequestMethod.GET)
+
+	/**************************** FrontEnd ************************************/
+
+	@RequestMapping(value="/public/validateRecordByID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<ValidationResult> validateRecordByID(@PathVariable Long id) throws OAIRecordMetadataParseException {
 		
 		
 		OAIRecord record = recordRepository.findOne( id );	
 		OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+		
 		ValidationResult result = validator.validate(metadata);
 		
 		ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
 		
 		return response;
 	}
-
-	/**************************** FrontEnd ************************************/
+	
 	
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
