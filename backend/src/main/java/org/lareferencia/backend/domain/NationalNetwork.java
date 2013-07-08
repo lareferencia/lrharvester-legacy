@@ -33,9 +33,7 @@ public class NationalNetwork extends AbstractEntity {
 	@Column(nullable = false)
 	private boolean published = false;
 		
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="schedule_id")
-	private Schedule schedule;
+	private String scheduleCronExpression;	
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="network_id")

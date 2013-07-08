@@ -2,14 +2,12 @@ package org.lareferencia.backend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.NationalNetwork;
-import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -52,10 +50,14 @@ public class IndexerTests {
 	
 	@Autowired
 	IIndexer indexer;
+	
+	@Autowired
+	@Qualifier(value="indexerIntelligo")
+	IIndexer indexerIntelligo;
 
 	@Autowired
 	NetworkSnapshotRepository networkSnapshotRepository;
-
+/*
 	
 	@Test
 	public void testRecordWiredDriverTransformer() throws Exception {
@@ -76,7 +78,7 @@ public class IndexerTests {
 		
 		//Document doc = indexer.transform(orecord, network);
 		
-		//System.out.println(indexer.transform(orecord, network) /* MedatadaDOMHelper.Node2XMLString(doc)*/ );
+		//System.out.println(indexer.transform(orecord, network)  );
 		
 	}
 	
@@ -89,6 +91,15 @@ public class IndexerTests {
 		
 	}
 	
+*/
+	@Test
+	public void testIntelligoIndexer() throws Exception {
+		
+		
+		indexerIntelligo.index(networkSnapshotRepository.findOne(2L));
+		
+		
+	}
 	
 	
 	
