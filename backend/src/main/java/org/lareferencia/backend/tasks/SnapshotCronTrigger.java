@@ -24,9 +24,9 @@ public class SnapshotCronTrigger implements Trigger {
 		
 		this.network = network;
 		
-		if ( network.getSchedule() != null ) {
+		if ( network.getScheduleCronExpression() != null && !network.getScheduleCronExpression().trim().equals("")) {
 			try {
-				cronTrigger = new CronTrigger( network.getSchedule().getCronExpression() );
+				cronTrigger = new CronTrigger( network.getScheduleCronExpression() );
 			} catch (java.lang.IllegalArgumentException e) {
 				// TODO: handle exception
 				System.out.println("Problemas con el trigger de:" + network.getName() );
