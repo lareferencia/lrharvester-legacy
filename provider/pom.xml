@@ -18,13 +18,11 @@
 	<dependencies>
 	
 	
-		<!--LaReferenciaLIB -->
+		<!--LaReferencia - hacer mvn clean package install en backend  -->
 		<dependency>
-		  <groupId>LaReferencia</groupId>
-		  <artifactId>lareferencia</artifactId>
-		  <version>1.0.0</version>
-		  <scope>system</scope>
-		  <systemPath>${basedir}/../backend/target/lareferencia-backend-0.1.M2.jar</systemPath>
+		  <groupId>org.lareferencia.backend</groupId>
+		  <artifactId>lareferencia.backend</artifactId>
+		  <version>1.0</version>
 		</dependency>
 
 		<!-- Common -->

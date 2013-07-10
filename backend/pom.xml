@@ -4,10 +4,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
-	<artifactId>lareferencia-backend</artifactId>
-	<version>0.1.M2</version>
+	<artifactId>lareferencia.backend</artifactId>
+	<version>1.0</version>
 	<packaging>jar</packaging>
-	<name>LaReferencia Backend</name>
+	<name>LAReferencia Backend</name>
 	<url></url>
 	<description>
 		<![CDATA[LaReferencia backend]]>
