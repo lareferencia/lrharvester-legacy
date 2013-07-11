@@ -11,6 +11,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataPar
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -178,6 +179,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		}
 		
 		//System.out.println( listRecords.toString() );
+		
 				
 		for (int i=0; i<nodes.getLength(); i++) {
 			
@@ -193,8 +195,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 				if ( ! status.equals(STATUS_DELETED) ) {
 				
-					metadataString = getMetadataString(nodes.item(i));	
-					result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString ));	
+					metadataString = getMetadataString(nodes.item(i), listRecords.getDocument());
+	
+					result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString) );	
 				}
 				
 			} catch (OAIRecordMetadataParseException e){
@@ -214,11 +217,12 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	
 	/**
 	 * @param node
+	 * @param document 
 	 * @return 
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException 
 	 */
-	private String getMetadataString(Node node) throws TransformerException, NoSuchFieldException {		
+	private String getMetadataString(Node node, Document document) throws TransformerException, NoSuchFieldException {		
 		
 		/**
 		 *  TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta implementado sobre nodos individaules
@@ -234,6 +238,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 		if (metadataNode == null) 
 			throw new NoSuchFieldException( "No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" +  MedatadaDOMHelper.Node2XMLString(node));
+		
+		// este rename unifica los casos distintos de namespace encontrados en repositorios
+		document.renameNode(metadataNode, metadataNode.getNamespaceURI(), METADATA_NODE_NAME);
+		
 		
 		// TODO: Ver el tema del char &#56256;
 		return MedatadaDOMHelper.Node2XMLString( metadataNode );

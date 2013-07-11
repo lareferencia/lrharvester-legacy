@@ -20,10 +20,12 @@ import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.indexer.IIndexer;
+import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.tasks.ISnapshotWorker;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
 import org.lareferencia.backend.validator.IValidator;
@@ -37,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -74,6 +77,9 @@ public class BackEndController {
 	
 	@Autowired
 	IIndexer indexer;
+	
+	@Autowired
+	TaskScheduler scheduler;
 	
 	@Autowired
 	IValidator validator;
@@ -195,20 +201,15 @@ public class BackEndController {
 	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Map<String,String>> indexRecordsBySnapshotID(@PathVariable Long id) {
 		
-		Map<String,String> result = new HashMap<String, String>();
-		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		// Se crea un proceso separado para la indexación
+		IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
+		worker.setSnapshotID(id);
+		scheduler.schedule(worker, new Date());
 	
-		if ( indexer.index(snapshot) ) {
-			result.put("result", "OK");
-		}
-		else {
-			result.put("result", "ERROR");
-		}	
-		
-		System.gc();
-		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
-		
-		return response;
+		Map<String,String> result = new HashMap<String, String>();
+		result.put("result", "INDEXING SNAPSHOT " + id);
+
+		return new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
 	}
 	
 

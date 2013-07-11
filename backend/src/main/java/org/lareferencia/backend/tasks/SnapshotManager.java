@@ -30,7 +30,6 @@ public class SnapshotManager {
 	
 	private ConcurrentLinkedQueue<ISnapshotWorker> workers;
 	
-	
 	public SnapshotManager() {
 		workers = new ConcurrentLinkedQueue<ISnapshotWorker>();
 	}
