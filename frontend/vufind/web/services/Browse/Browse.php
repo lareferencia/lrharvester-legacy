@@ -126,9 +126,9 @@ class Browse extends Action
 
         // Loop through remaining browse options.  All may be individually disabled
         // in config.ini, but if no settings are found, they are assumed to be on.
-		// LAREFERENCIA AR MAY02 SE AGREGO COUNTRY
+		// LAREFERENCIA AR MAY02 SE AGREGO COUNTRY JULIO 11 SE AGREGO DERECHOS
         $remainingOptions = array(
-            'Author', 'Topic', 'Genre', 'Region', 'Era','Country'
+            'Author', 'Topic', 'Genre', 'Region', 'Era','Country','Rights'
         );
         foreach ($remainingOptions as $current) {
             $config = strtolower($current);

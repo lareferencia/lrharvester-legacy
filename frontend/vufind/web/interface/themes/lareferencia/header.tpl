@@ -95,15 +95,15 @@ position: absolute; left: 100%; top:0;
               Cosechadas</a></li>
             <li><a href="{$url}/Laref/Cosechas">Estad&iacute;stica de Cosechas</a>
 					<ul>
-						<li><a href="{$url}/Laref/CosechasAR">Argentina</a></li>
-						<li><a href="{$url}/Laref/CosechasBR">Brasil</a></li>
-						<li><a href="{$url}/Laref/CosechasCL">Chile</a></li>
-						<li><a href="{$url}/Laref/CosechasCO">Colombia</a></li>
-						<li><a href="{$url}/Laref/CosechasEC">Ecuador</a></li>
-						<li><a href="{$url}/Laref/CosechasSV">El Salvador</a></li>
-						<li><a href="{$url}/Laref/CosechasMX">M&eacute;xico</a></li>
-						<li><a href="{$url}/Laref/CosechasPE">Per&uacute;</a></li>
-						<li><a href="{$url}/Laref/CosechasVE">Venezuela</a></li>
+					<li><a href="{$url}/Laref/CosechaAR">Argentina</a></li>
+					<li><a href="{$url}/Laref/CosechaBR">Brasil</a></li>
+					<li><a href="{$url}/Laref/CosechaCL">Chile</a></li>
+					<li><a href="{$url}/Laref/CosechaCO">Colombia</a></li>
+					<li><a href="{$url}/Laref/CosechaEC">Ecuador</a></li>
+					<li><a href="{$url}/Laref/CosechaSV">El Salvador</a></li>
+					<li><a href="{$url}/Laref/CosechaMX">M&eacute;xico</a></li>
+					<li><a href="{$url}/Laref/CosechaPE">Per&uacute;</a></li>
+					<li><a href="{$url}/Laref/CosechaVE">Venezuela</a></li>
 					</ul>	
 			</li>
           </ul>
@@ -164,9 +164,15 @@ position: absolute; left: 100%; top:0;
 			<a href="#">Usuarios</a>
         <ul>
 		<li>
-			<div {if !$user} class="hide"{/if}>	
-				<a  href="{$path}/MyResearch/Home"> {translate text="Your Account"} {$user->admin_country}</a>
-			</div>
+				
+				 <li><a {if !$user} class="hide"{/if} href="{$path}/MyResearch/Home"> {translate text="Your Account"}</a>
+					<ul>
+					        <li><a {if !$user } class="hide"{/if} href="{$url}/MyResearch/Favorites">Sus Favoritos</a></li>
+						<li><a {if !$user } class="hide"{/if} href="{$url}/Search/History?require_login">Sus B&uacute;squedas</a></li>	
+						<li><a {if !$user } class="hide"{/if} href="{$url}/Search/Comments">Sus Comentarios</a>	</li>
+					</ul>
+				</li>
+			
 		</li>
 		<li>
 			<div {if !$user} class="hide"{/if}>
@@ -212,6 +218,16 @@ position: absolute; left: 100%; top:0;
 		  {/if}
 		</li>
 		<li><a href="{$url}/Laref/About">{translate text="About"} </a></li>
+		<li>
+				
+				<li><a  {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$path}/MyResearch/Home"> {translate text="ADMINISTRADOR"} {$user->admin_country}</a>
+					<ul>
+					        <li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/ImpactoRec">Impacto por Pa&iacute;s del recolector</a></li>
+						<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/Cosechas{$user->admin_country}">Registro Avanzado de Cosechas {$user->admin_country}</a></li>
+					</ul>
+				</li>
+			
+		</li>
   </ul>
 </nav>
 <div id="headerRight">
