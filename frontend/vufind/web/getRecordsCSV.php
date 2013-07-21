@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: text/plain');
+header("Content-Disposition: attachment; filename=reporte.csv");
  $id=$_GET["id"];
 
 if(isset($_GET["iso"]))
@@ -11,7 +13,7 @@ if(isset($_GET["url"]))
    else
  	$url2="http://200.0.207.91:8080/public/listInvalidRecordsInfoBySnapshotID/92";
 	
-	$json2 = file_get_contents($url2);
+	$json2 = file_get_contents($url2."?page=0&size=50000");
 	$data2 = json_decode($json2, TRUE);
 
 	$countr="";
@@ -26,10 +28,9 @@ if(isset($_GET["url"]))
 	$first2=true;
     $link="";
 	$lurl="";
-	$ident="";
 	$outputN="";
-	$output7.= "<table border='0' style='font-family:Verdana;font-size:8pt;background-color:#E5ECF9'>";
-	$output7.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Identificador</th><th>Estatus</th><th>Detalle</th><th></th></tr>";
+//	$output7.= "<table border='0' style='font-family:Verdana;font-size:8pt;background-color:#E5ECF9'>";
+//	$output7.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Identificador</th><th>Estatus</th><th>Detalle</th><th></th></tr>";
 		foreach($data2 as $red){
 			foreach($red as $key => $value){
 			foreach($value as $key2 => $value2){
@@ -41,7 +42,7 @@ if(isset($_GET["url"]))
 				//echo print_r($value2);
 				
 				    
-				    $link=$value2;
+				  //  $link=$value2;
 					if ($link=="next") $link="siguiente";
 					if ($link=="first") $link="primera";
 					if ($link=="last") $link="&uacute;ltima";
@@ -51,7 +52,7 @@ if(isset($_GET["url"]))
 				}
 				if ($key2==="href")
 				{
-				$outputN.= "<a style='font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none' href='http://200.0.207.91/vufind/getRecords.php?iso=".$iso."&url=".$value2."'>".$link."</a>-";
+				//$outputN.= "<a style='font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none' href='http://200.0.207.91/vufind/getRecords.php?iso=".$iso."&url=".$value2."'>".$link."</a>-";
 				}
 			if ($key2==="id")
 				{
@@ -61,17 +62,17 @@ if(isset($_GET["url"]))
 				}	
 				if ($key2==="identifier")
 				{			
-					  	$output7 .=  "<tr><td>$iso</td><td>".$ni."</td>";
-						$output7 .= "<td>".$value2."</td>";
-						$ident=$value2;
+					  	$output7 .=  "$iso,".$ni;
+						$output7 .= ",".$value2;
+						$valtem=$value;
 					 }
-				 if ($key2==="status")
+				else if ($key2==="status")
 					  {
-						$output7 .= '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\'http://200.0.207.91/vufind/getRecordValidation.php?id='.$ni.'&oid='.$ident.'\',\'reporte\',\'width=500,height=436,scrollbars=yes\');return false;">'.$value2.'</a></td>';
+						$output7 .= ",".$value2;
 					 }
-				 if ($key2==="belongsToCollectionDetails")
+				else if ($key2==="belongsToCollectionDetails")
 					 {
-						$output7 .= "<td>".$value2."</td>";
+						$output7 .= ",".$value2."\n";
 
 					}
 			    
@@ -79,9 +80,9 @@ if(isset($_GET["url"]))
 				  }
 				}
 			
-		 $output7.= '</table>';		 
+		// $output7.= '</table>';		 
 
-echo $outputN;
+//echo $outputN;
 echo  $output7;
-echo $outputN;
+//echo $outputN;
 ?>

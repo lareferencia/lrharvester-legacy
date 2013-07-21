@@ -39,7 +39,7 @@ class ImpactoRec extends Action
 
 	global $ccode;$ccode="";
 	
-			$url="http://lareferencia.shell.la:8090/public/listProviderStats";
+			$url=$configArray['WebServices']['ws']."/public/listProviderStats";
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
 		

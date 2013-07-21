@@ -11,13 +11,13 @@ function getRealIP() {
 	return $_SERVER['REMOTE_ADDR'];
 }
 
- if (strpos($_GET['target'],'http://200.0.206.214/vufind/') === false) {
+ if (strpos($_GET['target'],'http://200.0.207.91/vufind/') === false) {
 
 $getip=getRealIP();
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL,
-		"http://200.0.206.214/vufind/getType.php?id=".$_GET['oid']);
+		"http://200.0.207.91/vufind/getType.php?id=".$_GET['oid']);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -25,7 +25,7 @@ curl_setopt($ch, CURLOPT_URL,
 	//echo $resultado;
 
 curl_setopt($ch, CURLOPT_URL,
-		"http://200.0.206.214/vufind/getTitle.php?id=".$_GET['oid']);
+		"http://200.0.207.91/vufind/getTitle.php?id=".$_GET['oid']);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);

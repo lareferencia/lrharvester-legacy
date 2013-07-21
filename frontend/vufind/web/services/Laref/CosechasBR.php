@@ -39,19 +39,19 @@ class CosechasBR extends Action
 		$output8="";
 		$output9="";		
 		
-		$url="http://lareferencia.shell.la:8090/public/lastGoodKnowSnapshotByCountryISO/BR";
+		$url=$configArray['WebServices']['ws']."/public/lastGoodKnowSnapshotByCountryISO/BR";
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
-		
+		$lastid="";		
    //echo print_r($data);
 	$output1.= "<table border='1'>";
-	$output1.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th></tr>";
+	$output1.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th><th>Registros transformados</th></tr>";
 
 			foreach($data as $key => $value){
 			//echo print_r($value);
 				if ($key==="id")
 				{
-				    $ni=$value;
+				    $ni=$value;		$lastid=$value;
 					//echo $value."-";
 				}	
 				if ($key==="status")
@@ -70,19 +70,25 @@ class CosechasBR extends Action
 						$output1 .= "<td> ".number_format((int)$value)."</td>";	
 
 					}
-			 else if ($key==="validSize")
+			 if ($key==="validSize")
 					 {
-						$output1 .= "<td> ".number_format((int)$value)."</td></tr>";
+						$output1 .= "<td> ".number_format((int)$value)."</td>";
 						$valtemp=$value;
 
 						
 					   }
+
+			if ($key==="transformedSize")
+					 {
+						$output1 .= "<td> ".number_format((int)$value)."</td></tr>";	
+
+					}
 			}
 		
 
 		 $output1 .= '</table>';
 
-	$url2="http://lareferencia.shell.la:8090/public/listSnapshotsByCountryISO/BR";
+	$url2=$configArray['WebServices']['ws']."/public/listSnapshotsByCountryISO/BR";
 	$json2 = file_get_contents($url2);
 	$data2 = json_decode($json2, TRUE);
 
@@ -99,8 +105,10 @@ class CosechasBR extends Action
 	$output8.="var d1=[";
 	$output9.="var d2=[";
 	$output7.= "<table border='1'>";
-	$output7.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th></tr>";
-		foreach($data2 as $red){
+
+	$output7.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th><th>Registros transformados</th></tr>";
+
+	foreach($data2 as $red){
 			foreach($red as $key => $value){
 			
 			//echo print_r($value);
@@ -135,9 +143,17 @@ class CosechasBR extends Action
 								$output9.='['.$datetemp.','.$value.']';
 							}
 					}
-			 else if ($key==="validSize")
+
+			if ($key==="transformedSize")
 					 {
-						$output7 .= "<td> ".number_format((int)$value)."</td></tr>";
+						$output7 .= "<td> ".number_format((int)$value)."</td></tr>";	
+
+					}
+					
+
+		else if ($key==="validSize")
+					 {
+						$output7 .= "<td> ".number_format((int)$value)."</td>";
 						$valtemp=$value;
 						if (!$first)
 							{
@@ -386,6 +402,8 @@ foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
 		$interface->assign('output7',$output7);
 		$interface->assign('output8',$output8);
 		$interface->assign('output9',$output9);
+		
+		$interface->assign('lastid',$lastid);	
 		
 		$interface->setTemplate('cosechasbr.tpl');
         $interface->setPageTitle('Cosechas Brasil');

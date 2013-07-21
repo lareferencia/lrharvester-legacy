@@ -39,7 +39,7 @@ class Cosechas extends Action
 		$output8="";
 		$output9="";		
 		
-		$url="http://lareferencia.shell.la:8090/public/listNetworks";
+		$url=$configArray['WebServices']['ws']."/public/listNetworks";
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
 
@@ -48,7 +48,7 @@ class Cosechas extends Action
 		foreach($data as $red){
 			foreach($red as $key => $value){
 			  if ($key==="name")
-				$output1 .=  "<tr> <td><a href='http://200.0.206.214/vufind/Search/Results?lookfor=&type=AllFields&filter[]=country%3A%22".$value."%22'>$value</a> </td>";
+				$output1 .=  "<tr> <td><a href='".$vurl."/Search/Results?lookfor=&type=AllFields&filter[]=country%3A%22".$value."%22'>$value</a> </td>";
 			  if ($key==="datestamp")
 				$output1 .= "<td>".substr($value,0,10)."</td>";
 			  /*if ($key==="size")
@@ -64,7 +64,7 @@ class Cosechas extends Action
 
 		 $output1 .= '</table>';
 
-		$url2="http://lareferencia.shell.la:8090/public/listNetworksHistory";
+		$url2=$configArray['WebServices']['ws']."/public/listNetworksHistory";
 		$json2 = file_get_contents($url2);
 		$data2 = json_decode($json2, TRUE);
 

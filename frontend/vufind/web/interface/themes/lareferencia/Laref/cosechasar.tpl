@@ -2,8 +2,8 @@
 <h1>Argentina</h1>
 <h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
 {$output1}
-<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha</h3>
-<iframe width="100%" src="http://200.0.206.214/vufind/getRecords.php?iso=AR&url=http://lareferencia.shell.la:8090//public/listInvalidRecordsInfoBySnapshotID/92"></iframe>
+<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/getRecordsCSV.php?iso=AR&url=http://200.0.207.91:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
+<iframe width="100%" src="{$url}/getRecords.php?iso=AR&url=http://200.0.207.91:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
       <style type="text/css">

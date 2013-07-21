@@ -14,7 +14,7 @@ require_once 'Action.php';
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_module Wiki
  */
-class CosechasMX extends Action
+class CosechaVE extends Action
 {
     /**
      * Process parameters and display the page.
@@ -39,141 +39,106 @@ class CosechasMX extends Action
 		$output8="";
 		$output9="";		
 		
-		$url=$configArray['WebServices']['ws']."/public/lastGoodKnowSnapshotByCountryISO/MX";
+		$url=$configArray['WebServices']['ws']."/public/listNetworks";
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
-	$lastid="";	
-   //echo print_r($data);
+
 	$output1.= "<table border='1'>";
-	$output1.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th><th>Registros transformados</th></tr>";
-
-			foreach($data as $key => $value){
-			//echo print_r($value);
-				if ($key==="id")
-				{
-				    $ni=$value;$lastid=$value;
-					//echo $value."-";
-				}	
-				if ($key==="status")
-				{			
-					  	$output1 .=  "<tr><td>MX</td><td>".$ni."</td>";
-						$output1 .= "<td>".$value."</td>";
-						$valtem=$value;
-					 }
-				else if ($key==="endTime")
-					  {
-						$output1 .= "<td>".substr($value,0,10)."</td>";
-						$datetemp='new Date("'.str_replace('-','/',substr($value,0,10)).'").getTime()';
-					 }
-				else if ($key==="size")
-					 {
-						$output1 .= "<td> ".number_format((int)$value)."</td>";	
-
-					}
-			if ($key==="transformedSize")
-					 {
-						$output1 .= "<td> ".number_format((int)$value)."</td></tr>";	
-
-					}
-
-					else if ($key==="validSize")
-					 {
-						$output1 .= "<td> ".number_format((int)$value)."</td>";
-						$valtemp=$value;
-
-						
-					   }
+	$output1.=  "<tr> <th>Red</th> <th>Fecha de &uacute;ltima actualizaci&oacute;n</th><th>Registros incorporados</th></tr>";
+		foreach($data as $red){
+			foreach($red as $key => $value){
+			  if ($key==="name")
+				$output1 .=  "<tr> <td><a href='".$vurl."/Search/Results?lookfor=&type=AllFields&filter[]=country%3A%22".$value."%22'>$value</a> </td>";
+			  if ($key==="datestamp")
+				$output1 .= "<td>".substr($value,0,10)."</td>";
+			  /*if ($key==="size")
+				$output1 .= "<td>".number_format((int)$value)."</td>";*/
+			  if ($key==="validSize")
+			  {
+				$output1 .= "<td> ".number_format((int)$value)."</td></tr>";
+				$sum+=$value;
+				}
 			}
-		
+		}
+			$output1.=  "<tr> <th></th> <th></th><th>".number_format((int)$sum)."</th></tr>";
 
 		 $output1 .= '</table>';
 
-	$url2=$configArray['WebServices']['ws']."/public/listSnapshotsByCountryISO/MX";
-	$json2 = file_get_contents($url2);
-	$data2 = json_decode($json2, TRUE);
+		$url2=$configArray['WebServices']['ws']."/public/listNetworksHistory";
+		$json2 = file_get_contents($url2);
+		$data2 = json_decode($json2, TRUE);
 
 	$countr="";
     $countn=0;	
     $ni="";	
 	
-	//echo $url2;
-	 $datetemp="";
-	$ni="";
-	$countr="";
-	$first=true;
-	$first2=true;
-	$output8.="var d1=[";
-	$output9.="var d2=[";
+
+	$output8.="var ";
 	$output7.= "<table border='1'>";
-	$output7.=  "<tr> <th>Pa&iacute;s</th><th>ID</th><th>Status</th><th>Fecha de actualizaci&oacute;n</th><th>Registros consultados</th><th>Registros incorporados</th><th>Registros transformados</th></tr>";
+	$output7.=  "<tr> <th>Red</th><th>Pa&iacute;s</th><th>ID</th><th>Fecha de actualizaci&oacute;n</th><th>Registros incorporados</th></tr>";
 		foreach($data2 as $red){
 			foreach($red as $key => $value){
-			
-			//echo print_r($value);
-			
-				if ($key==="id")
+				if ($key==="networkID")
 				{
 				    $ni=$value;
-					//echo $value."-";
 				}	
-				if ($key==="status")
-				{			
-					  	$output7 .=  "<tr><td>MX</td><td>".$ni."</td>";
-						$output7 .= "<td>".$value."</td>";
-						$valtem=$value;
-					 }
-				else if ($key==="endTime")
-					  {
-						$output7 .= "<td>".substr($value,0,10)."</td>";
-						$datetemp='new Date("'.str_replace('-','/',substr($value,0,10)).'").getTime()';
-					 }
-				else if ($key==="size")
-					 {
-						$output7 .= "<td> ".number_format((int)$value)."</td>";	
-						if (!$first2)
-							{
-								$output9.=',['.$datetemp.','.$value.']';
-								
-							}
-							else
-							{
-								$first2=false;
-								$output9.='['.$datetemp.','.$value.']';
-							}
-					}
+				if ($key==="country")
+				{	$countr=$value;
+				}
+				if ($key==="validSnapshots")
+				{
+				if ($countr==="VE")
+				{
+							$countn++;
+							$first=true;
+							$output8.="d".$countn."=[";
+					  $datetemp="";
+					  $valtemp=0;
+					   foreach($value as $snap){
+					   foreach($snap as $key2 => $value2){
+						 { 
+						  if ($key2==="id")
+						{					
+							$output7 .=  "<tr><td>".$ni."</td>";
+							$output7 .=  "<td><a href='".$vurl."/Search/Results?lookfor=&type=AllFields&filter[]=country_iso%3A%22".$countr."%22'>$countr</a> </td>";;
+							$output7 .= "<td>".$value2."</td>";
+							$valtem=$value2;
+						 }
+						  else if ($key2==="endTime")
+						  {
+							$output7 .= "<td>".substr($value2,0,10)."</td>";
+							$datetemp='new Date("'.str_replace('-','/',substr($value2,0,10)).'").getTime()';
+						 }
+						 else if ($key2==="validSize")
+						 {
+						 
+							$output7 .= "<td> ".number_format((int)$value2)."</td></tr>";
+							$valtemp=$value2;
+							if (!$first)
+								{
+									$output8.=',['.$datetemp.','.$valtemp.']';
+									
+								}
+								else
+								{
+									$first=false;
+									$output8.='['.$datetemp.','.$valtemp.']';
+								}
+							
+						   }
+						  }
 
-				if ($key==="transformedSize")
-					 {
-						$output7 .= "<td> ".number_format((int)$value)."</td></tr>";	
-
-					}					
-
-					else if ($key==="validSize")
-					 {
-						$output7 .= "<td> ".number_format((int)$value)."</td>";
-						$valtemp=$value;
-						if (!$first)
-							{
-								$output8.=',['.$datetemp.','.$valtemp.']';
-								
+						}
 							}
-							else
-							{
-								$first=false;
-								$output8.='['.$datetemp.','.$valtemp.']';
-							}
-						
-					   }
-			    
-					  
+					
+					  $output8.='];';
+					}  
 				  }
 				}
-			
-		 $output7.= '</table>';	
+			}
+		 $output7.= '</table>';		 
 		 
-		 $output8.='];';
-		 $output9.='];';
-		 $output = '<ul>';
+		$output = '<ul>';
 
 		$url2 = $vbiblio.'/biblio/select?facet=true&facet.field=country&fl=country&q=type'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
 		$xml2 = simpleXML_load_file($url2,"SimpleXMLElement",LIBXML_NOCDATA);
@@ -399,9 +364,9 @@ foreach ($xml4->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
 		$interface->assign('output7',$output7);
 		$interface->assign('output8',$output8);
 		$interface->assign('output9',$output9);
-		$interface->assign('lastid',$lastid);
-		$interface->setTemplate('cosechasmx.tpl');
-        $interface->setPageTitle('Cosechas M&eacute;xico');
+		
+		$interface->setTemplate('cosechave.tpl');
+        $interface->setPageTitle('Cosechas por Pa&iacute;s');
         $interface->display('layout.tpl');
     }
 }

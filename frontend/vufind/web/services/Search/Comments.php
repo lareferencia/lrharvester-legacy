@@ -50,7 +50,7 @@ class Comments extends Action
     {
         global $interface;
         global $user;
-
+        global $configArray;
         // In some contexts, we want to require a login before showing search
         // history:
         if (isset($_REQUEST['require_login']) && !UserAccount::isLoggedIn()) {
@@ -70,7 +70,17 @@ class Comments extends Action
 		or die(mysql_error()); 
 		while($row = mysql_fetch_array( $result )) {
 		//echo print_r($row);
-		$saved []=array('record_id'=>$row['record_id'],'comment'=>$row['comment'],'created'=>$row['created']);
+		 $ch = curl_init();
+				$title ="";
+				curl_setopt($ch, CURLOPT_URL,
+				"http://200.0.207.91/vufind/getTitle.php?id=".$row['record_id']);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+				$title = curl_exec ($ch);
+				//echo $row['record_id'];
+				//echo $title;
+		$saved []=array('record_id'=>$row['record_id'],'title'=>$title,'comment'=>$row['comment'],'created'=>$row['created']);
 		
 		//array('name'=>$ccode,'amount'=>$value2)
 		}

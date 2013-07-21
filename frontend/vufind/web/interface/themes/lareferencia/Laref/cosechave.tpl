@@ -1,10 +1,5 @@
 
-<h1>Brasil</h1>
-<h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
-{$output1}
-<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3>
-Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/getRecordsCSV.php?iso=BR&url=http://200.0.207.91:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
-<iframe width="100%" src="{$url}/getRecords.php?iso=BR&url=http://200.0.207.91:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
+<h1>Venezuela</h1>
 
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
@@ -24,7 +19,7 @@ Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/
 (
 function basic_time(container) {
 {/literal} 
-{$output8}{$output9}
+{$output8}
 {literal}
     options = {
 	
@@ -38,14 +33,15 @@ function basic_time(container) {
         },
         yaxis: {
             title: 'Registros',
-			max:300000 
+			max:16000,
+			min:12000
         },	
         mouse: {
             track: true,
 			trackFormatter: function(obj) {
             return obj.y;
 				},
-			trackDecimals: 0,
+			trackDecimals: 0,			
             relative: true
         },
         HtmlText: false,
@@ -65,13 +61,8 @@ function basic_time(container) {
         container,
 [{
         data: d1,
-        label: 'LA-BR'
-    },
-	{
-        data: d2,
-        label: 'BR'
-    }
-	],	
+        label: 'VE'
+    }],	
 		 o);
     }
 

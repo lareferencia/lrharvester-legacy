@@ -53,7 +53,7 @@ function record_outbound(target,oid) {
  var req = new AjaxRequest();
  var params = "src=" + encodeURIComponent(location.href) + "&target=" + encodeURIComponent(target)+ "&oid=" + encodeURIComponent(oid); 
 //alert(params);
-req.loadXMLDoc('http://200.0.206.214/vufind/record_outbound.php', params); 
+req.loadXMLDoc('http://200.0.207.91/vufind/record_outbound.php', params); 
 } 
 return true; 
 }

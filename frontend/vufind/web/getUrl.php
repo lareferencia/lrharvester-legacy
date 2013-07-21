@@ -1,6 +1,6 @@
 <?php
  $id=$_GET["id"];
-$url2 = 'http://200.0.207.91:8090/solr/biblio/select?q=oid:"'.$id.'"&fl=title';
+$url2 = 'http://200.0.207.91:8090/solr/biblio/select?q=oid:"'.$id.'"&fl=url';
 $xml2 = simpleXML_load_file($url2,"SimpleXMLElement",LIBXML_NOCDATA);
 //echo $url2;
 if($xml2 ===  FALSE)
@@ -12,7 +12,7 @@ else
 { //do stuff 
     $sum=0;
 	$num=0;
-foreach ($xml2->xpath("//str[@name='title']") as $type) 
+foreach ($xml2->xpath("//arr [@name='url']/str") as $type) 
     {
 	  
   echo $type;
