@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Lautaro Matas (lmatas@gmail.com) - Desarrollo e implementación
+ *     Emiliano Marmonti(emarmonti@gmail.com) - Coordinación del componente III
+ * 
+ * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
+ ******************************************************************************/
 package org.lareferencia.backend.rest;
 
 import java.text.DateFormat;
@@ -12,6 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -23,15 +37,15 @@ import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.tasks.ISnapshotWorker;
+import org.lareferencia.backend.stats.MetadataOccurrenceCountSnapshotStatProcessor;
+import org.lareferencia.backend.stats.RejectedByFieldSnapshotStatProcessor;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -68,6 +82,9 @@ public class BackEndController {
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
+	
+	@Autowired
+	private NetworkSnapshotStatRepository statsRepository;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
@@ -356,6 +373,32 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
+	
+	@ResponseBody
+	@RequestMapping(value="/public/metadataOccurrenceCountBySnapshotId/{id}", method=RequestMethod.GET)
+	public List<NetworkSnapshotStat> metadataOccurrenceCountBySnapshotId(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		if (snapshot == null) 
+			throw new Exception("No se encontró snapshot: " + id);
+		
+		List<NetworkSnapshotStat> stats = statsRepository.findBySnapshotAndStatId(snapshot, MetadataOccurrenceCountSnapshotStatProcessor.ID);
+		
+		return stats;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/public/rejectedByFieldCountBySnapshotId/{id}", method=RequestMethod.GET)
+	public List<NetworkSnapshotStat> rejectedByFieldCountBySnapshotId(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot: " + id);
+		
+		List<NetworkSnapshotStat> stats = statsRepository.findBySnapshotAndStatId(snapshot, RejectedByFieldSnapshotStatProcessor.ID);
+			
+		return stats;
+	}
 	
 	/**************  Clases de retorno de resultados *******************/
 	

@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2013 
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Lautaro Matas (lmatas@gmail.com) - Desarrollo e implementación
+      Emiliano Marmonti(emarmonti@gmail.com) - Coordinación del componente III
+  
+  Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
@@ -18,7 +31,7 @@
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:driver"/>
 		<property name="quantifier" value="1..1" />
-		<property name="controlledValuesFileName" value="validator.datadir/dctype.driver.txt"/>
+		<property name="controlledValuesFileName" value="${validator.datadir}/dctype.driver.txt"/>
 	</bean>
 
 	<!-- Status type validator -->	
@@ -26,14 +39,14 @@
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:status"/>
 		<property name="quantifier" value="1..1" />
-		<property name="controlledValuesFileName" value="validator.datadir/dctype.status.txt"/>
+		<property name="controlledValuesFileName" value="${validator.datadir}/dctype.status.txt"/>
 	</bean>
 	
 	<!-- iso639-3 -->
 	<bean id="langRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="language:iso639-3"/>
-		<property name="controlledValuesFileName" value="validator.datadir/dclanguage.iso639-3.txt"/>
+		<property name="controlledValuesFileName" value="${validator.datadir}/dclanguage.iso639-3.txt"/>
 	</bean>
 	
 	<bean id="validator" class="org.lareferencia.backend.validator.ValidatorImpl">
@@ -164,7 +177,7 @@
 								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 								<property name="name" value="rights:driver"/>
 								<property name="quantifier" value="1..1" />
-								<property name="controlledValuesFileName" value="validator.datadir/dcrights.driver.txt"/>
+								<property name="controlledValuesFileName" value="${validator.datadir}/dcrights.driver.txt"/>
 							</bean>
 						</list>
 					</property>
@@ -233,7 +246,7 @@
 								class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 								<property name="name" value="format:mime"/>
 								<property name="quantifier" value="1..*" />
-								<property name="controlledValuesFileName" value="validator.datadir/dcformat.mime.txt"/>
+								<property name="controlledValuesFileName" value="${validator.datadir}/dcformat.mime.txt"/>
 							</bean>
 						</list>
 					</property>
@@ -253,7 +266,7 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="driverTypeRule" />
-						<property name="translationMapFileName"  value="validator.datadir/dctype.driver.translation.txt"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dctype.driver.translation.txt"/>
 					</bean>
 					
 					<!-- DC:TYPE Status Transformer -->
@@ -261,7 +274,7 @@
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="statusTypeRule" />
 						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
-						<property name="translationMapFileName"  value="validator.datadir/dctype.status.translation.txt"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dctype.status.translation.txt"/>
 
 					</bean>
 					
@@ -270,7 +283,7 @@
 						<property name="fieldName" value="dc:language" />
 						<property name="validationRule" ref="langRule" />
 						<property name="defaultFieldValue" value="spa"/>
-						<property name="translationMapFileName"  value="validator.datadir/dclanguage.translation.txt"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dclanguage.translation.txt"/>
 					</bean>
 				</list>
 		</property>

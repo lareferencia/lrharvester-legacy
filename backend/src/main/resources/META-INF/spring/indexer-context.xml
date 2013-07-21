@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2013 
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Lautaro Matas (lmatas@gmail.com) - Desarrollo e implementación
+      Emiliano Marmonti(emarmonti@gmail.com) - Coordinación del componente III
+  
+  Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
@@ -13,21 +26,15 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	
-	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">
-	
-	    <constructor-arg><value>indexer.xsl</value></constructor-arg>
-		<!--  constructor-arg><value>/Users/lmatas/Source/LaReferencia/main/backend/indexer.xsl</value></constructor-arg-->
-		<!--  constructor-arg><value>http://localhost:8983/solr/core0</value></constructor-arg-->
-	    <constructor-arg><value>http://localhost:8080/solr/biblio</value></constructor-arg>
-		
+	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">	
+	    <constructor-arg><value>${solrxslpath}</value></constructor-arg>
+	    <constructor-arg><value>${solrurl}</value></constructor-arg>
 	</bean>
 	
 	<bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.IntelligoIndexer">
-	
 	    <constructor-arg><value>./intelligo.xsl</value></constructor-arg>
 	    <constructor-arg><value>./lang.detector.profiles</value></constructor-arg>
 		<constructor-arg><value>.</value></constructor-arg>
-		
 	</bean>
 	
 

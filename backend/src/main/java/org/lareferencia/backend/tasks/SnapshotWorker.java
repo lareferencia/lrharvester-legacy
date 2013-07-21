@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Lautaro Matas (lmatas@gmail.com) - Desarrollo e implementación
+ *     Emiliano Marmonti(emarmonti@gmail.com) - Coordinación del componente III
+ * 
+ * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
+ ******************************************************************************/
 package org.lareferencia.backend.tasks;
 
 import java.util.ArrayList;
@@ -11,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -24,11 +38,14 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.stats.StatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +56,19 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	private static int MAX_RETRIES = 15;
 	
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Autowired 
+	private ApplicationContext applicationContext;
+	
+	private StatsManager statsManager; // se carga como prototype en cada harvesting
 	
 	@Autowired
 	private NationalNetworkRepository networkRepository;
 		
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
+	
+	@Autowired
+	private NetworkSnapshotStatRepository statRepository;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
@@ -89,6 +111,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Override
 	public void run() {
 		
+		// Se pide al contexto una nueva instacia del statsManager (es prototype) cada cosecha
+		statsManager = applicationContext.getBean("statsManager", StatsManager.class);
 		
 		boolean newSnapshotCreated = true;
 		
@@ -168,6 +192,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 		snapshot.setEndTime( new Date() );
 		snapshotRepository.save(snapshot);
+		
+		// Persistencia de las estadísticas en caso de snap exitoso
+		if ( snapshot.getStatus() == SnapshotStatus.VALID) {
+			
+			for ( NetworkSnapshotStat stat: statsManager.getResults() ) {
+				stat.setSnapshot(snapshot);
+				statRepository.save(stat);
+			}
+			
+			statRepository.flush();
+		}
 		
 		// Flush y llamados al GC
 		snapshotRepository.flush();
@@ -257,8 +292,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							if ( !validationResult.isValid() && network.isRunTransformation() ) {
 								
 								// transforma y si hubo transformación la registra
-								if ( transformer.transform(metadata, validationResult) )
+								if ( transformer.transform(metadata, validationResult) ) {
 									snapshot.incrementTransformedSize();
+									
+									// marca si el registro fue transformado
+									record.setWasTransformed(true);
+								}
 								
 								// lo vuelve a validar
 								validationResult = validator.validate(metadata);
@@ -275,6 +314,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							// Se almacena la metadata transformada para los registros válidos
 							if ( validationResult.isValid() ) 
 								record.setPublishedXML( metadata.toString() );
+							
+							
+							///////// Cálculo de estadísticas
+							statsManager.process(metadata, validationResult);
 							
 							///////// Test de pertenencia a la colección del registro final
 							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);

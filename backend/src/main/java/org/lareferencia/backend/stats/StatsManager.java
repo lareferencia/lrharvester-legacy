@@ -1,25 +1,61 @@
+/*******************************************************************************
+ * Copyright (c) 2013 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Lautaro Matas (lmatas@gmail.com) - Desarrollo e implementación
+ *     Emiliano Marmonti(emarmonti@gmail.com) - Coordinación del componente III
+ * 
+ * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
+ ******************************************************************************/
 package org.lareferencia.backend.stats;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.domain.ValidationType;
+import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.ContentValidationResult;
 import org.lareferencia.backend.validator.ValidationResult;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class StatsManager {
+
+	@Getter
+	@Setter
+	List<IStatProcessor> statsProcessors = new ArrayList<IStatProcessor>();
+	
+	// Ejecuta todos los procesadores de estadísticas disponibles 
+	public void process(OAIRecordMetadata metadata, ValidationResult valResult) {
+		for (IStatProcessor processor: statsProcessors) {
+			processor.process(metadata, valResult);
+		}
+	}
+	
+	public List<NetworkSnapshotStat> getResults() {
+		
+		List<NetworkSnapshotStat> result = new ArrayList<NetworkSnapshotStat>();
+		
+		for (IStatProcessor statProcessor:statsProcessors) {
+			result.addAll( statProcessor.getResults() );
+		}
+		
+		return result;
+	}
 	
 	/** TODO
 	 *  Esta es la clase que centralizará el cálculo de estadísticas por red, de momento es muy sencilla y 
 	 *  estática, acotada a las necesidades de dignóstico planificadas para el milestone1
 	 */
 
-	
+	/******* codigo antiguo 
 	Map<Long, Map<String,Integer>> validationMap;
 	List<String> validationMapKeys;
 	
@@ -86,14 +122,7 @@ public class StatsManager {
 			
 			initMap(snapId, occurrencesByFieldMap, occurrencesByFieldMapKeys);
 			
-			/*
-			Map<String,Map<String,Integer>> aux = new HashMap<String, Map<String,Integer>>();
-			for (String key: rejectedByFieldMapKeys) {
-				Map<String,Integer> inner = new HashMap<String, Integer>();
-				aux.put(key,inner);
-			}
-			examplesByField.put(snapId, aux);
-			*/
+			
 		}	
 	}
 	
@@ -228,7 +257,7 @@ public class StatsManager {
 		
 		return result;
 	}
-	
+	*/
 	
 	
 
