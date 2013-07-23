@@ -12,11 +12,13 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 
-	<description></description>
+	<!-- Aquí se consigna el path principal de configuración, la configuración básica se aloja en backend.properties -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="location" value="file:/etc/lareferencia/backend.properties"/>
+  	</bean>
 
 	<jpa:repositories base-package="org.lareferencia.backend.repositories" />
 	<context:component-scan base-package="org.lareferencia.backend.repositories" />
-	
 	
 	<!-- Persistence setup -->
 	<bean id="entityManagerFactory"
@@ -35,9 +37,11 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost/backend_milestone2" />
-		<property name="username" value="backend" />
-		<property name="password" value="l210279" />
+		<property name="url"> 
+			<value>jdbc:mysql://${dbhost}/${dbname}</value>
+		</property>
+		<property name="username" value="${dbuser}" />
+		<property name="password" value="${dbpasswd}" />
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
