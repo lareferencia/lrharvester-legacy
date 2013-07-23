@@ -116,7 +116,6 @@ public class BackEndController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
-		//logger.info("Welcome home! The client locale is {}.", locale);
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -401,9 +400,9 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
-	@RequestMapping(value="/public/listTrasnformedRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="/public/listTransformedRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
-	public PageResource<OAIRecord> listTrasnsformedRecordsInfoBySnapshotID(@PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+	public PageResource<OAIRecord> listTransformedRecordsInfoBySnapshotID(@PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
 		
