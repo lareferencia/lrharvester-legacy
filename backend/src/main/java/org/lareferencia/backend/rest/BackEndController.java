@@ -43,6 +43,7 @@ import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.stats.MetadataOccurrenceCountSnapshotStatProcessor;
 import org.lareferencia.backend.stats.RejectedByFieldSnapshotStatProcessor;
 import org.lareferencia.backend.tasks.SnapshotManager;
+import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.JsonDateSerializer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
@@ -100,6 +101,9 @@ public class BackEndController {
 	
 	@Autowired
 	IValidator validator;
+	
+	@Autowired
+	ITransformer transformer;
 
 	
 	//private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
@@ -246,6 +250,30 @@ public class BackEndController {
 		return response;
 	}
 	
+	@RequestMapping(value="/public/transformRecordByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<OAIRecordTransformationInfo> transformRecordByID(@PathVariable Long id) throws Exception {
+		
+		OAIRecordTransformationInfo result = new OAIRecordTransformationInfo();
+		
+		OAIRecord record = recordRepository.findOne( id );	
+		OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+		
+		ValidationResult preValidationResult = validator.validate(metadata);
+		transformer.transform(metadata, preValidationResult);
+		ValidationResult posValidationResult = validator.validate(metadata);
+
+		result.id = id;
+		result.originalHeaderId = record.getIdentifier();
+		result.originalMetadata = record.getOriginalXML();
+		result.transformedMetadata = metadata.toString();
+		result.isOriginalValid = preValidationResult.isValid();
+		result.isTransformedValid = posValidationResult.isValid();
+		
+		ResponseEntity<OAIRecordTransformationInfo> response = new ResponseEntity<OAIRecordTransformationInfo>(result, HttpStatus.OK);
+		
+		return response;
+	}
+	
 	
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
@@ -373,6 +401,25 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
+	@RequestMapping(value="/public/listTrasnformedRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listTrasnsformedRecordsInfoBySnapshotID(@PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findBySnapshotAndWasTransformed(snapshot, true, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
+	
 	
 	@ResponseBody
 	@RequestMapping(value="/public/metadataOccurrenceCountBySnapshotId/{id}", method=RequestMethod.GET)
@@ -388,8 +435,8 @@ public class BackEndController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/public/rejectedByFieldCountBySnapshotId/{id}", method=RequestMethod.GET)
-	public List<NetworkSnapshotStat> rejectedByFieldCountBySnapshotId(@PathVariable Long id) throws Exception {
+	@RequestMapping(value="/public/rejectedFieldCountBySnapshotId/{id}", method=RequestMethod.GET)
+	public List<NetworkSnapshotStat> rejectedFieldCountBySnapshotId(@PathVariable Long id) throws Exception {
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
 		if (snapshot == null) // TODO: Implementar Exc
@@ -435,6 +482,16 @@ public class BackEndController {
 		private String  dcTypeFieldContents;
 	}
 	
+	@Getter
+	@Setter
+	class OAIRecordTransformationInfo {	
+		private Long   id;
+		private String originalHeaderId;
+		private String originalMetadata;
+		private String transformedMetadata;
+		private boolean isOriginalValid;
+		private boolean isTransformedValid;
+	}
 	
 	
 }

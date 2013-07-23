@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> { 
 	
 	 Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot, RecordStatus status, Pageable pageable);
+	 Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot, boolean wasTransformed, Pageable pageable);
+
 	 Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
 	 
 	 // Esta query sirve para obtener el total de páginas
@@ -45,7 +47,8 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 	 // Esta query sirve para obtener el total de páginas
      @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
-
+     
+     
 	 /***
 	  * 
 	  * Debido a que las operaciones con limit en mysql son suboptimas se implementa
