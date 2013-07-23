@@ -42,6 +42,7 @@
 		</property>
 		<property name="username" value="${dbuser}" />
 		<property name="password" value="${dbpasswd}" />
+
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
