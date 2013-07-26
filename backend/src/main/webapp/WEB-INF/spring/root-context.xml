@@ -25,6 +25,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<import resource="classpath:/META-INF/spring/base-context.xml"/>
+	<import resource="classpath:/META-INF/spring/security-context.xml"/>
 	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
 	<import resource="classpath:/META-INF/spring/persistence-context.xml"/>
 	<import resource="classpath:/META-INF/spring/indexer-context.xml"/>

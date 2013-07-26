@@ -72,9 +72,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Controller
 public class BackEndController {
 	
-	
-	private static final int STATS_PAGE_SIZE = 100;
-
 	@Autowired 
 	private ApplicationContext applicationContext;
 	
@@ -116,15 +113,8 @@ public class BackEndController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		
-		return "";
+				
+		return "home";
 	}
 	
 	
