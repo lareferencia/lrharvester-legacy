@@ -156,8 +156,6 @@ public class BackEndController {
 	}
 	
 	
-	
-	
 	@Transactional
 	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {

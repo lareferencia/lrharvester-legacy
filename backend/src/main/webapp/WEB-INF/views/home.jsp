@@ -3,13 +3,13 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Home</title>
+	<title>LAReferencia Admin</title>
 </head>
 <body>
 <h1>
 	Servicios de backend LAReferencia  
 </h1>
-<a href="/logout">logout</a>
+<a href="./logout">logout</a>
 
 </body>
 </html>
