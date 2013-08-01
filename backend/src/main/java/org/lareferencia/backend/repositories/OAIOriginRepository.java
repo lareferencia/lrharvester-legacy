@@ -13,18 +13,13 @@
  ******************************************************************************/
 package org.lareferencia.backend.repositories;
 
-import java.util.List;
-
-import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.OAIOrigin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.repository.annotation.RestResource;
 
-@RestResource(path = "stat", rel="stat", exported=false)
-public interface NetworkSnapshotStatRepository extends JpaRepository<NetworkSnapshotStat, Long> { 	
-	
-	 List<NetworkSnapshotStat> findBySnapshotAndStatId(NetworkSnapshot snapshot, Long statId);
-	 
+@RestResource(path = "origin",rel="origin")
+public interface OAIOriginRepository extends JpaRepository<OAIOrigin, Long> { 
 	
 	
+	  
 }

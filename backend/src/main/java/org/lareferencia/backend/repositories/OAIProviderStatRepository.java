@@ -15,7 +15,9 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.repository.annotation.RestResource;
 
+@RestResource(path = "providerStat", rel="providerStat", exported=false)
 public interface OAIProviderStatRepository extends JpaRepository<OAIProviderStat, String> { 
 	
 	//OAIProviderStat findByIpAddress(String ipAddress);

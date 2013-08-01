@@ -20,7 +20,9 @@ import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.rest.repository.annotation.RestResource;
 
+@RestResource(path = "snapshot", rel="snapshot")
 public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot, Long> { 
 	
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = ?1 and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = ?1 and s.status = 9)")

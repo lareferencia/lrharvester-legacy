@@ -48,12 +48,12 @@ public class NationalNetwork extends AbstractEntity {
 		
 	private String scheduleCronExpression;	
 	
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade=CascadeType.ALL/*, orphanRemoval=true*/)
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
 	private Collection<OAIOrigin> origins = new LinkedHashSet<OAIOrigin>();
 	
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade=CascadeType.ALL/*,orphanRemoval=true*/)
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
