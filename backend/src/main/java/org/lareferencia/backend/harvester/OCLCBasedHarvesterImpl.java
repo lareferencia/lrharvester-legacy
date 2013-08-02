@@ -29,8 +29,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ORG.oclc.oai.harvester2.verb.ListRecords;
-import ORG.oclc.oai.harvester2.verb.ListSets;
+import org.oclc.oai.harvester2.verb.ListRecords;
+import org.oclc.oai.harvester2.verb.ListSets;
 
 @Component
 @Scope(value = "prototype")
@@ -118,8 +118,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	private String buildErrorMessage(Exception e, int batchIndex, int actualRetry) {
 		String message = "Error en lote: " + batchIndex + " reintento: " + actualRetry + "\n";
 		message += "Detalles del error:\n";
-		message += e.getMessage();
-		message += "Fin detalles:\n";
+		message += e.getMessage() + "\n\n";
 		return message;
 	}
 

@@ -51,6 +51,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+
+
 /**
  * HarvesterVerb is the parent class for each of the OAI verbs.
  * 
@@ -58,6 +60,9 @@ import org.xml.sax.SAXException;
  */
 public abstract class HarvesterVerb {
     private static Logger logger = Logger.getLogger(HarvesterVerb.class);
+    
+    private static int MAX_REQUEST_TIME = 60; // SEGUNDOS
+    
     static {
         BasicConfigurator.configure();
     }
@@ -204,14 +209,20 @@ public abstract class HarvesterVerb {
         int i = 0;
         do {
         	
-            System.err.println("OCLC Harvester 2: intento: " + i);
+            System.out.println("OCLC Harvester 2: intento: " + i + " :Comenzando: " + requestURL);
             
             con = (HttpURLConnection) url.openConnection();
+            
+            con.setReadTimeout(MAX_REQUEST_TIME*1000);
+            	
             con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
             con.setRequestProperty("Accept-Encoding","compress, gzip, identify");
             
             try {
                 responseCode = con.getResponseCode();
+                
+                System.out.println("OCLC Harvester 2: intento: " + i + " :ResponseCode: " + responseCode);
+
                 logger.debug("responseCode=" + responseCode);
                 
             } catch (FileNotFoundException e) {
@@ -244,8 +255,13 @@ public abstract class HarvesterVerb {
             
           i++; 
         } while (responseCode == HttpURLConnection.HTTP_UNAVAILABLE);
+        
+        System.out.println("OCLC Harvester 2: Finalizando Get: " + requestURL);
+
+        
         String contentEncoding = con.getHeaderField("Content-Encoding");
         logger.debug("contentEncoding=" + contentEncoding);
+        
         if ("compress".equals(contentEncoding)) {
             ZipInputStream zis = new ZipInputStream(con.getInputStream());
             zis.getNextEntry();
@@ -258,7 +274,11 @@ public abstract class HarvesterVerb {
             in = con.getInputStream();
         }
         
+        
         InputSource data = new InputSource(in);
+        
+        System.out.println("OCLC Harvester 2: Leido input stream: " + requestURL);
+
         
         Thread t = Thread.currentThread();
         DocumentBuilder builder = (DocumentBuilder) builderMap.get(t);
@@ -266,8 +286,13 @@ public abstract class HarvesterVerb {
             builder = factory.newDocumentBuilder();
             builderMap.put(t, builder);
         }
+        
+        System.out.println("OCLC Harvester 2: parser preparado: " + requestURL);
+
         doc = builder.parse(data);
         
+        System.out.println("OCLC Harvester 2: parseado el documento : " + requestURL);
+
         StringTokenizer tokenizer = new StringTokenizer(
                 getSingleString("/*/@xsi:schemaLocation"), " ");
         StringBuffer sb = new StringBuffer();
@@ -277,6 +302,11 @@ public abstract class HarvesterVerb {
             sb.append(tokenizer.nextToken());
         }
         this.schemaLocation = sb.toString();
+        
+        System.out.println("OCLC Harvester 2: Finalizado: " + requestURL);
+        
+        con.disconnect();
+
     }
     
     /**
