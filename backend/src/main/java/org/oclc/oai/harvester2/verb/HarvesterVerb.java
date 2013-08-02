@@ -209,7 +209,7 @@ public abstract class HarvesterVerb {
         int i = 0;
         do {
         	
-            System.out.println("OCLC Harvester 2: intento: " + i + " :Comenzando: " + requestURL);
+            ///System.out.println("OCLC Harvester 2: intento: " + i + " :Comenzando: " + requestURL);
             
             con = (HttpURLConnection) url.openConnection();
             
@@ -221,7 +221,7 @@ public abstract class HarvesterVerb {
             try {
                 responseCode = con.getResponseCode();
                 
-                System.out.println("OCLC Harvester 2: intento: " + i + " :ResponseCode: " + responseCode);
+                //System.out.println("OCLC Harvester 2: intento: " + i + " :ResponseCode: " + responseCode);
 
                 logger.debug("responseCode=" + responseCode);
                 
@@ -256,7 +256,7 @@ public abstract class HarvesterVerb {
           i++; 
         } while (responseCode == HttpURLConnection.HTTP_UNAVAILABLE);
         
-        System.out.println("OCLC Harvester 2: Finalizando Get: " + requestURL);
+        //System.out.println("OCLC Harvester 2: Finalizando Get: " + requestURL);
 
         
         String contentEncoding = con.getHeaderField("Content-Encoding");
@@ -277,7 +277,7 @@ public abstract class HarvesterVerb {
         
         InputSource data = new InputSource(in);
         
-        System.out.println("OCLC Harvester 2: Leido input stream: " + requestURL);
+        //System.out.println("OCLC Harvester 2: Leido input stream: " + requestURL);
 
         
         Thread t = Thread.currentThread();
@@ -287,11 +287,11 @@ public abstract class HarvesterVerb {
             builderMap.put(t, builder);
         }
         
-        System.out.println("OCLC Harvester 2: parser preparado: " + requestURL);
+        //System.out.println("OCLC Harvester 2: parser preparado: " + requestURL);
 
         doc = builder.parse(data);
         
-        System.out.println("OCLC Harvester 2: parseado el documento : " + requestURL);
+        //System.out.println("OCLC Harvester 2: parseado el documento : " + requestURL);
 
         StringTokenizer tokenizer = new StringTokenizer(
                 getSingleString("/*/@xsi:schemaLocation"), " ");

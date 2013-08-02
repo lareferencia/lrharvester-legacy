@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.NetworkSnapshotLog;
 import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
@@ -37,6 +38,7 @@ import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
@@ -67,6 +69,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
 	
+	@Autowired
+	private NetworkSnapshotLogRepository snapshotLogRepository;
+
 	@Autowired
 	private NetworkSnapshotStatRepository statRepository;
 	
@@ -101,6 +106,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	public NetworkSnapshot getSnapshot() {
 		return snapshot;
+	}
+	
+	private void logMessage(String message) {
+		snapshotLogRepository.save( new NetworkSnapshotLog(message, this.snapshot) );
+		snapshotLogRepository.flush();
+		
 	}
 
 	/**
@@ -145,8 +156,13 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				
 		}
 		
+				
+		
 		snapshot.setStatus( SnapshotStatus.HARVESTING );
 		snapshotRepository.save(snapshot);
+		
+		logMessage("Comenzando cosecha ..."); 
+
 
 		// harvest de la red
 		if ( newSnapshotCreated ) // caso de harvesting desde cero
@@ -160,12 +176,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			harvestNetworkFromRT(snapshot.getResumptionToken());
 
 		
+		
 		// Si no generó errores terminó exitoso la cosecha
 		if ( snapshot.getStatus() != SnapshotStatus.HARVESTING_FINISHED_ERROR ) {
 			
 			// Lo setea como cosechado exitosamente
 			snapshot.setStatus( SnapshotStatus.HARVESTING_FINISHED_VALID );
+			logMessage("Cosecha terminada en forma exitosa");
+			
+			
 			snapshot.setStatus( SnapshotStatus.INDEXING );
+			logMessage("Comenzando indexación ...");
 			
 			snapshot.setEndTime( new Date() );
 			snapshotRepository.save(snapshot);
@@ -178,16 +199,23 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				boolean isSuccesfullyIndexed = indexer.index(snapshot);
 				
 				// Si el indexado es exitoso marca el snap válido
-				if ( isSuccesfullyIndexed )
+				if ( isSuccesfullyIndexed ) {
 					snapshot.setStatus( SnapshotStatus.VALID );
-				else
+					logMessage("Indexación terminada con éxito.") ;
+				}
+				else {
 					snapshot.setStatus( SnapshotStatus.INDEXING_FINISHED_ERROR );
+					logMessage("Error en proceso de indexación.");
+				}
 			} 
 			else {
 				// si no está publicada o no se indexa la marca como válida sin indexar
 				snapshot.setStatus( SnapshotStatus.VALID );
+				
 			}
 				
+		} else {
+			logMessage("Cosecha finalizada con errores");
 		}
 	
 		snapshot.setEndTime( new Date() );
@@ -269,8 +297,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 		
 			case OK:			
-				
-				
+					
 				List<OAIRecord> records = new ArrayList<OAIRecord>(100);
 			
 				// Agrega los records al snapshot actual			
@@ -336,7 +363,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						recordRepository.save(records);
 						recordRepository.flush();
 
-
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -353,6 +379,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			break;
 			
 			case ERROR_RETRY:
+				
+				logMessage("Retry:" + event.getMessage());
+				
 				System.out.println( event.getMessage() );			
 				snapshot.setStatus( SnapshotStatus.RETRYING );
 				snapshot.setEndTime( new Date() );
@@ -360,9 +389,13 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			break;
 			
 			case ERROR_FATAL:
+				
+				logMessage("Fatal:" + event.getMessage());
+				
 				System.out.println( event.getMessage() );
 				snapshot.setStatus( SnapshotStatus.HARVESTING_FINISHED_ERROR );
 				snapshotRepository.save(snapshot);
+				
 			break;
 
 			default:

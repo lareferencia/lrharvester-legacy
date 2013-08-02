@@ -36,6 +36,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataPar
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
@@ -80,6 +81,9 @@ public class BackEndController {
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
+	
+	@Autowired
+	private NetworkSnapshotLogRepository networkSnapshotLogRepository;
 	
 	@Autowired
 	private NetworkSnapshotStatRepository statsRepository;
@@ -173,6 +177,8 @@ public class BackEndController {
 				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() ) {
 					// borra los registros
 					recordRepository.deleteBySnapshotID(snapshot.getId());
+					// borra el log de cosechas
+					networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
 					// lo marca borrado
 					snapshot.setDeleted(true);
 					// almacena el estado del snap
