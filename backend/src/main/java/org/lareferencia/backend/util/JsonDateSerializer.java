@@ -26,14 +26,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 
-/**
-* Used to serialize Java.util.Date, which is not a common JSON
-* type, so we have to create a custom serialize method;.
-*
-* @author Loiane Groner
-* http://loianegroner.com (English)
-* http://loiane.com (Portuguese)
-*/
 @Component
 public class JsonDateSerializer extends JsonSerializer<Date>{
 

@@ -13,8 +13,11 @@
  ******************************************************************************/
 package org.lareferencia.backend.tasks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,8 +28,11 @@ import org.lareferencia.backend.repositories.NationalNetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.TaskScheduler;
 
+@ManagedResource(objectName = "backend:name=snapshotManager", description = "Administrador de snapshots")
 public class SnapshotManager {
 	
 	@Autowired
@@ -46,6 +52,23 @@ public class SnapshotManager {
 	
 	public SnapshotManager() {
 		workersBySnapshotID = new ConcurrentHashMap<Long, ISnapshotWorker>();
+	}
+	
+	@ManagedAttribute
+	public List<String> getActiveSnapshots() {
+		
+		List<String> result = new ArrayList<String>();
+		
+		for ( Long snapshotID: workersBySnapshotID.keySet() ) {
+		
+			result.add( snapshotID.toString() + " :: " + workersBySnapshotID.get(snapshotID).getStatus() );
+		}
+		return result;
+	}
+	
+	@ManagedAttribute
+	public Integer getActiveSnapshotsCount() {	
+		return workersBySnapshotID.size();
 	}
 	
 	@Autowired 

@@ -119,6 +119,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 	
 	
+	
+	
 	@Override
 	public void stop() {
 		
@@ -451,6 +453,14 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private void logMessage(String message) {
 		snapshotLogRepository.save( new NetworkSnapshotLog(message, this.snapshot) );
 		snapshotLogRepository.flush();
+	}
+
+	@Override
+	public SnapshotStatus getStatus() {
+		if ( snapshot != null )
+			return snapshot.getStatus();
+		else 
+			return SnapshotStatus.UNKNOWN;
 	}
 	
 	
