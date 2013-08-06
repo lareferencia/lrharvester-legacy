@@ -93,9 +93,9 @@
 							<!-- Regex valid url validator -->
 							<bean
 								class="org.lareferencia.backend.validator.RegexContentValidationRule">
-								<property name="name" value="identifier:not_empty"/>
+								<property name="name" value="identifier:match_url_regexp"/>
 								<property name="quantifier" value="1..*" />
-								<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789$)[a-zA-Z0-9/\-\.\_\?\=&amp;\;\:\@])+"/>
+								<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789.*$)[a-zA-Z0-9/\-\s\.\_\?\=&amp;\;\:\@])+"/>
 							</bean>
 						</list>
 					</property>
