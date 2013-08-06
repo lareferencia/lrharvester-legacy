@@ -4,6 +4,7 @@
 
 	var actual_origin_link = null;
 	var actual_network_link = null;
+	
 
 	function refreshNetworks() {
 		loadNetworkList('./rest/network','#networks');
@@ -99,6 +100,10 @@
  	function editNetwork(network_link) {
 		 actual_network_link = network_link;
 		 $('#form_edit_network').fromJson( $.rest.retrieve(network_link) );
+		 
+		 // actualiza el cron object
+		 //edit_network_cron.cron( 'value', $('[name=scheduleCronExpression]', '#form_edit_network').attr('value') );
+		 
 		 $('#dialog_edit_network').dialog('open');
 	}
 
@@ -243,7 +248,11 @@
 		    
 		    p.append("span")
             .attr("class", "column_date")
-            .text(function(d) { return d.startTime; });
+            .text(function(d) { 
+            	var date = new Date();
+            	date.setTime(d.startTime);
+            	return date.toLocaleTimeString(); 	
+            });
 		    
 		    p.append("span")
             .attr("class", "column_date")

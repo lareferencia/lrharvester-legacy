@@ -6,29 +6,56 @@
 <head>
 <title>LAReferencia Admin</title>
 	<link rel="stylesheet" href="<spring:url value="/static/css/smoothness/jquery-ui.css"/>"></link>
+	<link rel="stylesheet" href="<spring:url value="/static/css/jquery-select.css"/>"></link>
+	<link rel="stylesheet" href="<spring:url value="/static/css/jquery-cron.css"/>"></link>
 	<link rel="stylesheet" href="<spring:url value="/static/css/backend.css"/>"></link>
+	<link rel="stylesheet" href="<spring:url value="/static/css/cubism.css"/>"></link>
+	
 	
 	<script type="text/javascript" src="<spring:url value="/d3.v3.min.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/jquery.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/jquery-ui.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/jquery-select.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/jquery-cron.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/rest.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/backend.js"/>"></script>
 	
+	<!--  Monitoreo de recursos usando Jolokia -->
+	<script type="text/javascript" src="<spring:url value="/jolokia-min.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/jolokia-simple-min.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/cubism.v1.min.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/jolokia-cubism-min.js"/>"></script>	
+	<script type="text/javascript" src="<spring:url value="/jolokia-backend.js"/>"></script>
+	<!--  Necesita jolokia corriendo en /jolokia en tomcat -->
+	
+	
 </head>
+
 <body>	
 	<script type="text/javascript">
 	
 	 
-	  $(function() {
+	 $(function() { 
+		 
 		
-		     // dialogo de borrar red, setup inicial
+		  	 // cron editor create network 
+		  	 $('#create_network_cron_selector').cron( { onChange: function() {
+		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', $(this).cron('value'));}});
+		  
+			 // cron editor create network 
+		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
+		  		    var control = $('[name=scheduleCronExpression]', '#form_edit_network');
+		  		    control.value = '';
+		  			$('[name=scheduleCronExpression]', '#form_edit_network').attr('value', $(this).cron('value'));}});
+		  
+		  	 
+		  	 // dialogo de borrar red, setup inicial
 			 $("#dialog_delete_network").dialog( { autoOpen:false, 
 				                                   resizable: false,
 				      							   height:200,
 				      							   modal: true
 				      							});
-		     
-		     
+		          
 			 $("#dialog_network_snapshots").dialog( { autoOpen:false, 
                    resizable: false,
 				   height:400,
@@ -46,7 +73,7 @@
 		     
 			 $("#dialog_create_network").dialog( { autoOpen:false, 
                    resizable: false,
-				   height:300,
+				   height:500,
 				   width:500,
 				   modal: true,
 				   
@@ -63,7 +90,7 @@
 			 
 			 $("#dialog_edit_network").dialog( { autoOpen:false, 
                  resizable: false,
-				   height:300,
+				   height:500,
 				   width:500,
 				   modal: true,
 				   
@@ -129,13 +156,8 @@
 				      }
 				});
 		     
-		     
 		     // carga de redes disponibles
 			 loadNetworkList('./rest/network','#networks');
-		     
-			
-
-		     
 	  });
 	</script>
 
@@ -144,10 +166,14 @@
 		<a  href="./logout">logout</a>
 	</div> 
 	
+	<div id="memory" style="width:600;"></div>
+	
+	
 	<div id="buttons">
 		<button id="button_create_network" onclick="openCreateNetwork();">Crear una red</button>
 	</div>
 	<div id="networks"></div>
+	<br/>
 	
 	
 	<div id="dialog_network_snapshots" title="Listado de cosechas de la red nacional">
@@ -167,12 +193,15 @@
 				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
 				
-				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
-				
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
+				<br/>
+				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
 			</form>
+			
+			<div id='edit_network_cron_selector'></div>
+			
 	 </div>
 	 
 	 <div id="dialog_create_network" title="Crear una nueva red nacional">	
@@ -180,13 +209,13 @@
 				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
 				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
-				
-				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
-				
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
+				<br/>
+				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
 			</form>
+			<div id='create_network_cron_selector'></div>
 	 </div>		
 	 
 	<div id="dialog_edit_origins" title="Editar orígenes OAI de cosecha de la red">
