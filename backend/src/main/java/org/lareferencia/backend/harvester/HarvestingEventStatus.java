@@ -17,7 +17,9 @@ public enum HarvestingEventStatus {
 	
 	OK,
 	ERROR_RETRY,
-	ERROR_FATAL
+	ERROR_FATAL,
+	STOP_SIGNAL_RECEIVED
+
 	
 
 }

@@ -61,7 +61,7 @@ import org.xml.sax.SAXException;
 public abstract class HarvesterVerb {
     private static Logger logger = Logger.getLogger(HarvesterVerb.class);
     
-    private static int MAX_REQUEST_TIME = 60; // SEGUNDOS
+    private static int MAX_REQUEST_TIME = 120; // SEGUNDOS
     
     static {
         BasicConfigurator.configure();
@@ -303,7 +303,7 @@ public abstract class HarvesterVerb {
         }
         this.schemaLocation = sb.toString();
         
-        System.out.println("OCLC Harvester 2: Finalizado: " + requestURL);
+        //System.out.println("OCLC Harvester 2: Finalizado: " + requestURL);
         
         con.disconnect();
 

@@ -105,7 +105,10 @@ public class BackEndController {
 	
 	@Autowired
 	ITransformer transformer;
-
+	
+	@Autowired
+	SnapshotManager snapshotManager;
+	
 	
 	//private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
 	
@@ -122,16 +125,45 @@ public class BackEndController {
 	}
 	
 	
-	/************************** Backend ************************************/
+	/************************** Backend 
+	 * @throws Exception ************************************/
 	
-	@RequestMapping(value="/private/harvester/{networkID}", method=RequestMethod.GET)
-	public ResponseEntity<String> harvesting(@PathVariable Long networkID) {
-		//TODO: debiera chequear la existencia de la red
+	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
+	public ResponseEntity<String> startHarvesting(@PathVariable Long networkID) throws Exception {
 		
-		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
-		manager.lauchHarvesting(networkID);
+		NationalNetwork network = nationalNetworkRepository.findOne(networkID);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
 		
-		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
+		snapshotManager.lauchHarvesting(networkID);
+		
+		return new ResponseEntity<String>("Havesting iniciado red:" + networkID, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/private/stopHarvestingBySnapshotID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> stopHarvesting(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+		
+		snapshotManager.stopHarvesting(id);
+		
+		return new ResponseEntity<String>("Havesting detenido Snapshot:" + id, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
+	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + snapshotID);
+		
+		snapshotManager.relauchHarvesting(snapshotID);
+		
+		return new ResponseEntity<String>("Relauch havesting:" + snapshotID, HttpStatus.OK);
 	}
 	
 	/**
@@ -140,24 +172,21 @@ public class BackEndController {
 	 * sin repeticiones
 	 * @param networkID
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value="/private/harvestSetBySet/{networkID}", method=RequestMethod.GET)
-	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) {
+	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) throws Exception {
 		
-		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
-		manager.lauchSetBySetHarvesting(networkID);
+		NationalNetwork network = nationalNetworkRepository.findOne(networkID);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		snapshotManager.lauchSetBySetHarvesting(networkID);
 		
 		return new ResponseEntity<String>("Havesting:" + networkID, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
-	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) {
-		
-		SnapshotManager manager = applicationContext.getBean("snapshotManager", SnapshotManager.class);
-		manager.relauchHarvesting(snapshotID);
-		
-		return new ResponseEntity<String>("Relauch Havesting:" + snapshotID, HttpStatus.OK);
-	}
+	
 	
 	
 	@Transactional
@@ -227,20 +256,43 @@ public class BackEndController {
 	}
 	
 
-	/**************************** FrontEnd ************************************/
+	/**************************** FrontEnd  Exception ************************************/
 
-	@RequestMapping(value="/public/validateRecordByID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<ValidationResult> validateRecordByID(@PathVariable Long id) throws OAIRecordMetadataParseException {
+	@RequestMapping(value="/public/validateOriginalRecordByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<ValidationResult> validateOriginalRecordByID(@PathVariable Long id) throws Exception {
 		
+		OAIRecord record = recordRepository.findOne(id);
 		
-		OAIRecord record = recordRepository.findOne( id );	
-		OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+		if ( record != null ) {
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			ValidationResult result = validator.validate(metadata);
+			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
+			return response; 
+		}	
+		else
+			throw new Exception("Registro inexistente");
 		
-		ValidationResult result = validator.validate(metadata);
+	}
+	
+	@RequestMapping(value="/public/validateTransformedRecordByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<ValidationResult> validateTransformedRecordByID(@PathVariable Long id) throws Exception {
 		
-		ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
+		OAIRecord record = recordRepository.findOne(id);	
 		
-		return response;
+		if ( record != null ) {
+
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			
+			ValidationResult preValidationResult = validator.validate(metadata);
+			transformer.transform(metadata, preValidationResult);
+			ValidationResult posValidationResult = validator.validate(metadata);
+	
+			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(posValidationResult, HttpStatus.OK);
+		
+			return response;
+		}
+		else
+			throw new Exception("Registro inexistente");
 	}
 	
 	@RequestMapping(value="/public/transformRecordByID/{id}", method=RequestMethod.GET)
@@ -249,22 +301,30 @@ public class BackEndController {
 		OAIRecordTransformationInfo result = new OAIRecordTransformationInfo();
 		
 		OAIRecord record = recordRepository.findOne( id );	
-		OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
 		
-		ValidationResult preValidationResult = validator.validate(metadata);
-		transformer.transform(metadata, preValidationResult);
-		ValidationResult posValidationResult = validator.validate(metadata);
-
-		result.id = id;
-		result.originalHeaderId = record.getIdentifier();
-		result.originalMetadata = record.getOriginalXML();
-		result.transformedMetadata = metadata.toString();
-		result.isOriginalValid = preValidationResult.isValid();
-		result.isTransformedValid = posValidationResult.isValid();
-		
-		ResponseEntity<OAIRecordTransformationInfo> response = new ResponseEntity<OAIRecordTransformationInfo>(result, HttpStatus.OK);
-		
-		return response;
+		if ( record != null ) {
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			
+			ValidationResult preValidationResult = validator.validate(metadata);
+			transformer.transform(metadata, preValidationResult);
+			ValidationResult posValidationResult = validator.validate(metadata);
+	
+			result.id = id;
+			result.originalHeaderId = record.getIdentifier();
+			result.originalMetadata = record.getOriginalXML();
+			result.transformedMetadata = metadata.toString();
+			result.isOriginalValid = preValidationResult.isValid();
+			result.isTransformedValid = posValidationResult.isValid();
+			result.preValidationResult = preValidationResult;
+			result.posValidationResult = posValidationResult;
+			
+			ResponseEntity<OAIRecordTransformationInfo> response = new ResponseEntity<OAIRecordTransformationInfo>(result, HttpStatus.OK);
+			
+			return response;
+		}
+			else
+				throw new Exception("Registro inexistente");
+			
 	}
 	
 	
@@ -482,6 +542,10 @@ public class BackEndController {
 		private String originalHeaderId;
 		private String originalMetadata;
 		private String transformedMetadata;
+		
+		private ValidationResult preValidationResult;
+		private ValidationResult posValidationResult;
+		
 		private boolean isOriginalValid;
 		private boolean isTransformedValid;
 	}

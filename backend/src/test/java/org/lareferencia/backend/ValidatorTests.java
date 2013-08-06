@@ -192,11 +192,10 @@ public class ValidatorTests {
 			System.out.println( rerule.validate(content) );
 		}
 		
-		
-		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789$)[a-zA-Z0-9/\\-\\.\\_\\?\\=\\&\\;\\:\\@])+");
-		assertTrue(rerule.validate("http://hdl.handle.net/10915/12185").isValid()  );
+		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789.*$)[a-zA-Z0-9/\\-\\.\\s\\_\\?\\=\\&\\;\\:\\@])+");
+		assertTrue(rerule.validate("http://hdl.handle.net/10915/121 85").isValid()  );
 		assertTrue(rerule.validate("https://server.com:8080/janium-bin/janium_zui.pl?jzd=/janium/fotos/bpp-f-009/0502.jzd&amp;amp;fn=8502").isValid());
-		assertFalse(rerule.validate("http://hdl.handle.net/123456789").isValid()  );
+		assertFalse(rerule.validate("http://hdl.handle.net/123456789/15").isValid()  );
 		assertTrue(rerule.validate("http://www.maxwell.lambda.ele.puc-rio.br/Busca_etds.php?strSecao=resultado&nrSeq=11212@1").isValid());
 		assertTrue(rerule.validate("http://creativa.uaslp.mx/creativa.pl?d=-2&id=7841&t=TESU").isValid() );		
 		

@@ -20,6 +20,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.hibernate.annotations.Synchronize;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.context.annotation.Scope;
@@ -43,13 +44,25 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	//private static int MAX_RETRIES = 15;
 	private static int INITIAL_SECONDS_TO_RETRY = 3;
 	private static int RETRY_FACTOR = 2;
-
 	
+	private boolean stopSignalReceived = false;
+
+	@Override
+	public void stop() {
+		stopSignalReceived = true;
+	}
+	
+	@Override
+	public void reset() {
+		stopSignalReceived = false;
+	}
+
 	//private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
 	public OCLCBasedHarvesterImpl() {
 		super();
 		System.out.println("Creando Harvester: " + this.toString());
+		reset();
 	}
 
 	public void harvest(String uri, String from, String until, String setname,
@@ -64,7 +77,8 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// La condición es que sea la primera corrida o que no sea null el
 		// resumption (caso de fin)
 		// TODO: Hay casos donde dio null y no era el fin, estudiar alternativas
-		while ( batchIndex == 0 || (resumptionToken.trim().length() != 0 ) ) {
+		// Si levantan la stopSignal entonces corta el ciclo de harvesting
+		while ( !stopSignalReceived && ( batchIndex == 0 || (resumptionToken.trim().length() != 0 )) ) {
 
 			do {
 				try {
@@ -92,7 +106,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				//} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 					
 					String message = buildErrorMessage(e, batchIndex, actualRetry);
-					message += "Esperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
+					message += "\nEsperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
 					
 					fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_RETRY) );
 						
@@ -111,14 +125,23 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_FATAL) );
 				break;
 			}
+			
+			if ( stopSignalReceived ) {
+				String message = "Cosecha detenida por el administrador.";
+				message += "  Origen: " + uri; 
+				message += "  Set: " + setname; 
+				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.STOP_SIGNAL_RECEIVED) );
+				break;
+			}
 
 		}
 	}
 	
 	private String buildErrorMessage(Exception e, int batchIndex, int actualRetry) {
-		String message = "Error en lote: " + batchIndex + " reintento: " + actualRetry + "\n";
-		message += "Detalles del error:\n";
-		message += e.getMessage() + "\n\n";
+		String message = "Error lote: " + batchIndex + " reintento: " + actualRetry + "\n";
+		message += "Detalles:\n";
+		message +=  e.getMessage() + "\n";
+		
 		return message;
 	}
 
