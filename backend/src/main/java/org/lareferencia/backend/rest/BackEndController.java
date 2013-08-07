@@ -251,21 +251,39 @@ public class BackEndController {
 	
 	@ResponseBody
 	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Map<String,String>> indexRecordsBySnapshotID(@PathVariable Long id) {
+	public ResponseEntity<String> indexRecordsBySnapshotID(@PathVariable Long id) {
 		
 		// Se crea un proceso separado para la indexación
 		IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
 		worker.setSnapshotID(id);
 		scheduler.schedule(worker, new Date());
 	
-		Map<String,String> result = new HashMap<String, String>();
-		result.put("result", "INDEXING SNAPSHOT " + id);
-
-		return new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
+		return new ResponseEntity<String>("Indexando Snapshot: " + id, HttpStatus.OK);
 	}
 	
+	
+	@ResponseBody
+	@RequestMapping(value="/private/indexLGKSnapshotByNetworkID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> indexLGKByNetworkID(@PathVariable Long id) {
+		
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
 
-	/**************************** FrontEnd  Exception ************************************/
+		if ( snapshot != null ) {
+		
+			// Se crea un proceso separado para la indexación
+			IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
+			worker.setSnapshotID(snapshot.getId());
+			scheduler.schedule(worker, new Date());
+		
+			return new ResponseEntity<String>("Indexando LGK Snapshot RED: " + id, HttpStatus.OK);
+		} else 
+			return new ResponseEntity<String>("No existe LGK Snapshot RED: " + id, HttpStatus.OK);
+
+		
+	}
+
+	/**************************** FrontEnd  ************************************/
 
 	@ResponseBody
 	@RequestMapping(value="/public/validateOriginalRecordByID/{id}", method=RequestMethod.GET)

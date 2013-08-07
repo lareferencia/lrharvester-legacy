@@ -43,11 +43,15 @@
 		$.rest.retrieve(service_url, function(result) { alert('Cosecha lanzada');}, error_handler); 
 	}
 	
+	function 	sendStartIndexingLGKByNetworkID(networkID) {	
+		service_url = './private/indexLGKSnapshotByNetworkID/' + networkID;
+		$.rest.retrieve(service_url, function(result) { alert('Indexación lanzada');}, error_handler); 
+	}
+	
 	function sendDeleteAllButLGKSnapshotByNetworkID(networkID) {
 		service_url = './private/deleteAllButLGKSnapshot/' + networkID;
 		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los snapshots antiguos');}, error_handler); 
 	}
-	
 	
 	
 	
@@ -63,9 +67,9 @@
 	
     /**** Acciones sobre la lista de snpashots *******/
 	
-	function showSnapshots(network_link) {
+	function showSnapshots(network_link, lgkOnly) {
 		 actual_network_link = network_link;
-		 loadSnapshotList(network_link);
+		 loadSnapshotList(network_link, lgkOnly);
 		 $( "#dialog_network_snapshots" ).dialog("open");
 	}
 	
@@ -291,6 +295,11 @@
 		            p.append("td")
 		              .text(function(d) { if (d.published) return 'Si'; else return 'No'; });
 					
+		        	p.append("td")
+					  .append("button")
+					  .on("click", function(d) { showSnapshots($.rest.relLink(d,"self"), true); })	   
+					  .text("LGK snapshot"); 
+		            
 					p.append("td")
 					  .append("button")
 					  .on("click", function(d) { showSnapshots($.rest.relLink(d,"self")); })	   
@@ -305,6 +314,12 @@
 					  .append("button")
 					  .on("click", function(d) { sendStartHarvestingByNetworkID( $.rest.link2id($.rest.relLink(d,"self")) );  } )	   
 					  .text("cosechar"); 
+					
+					p.append("td")
+					  .append("button")
+					  .on("click", function(d) { sendStartIndexingLGKByNetworkID( $.rest.link2id($.rest.relLink(d,"self")) );  } )	   
+					  .text("indexar LGK"); 
+					
 					
 					p.append("td")
 					  .append("button")
@@ -333,11 +348,19 @@
      * Carga los datos del snapshot correspondiente a @para network en #snapshots
      * @param network
      */
-	function loadSnapshotList(network_link) {
+	function loadSnapshotList(network_link, lgkOnly) {
 		
-		// Esto los da ordenados de mayor fecha a menor
-		service_url = './rest/snapshot/search/findByNetworkIdOrderByStartTimeDesc?network_id=' +  $.rest.link2id(network_link);
 		
+		// lista todo, no solo el lgk
+		if ( lgkOnly == null || !lgkOnly ) {
+			// Esto los da ordenados de mayor fecha a menor
+			service_url = './rest/snapshot/search/findByNetworkIdOrderByStartTimeDesc?limit=50&network_id=' +  $.rest.link2id(network_link);
+		}
+		else {
+			// lista solo el lgk
+			service_url = '/rest/snapshot/search/findLastGoodKnowByNetworkID?network_id=' +  $.rest.link2id(network_link);
+		}
+				
 		dst_element_id = '#snapshots';
 		
 		d3.select(dst_element_id)
@@ -346,9 +369,16 @@
 		
 		$.rest.retrieve(service_url, function(result) {
 					
+			var content;
+			
+			if (lgkOnly != null && lgkOnly ) 
+				content = [result];
+			else
+				content = result.content;
+			
 			var p = d3.select(dst_element_id)
 			  .selectAll('tr')
-    		  .data(result.content)
+    		  .data(content)
               .enter().append('tr');
 			
 			p.append("td")

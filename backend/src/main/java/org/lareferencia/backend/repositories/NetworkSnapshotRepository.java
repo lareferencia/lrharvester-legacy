@@ -18,6 +18,8 @@ import java.util.List;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,13 +28,13 @@ import org.springframework.data.rest.repository.annotation.RestResource;
 @RestResource(path = "snapshot", rel="snapshot")
 public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot, Long> { 
 	
-	  @Query("select ns from NetworkSnapshot ns where ns.network.id = ?1 and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = ?1 and s.status = 9)")
-	  NetworkSnapshot findLastGoodKnowByNetworkID(Long networkID);
+	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id and s.status = 9)")
+	  NetworkSnapshot findLastGoodKnowByNetworkID(@Param("network_id") Long networkID);
 	  
 	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(NationalNetwork network, SnapshotStatus status);
 	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(NationalNetwork network);
 
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
-	  List<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id);
+	  Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);
 
 }

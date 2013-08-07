@@ -40,15 +40,21 @@
 		
 		  	 // cron editor create network 
 		  	 $('#create_network_cron_selector').cron( { onChange: function() {
-		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', $(this).cron('value'));}});
+		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', $(this).cron('value') + ' *');}});
 		  
-			 // cron editor create network 
+		  	 // cron editor edit network 
 		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
-		  		    var control = $('[name=scheduleCronExpression]', '#form_edit_network');
-		  		    control.value = '';
-		  			$('[name=scheduleCronExpression]', '#form_edit_network').attr('value', $(this).cron('value'));}});
+		  		
+		  			$('#input_edit_network_cron').attr('value', $(this).cron('value') + ' *');}});
 		  
-		  	 
+			 // cron editor copy to 
+			 function copyCronToEditNetwork() {
+			 
+		  	    var control = $('[name=scheduleCronExpression]', '#form_edit_network');
+		  		    control.value = $('#input_edit_network_cron').attr('value');
+		  	 }
+		  
+	 			
 		  	 // dialogo de borrar red, setup inicial
 			 $("#dialog_delete_network").dialog( { autoOpen:false, 
 				                                   resizable: false,
@@ -65,7 +71,7 @@
 				   buttons: {
 				       
 					   "Recargar": function() {
-							 loadSnapshotList(actual_network_link, '#snapshots');
+							 loadSnapshotList(actual_network_link);
 					    },
 					   
 				        "Cerrar": function() {
@@ -252,12 +258,8 @@
 		      <th>Nombre</th>
 		      <th>ISO</th>
 		      <th>Publicada</th>
-		      <th>Snapshots</th>
-		      <th>Orígenes</th>
-		      <th>Cosechar</th>
-		      <th>Limpiar</th>
-		      <th>Editar</th>
-		      <th>Borrar</th>    
+		
+		 
 		    </tr>
   		<tbody id="networks"></tbody>
 		</table>
@@ -279,8 +281,7 @@
 		      <th>Iniciado</th>
 		      <th>Terminado</th>
 		      
-		      <th>Log</th>
-		      <th>Detener</th>
+		
 		      
 		    </tr>
   			<tbody id="snapshots"></tbody>
@@ -318,7 +319,13 @@
 				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
 			</form>
 			
-			<div id='edit_network_cron_selector'></div>
+			<hr></hr>
+			<p><b>Asistente de expresiones cron</b></p>
+			<p>Cree un expresión nueva y haga click en copiar para sobreescribir la expresión actual</p>
+			<input id="input_edit_network_cron"></input>
+			<button onclick="copyCronToEditNetwork()">copiar</button>
+			<br/>
+			<div style="margin_top:10px;" id='edit_network_cron_selector'></div>
 			
 	 </div>
 	 
