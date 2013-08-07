@@ -63,7 +63,11 @@
 				   modal: true,
 				   
 				   buttons: {
-				        
+				       
+					   "Recargar": function() {
+							 loadSnapshotList(actual_network_link, '#snapshots');
+					    },
+					   
 				        "Cerrar": function() {
 				          $( this ).dialog( "close" );
 				        }
@@ -71,6 +75,21 @@
 				});
 			 
 		     
+			 $("#dialog_snapshot_log").dialog( { autoOpen:false, 
+                 resizable: false,
+				   height:400,
+				   width:800,
+				   modal: true,
+				   
+				   buttons: {
+				       
+				        "Cerrar": function() {
+				          $( this ).dialog( "close" );
+				        }
+				      }
+				});
+			 
+			 
 			 $("#dialog_create_network").dialog( { autoOpen:false, 
                    resizable: false,
 				   height:500,
@@ -156,8 +175,60 @@
 				      }
 				});
 		     
+			 
+			 $("#dialog_edit_sets").dialog( { autoOpen:false, 
+                 resizable: false,
+				   height:300,
+				   width:680,
+				   modal: true,
+				   
+				   buttons: {
+					   "Agregar un nuevo set": function() {
+					      openCreateSet();
+					    },
+				        "Cerrar": function() {
+				          $( this ).dialog( "close" );
+				        }
+				      }
+				});
+			 
+			 $("#dialog_create_set").dialog( { autoOpen:false, 
+                 resizable: false,
+				   height:200,
+				   width:400,
+				   modal: true,
+				   
+				   buttons: {
+				        "Agregar set al origen": function() {
+				          createSet(refreshSets);
+				          $( this ).dialog( "close" );
+				        },
+				        "Cerrar": function() {
+				          $( this ).dialog( "close" );
+				        }
+				      }
+				});
+			 
+			 $("#dialog_edit_set").dialog( { autoOpen:false, 
+                 resizable: false,
+				   height:200,
+				   width:400,
+				   modal: true,
+				   
+				   buttons: {
+				        "Actualizar información": function() {
+				          updateSet(actual_set_link, refreshSets);
+				          $( this ).dialog( "close" );
+				        },
+				        "Cancelar": function() {
+				          $( this ).dialog( "close" );
+				        }
+				      }
+				});
+		     
+			 
 		     // carga de redes disponibles
-			 loadNetworkList('./rest/network','#networks');
+			 loadNetworkList('./rest/network');
 	  });
 	</script>
 
@@ -167,17 +238,64 @@
 	</div> 
 	
 	<div id="memory" style="width:600;"></div>
+	<div id="harvesters" style="width:600;"></div>
 	
 	
 	<div id="buttons">
 		<button id="button_create_network" onclick="openCreateNetwork();">Crear una red</button>
 	</div>
-	<div id="networks"></div>
+	
+	<div>
+		<table>
+		    <tr>
+		      <th>ID</th>
+		      <th>Nombre</th>
+		      <th>ISO</th>
+		      <th>Publicada</th>
+		      <th>Snapshots</th>
+		      <th>Orígenes</th>
+		      <th>Cosechar</th>
+		      <th>Limpiar</th>
+		      <th>Editar</th>
+		      <th>Borrar</th>    
+		    </tr>
+  		<tbody id="networks"></tbody>
+		</table>
+	
+	</div>
 	<br/>
 	
 	
 	<div id="dialog_network_snapshots" title="Listado de cosechas de la red nacional">
-		<div id="snapshots"></div>
+		
+		<table>
+		    <tr>
+		      <th>ID</th>
+		      <th>Estado</th>
+		      <th>Borrado</th>
+		      <th>#Registros</th>
+		      <th>#Válidos</th>
+		      <th>#Transformados</th>
+		      <th>Iniciado</th>
+		      <th>Terminado</th>
+		      
+		      <th>Log</th>
+		      <th>Detener</th>
+		      
+		    </tr>
+  			<tbody id="snapshots"></tbody>
+		</table>
+	</div>
+	
+	<div id="dialog_snapshot_log" title="Bitácora de cosecha">
+		
+		<table>
+		    <tr>
+		      <th width="150">FechaHora</th>
+		      <th width="600">Mensaje</th>
+		    </tr>
+  			<tbody id="snapshot_log"></tbody>
+		</table>
 	</div>
 	
 	<div id="dialog_delete_network" title="¿Desea borrar la red nacional?">
@@ -219,7 +337,13 @@
 	 </div>		
 	 
 	<div id="dialog_edit_origins" title="Editar orígenes OAI de cosecha de la red">
-		<div id="network_origins"></div>
+			<table>
+		    <tr>
+		      <th width="150">Nombre</th>
+		      <th width="600">URL</th>
+		    </tr>
+  			<tbody id="network_origins"></tbody>
+		</table>
 	</div> 
 	
 	<div id="dialog_edit_origin" title="Editar un orígen OAI">
@@ -237,6 +361,30 @@
 			URI:<input type="text" name="uri" maxlength="150" size="100"/><br/> 
 		</form>
 	</div>		
+	
+	<div id="dialog_edit_sets" title="Editar sets OAI de cosecha de la red">
+			<table>
+		    <tr>
+		      <th width="150">Nombre</th>
+		      <th width="600">Spec</th>
+		    </tr>
+  			<tbody id="origin_sets"></tbody>
+		</table>
+	</div> 
+	
+	<div id="dialog_create_set" title="Agregar un set OAI">
+		<form id="form_create_set">
+			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
+			Spec:<input type="text" name="spec" maxlength="255" size="30"/><br/> 
+		</form>
+	</div>	
+	
+	<div id="dialog_edit_set" title="Agregar un set OAI">
+		<form id="form_edit_set">
+			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
+			Spec:<input type="text" name="spec" maxlength="255" size="30"/><br/> 
+		</form>
+	</div>	
 	
 </body>
 </html>

@@ -6,6 +6,26 @@ body {
 	
 }
 
+table {
+	border-spacing:0;
+    border-collapse:collapse;
+    font-size: 11px;
+    
+};
+
+th {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+td {
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 1px solid #e3e7e7;
+
+}
+
+
 #title {	
 	margin-bottom: 30px;
 	margin-top: 20px;
@@ -25,35 +45,10 @@ body {
 
 
 #networks {	
-	border-top: 4px solid #e3e7e7;
-	width: 600px;
+
 }
 
-#networks p {
-		clear: both;
-		width: 100%;
-		margin: 0;
-}
 
-#networks span {
-		float: left;
-		display: block;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		padding-left: 10px;
-		border-left: 1px solid #e3e7e7;
-		border-bottom: 1px solid #e3e7e7;
-		height: 20px;
-}
-
-#networks .network_name {
-	width: 100px;
-	font-weight:bold;
-}
-
-#networks .column {
-	width: 80px;
-}
 
 
 /*********  Origins ***********/
@@ -97,42 +92,6 @@ body {
 /*********  Snapshots ***********/
 
 #snapshots {
-	border-top: 4px solid #e3e7e7;
-	width: 750px;
-	height: 200px;
-	
-	font-size: 11px;
+	border-top: 4px solid #e3e7e7;	
 }
 
-#snapshots p {
-		clear: both;
-		width: 100%;
-		margin: 0;
-}
-
-#snapshots span {
-		float: left;
-		display: block;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		padding-left: 10px;
-		border-left: 1px solid #e3e7e7;
-		border-bottom: 1px solid #e3e7e7;
-		height: 20px;
-}
-
-#snapshots .column {
-	width: 40px;
-}
-
-#snapshots .column_wide {
-	width: 200px;
-}
-
-#snapshots .column_number {
-	width: 60px;
-}
-
-#snapshots .column_date {
-	width: 100px;
-}

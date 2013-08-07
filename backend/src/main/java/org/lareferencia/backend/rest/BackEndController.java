@@ -128,6 +128,7 @@ public class BackEndController {
 	/************************** Backend 
 	 * @throws Exception ************************************/
 	
+	@ResponseBody
 	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> startHarvesting(@PathVariable Long networkID) throws Exception {
 		
@@ -140,6 +141,7 @@ public class BackEndController {
 		return new ResponseEntity<String>("Havesting iniciado red:" + networkID, HttpStatus.OK);
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/private/stopHarvestingBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> stopHarvesting(@PathVariable Long id) throws Exception {
 		
@@ -153,6 +155,8 @@ public class BackEndController {
 		return new ResponseEntity<String>("Havesting detenido Snapshot:" + id, HttpStatus.OK);
 	}
 	
+	
+	@ResponseBody
 	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
 	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) throws Exception {
 		
@@ -174,6 +178,7 @@ public class BackEndController {
 	 * @return
 	 * @throws Exception 
 	 */
+	@ResponseBody
 	@RequestMapping(value="/private/harvestSetBySet/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) throws Exception {
 		
@@ -190,6 +195,7 @@ public class BackEndController {
 	
 	
 	@Transactional
+	@ResponseBody
 	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {
 		
@@ -216,31 +222,34 @@ public class BackEndController {
 			}
 		}
 		else
-			throw new Exception("No se encontró LGK Snapshot para esa red, no se realizaron cambios");
+			return new ResponseEntity<String>("No hay snapshots excedentes de:" + network.getName(), HttpStatus.OK);
 
 		
 		return new ResponseEntity<String>("Borrados snapshots excedentes de:" + network.getName(), HttpStatus.OK);
 	}
 	
 	@Transactional
+	@ResponseBody
 	@RequestMapping(value="/private/deleteRecordsBySnapshotID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Map<String,String>> deleteRecordsBySnapshotID(@PathVariable Long id) {
+	public ResponseEntity<String> deleteRecordsBySnapshotID(@PathVariable Long id) {
 		
-		recordRepository.deleteBySnapshotID(id);
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
 		snapshot.setDeleted(true);
+		
+		// borra los registros
+		recordRepository.deleteBySnapshotID(id);
+			
+		// borra el log de cosechas
+		networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
+		
 		networkSnapshotRepository.save(snapshot);
 		
+		return new ResponseEntity<String>("Registros borrados snapshot: " + id.toString(), HttpStatus.OK);
 		
-		Map<String,String> result = new HashMap<String, String>();
-		result.put("result", "OK");
-		
-		ResponseEntity<Map<String,String>> response = new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
-		
-		return response;
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Map<String,String>> indexRecordsBySnapshotID(@PathVariable Long id) {
 		
@@ -258,6 +267,7 @@ public class BackEndController {
 
 	/**************************** FrontEnd  Exception ************************************/
 
+	@ResponseBody
 	@RequestMapping(value="/public/validateOriginalRecordByID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<ValidationResult> validateOriginalRecordByID(@PathVariable Long id) throws Exception {
 		
@@ -274,6 +284,7 @@ public class BackEndController {
 		
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/public/validateTransformedRecordByID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<ValidationResult> validateTransformedRecordByID(@PathVariable Long id) throws Exception {
 		
@@ -295,6 +306,7 @@ public class BackEndController {
 			throw new Exception("Registro inexistente");
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/public/transformRecordByID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<OAIRecordTransformationInfo> transformRecordByID(@PathVariable Long id) throws Exception {
 		
@@ -327,7 +339,7 @@ public class BackEndController {
 			
 	}
 	
-	
+	@ResponseBody
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
 			
@@ -338,7 +350,8 @@ public class BackEndController {
 		);
 		return response;
 	}
-	
+
+	@ResponseBody
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByCountryISO/{iso}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String iso) throws Exception {
 		
@@ -357,6 +370,7 @@ public class BackEndController {
 		return response;
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/public/listSnapshotsByCountryISO/{iso}", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByCountryISO(@PathVariable String iso) throws Exception {
 		
@@ -369,7 +383,7 @@ public class BackEndController {
 		return response;
 	}
 	
-	
+	@ResponseBody
 	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 		
@@ -402,6 +416,7 @@ public class BackEndController {
 		return response;
 	}
 	
+	@ResponseBody
 	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
 		

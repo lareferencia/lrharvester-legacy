@@ -19,12 +19,21 @@
         {type:"read", mbean:"java.lang:type=Memory", attribute:"HeapMemoryUsage", path:"max"}, "Heap-Memory"
     );
     
+    var harvesters =  jolokia.metric(
+       function (resp1) {
+            return resp1.value;
+        },
+        {type:"read", mbean:"backend:name=snapshotManager", attribute:"ActiveSnapshotsCount"}, "Cosechas Activas"
+    );
+    
     var colorsRed = ["#FDBE85", "#FEEDDE", "#FD8D3C", "#E6550D", "#A63603", "#FDBE85", "#FEEDDE", "#FD8D3C", "#E6550D", "#A63603" ],
         colorsGreen = [ "#E5F5F9", "#99D8C9", "#2CA25F", "#E5F5F9", "#99D8C9", "#2CA25F"],
         colorsBlue = [ "#ECE7F2", "#A6BDDB", "#2B8CBE", "#ECE7F2", "#A6BDDB", "#2B8CBE"];
 
     // Created graphs
     $(function () {
+    	
+    
         d3.select("#memory").call(function (div) {
 
             div.append("div")
@@ -44,6 +53,28 @@
             div.append("div")
                 .attr("class", "rule")
                 .call(context.rule());
+            
+        });
+        
+        d3.select("#harvesters").call(function (div) {
+
+                div.append("div")
+                    .attr("class", "axis")
+                    .call(context.axis().orient("top"));
+
+                div.selectAll(".horizon")
+                    .data([harvesters])
+                    .enter().append("div")
+                    .attr("class", "horizon")
+                    .call(
+                    	context.horizon()
+                        .colors(colorsBlue)
+                        .format(d3.format("d"))
+                );
+               
+                div.append("div")
+                    .attr("class", "rule")
+                    .call(context.rule());
 
         });
 
@@ -59,4 +90,4 @@
     };
 		 
     
-    j4p.start(1000);
+    //j4p.start(1000);
