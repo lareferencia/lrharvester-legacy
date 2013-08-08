@@ -354,7 +354,7 @@
 		}
 		else {
 			// lista solo el lgk
-			service_url = '/rest/snapshot/search/findLastGoodKnowByNetworkID?network_id=' +  $.rest.link2id(network_link);
+			service_url = './rest/snapshot/search/findLastGoodKnowByNetworkID?network_id=' +  $.rest.link2id(network_link);
 		}
 				
 		dst_element_id = '#snapshots';
