@@ -34,6 +34,11 @@
 <body>	
 	<script type="text/javascript">
 	
+	 // cron editor copy to 
+	 function copyCronToEditNetwork() {
+		var value = $('#input_edit_network_cron_helper').attr('value');  
+ 	    $('#input_edit_network_cron').attr('value', value);   	 
+ 	 }
 	 
 	 $(function() { 
 		 
@@ -44,17 +49,10 @@
 		  
 		  	 // cron editor edit network 
 		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
-		  		
-		  			$('#input_edit_network_cron').attr('value', $(this).cron('value') + ' *');}});
+		  			$('#input_edit_network_cron_helper').attr('value', $(this).cron('value') + ' *');}
+		  	 });
 		  
-			 // cron editor copy to 
-			 function copyCronToEditNetwork() {
-			 
-		  	    var control = $('[name=scheduleCronExpression]', '#form_edit_network');
-		  		    control.value = $('#input_edit_network_cron').attr('value');
-		  	 }
-		  
-	 			
+				
 		  	 // dialogo de borrar red, setup inicial
 			 $("#dialog_delete_network").dialog( { autoOpen:false, 
 				                                   resizable: false,
@@ -316,16 +314,16 @@
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
 				<br/>
-				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
+				Cosecha programada: <input id="input_edit_network_cron" type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
 			</form>
 			
 			<hr></hr>
 			<p><b>Asistente de expresiones cron</b></p>
 			<p>Cree un expresión nueva y haga click en copiar para sobreescribir la expresión actual</p>
-			<input id="input_edit_network_cron"></input>
+			<input id="input_edit_network_cron_helper"></input>
 			<button onclick="copyCronToEditNetwork()">copiar</button>
 			<br/>
-			<div style="margin_top:10px;" id='edit_network_cron_selector'></div>
+			<div id='edit_network_cron_selector'></div>
 			
 	 </div>
 	 
