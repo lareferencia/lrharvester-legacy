@@ -211,11 +211,7 @@
  	 */
  	function editNetwork(network_link) {
 		 actual_network_link = network_link;
-		 $('#form_edit_network').fromJson( $.rest.retrieve(network_link) );
-		 
-		 // actualiza el cron object
-		 //edit_network_cron.cron( 'value', $('[name=scheduleCronExpression]', '#form_edit_network').attr('value') );
-		 
+		 $('#form_edit_network').fromJson( $.rest.retrieve(network_link) );	 
 		 $('#dialog_edit_network').dialog('open');
 	}
 

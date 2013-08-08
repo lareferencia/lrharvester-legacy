@@ -13,31 +13,34 @@ $.fn.resetForm = function () {
  */
 $.fn.toJson = function()
 {
-	
-	var form = $(this);
-	var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-    	
-	    var $ctrl = $('[name='+this.name+']', form);  
+    var form = $(this);
+    
+    var jsonResult = {};
 
+    /* Get input values from form */
+    var values = this.serializeArray();
+    
+    /* Because serializeArray() ignores unset checkboxes and radio buttons: */
+    values = values.concat(
+    		$('input[type=checkbox]:not(:checked)', form).map(function() {return {"name": this.name, "value": "0"};}).get()
+    );
+	
+    $.each(values, function() {
+    	    	
+	    var $ctrl = $('[name='+this.name+']', form);  
+	    
 	    if ( $ctrl.attr("type") == 'checkbox' ) {
 	    	if ( this.value == '1' ) 
-	    		this.value = 'true';
-	    	if ( this.value == '1' ) 
-	    		this.value = 'false';
+	    		this.value = true;
+	    	if ( this.value == '0' ) 
+	    		this.value = false;
 	    }
     	
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
+        jsonResult[this.name] = this.value;
+
+    });   
+    
+    return jsonResult;
 };
 
 /**
@@ -59,9 +62,8 @@ $.fn.fromJson = function(data) {
 	        	$ctrl.val(value);   
 	        break;   
 	        
-	        case "radio" : case "checkbox":   
-	        $ctrl.each(function(){
-	           if( $(this).attr('value') == value) {  $(this).attr("checked", true); } });   
+	        case "radio" : case "checkbox":
+	        	$ctrl.attr("checked", value); 
 	        break;  
 	    }  
     });   
