@@ -209,7 +209,8 @@ public class BackEndController {
 		if ( lgkSnapshot != null) {
 		
 			for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
-				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() ) {
+				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() 
+						&& snapshot.getStatus() != SnapshotStatus.HARVESTING ) { // previene el borrado de harvestings en proceso
 					// borra los registros
 					recordRepository.deleteBySnapshotID(snapshot.getId());
 					// borra el log de cosechas
