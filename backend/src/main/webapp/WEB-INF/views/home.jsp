@@ -319,9 +319,11 @@
 			
 			<hr></hr>
 			<p><b>Asistente de expresiones cron</b></p>
-			<p>Cree un expresión nueva y haga click en copiar para sobreescribir la expresión actual</p>
+			<!--  p>Cree un expresión nueva y haga click en copiar para sobreescribir la expresión actual</p-->
+			<p>Cree un expresión nueva y haga use copiar/pegar para  sobreescribir la expresión actual</p>
+			
 			<input id="input_edit_network_cron_helper"></input>
-			<button onclick="copyCronToEditNetwork()">copiar</button>
+			<!--  button onclick="copyCronToEditNetwork()">copiar</button-->
 			<br/>
 			<div id='edit_network_cron_selector'></div>
 			
