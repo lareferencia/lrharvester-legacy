@@ -48,7 +48,7 @@ $ccode= $row['ccode'];
 $registro = "";
 
 $file = "/registro_click.csv";
-$fp = fopen("/usr/local/vufind/web".$file, "a+");
+$fp = fopen("/var/www/vufind/".$file, "a+");
 
 //$registro .= date("l dS of F Y h:i:s A") . "\t";
 //$registro .= date("j/n/Y - h:i:s A") . ",";
