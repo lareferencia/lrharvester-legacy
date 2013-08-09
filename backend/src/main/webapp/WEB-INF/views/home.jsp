@@ -45,11 +45,11 @@
 		
 		  	 // cron editor create network 
 		  	 $('#create_network_cron_selector').cron( { onChange: function() {
-		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', $(this).cron('value') + ' *');}});
+		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', '* ' + $(this).cron('value'));}});
 		  
 		  	 // cron editor edit network 
 		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
-		  			$('#input_edit_network_cron_helper').attr('value', $(this).cron('value') + ' *');}
+		  			$('#input_edit_network_cron_helper').attr('value', '* ' + $(this).cron('value'));}
 		  	 });
 		  
 				
