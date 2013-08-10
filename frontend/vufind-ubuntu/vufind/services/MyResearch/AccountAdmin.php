@@ -32,7 +32,7 @@ require_once 'sys/User.php';
 
 require_once 'Mail/RFC822.php';
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage2/securimage.php';
 /**
  * Account action for MyResearch module
  *
@@ -64,6 +64,18 @@ class AccountAdmin extends Action
     {
         global $interface;
         global $configArray;
+	
+	$vurl=$configArray['Site']['url'];
+		 $vbiblio=$configArray['Index']['url'];
+		 $vstats=$configArray['Statistics']['solr'];
+		 $localhost=$configArray['LocalHost']['lht'];
+		 $captcha=$configArray['Captcha']['cap'];
+		 
+	$local_url=$_SERVER['DOCUMENT_ROOT'];
+	
+	$interface->assign('captcha', $captcha);
+	$interface->assign('localhost', $localhost);
+	
         
         // Don't allow account creation if a non-DB authentication method
         // is being used!!
@@ -144,12 +156,16 @@ class AccountAdmin extends Action
             $user->email = $_POST['email'];
             if (!$user->find()) {
 			
-				// session_start();
-			     //$securimage = new Securimage();
+				 //session_start();
+			     $securimage = new Securimage();
 				 
-				// if ($securimage->check($_POST['captcha_code'])) {
-				
-				//if (($_POST['authorization']==="adminl4r3f")) {
+				 //echo $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+				 //echo ' -- ';
+				 // echo $_POST['captcha_code'];echo ' :: ';
+				 // print_r( $securimage->getCode(true,true));
+				  
+				 if ($securimage->check($_POST['captcha_code'])) {
+					//if (($_POST['authorization']==="adminl4r3f")) {
 						// We need to reassign the username since we cleared it out when
 						// we did the search for duplicate email addresses:
 						$user->username = $_POST['username'];
@@ -167,9 +183,9 @@ class AccountAdmin extends Action
 						$result2 = $this->sendEmail($user->email, 'admin@lareferencia.net', $bienvenida);
 					//}
 					
-				//} else {
-                //return new PEAR_Error('The security code entered was incorrect');
-		//		}
+				} else {
+                return new PEAR_Error('The security code entered was incorrect');
+				}
             } else {
                 return new PEAR_Error('That email address is already used');
             }

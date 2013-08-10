@@ -32,7 +32,7 @@ require_once 'sys/User.php';
 
 require_once 'Mail/RFC822.php';
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+include_once $_SERVER['DOCUMENT_ROOT'].'/'.$configArray['Captcha']['cap'].'/securimage.php';
 /**
  * Account action for MyResearch module
  *
@@ -64,7 +64,20 @@ class Account extends Action
     {
         global $interface;
         global $configArray;
-        
+		
+		 $vurl=$configArray['Site']['url'];
+		 $vbiblio=$configArray['Index']['url'];
+		 $vstats=$configArray['Statistics']['solr'];
+		 $localhost=$configArray['LocalHost']['lht'];
+		 $captcha=$configArray['Captcha']['cap'];
+		 
+		 $admincode=$configArray['Admin']['code'];
+	//echo $admincode;
+	$local_url=$_SERVER['DOCUMENT_ROOT'];
+	
+	$interface->assign('captcha', $captcha);
+	$interface->assign('localhost', $localhost);
+	
         // Don't allow account creation if a non-DB authentication method
         // is being used!!
         if ($configArray['Authentication']['method'] !== 'DB') {
@@ -124,6 +137,8 @@ class Account extends Action
      */
     private function _processInput()
     {
+	
+	   global $configArray;
         // Validate Input
         if (trim($_POST['username']) == '') {
             return new PEAR_Error('Username cannot be blank');
@@ -137,7 +152,9 @@ class Account extends Action
         if (!Mail_RFC822::isValidInetAddress($_POST['email'])) {
             return new PEAR_Error('Email address is invalid');
         }
-
+		
+$admincode=$configArray['Admin']['code'];
+		
         // Create Account
         $user = new User();
         $user->username = $_POST['username'];
@@ -147,10 +164,13 @@ class Account extends Action
             $user->email = $_POST['email'];
             if (!$user->find()) {
 			
-				// session_start();
-			    // $securimage = new Securimage();
-				 
-				// if ($securimage->check($_POST['captcha_code'])) {
+				 //session_start();
+			     $securimage = new Securimage();
+				 //  echo $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+				 //  echo ' -- ';
+				 // echo $_POST['captcha_code'];echo ' :: ';
+				 // print_r( $securimage->getCode(true,true));
+				 if ($securimage->check($_POST['captcha_code'])) {
 					// We need to reassign the username since we cleared it out when
 					// we did the search for duplicate email addresses:
 					$user->username = $_POST['username'];
@@ -170,18 +190,31 @@ class Account extends Action
 					$user->admin_country = $_POST['admin'];
 					
 					$user->created = date('Y-m-d h:i:s');
-					$user->insert();
+					
+					if (isset($_POST['admin']))
+						{
+						//echo $_POST['authorization'];
+						//echo $admincode;
+						if ((strcmp($_POST['authorization'],$admincode)))
+							return new PEAR_Error('El c&oacute;digo de autorizaci&oacute;n proporcionado no es correcto');
+						else
+							$user->insert();
+						}
+						else
+						{
+						$user->insert();
+						}
 					$bienvenida="Datos de registro\nUsuario:".$user->username."\nContraseña:".$user->password."\nFecha:".date('Y-m-d h:i:s');
 					$result2 = $this->sendEmail($user->email, 'admin@lareferencia.net', $bienvenida);
 				
-				//} else {
-                //return new PEAR_Error('The security code entered was incorrect');
-		//		}
+				} else {
+                return new PEAR_Error('El c&oacute;digo de seguridad proporcionado no es correcto');
+				}
             } else {
-                return new PEAR_Error('That email address is already used');
+                return new PEAR_Error('El correo proporcionado ya est&aacute; en uso');
             }
         } else {
-            return new PEAR_Error('That username is already taken');
+            return new PEAR_Error('El nombre de usuario proporcionado ya est&aacute; en uso');
         }
         
         return true;
