@@ -58,10 +58,11 @@ class Home extends Action
 		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
+		  $vterminos=$configArray['Terminos']['terminos_portada'];
 
 $output="";
 		 
-$url = $vbiblio.'/biblio/select?q='.urlencode('topic_browse:[* TO *]').'&wt=xml&facet=true&facet.field=topic_browse&fl=topic_browse&facet.limit=1000&rows=0&facet.mincount=700&facet.sort=index';
+$url = $vbiblio.'/biblio/select?q='.urlencode('topic_browse:[* TO *]').'&wt=xml&facet=true&facet.field=topic_browse&fl=topic_browse&facet.limit=1000&rows=0&facet.mincount='.$vterminos.'&facet.sort=index';
 $xml = simpleXML_load_file($url,"SimpleXMLElement",LIBXML_NOCDATA);
 if($xml ===  FALSE)
 {
