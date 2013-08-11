@@ -124,7 +124,9 @@ foreach ($xml->xpath("//lst[@name='topic_browse']/int") as $busqueda) {
 		
 		
         // Cache homepage
-        $interface->caching = 1; 
+		
+        // $interface->caching = 1; 
+		
         $cacheId = 'homepage|' . $interface->lang . '|' .
             (UserAccount::isLoggedIn() ? '1' : '0') . '|' .
             (isset($_SESSION['lastUserLimit']) ? $_SESSION['lastUserLimit'] : '') .
