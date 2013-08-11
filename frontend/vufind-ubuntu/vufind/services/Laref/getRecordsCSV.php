@@ -105,7 +105,7 @@ if(isset($_GET["url"]))
 					 }
 				else if ($key2==="belongsToCollectionDetails")
 					 {
-						$output7 .= "\",\"".$value2.;
+						$output7 .= "\",\"".$value2;
 						$output7 .= "\",\"".$vurl."/Laref/getRecordValidation?id=".$ni."&oid=".$valtem."\"\n";
 
 					}

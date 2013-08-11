@@ -3,7 +3,7 @@
   <h1>{translate text="Argentina"}</h1>
   <h2>{translate text="Distribuci&oacute;n de Material"}</h2>
  Gr&aacute;fico que representa la distribuci&oacute;n de los tipos de materiales mas usados para el pa&iacute;s integrante de LA Referencia. 
-     	{* Load graphic library *}{js filename="flotr2.min.js"}ript>
+     	{* Load graphic library *}{js filename="flotr2.min.js"}
   <div class="clear"></div>
   {literal}
        <style type="text/css">

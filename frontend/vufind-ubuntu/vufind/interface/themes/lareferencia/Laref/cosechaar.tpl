@@ -33,7 +33,7 @@ function basic_time(container) {
         },
         yaxis: {
             title: 'Registros',
-			max:17000,
+			max:25000,
 			min:8000
         },	
         mouse: {

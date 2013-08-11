@@ -2,11 +2,8 @@
 <h1>M&eacute;xico</h1>
 <h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
 {$output1}
-<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3>
-Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/getRecordsCSV.php?iso=MX&url=http://localhost:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
-
-<iframe width="100%" src="{$url}/getRecords.php?iso=MX&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
-
+<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/Laref/getRecordsCSV?iso=MX&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
+<iframe width="100%" src="{$url}/Laref/getRecords?iso=MX&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
       <style type="text/css">
@@ -19,7 +16,7 @@ Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/
     </style>
 {/literal}
 <div id="container3"> </div>
-    	{* Load graphic library *}{js filename="flotr2.min.js"}ript>
+    	{* Load graphic library *}{js filename="flotr2.min.js"}
 {literal}
 <script type="text/javascript">
 (
@@ -39,8 +36,8 @@ function basic_time(container) {
         },
         yaxis: {
             title: 'Registros',
-			max:20000,
-			min:1000
+			max:25000,
+			min:500
         },	
         mouse: {
             track: true,
@@ -85,7 +82,7 @@ function basic_time(container) {
     </script>
 {/literal} 	
 <div class="clear"></div>
-<h2>Estad&iacute;sticas de Cosechas</h2>
+<h2>Estad&iacute;stica de Cosechas</h2>
 {$output7}
 
 <div class="clear"></div>

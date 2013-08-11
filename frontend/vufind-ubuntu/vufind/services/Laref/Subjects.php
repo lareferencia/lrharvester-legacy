@@ -14,6 +14,7 @@ class Subjects extends Action
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
 		
+		
         $interface->setTemplate('subjects.tpl');
         $interface->setPageTitle('Temas');
 	

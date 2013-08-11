@@ -2,8 +2,8 @@
 <h1>Argentina</h1>
 <h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
 {$output1}
-<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/getRecordsCSV.php?iso=AR&url=http://200.0.207.91:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
-<iframe width="100%" src="{$url}/getRecords.php?iso=AR&url=http://localhost:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
+<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/Laref/getRecordsCSV?iso=AR&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
+<iframe width="100%" src="{$url}/Laref/getRecords?iso=AR&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
       <style type="text/css">
@@ -36,7 +36,7 @@ function basic_time(container) {
         },
         yaxis: {
             title: 'Registros',
-			max:35000 
+			max:45000 
         },	
         mouse: {
             track: true,

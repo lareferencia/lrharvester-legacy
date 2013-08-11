@@ -3,8 +3,8 @@
 <h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
 {$output1}
 <h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3>
-Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/getRecordsCSV.php?iso=VE&url=http://localhost:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
-<iframe width="100%" src="{$url}/getRecords.php?iso=VE&url=http://localhost:8080/backend/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
+Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/Laref/getRecordsCSV?iso=VE&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
+<iframe width="100%" src="{$url}/Laref/getRecords?iso=VE&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
 
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
