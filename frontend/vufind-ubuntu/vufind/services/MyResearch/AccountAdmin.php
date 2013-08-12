@@ -32,7 +32,7 @@ require_once 'sys/User.php';
 
 require_once 'Mail/RFC822.php';
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage2/securimage.php';
+include_once $_SERVER['DOCUMENT_ROOT'].'/'.$configArray['Captcha']['cap'].'/securimage.php';
 /**
  * Account action for MyResearch module
  *

@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '-1');
 /**
 
  */
@@ -46,7 +47,7 @@ if(isset($_GET["url"]))
    else
  	$url2=$ws."/public/listInvalidRecordsInfoBySnapshotID/92";
 	
-	$json2 = file_get_contents($url2."?page=0&size=50000");
+	$json2 = file_get_contents($url2."?page=0&size=500000");
 	$data2 = json_decode($json2, TRUE);
 
 	$countr="";
