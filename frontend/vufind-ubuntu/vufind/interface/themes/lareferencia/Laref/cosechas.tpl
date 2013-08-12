@@ -58,35 +58,9 @@ function basic_time(container) {
         // Return a new graph.
         return Flotr.draw(
         container,
-[{
-        data: d1,
-        label: 'AR'
-    }, {
-        data: d2,
-        label: 'BR'
-    }, {
-        data: d3,
-        label: 'CL',
-    }, {
-        data: d4,
-        label: 'CO'
-    },{
-        data: d5,
-        label: 'EC'
-    },{
-        data: d6,
-        label: 'SV'
-    },{
-        data: d7,
-        label: 'MX'
-    },{
-        data: d8,
-        label: 'PE'
-    },	
-	{
-        data: d9,
-        label: 'VE'
-    }],	
+{/literal} 
+{$output9}
+{literal},	
 		 o);
     }
 

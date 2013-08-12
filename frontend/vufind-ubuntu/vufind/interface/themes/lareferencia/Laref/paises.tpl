@@ -87,7 +87,7 @@
     </style>
 {/literal}
 <div id="container3"> </div>
-    	{* Load graphic library *}{js filename="flotr2.min.js"}ript>
+    	{* Load graphic library *}{js filename="flotr2.min.js"}
 {literal}
 <script type="text/javascript">
 (

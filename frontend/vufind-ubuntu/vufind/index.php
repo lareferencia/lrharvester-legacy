@@ -31,6 +31,22 @@
 require_once 'sys/ConfigArray.php';
 $configArray = readConfig();
 
+
+$url=$configArray['WebServices']['ws']."/public/listNetworks";
+$json = file_get_contents($url);
+$data = json_decode($json, TRUE);
+$countries=array();
+
+foreach($data as $red){
+	foreach($red as $key => $value){
+
+	  if ($key==="country")
+	  {
+			$countries[$value] = true;
+		}
+	}
+}
+		 
 // Try to set the locale to UTF-8, but fail back to the exact string from the config
 // file if this doesn't work -- different systems may vary in their behavior here.
 setlocale(
@@ -171,6 +187,9 @@ if (!$user) {
 
 // Assign global interface values now that the environment is all set up:
 $interface->initGlobals();
+$interface->assign('countries',$countries);
+
+//print_r($countries);
 
 // Process Login Followup
 if (isset($_REQUEST['followup'])) {

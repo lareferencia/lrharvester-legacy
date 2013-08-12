@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '-1');
 /**
 
  */
@@ -33,6 +34,7 @@ class getRecordsCSV extends Action
 
 header('Content-Type: text/plain');
 header("Content-Disposition: attachment; filename=reporte.csv");
+
  $id=$_GET["id"];
 
 if(isset($_GET["iso"]))
@@ -45,7 +47,7 @@ if(isset($_GET["url"]))
    else
  	$url2=$ws."/public/listInvalidRecordsInfoBySnapshotID/92";
 	
-	$json2 = file_get_contents($url2."?page=0&size=50000");
+	$json2 = file_get_contents($url2."?page=0&size=500000");
 	$data2 = json_decode($json2, TRUE);
 
 	$countr="";
@@ -97,7 +99,7 @@ if(isset($_GET["url"]))
 				{			
 					  	$output7 .=  "\"$iso\",".$ni;
 						$output7 .= ",\"".$value2;
-						$valtem=$value;
+						$valtem=$value2;
 					 }
 				else if ($key2==="status")
 					  {
@@ -105,8 +107,9 @@ if(isset($_GET["url"]))
 					 }
 				else if ($key2==="belongsToCollectionDetails")
 					 {
-						$output7 .= "\",\"".$value2.;
-						$output7 .= "\",\"".$vurl."/Laref/getRecordValidation?id=".$ni."&oid=".$valtem."\"\n";
+						$output7 .= "\",\"".$vurl."/Laref/getRecordValidation?id=".$ni."&oid=".$valtem;
+						$output7 .= "\",\"".$vurl."/Laref/getTransformedRecordValidation?id=".$ni."&oid=".$valtem;
+						$output7 .= "\",\"".$value2."\"\n";
 
 					}
 			    

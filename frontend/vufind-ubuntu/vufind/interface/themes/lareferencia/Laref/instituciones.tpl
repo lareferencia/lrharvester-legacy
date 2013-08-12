@@ -4,5 +4,4 @@
 	 <i> El dc:source "instname" es parte de los acuerdos acerca del uso de DRIVER, sin embargo actualmente solo M&eacute;xico lo est&aacute; cumpliendo, a medida que ese acuerdo se cumpla, se agregar&aacute;n m&aacute;s instituciones</i>
 <div class="clear"></div>
 	{$output}
-	
 <div class="clear"></div>
