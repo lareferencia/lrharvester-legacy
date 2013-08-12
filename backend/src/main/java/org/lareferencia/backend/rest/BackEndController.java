@@ -116,12 +116,23 @@ public class BackEndController {
 
 	
 	/**
-	 * Simply selects the home view to render by returning its name.
+	 * Login Services
 	 */
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-				
+	public String home(Locale locale, Model model) {	
 		return "home";
+	}
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login(Locale locale, Model model) {	
+		return "login";
+	}
+	
+	@RequestMapping(value="/login", params="errorLogin", method = RequestMethod.GET)
+	public String loginFailed(Locale locale, Model model) {
+		model.addAttribute("loginFailed", true);
+		return "login";
 	}
 	
 	

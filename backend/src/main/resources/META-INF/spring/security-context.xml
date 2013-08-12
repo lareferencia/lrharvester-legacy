@@ -9,14 +9,21 @@
      http://www.springframework.org/schema/security/spring-security-3.2.xsd">
      
      <http security="none" pattern="/public/**"/> 
+     <http security="none" pattern="/static/**"/> 
+     
+     <http security="none" pattern="/login"/> 
+     
+     
      
      <http auto-config="true">
        <intercept-url pattern="/**" access="ROLE_ADMIN"/>
        
-        <logout logout-url="/logout"/>
         <form-login 
-        always-use-default-target="true"
-        default-target-url="/"/>
+        	login-page="/login" 
+        	default-target-url="/" 
+        	authentication-failure-url="/login?errorLogin"/> 
+     
+        <logout logout-url="/logout"/>
         
      </http>
      <authentication-manager>
