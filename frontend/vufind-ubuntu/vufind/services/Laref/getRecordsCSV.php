@@ -33,6 +33,7 @@ class getRecordsCSV extends Action
 
 header('Content-Type: text/plain');
 header("Content-Disposition: attachment; filename=reporte.csv");
+
  $id=$_GET["id"];
 
 if(isset($_GET["iso"]))
@@ -97,7 +98,7 @@ if(isset($_GET["url"]))
 				{			
 					  	$output7 .=  "\"$iso\",".$ni;
 						$output7 .= ",\"".$value2;
-						$valtem=$value;
+						$valtem=$value2;
 					 }
 				else if ($key2==="status")
 					  {
@@ -105,8 +106,9 @@ if(isset($_GET["url"]))
 					 }
 				else if ($key2==="belongsToCollectionDetails")
 					 {
-						$output7 .= "\",\"".$value2;
-						$output7 .= "\",\"".$vurl."/Laref/getRecordValidation?id=".$ni."&oid=".$valtem."\"\n";
+						$output7 .= "\",\"".$vurl."/Laref/getRecordValidation?id=".$ni."&oid=".$valtem;
+						$output7 .= "\",\"".$vurl."/Laref/getTransformedRecordValidation?id=".$ni."&oid=".$valtem;
+						$output7 .= "\",\"".$value2."\"\n";
 
 					}
 			    
