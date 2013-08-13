@@ -256,11 +256,23 @@
 		      <th>Nombre</th>
 		      <th>ISO</th>
 		      <th>Publicada</th>
-		
-		 
 		    </tr>
   		<tbody id="networks"></tbody>
 		</table>
+		<br/>
+		<div id="help">
+			<p><strong>LKG Snapshot:</strong> ver último snapshot válido (LGK) </p>
+			<p><strong>Snapshots:</strong> ver todos los snapshots </p>
+			<p><strong>Orígenes:</strong> editar los orígenes OAI de la red </p>
+			<p><strong>Cosechar:</strong> lanzar un proceso de cosecha </p>
+			<p><strong>Indexar LKG:</strong> indexar el último snapshot válido (LGK) </p>
+			<p><strong>Limpiar:</strong> eliminar información de snapshots antiguos </p>
+			<p><strong>Editar:</strong> editar detalles y programar cosechas </p>
+			<p><strong>Borrar:</strong> eliminar la red del sistema (!!) </p>
+			
+			
+			
+		</div>
 	
 	</div>
 	<br/>
