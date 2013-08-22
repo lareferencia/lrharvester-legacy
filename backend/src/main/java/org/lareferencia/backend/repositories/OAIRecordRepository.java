@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.repository.annotation.RestResource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,9 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
      @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
      
+     // Esta query sirve para obtener el total de páginas
+     @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field")
+	 Page<OAIRecord> findBySnapshotIdAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("field") String field, Pageable pageable);
      
 	 /***
 	  * 

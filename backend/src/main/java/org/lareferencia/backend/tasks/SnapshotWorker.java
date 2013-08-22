@@ -29,6 +29,7 @@ import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.OAIRecordValidationResult;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
@@ -42,6 +43,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
 import org.lareferencia.backend.stats.StatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
@@ -77,6 +79,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	private OAIRecordValidationRepository recordValidationRepository;
 	
 	private IHarvester harvester;
 	
@@ -321,7 +326,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 			case OK:			
 					
-				List<OAIRecord> records = new ArrayList<OAIRecord>(100);
+				//List<OAIRecord> records = new ArrayList<OAIRecord>(100);
 			
 				// Agrega los records al snapshot actual			
 				for (OAIRecordMetadata  metadata:event.getRecords() ) {
@@ -366,14 +371,31 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setPublishedXML( metadata.toString() );
 							
 							
-							///////// Cálculo de estadísticas
+							///////// Cálculo de estadísticas 
 							statsManager.process(metadata, validationResult);
+	
 							
 							///////// Test de pertenencia a la colección del registro final
 							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
 							record.setBelongsToCollection( btcValidationResult.isValid() );
 							record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
 							
+							//// SE ALMACENA EL REGISTRO
+							recordRepository.save(record);
+							
+							/// Almacenamiento de resultados de validación
+							OAIRecordValidationResult recordValidationResult;
+							for ( String field : validationResult.getFieldResults().keySet() ) {
+								
+								if ( !validationResult.getFieldResults().get(field).isValid() ) {
+								// solo se almacenan los campos inválidos 
+									recordValidationResult = new OAIRecordValidationResult(field);
+									recordValidationResult.setSnapshot(snapshot);
+									recordValidationResult.setRecord(record);
+									recordValidationRepository.save(recordValidationResult);
+								}
+							}
+	
 						} 
 						
 						else { // Si no se valida entonces todo puesto para publicación
@@ -382,9 +404,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							record.setPublishedXML( metadata.toString() );
 						}
 						
-						records.add(record);
-						recordRepository.save(records);
-						recordRepository.flush();
 
 					}
 					catch (Exception e) {
@@ -392,6 +411,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					}
 				}
 			
+				recordRepository.flush();
+				recordValidationRepository.flush();
+
 				snapshot.setEndTime( new Date() );
 				snapshot.setResumptionToken( event.getResumptionToken() );
 

@@ -41,6 +41,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
 import org.lareferencia.backend.stats.MetadataOccurrenceCountSnapshotStatProcessor;
 import org.lareferencia.backend.stats.RejectedByFieldSnapshotStatProcessor;
 import org.lareferencia.backend.tasks.SnapshotManager;
@@ -90,6 +91,9 @@ public class BackEndController {
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	private OAIRecordValidationRepository recordValidationRepository;
 	
 	@Autowired 
 	private OAIProviderStatRepository oaiProviderStatRepository;
@@ -222,6 +226,9 @@ public class BackEndController {
 			for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
 				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() 
 						&& snapshot.getStatus() != SnapshotStatus.HARVESTING ) { // previene el borrado de harvestings en proceso
+					
+					// borra los resultados de validación
+					recordValidationRepository.deleteBySnapshotID(snapshot.getId());
 					// borra los registros
 					recordRepository.deleteBySnapshotID(snapshot.getId());
 					// borra el log de cosechas
@@ -498,6 +505,26 @@ public class BackEndController {
 		
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
+	
+	@RequestMapping(value="/public/listInvalidRecordsInfoByFieldAndSnapshotID/{field}/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listInvalidRecordsInfoByFieldAndSnapshotID(@PathVariable String field, @PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findBySnapshotIdAndInvalidField(id, field, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
+	
 	
 	@RequestMapping(value="/public/listTransformedRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
