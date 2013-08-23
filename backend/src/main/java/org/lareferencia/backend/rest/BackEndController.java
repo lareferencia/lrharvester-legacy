@@ -13,26 +13,22 @@
  ******************************************************************************/
 package org.lareferencia.backend.rest;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.NationalNetwork;
-import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NationalNetworkRepository;
@@ -103,12 +99,6 @@ public class BackEndController {
 	
 	@Autowired
 	TaskScheduler scheduler;
-	
-	@Autowired
-	IValidator validator;
-	
-	@Autowired
-	ITransformer transformer;
 	
 	@Autowired
 	SnapshotManager snapshotManager;
@@ -310,7 +300,12 @@ public class BackEndController {
 		
 		OAIRecord record = recordRepository.findOne(id);
 		
+		
 		if ( record != null ) {
+			
+			NationalNetwork network = record.getSnapshot().getNetwork();
+			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
 			ValidationResult result = validator.validate(metadata);
 			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
@@ -328,6 +323,10 @@ public class BackEndController {
 		OAIRecord record = recordRepository.findOne(id);	
 		
 		if ( record != null ) {
+			
+			NationalNetwork network = record.getSnapshot().getNetwork();
+			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
 
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
 			
@@ -352,6 +351,11 @@ public class BackEndController {
 		OAIRecord record = recordRepository.findOne( id );	
 		
 		if ( record != null ) {
+			
+			NationalNetwork network = record.getSnapshot().getNetwork();
+			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
 			
 			ValidationResult preValidationResult = validator.validate(metadata);

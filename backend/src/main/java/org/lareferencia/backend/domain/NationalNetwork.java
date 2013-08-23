@@ -66,4 +66,11 @@ public class NationalNetwork extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private boolean runTransformation = true;
+	
+	@Column(nullable = false)
+	private String validatorName;
+	
+	@Column(nullable = false)
+	private String transformerName;
+
 }

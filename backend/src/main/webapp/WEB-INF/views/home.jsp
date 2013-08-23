@@ -322,6 +322,9 @@
 				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
 				
+				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
+				Transformador:<input type="text" name="transformerName" maxlength="50" size="30"/><br/> 
+				
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
@@ -346,6 +349,10 @@
 				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
 				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
+				
+				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
+				Transformador:<input type="text" name="transformerName" maxlength="50" size="30"/><br/> 
+				
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>

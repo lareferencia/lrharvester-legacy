@@ -193,7 +193,7 @@
  	/*********** Acciones sobre un red nacional *****************/
  	
  	function openCreateNetwork() {
-		 $('#form_create_network').fromJson( {} );
+		 $('#form_create_network').fromJson( {validatorName:'defaultValidator', transformerName:'defaultTransformer'} );
 		 $( "#dialog_create_network" ).dialog("open");
 	}
  	

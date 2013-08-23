@@ -93,10 +93,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		harvester.addEventListener(this);		
 	}
 	
-	@Autowired
-	private IValidator validator;
-	
-	@Autowired
+	// No son autowired, se cargan en cada ejecución de acuerdo a la conf de cada red
+	private IValidator validator;	
 	private ITransformer transformer;
 	
 	@Autowired
@@ -122,9 +120,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	public NetworkSnapshot getSnapshot() {
 		return snapshot;
 	}
-	
-	
-	
 	
 	@Override
 	public void stop() {
@@ -179,10 +174,24 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			}
 				
 		}
+			
 		
+		// Se cargan el validador y el transformador de acuerdo a la configuración de la red
+		try {
+			logMessage("Cargando validador y transformador  ..."); 
+
+			validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			
+		} catch (Exception e) {		
+			logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
+			setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
+			return;
+		}
+		
+
 		// Se registra el incicio de tareas en el manager
 		manager.registerWorkerBeginSnapshot(snapshot.getId(), this);
-		
 		
 		logMessage("Comenzando cosecha ..."); 
 		setSnapshotStatus(SnapshotStatus.HARVESTING);
