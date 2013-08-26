@@ -105,9 +105,9 @@ $.rest = {
 	        accepts: {json:'application/json'},
 	        error: error_handler
 	        
-	    }).responseJSON;
+	    });//.responseJSON;
 		
-		return result;
+		//return result;
 	},
 	
 

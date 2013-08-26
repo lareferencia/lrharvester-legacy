@@ -109,8 +109,11 @@
 	
 	function openEditOrigin(origin_link) {
 		 actual_origin_link = origin_link;
-		 $('#form_edit_origin').fromJson( $.rest.retrieve(origin_link) );
-		 $( "#dialog_edit_origin" ).dialog("open");
+		 
+		 $.rest.retrieve(origin_link, function(result) {
+			 	$('#form_edit_origin').fromJson(result);
+			 	$( "#dialog_edit_origin" ).dialog("open");
+		 });
 	}
 
 	function openCreateOrigin() {
@@ -166,8 +169,10 @@
  	
  	function openEditSet(set_link) {
 		 actual_set_link = set_link;
-		 $('#form_edit_set').fromJson( $.rest.retrieve(set_link) );
-		 $( "#dialog_edit_set" ).dialog("open");
+		 $.rest.retrieve(set_link, function(result) {
+			 $('#form_edit_set').fromJson(result);
+			 $( "#dialog_edit_set" ).dialog("open");
+		 });
 	}
  	
  	function createSet(success_handler) { 		  
@@ -211,8 +216,12 @@
  	 */
  	function editNetwork(network_link) {
 		 actual_network_link = network_link;
-		 $('#form_edit_network').fromJson( $.rest.retrieve(network_link) );	 
-		 $('#dialog_edit_network').dialog('open');
+				 
+		 $.rest.retrieve(network_link, function(result) {
+			 $('#form_edit_network').fromJson(result); 
+			 $('#dialog_edit_network').dialog('open');
+		 }, error_handler );	 
+		 
 	}
 
 	/**
@@ -535,7 +544,7 @@
 					  .on("click", function(d) { deleteOrigin($.rest.relLink(d,"self"), refreshOrigins);  } )	   
 					  .text("borrar"); 
 				
-		 		}, error_handler
+		 		}
 		 );
 		
 		
