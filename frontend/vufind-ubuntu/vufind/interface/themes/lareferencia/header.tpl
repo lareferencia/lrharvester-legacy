@@ -95,15 +95,13 @@ position: absolute; left: 100%; top:0;
               Cosechadas</a></li>
             <li><a href="{$url}/Laref/Cosechas">Estad&iacute;stica de Cosechas</a>
 					<ul>
-					<li {if !$countries.AR} class="hide"{/if}  ><a href="{$url}/Laref/CosechaAR">Argentina</a></li>
-					<li {if !$countries.BR} class="hide"{/if}  ><a href="{$url}/Laref/CosechaBR">Brasil</a></li>
-					<li {if !$countries.CL} class="hide"{/if}  ><a href="{$url}/Laref/CosechaCL">Chile</a></li>
-					<li {if !$countries.CO} class="hide"{/if}  ><a href="{$url}/Laref/CosechaCO">Colombia</a></li>
-					<li {if !$countries.EC} class="hide"{/if}  ><a href="{$url}/Laref/CosechaEC">Ecuador</a></li>
-					<li {if !$countries.SV} class="hide"{/if}  ><a href="{$url}/Laref/CosechaSV">El Salvador</a></li>
-					<li {if !$countries.MX} class="hide"{/if}  ><a href="{$url}/Laref/CosechaMX">M&eacute;xico</a></li>
-					<li {if !$countries.PE} class="hide"{/if}  ><a href="{$url}/Laref/CosechaPE">Per&uacute;</a></li>
-					<li {if !$countries.VE} class="hide"{/if}  ><a href="{$url}/Laref/CosechaVE">Venezuela</a></li>
+					{foreach from=$networks key=key item=term}
+					    {foreach from=$term key=key2 item=i} 
+							{if $key2 == 'name' }
+							 <li ><a href="{$url}/Laref/Cosecha?iso={$key}">{$i}</a></li>
+							{/if}	
+						{/foreach}
+					{/foreach}
 					</ul>	
 			</li>
           </ul>

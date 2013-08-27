@@ -35,15 +35,32 @@ $configArray = readConfig();
 $url=$configArray['WebServices']['ws']."/public/listNetworks";
 $json = file_get_contents($url);
 $data = json_decode($json, TRUE);
+
+$networks=array();
 $countries=array();
+
+$ncountry="";
+$nname="";
+$nvalidSize=0;
 
 foreach($data as $red){
 	foreach($red as $key => $value){
-
-	  if ($key==="country")
+	if ($key==="country")
 	  {
 			$countries[$value] = true;
+			$ncountry=$value;
 		}
+	  if ($key==="name")
+	  {
+			$nname=$value;
+		}
+	 if ($key==="validSize")
+	  {
+			$nvalidSize=$value;
+			//"wine"   => "red",
+			$networks[$ncountry]=array("name"=>$nname,"validSize"=>$nvalidSize);
+		}
+		
 	}
 }
 		 
@@ -188,8 +205,8 @@ if (!$user) {
 // Assign global interface values now that the environment is all set up:
 $interface->initGlobals();
 $interface->assign('countries',$countries);
-
-//print_r($countries);
+$interface->assign('networks',$networks);
+//print_r($networks);
 
 // Process Login Followup
 if (isset($_REQUEST['followup'])) {
