@@ -210,8 +210,8 @@ position: absolute; left: 100%; top:0;
 				
 				<li><a  {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$path}/MyResearch/Home"> {translate text="ADMINISTRADOR"} {$user->admin_country}</a>
 					<ul>
-					        <li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/ImpactoRec">Impacto por Pa&iacute;s del recolector</a></li>
-						<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/Cosechas{$user->admin_country}">Registro Avanzado de Cosechas {$user->admin_country}</a></li>
+						<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/Cosechaad?iso={$user->admin_country}">Registro Avanzado de Cosechas {$user->admin_country}</a></li>
+					<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/ImpactoRec">Impacto por Pa&iacute;s del recolector</a></li>
 					</ul>
 				</li>
 			

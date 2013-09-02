@@ -77,7 +77,7 @@ class rejectedField extends Action
 					}
 					else
 					{
-					$output7.= "<tr><td><b>".$value."</b></td>";
+					$output7.= "<tr><td><b><a style='font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none' href='getInvalidRecordValidation?dc=".$value."&id=".$id."'>".$value."</a></b></td>";
 					$par=true;
 					}
 						

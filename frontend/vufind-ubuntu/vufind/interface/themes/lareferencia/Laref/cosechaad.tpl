@@ -1,9 +1,9 @@
 
-<h1>Brasil</h1>
+<h1>{$nname}</h1>
 <h2>&Uacute;ltima Cosecha V&aacute;lida</h2>
 {$output1}
-<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/Laref/getRecordsCSV?iso=BR&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
-<iframe width="100%" src="{$url}/Laref/getRecords?iso=BR&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
+<h3>Listado de Registros Inv&aacute;lidos en la &Uacute;ltima Cosecha ({$lastid})</h3> Descargar Archivo con todos los identificadores <a target="_blank" href="{$url}/Laref/getRecordsCSV?iso={$ncountry}&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}">CSV</a>
+<iframe width="100%" src="{$url}/Laref/getRecords?iso={$ncountry}&url={$ws}/public/listInvalidRecordsInfoBySnapshotID/{$lastid}"></iframe>
 <h2>Material por Fecha de Recolecci&oacute;n</h2> 
 {literal}
       <style type="text/css">
@@ -36,7 +36,8 @@ function basic_time(container) {
         },
         yaxis: {
             title: 'Registros',
-			max:300000
+			max:{/literal}{$nsize*1.50}{literal},
+			min:0 
         },	
         mouse: {
             track: true,
@@ -63,11 +64,11 @@ function basic_time(container) {
         container,
 [{
         data: d1,
-        label: 'LA-BR'
+        label: 'LA-{/literal}{$ncountry}{literal}'
     },
 	{
         data: d2,
-        label: 'BR'
+        label: '{/literal}{$ncountry}{literal}'
     }
 	],	
 		 o);

@@ -5,15 +5,16 @@
 require_once 'Action.php';
 
 /**
- * getRecordValidation action for Laref module
+ * Paises action for Laref module
  *
  * @category VuFind
- * @package  Laref
- * @author   Antonio Razo <>
+ * @package  Controller_Admin
+ * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/building_a_module Wiki
  */
- 
-class CosechasVE extends Action
+class Cosechaad extends Action
 {
     /**
      * Process parameters and display the page.
@@ -25,13 +26,29 @@ class CosechasVE extends Action
     {
         global $configArray;
         global $interface;
-		global $output; 
+		global $output;
+		global $networks;
+		
 		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
-		 $ws=$configArray['WebServices']['ws'];
-		// echo $ws;
-	$sum=0;
+		 		 $ws=$configArray['WebServices']['ws'];
+		 $lnetworks=$networks;
+
+$ncountry="";
+$nname="";
+$nvalidSize=0;
+
+if(isset($_GET["iso"]))
+   $ncountry=$_GET["iso"];
+   else
+ 	$ncountry="AR";
+
+
+$nname=$lnetworks[$ncountry]['name'];
+$nvalidSize=$lnetworks[$ncountry]['validSize'];
+
+
 	$output1="";
 	$output2="";	
 	$output3="";	
@@ -40,7 +57,8 @@ class CosechasVE extends Action
 		$output8="";
 		$output9="";		
 		
-		$url=$ws."/public/lastGoodKnowSnapshotByCountryISO/VE";
+		$url=$ws."/public/lastGoodKnowSnapshotByCountryISO/$ncountry";
+		 //echo $url;
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
 		$lastid="";
@@ -58,7 +76,7 @@ class CosechasVE extends Action
 				}	
 				if ($key==="status")
 				{			
-					  	$output1 .=  "<tr><td>VE</td><td>".$ni."</td>";
+					  	$output1 .=  "<tr><td>$ncountry</td><td>".$ni."</td>";
 						$output1 .= "<td>".$value."</td>";
 						$valtem=$value;
 					 }
@@ -69,7 +87,7 @@ class CosechasVE extends Action
 					 }
 				 if ($key==="size")
 					 {
-						$output1 .= "<td> ".number_format((int)$value)."</td>";	
+						$output1 .= "<td> ".number_format((int)$value)."</td>";	$nsize=$value;
 
 					}
 			 if ($key==="validSize")
@@ -93,7 +111,7 @@ class CosechasVE extends Action
 
 		 $output1 .= '</table>';
 
-	$url2=$ws."/public/listSnapshotsByCountryISO/VE";
+	$url2=$ws."/public/listSnapshotsByCountryISO/$ncountry";
 	$json2 = file_get_contents($url2);
 	$data2 = json_decode($json2, TRUE);
 
@@ -123,7 +141,7 @@ class CosechasVE extends Action
 				}	
 				if ($key==="status")
 				{			
-					  	$output7 .=  "<tr><td>VE</td><td>".$ni."</td>";
+					  	$output7 .=  "<tr><td>$ncountry</td><td>".$ni."</td>";
 						$output7 .= "<td>".$value."</td>";
 						$valtem=$value;
 					 }
@@ -186,13 +204,16 @@ class CosechasVE extends Action
 		$interface->assign('output7',$output7);
 		$interface->assign('output8',$output8);
 		$interface->assign('output9',$output9);
-		
+		$interface->assign('ncountry',$ncountry);
+		$interface->assign('nname',$nname);
+		$interface->assign('nvalidSize',$nvalidSize);		
 		$interface->assign('lastid',$lastid);
+		$interface->assign('nsize',$nsize);
 		
 				$interface->assign('ws',$ws);	
-		
-		$interface->setTemplate('cosechasve.tpl');
-        $interface->setPageTitle('Cosechas Venezuela');
+
+		$interface->setTemplate('cosechaad.tpl');
+        $interface->setPageTitle('Cosechas '.$nname);
         $interface->display('layout.tpl');
     }
 }
