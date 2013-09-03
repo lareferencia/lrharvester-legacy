@@ -16,6 +16,11 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     	<property name="location" value="file:/etc/lareferencia/backend.properties"/>
   	</bean>
+  	
+  	<!-- Bean que contiene la dirección de correo del administrador y que se obtiene del archivo de configuración  -->
+  	<bean id="adminEmail" class="java.lang.String">
+    	<constructor-arg type="String" value="${adminEmail}"/>
+    </bean>
 
 	<jpa:repositories base-package="org.lareferencia.backend.repositories" />
 	<context:component-scan base-package="org.lareferencia.backend.repositories" />

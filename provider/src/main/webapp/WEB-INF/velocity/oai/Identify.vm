@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-  <responseDate>2002-02-08T12:00:01Z</responseDate>
+	  <responseDate>$!{ResponseDate}</responseDate>
   #parse("oai/common/Request.vm")
   <Identify>
     <repositoryName>LAReferencia Open Archive Initiative Repository</repositoryName>
     <baseURL>$!{RequestURL}</baseURL>
     <protocolVersion>2.0</protocolVersion>
-    <adminEmail>repositoriosla@gmail.com</adminEmail>
+    <adminEmail>$!{AdminEmail}</adminEmail>
     <earliestDatestamp>$!{EarliestDatestamp}</earliestDatestamp>
     <deletedRecord>no</deletedRecord>
     <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>

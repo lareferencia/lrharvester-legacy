@@ -14,6 +14,7 @@
 package org.lareferencia.provider.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.lareferencia.backend.stats.ProviderStatsManager;
 import org.lareferencia.provider.domain.MetadataFormat;
 import org.lareferencia.provider.domain.Record;
@@ -36,6 +38,7 @@ import org.lareferencia.provider.exceptions.ServerException;
 import org.lareferencia.provider.providers.IProvider;
 import org.lareferencia.provider.providers.StateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -49,10 +52,17 @@ public class ProviderController extends MultiActionController implements Message
 	
    @Autowired	
    private ProviderStatsManager statsManager;	 
+   
+   @Autowired
+   @Qualifier("adminEmail")
+   private String adminEmail;	 
 
    private MessageSource messages = null;
    private IProvider provider = null;
    private Map<String, MetadataFormat> metadataFormatMap = new HashMap<String, MetadataFormat>();
+   
+   private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
 
    public ProviderController()
    {
@@ -111,7 +121,7 @@ public class ProviderController extends MultiActionController implements Message
 
 	public ModelAndView defaultHandler(final HttpServletRequest request, final HttpServletResponse response, final Arguments arguments)
 	{
-		final Map<String, Object> model = new HashMap<String, Object>();
+	  final Map<String, Object> model = new HashMap<String, Object>();
 
       // Debugging.
       response.setContentType("text/xml; charset=UTF-8");
@@ -120,9 +130,17 @@ public class ProviderController extends MultiActionController implements Message
       statsManager.countIPAccess( request.getRemoteAddr() );
 
       // The OAI protocol includes the original HTTP request.
-		final String requestURL = request.getRequestURL().toString();
-		model.put("RequestURL", requestURL);
-
+	  final String requestURL = request.getRequestURL().toString();
+	  model.put("RequestURL", requestURL);
+		
+	 // responseDate
+	  String dateString = dateFormater.format( new DateTime().toDate() );
+	  System.out.println(dateString);
+	  model.put("ResponseDate", dateString);
+	  
+	 // adminEmail
+	  model.put("AdminEmail", adminEmail);
+	  
       try
       {
          if(this.getProvider() == null)

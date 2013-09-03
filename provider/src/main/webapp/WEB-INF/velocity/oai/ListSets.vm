@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
- <responseDate>2002-08-11T07:21:33Z</responseDate>
+	  <responseDate>$!{ResponseDate}</responseDate>
  #parse("oai/common/Request.vm")
  <ListSets>
 	<set>
