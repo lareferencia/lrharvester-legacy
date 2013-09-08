@@ -85,7 +85,7 @@ class Home extends MyResearch
 						
 			if($user->admin_country<>"")
 			{
-           $page = 'Cosechas'.$user->admin_country;
+           $page = 'Cosechaad?iso='.$user->admin_country;
             $accountStart = $configArray['Site']['url'] . "/Laref/". $page;	
 			}
             header("Location: " . $accountStart);
