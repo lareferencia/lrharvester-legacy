@@ -28,6 +28,8 @@ class PorMaterialp extends Action
 		 $vstats=$configArray['Statistics']['solr'];
 		 $lnetworks=$networks;
 
+		 //print_r($configArray);
+
 $ncountry="";
 $nname="";
 $nvalidSize=0;
@@ -41,9 +43,20 @@ $nname=$lnetworks[$ncountry]['name'];
 		 	
 	$output8="";
 	
+
+	//print_r($connection);
+	
+	//echo $connection['host'];
+	//echo $connection['user'];
+	//echo $connection['pass'];
+
 	// Make a MySQL Connection
-	mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
-	mysql_select_db("vufind") or die(mysql_error());
+	$ConnectionString=$configArray['Database']['database'];	
+	$connection=array();
+	$connection=parse_url($ConnectionString);
+	
+	mysql_connect($connection['host'], $connection['user'], $connection['pass']) or die(mysql_error());
+	mysql_select_db(str_replace("/","",$connection['path'])) or die(mysql_error());
 
 	// Get all the data from the "example" table
 	$result = mysql_query("SELECT count(*) as total,red,type from record WHERE red='".$ncountry."' group by red,type order by type") 

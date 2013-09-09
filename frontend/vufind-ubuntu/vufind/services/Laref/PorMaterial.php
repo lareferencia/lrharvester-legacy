@@ -26,8 +26,15 @@ class PorMaterial extends Action
 		 $vstats=$configArray['Statistics']['solr'];
 		
 	$output8="";
-
-$result = mysql_query("SELECT count(*) as total,red,type from record WHERE ccode<>'' OR not(NULL) group by red,type order by total desc") 
+		// Make a MySQL Connection
+		$ConnectionString=$configArray['Database']['database'];	
+		$connection=array();
+		$connection=parse_url($ConnectionString);
+		
+		mysql_connect($connection['host'], $connection['user'], $connection['pass']) or die(mysql_error());
+		mysql_select_db(str_replace("/","",$connection['path'])) or die(mysql_error());
+		
+$result = mysql_query("SELECT count(*) as total,red,type from record WHERE ccode<>'' OR not(NULL) OR type<>'' group by red,type order by type,total desc") 
 or die(mysql_error());  
 
 $output8.="<table border='1' >";
