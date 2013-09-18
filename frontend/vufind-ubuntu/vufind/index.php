@@ -31,7 +31,7 @@
 require_once 'sys/ConfigArray.php';
 $configArray = readConfig();
 
-
+// LA-Referencia listado de redes y paises
 $url=$configArray['WebServices']['ws']."/public/listNetworks";
 $json = file_get_contents($url);
 $data = json_decode($json, TRUE);
@@ -57,7 +57,6 @@ foreach($data as $red){
 	 if ($key==="validSize")
 	  {
 			$nvalidSize=$value;
-			//"wine"   => "red",
 			$networks[$ncountry]=array("name"=>$nname,"validSize"=>$nvalidSize);
 		}
 		

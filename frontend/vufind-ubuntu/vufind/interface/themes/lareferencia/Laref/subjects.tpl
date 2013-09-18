@@ -1,8 +1,6 @@
 <div class="span-12" >
-<h1 >Nube de T&eacute;rminos</h1>
-<div class="span-12" style="word-wrap:break-word;">
-{$output}
-</div>
+<h1 >Presentaci&oacute;n</h1>
+<a href="http://lareferencia.redclara.net/rfr/resumen"><img src="banner1.png"/></a>
 </div>
 <div class="span-10 last">
   <h1>{translate text="Recursos en la colecci&oacute;n"}</h1>

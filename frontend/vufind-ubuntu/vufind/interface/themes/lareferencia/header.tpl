@@ -87,18 +87,17 @@ position: absolute; left: 100%; top:0;
 {/literal}	
 <nav>
   <ul>
-	  <li><a href="{$url}">Inicio</a></li>
-        <li><a href="#">Pa&iacute;ses</a>
+	  <li><a href="{$url}">{translate text='Home'}</a></li>
+        <li><a href="#">{translate text='Countries'}</a>
           <ul>
-            <li><a href="{$url}/Laref/Mapa">Mapa de la Red</a></li>
-            <li><a href="{$url}/Laref/Instituciones">Listado de Instituciones 
-              Cosechadas</a></li>
-            <li><a href="{$url}/Laref/Cosechas">Estad&iacute;stica de Cosechas</a>
+            <li><a href="{$url}/Laref/Mapa">{translate text='Country Map'}</a></li>
+            <li><a href="{$url}/Laref/Instituciones">{translate text='List of Harvested Institutions'} </a></li>
+            <li><a href="{$url}/Laref/Cosechas">{translate text='Harvesting Statistics'}</a>
 					<ul>
 					{foreach from=$networks key=key item=term}
 					    {foreach from=$term key=key2 item=i} 
 							{if $key2 == 'name' }
-							 <li ><a href="{$url}/Laref/Cosecha?iso={$key}">{$i}</a></li>
+							 <li ><a href="{$url}/Laref/Cosecha?iso={$key}">{translate text=$i}</a></li>
 							{/if}	
 						{/foreach}
 					{/foreach}
@@ -106,42 +105,42 @@ position: absolute; left: 100%; top:0;
 			</li>
           </ul>
         </li>
-        <li><a href="#">Material</a>
+        <li><a href="#">{translate text='Material'}</a>
           <ul>
-            <li><a href="{$url}/Laref/Material">Distribuci&oacute;n del material</a></li>
-            <li><a href="{$url}/Laref/Fechas">Distribuci&oacute;n del material cosechado por d&eacute;cada</a></li>
-			<li><a href="{$url}/Laref/Licencias">Distribuci&oacute;n de licencias por Pa&iacute;s</a></li>
-            <li><a href="{$url}/Laref/Terminos">Nube de T&eacute;rminos </a></li>
+            <li><a href="{$url}/Laref/Material">{translate text='Material Distribution'}</a></li>
+            <li><a href="{$url}/Laref/Fechas">{translate text='Material Distribution by date'}</a></li>
+			<li><a href="{$url}/Laref/Licencias">{translate text='Licence Distribution by country'}</a></li>
+            <li><a href="{$url}/Laref/Terminos">{translate text='Cloud Tag'}</a></li>
           </ul>
         </li>
-        <li><a href="#">Impacto</a>
+        <li><a href="#">{translate text='Impact'}</a>
           <ul>
-            <li><a href="#">Mapa de accesos </a>
+            <li><a href="#">{translate text='Access Maps'}</a>
 				  <ul>
-					<li><a href="{$url}/Laref/Impacto">Pa&iacute;s del visitante</a></li>
-					<li><a href="{$url}/Laref/ImpactoRec">Pa&iacute;s del recolector</a></li>
+					<li><a href="{$url}/Laref/Impacto">{translate text='Visitors Map'}</a></li>
+					<li><a href="{$url}/Laref/ImpactoRec">{translate text='Harvesters Map'}</a></li>
 				  </ul>				
 			</li>
-            <li><a href="{$url}/Laref/PorPais">Por Pa&iacute;s Visitante</a>
+            <li><a href="{$url}/Laref/PorPais">{translate text='Visitors Country'}</a>
 				  <ul>
-					<li><a href="{$url}/Laref/PorPaisA">Mapa por Art&iacute;culo</a></li>
-					<li><a href="{$url}/Laref/PorPaisR">Mapa por Reporte</a></li>
-					<li><a href="{$url}/Laref/PorPaisTD">Mapa por Tesis de Doctorado</a></li>
-					<li><a href="{$url}/Laref/PorPaisTM">Mapa por Tesis de Maestr&iacute;a</a></li>
+					<li><a href="{$url}/Laref/PorPaisA">{translate text='Map by Article'}</a></li>
+					<li><a href="{$url}/Laref/PorPaisR">{translate text='Map by Report'}</a></li>
+					<li><a href="{$url}/Laref/PorPaisTD">{translate text='Map by Doctoral Thesis'}</a></li>
+					<li><a href="{$url}/Laref/PorPaisTM">{translate text='Map by Master Thesis'}</a></li>
 				  </ul>				
 			</li>
-            <li><a href="{$url}/Laref/PorMaterial">Por Tipo de Material </a>
+            <li><a href="{$url}/Laref/PorMaterial">{translate text='By Material'}</a>
 					<ul>
 					{foreach from=$networks key=key item=term}
 					    {foreach from=$term key=key2 item=i} 
 							{if $key2 == 'name' }
-							 <li ><a href="{$url}/Laref/PorMaterialp?iso={$key}">{$i}</a></li>
+							 <li ><a href="{$url}/Laref/PorMaterialp?iso={$key}">{translate text=$i}</a></li>
 							{/if}	
 						{/foreach}
 					{/foreach}
 					</ul>						
 			</li>
-            <li><a href="{$url}/Laref/Busquedas">Ranking de b&uacute;squedas</a></li>
+            <li><a href="{$url}/Laref/Busquedas">{translate text='Search Ranking'}</a></li>
           </ul>
         </li>
         <li><a href="#">{translate text='Browse'}</a>
@@ -150,7 +149,7 @@ position: absolute; left: 100%; top:0;
           </ul>
         </li>
         <li>
-		<a href="#">B&uacute;squeda</a>
+		<a href="#">{translate text='Search'}</a>
           <ul>
             <li><a href="{$path}/Search/Advanced">{translate text='Advanced Search'}</a></li>
              <li><a href="{$path}/Search/History">{translate text='Search History'}</a></li>
@@ -158,14 +157,14 @@ position: absolute; left: 100%; top:0;
           </ul>
         </li>
 		<li>
-		<a href="#">Usuarios</a>
+		<a href="#">{translate text='User'}</a>
 			<ul>
 				<li {if !$user} class="hide"{/if} >
 					<a  href="{$path}/MyResearch/Home"> {translate text="Your Account"}</a>
 						<ul>
-							<li {if !$user } class="hide"{/if}  ><a href="{$url}/MyResearch/Favorites">Sus Favoritos</a></li>
-							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/History?require_login">Sus B&uacute;squedas</a></li>	
-							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/Comments">Sus Comentarios</a>	</li>
+							<li {if !$user } class="hide"{/if}  ><a href="{$url}/MyResearch/Favorites">{translate text='Your Favorites'}</a></li>
+							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/History?require_login">{translate text='Your search terms'}</a></li>	
+							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/Comments">{translate text='Your Comment'}</a>	</li>
 						</ul>
 				</li>
 				<li>
@@ -175,18 +174,18 @@ position: absolute; left: 100%; top:0;
 					{if $authMethod == 'Shibboleth'}
 					<a   href="{$sessionInitiator}">{translate text="Institutional Login"}</a>
 					{else}
-					<a  href="{$path}/MyResearch/Home"> Identificarse </a>
+					<a  href="{$path}/MyResearch/Home">{translate text='Login'}</a>
 					{/if}
 				</li>
 				<li>
 					{if $authMethod == 'Shibboleth'}
 					<a {if $user} class="hide"{/if} href="{$sessionInitiator}">{translate text="Institutional Login"}</a>
 					{else}
-					<a {if $user} class="hide"{/if} href="{$path}/MyResearch/Account">Registro como usuario</a>
+					<a {if $user} class="hide"{/if} href="{$path}/MyResearch/Account">{translate text='Create New User Account'}</a>
 					{/if}
 				</li>
 				<li>
-					<a {if $user} class="hide"{/if} href="{$path}/MyResearch/AccountAdmin">Registro como administrador</a>
+					<a {if $user} class="hide"{/if} href="{$path}/MyResearch/AccountAdmin">{translate text='Create New Adminstrator Account'}</a>
 				</li>
 			</ul>
 		</li>
@@ -206,10 +205,10 @@ position: absolute; left: 100%; top:0;
 		<li><a href="{$url}/Laref/About">{translate text="About"} </a></li>
 		<li>
 				
-				<li><a  {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$path}/MyResearch/Home"> {translate text="ADMINISTRADOR"} {$user->admin_country}</a>
+				<li><a  {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$path}/MyResearch/Home"> {translate text="ADMINISTRATOR"} {$user->admin_country}</a>
 					<ul>
-						<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/Cosechaad?iso={$user->admin_country}">Registro Avanzado de Cosechas {$user->admin_country}</a></li>
-					<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/ImpactoRec">Impacto por Pa&iacute;s del recolector</a></li>
+						<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/Cosechaad?iso={$user->admin_country}">{translate text='Advanced Harvesting Statistics'} {$user->admin_country}</a></li>
+					<li><a {if (!$user || ($user->admin_country==""))} class="hide"{/if} href="{$url}/Laref/ImpactoRec">{translate text='Harvesters Map'}</a></li>
 					</ul>
 				</li>
 			
