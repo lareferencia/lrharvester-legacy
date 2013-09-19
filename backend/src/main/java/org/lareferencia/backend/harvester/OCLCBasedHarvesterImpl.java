@@ -228,7 +228,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				
 			try {
 				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
-				identifier.replace("&", "");
+				identifier = identifier.replace("&", "");
 				
 				status = listRecords.getSingleString(nodes.item(i), namespace + ":header/@status");						
 
