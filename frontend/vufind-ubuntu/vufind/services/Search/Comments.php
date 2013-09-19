@@ -33,10 +33,8 @@ require_once 'Action.php';
  *
  * @category VuFind
  * @package  Controller_Search
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Antonio Razo <>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_module Wiki
  */
 class Comments extends Action
 {
@@ -62,10 +60,15 @@ class Comments extends Action
         }
 
         $interface->setPageTitle('Comments History');
-
+		
 		// Make a MySQL Connection
-		mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
-		mysql_select_db("vufind") or die(mysql_error());		
+		$ConnectionString=$configArray['Database']['database'];	
+		$connection=array();
+		$connection=parse_url($ConnectionString);
+		
+		mysql_connect($connection['host'], $connection['user'], $connection['pass']) or die(mysql_error());
+		mysql_select_db(str_replace("/","",$connection['path'])) or die(mysql_error());
+	
 		$saved=array();
 		// Get all the data from the "example" table $user->id
 		$result = mysql_query("select record_id,comment,created from comments,resource where comments.user_id=".$user->id." and comments.resource_id=resource.id order by comments.created desc") 

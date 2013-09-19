@@ -37,14 +37,22 @@ class rejectedField extends Action
 			
 			$id=$_GET["id"];
 			$oid="";
+			$ncountry="";
 			
 			if(isset($_GET["oid"]))
 			 $oid=$_GET["oid"];
 			
-
+			if(isset($_GET["iso"]))
+			   $ncountry=$_GET["iso"];
+			   else
+				$ncountry="AR";
+			
+			$output7.= "<html><body>";			
 			$output7.= "<table border='0' style='font-family:Verdana;font-size:8pt'>";
 
 			$output7.= "<tr><th>METADATOS</th><th>RECHAZADOS</th></tr>";
+			$output7.= "<tr><th>$ncountry</th><th>$id</th></tr>";
+
 			$url2=$ws."/public/rejectedFieldCountBySnapshotId/$id";
 			$output7.= "<tr><td>&nbsp;</td></tr>";
 			$json2 = file_get_contents($url2);
@@ -77,7 +85,7 @@ class rejectedField extends Action
 					}
 					else
 					{
-					$output7.= "<tr><td><b><a style='font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none' href='getInvalidRecordValidation?dc=".$value."&id=".$id."'>".$value."</a></b></td>";
+					$output7.= '<tr><td><b><a style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" href="#" onclick="window.open(\''.$vurl.'/Laref/getInvalidRecordValidation?iso='.$ncountry.'&dc='.$value.'&id='.$id.'\',\'Rechazados\',\'width=800,height=330,scrollbars=yes\');return false;" >'.$value.'</a></b></td>';
 					$par=true;
 					}
 						
@@ -86,7 +94,7 @@ class rejectedField extends Action
 						
 					
 				 $output7.= '</table>';		 
-
+		$output7.= "</body></html>";	
 		//echo $outputN;
 		echo  $output7;
 		//echo $outputN;
@@ -99,7 +107,7 @@ class rejectedField extends Action
 			$interface->assign('output',$output);
 			$interface->setTemplate('rejectedField.tpl');
 			$interface->setPageTitle('rejectedField');
-			$interface->display('blank.tpl');
+			$interface->display('blankt.tpl');
 		}
 }
 

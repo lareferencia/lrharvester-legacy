@@ -41,10 +41,17 @@ class metadataOccurrence extends Action
 			if(isset($_GET["oid"]))
 			 $oid=$_GET["oid"];
 			
+			$ncountry="";			
 
+			if(isset($_GET["iso"]))
+			   $ncountry=$_GET["iso"];
+			   else
+				$ncountry="AR";
+			
 			$output7.= "<table border='0' style='font-family:Verdana;font-size:8pt'>";
 
 			$output7.= "<tr><th>METADATOS</th><th> RECIBIDOS</th></tr>";
+			$output7.= "<tr><th>$ncountry</th><th>$id</th></tr>";			
 			$url2=$ws."/public/metadataOccurrenceCountBySnapshotId/$id";
 			$output7.= "<tr><td>&nbsp;</td></tr>";
 			$json2 = file_get_contents($url2);

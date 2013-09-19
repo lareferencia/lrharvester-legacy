@@ -6,7 +6,7 @@ El objetivo del componente es poner a prueba y retroalimentar los acuerdos y est
  <br/><br/>
 Esta etapa comprende cuatro tareas que permitir&aacute;n construir un piloto de la infraestructura federada de los repositorios, conforme a las mejores pr&aacute;cticas identificadas y los acuerdos logrados.
 <br/><br/>
-Este es el sitio piloto del proyecto <a href="http://lareferencia.redclara.net/rfr/">La Referencia. </a> 
+Este es el sitio piloto del proyecto <a href="http://lareferencia.redclara.net/rfr/">LA Referencia. </a> 
 </div>
 	<div class="clear"></div>
 </div>	

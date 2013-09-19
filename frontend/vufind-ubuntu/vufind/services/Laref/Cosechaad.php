@@ -101,8 +101,8 @@ $nvalidSize=$lnetworks[$ncountry]['validSize'];
 			if ($key==="transformedSize")
 					 {
 						$output1 .= "<td> ".number_format((int)$value)."</td>";	
-						$output1 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/metadataOccurrence?id='.$ni.'\',\'Recibidos\',\'width=200,height=330,scrollbars=yes\');return false;">Recibidos</a></td>';
-						$output1 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/rejectedField?id='.$ni.'\',\'Rechazados\',\'width=200,height=330,scrollbars=yes\');return false;">Rechazados</a></td></tr>';
+						$output1 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/metadataOccurrence?iso='.$ncountry.'&id='.$ni.'\',\'Recibidos\',\'width=200,height=330,scrollbars=yes\');return false;">Recibidos</a></td>';
+						$output1 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/rejectedField?iso='.$ncountry.'&id='.$ni.'\',\'Rechazados\',\'width=800,height=330,scrollbars=yes\');return false;">Rechazados</a></td></tr>';
   				  	    //$output1 .=  "<td><a href='".$vurl."/Laref/metadataOccurrence?id=".$ni."'>Recibidos</a></td>";
 					  	//$output1 .=  "<td><a href='".$vurl."/Laref/rejectedField?id=".$ni."'>Rechazados</a></td></tr>";
 						
@@ -168,8 +168,8 @@ $nvalidSize=$lnetworks[$ncountry]['validSize'];
 					 {
 					 
 						$output7 .= "<td> ".number_format((int)$value)."</td>";	
-  				  	    $output7 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/metadataOccurrence?id='.$ni.'\',\'Recibidos\',\'width=200,height=330,scrollbars=yes\');return false;">Recibidos</a></td>';
-						$output7 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/rejectedField?id='.$ni.'\',\'Rechazados\',\'width=200,height=330,scrollbars=yes\');return false;">Rechazados</a></td></tr>';
+  				  	    $output7 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/metadataOccurrence?iso='.$ncountry.'&id='.$ni.'\',\'Recibidos\',\'width=200,height=330,scrollbars=yes\');return false;">Recibidos</a></td>';
+						$output7 .=  '<td><a href="#" style="font-family:Verdana;font-size:8pt;color:#2E8CB4;text-decoration: none" onclick="window.open(\''.$vurl.'/Laref/rejectedField?iso='.$ncountry.'&id='.$ni.'\',\'Rechazados\',\'width=800,height=330,scrollbars=yes\');return false;">Rechazados</a></td></tr>';
 					}
 
 					else if ($key==="validSize")

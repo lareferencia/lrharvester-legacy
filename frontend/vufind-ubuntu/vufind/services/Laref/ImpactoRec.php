@@ -35,11 +35,14 @@ class ImpactoRec extends Action
 		$json = file_get_contents($url);
 		$data = json_decode($json, TRUE);
 		
+	$output8="";
 		// Make a MySQL Connection
-		mysql_connect("localhost", "vufind", "vufind") or die(mysql_error());
-		mysql_select_db("vufind") or die(mysql_error());
+		$ConnectionString=$configArray['Database']['database'];	
+		$connection=array();
+		$connection=parse_url($ConnectionString);
 		
-		//echo $url." :";
+		mysql_connect($connection['host'], $connection['user'], $connection['pass']) or die(mysql_error());
+		mysql_select_db(str_replace("/","",$connection['path'])) or die(mysql_error());
 		
 		$output10.= "<table border='1'>";
 		$output10.=  "<tr> <th>Pais</th> <th>Cuenta</th></tr>";

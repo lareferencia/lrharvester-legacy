@@ -40,6 +40,12 @@ class getInvalidRecordValidation extends Action
 			
 			if(isset($_GET["dc"]))
 			 $dc=$_GET["dc"];
+			 
+		if(isset($_GET["iso"]))
+			   $ncountry=$_GET["iso"];
+			   else
+				$ncountry="AR";
+				
 			
 			$url2=$ws."/public/listInvalidRecordsInfoByFieldAndSnapshotID/$dc/$id";
 			$json2 = file_get_contents($url2);
@@ -91,7 +97,7 @@ class getInvalidRecordValidation extends Action
 				}	
 				if ($key2==="identifier")
 				{			
-					  	$output7 .=  "<tr><td>$iso</td><td>".$ni."</td>";
+					  	$output7 .=  "<tr><td>$ncountry</td><td>".$ni."</td>";
 						$output7 .= "<td>".$value2."</td>";
 						$ident=$value2;
 					 }
