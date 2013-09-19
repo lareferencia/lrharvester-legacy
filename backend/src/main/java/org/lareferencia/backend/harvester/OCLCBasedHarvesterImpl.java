@@ -105,7 +105,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				//TODO: Esto es compatible solo con 1.7
 				//} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 					
+					
 					String message = buildErrorMessage(e, batchIndex, actualRetry);
+					message += "RT Anterior: " + resumptionToken + "\n";
 					message += "\nEsperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
 					
 					fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_RETRY) );
