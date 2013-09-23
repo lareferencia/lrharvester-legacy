@@ -205,7 +205,7 @@ $admincode=$configArray['Admin']['code'];
 						$user->insert();
 						}
 					$bienvenida="Datos de registro\nUsuario:".$user->username."\nContraseña:".$user->password."\nFecha:".date('Y-m-d h:i:s');
-					$result2 = $this->sendEmail($user->email, 'admin@lareferencia.net', $bienvenida);
+					$result2 = $this->sendEmail($user->email, $configArray['Site']['email'], $bienvenida);
 				
 				} else {
                 return new PEAR_Error('El c&oacute;digo de seguridad proporcionado no es correcto');
