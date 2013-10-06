@@ -172,13 +172,13 @@ class Results extends Action
             // TODO : Stats, move inside the search object
             // Save no records found stat
             if ($this->_solrStats) {
-                $this->_solrStats->saveNoHits($_GET['lookfor'], $_GET['type']);
+                $this->_solrStats->saveNoHits($_GET['lookfor'], isset($_GET['type']) ? $_GET['type'] : '');
             }
         } else {
             // TODO : Stats, move inside the search object
-            // Save search stat
+            // Save search stat 'browserVersion' => isset($product[1]) ? $product[1] : '',
             if ($this->_solrStats) {
-                $this->_solrStats->saveSearch($_GET['lookfor'], $_GET['type']);
+                $this->_solrStats->saveSearch($_GET['lookfor'], isset($_GET['type']) ? $_GET['type'] : '');
             }
 
             // If the "jumpto" parameter is set, jump to the specified result index:

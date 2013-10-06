@@ -191,7 +191,7 @@ class SolrStats extends Solr
 
         // Build new return array
         $info = array('browser' => $product[0],
-                      'browserVersion' => $product[1],
+                      'browserVersion' => isset($product[1]) ? $product[1] : '',
                       'system' => $system);
         return $info;
     }
