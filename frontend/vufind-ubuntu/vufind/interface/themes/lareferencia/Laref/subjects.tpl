@@ -1,18 +1,18 @@
 <div class="span-12" >
-<h1 >Presentaci&oacute;n</h1>
-<a href="http://lareferencia.redclara.net/rfr/resumen"><img src="banner1.png"/></a>
+
+<a href="http://lareferencia.redclara.net/rfr/resumen"><img src="{$url}/images/intro.png"/></a>
 </div>
 <div class="span-10 last">
-  <h1>{translate text="Recursos en la colecci&oacute;n"}</h1>
+  <h1>{translate text="Documents"}</h1>
   <table class="citation">
   <tr>
-    <th>{translate text="Tipo de Materiales"}</th>
+    <th>{translate text="Document Types"}</th>
 	</tr>
   <tr>
     <td>
       <ul>
       {foreach from=$typeList item=term}
-        <li><a href="{$url}/Search/Results?lookfor=&type=AllFields&filter%5B%5D=type%3A%22{$term.0|escape}%22">{$term.0|escape}</a> - {$term.1|number_format:0:".":","}</li>
+        <li><a href="{$url}/Search/Results?lookfor=&type=AllFields&filter%5B%5D=type%3A%22{$term.0|escape}%22">{translate text=$term.0|escape}</a> - {$term.1|number_format:0:".":","}</li>
       {assign var="sum2" value="`$sum2+$term.1`"}
 	  {/foreach}
 	  <li>Total - {$sum2|number_format:0:".":","}</li>
@@ -61,7 +61,7 @@
 graph = Flotr.draw(container, [ 
 {/literal}
 {foreach from=$typeList item=term name=ciclo}
-        {literal}{ data:d{/literal}{$smarty.foreach.ciclo.index}{literal},label:"{/literal}{$term.0}{literal}"},{/literal}
+        {literal}{ data:d{/literal}{$smarty.foreach.ciclo.index}{literal},label:"{/literal}{translate text=$term.0}{literal}"},{/literal}
 			{/foreach}
 {literal}	],
 			 {
