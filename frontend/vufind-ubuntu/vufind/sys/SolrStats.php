@@ -178,10 +178,15 @@ class SolrStats extends Solr
             $product = explode('/', $product);
         } else {
             $product = explode('; ', $info[1]);
-            if ($product[2] == 'MSIE') {
-                // IE
-                $product = explode(' ', $product[2]);
-            } else {
+			if (isset($product[2]))
+				{
+					if ($product[2] == 'MSIE') 
+					{
+					// IE
+						$product = explode(' ', $product[2]);
+					}
+				}				
+			else {
                 $product = array('Other');
             }
         }
