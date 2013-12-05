@@ -17,3 +17,22 @@ tesis de maestría	info:eu-repo/semantics/masterThesis
 tesis de maestria	info:eu-repo/semantics/masterThesis
 tesis doctoral	info:eu-repo/semantics/doctoralThesis	
 trabajo de grado	info:eu-repo/semantics/masterThesis
+Dissertação de Mestrado	info:eu-repo/semantics/masterThesis
+Artigo em anais de congresso (ALICE)	info:eu-repo/semantics/conferenceObject
+Tese de Doutorado	info:eu-repo/semantics/doctoralThesis
+Artigo em periódico indexado (ALICE)	info:eu-repo/semantics/article
+Resumo em anais de congresso (ALICE)	info:eu-repo/semantics/conferenceObject
+Dissertation	info:eu-repo/semantics/masterThesis
+Dissertação / Dissertation	info:eu-repo/semantics/masterThesis
+Artigo de periódico	info:eu-repo/semantics/article
+Thesis	info:eu-repo/semantics/doctoralThesis
+Tese / Thesis	info:eu-repo/semantics/doctoralThesis
+Produção bibliográfica: Artigos completos publicados em periódicos	info:eu-repo/semantics/article
+Artigo publicado em periodico	info:eu-repo/semantics/article
+Monografia	info:eu-repo/semantics/bachelorThesis
+Capítulo em livro técnico-científico (ALICE)	info:eu-repo/semantics/bookPart
+dissertacao	info:eu-repo/semantics/masterThesis
+Trabalho completo publicado em evento	info:eu-repo/semantics/conferenceObject
+Produção bibliográfica: Artigos completos publicados em periódicos	info:eu-repo/semantics/article
+Working Paper	info:eu-repo/semantics/workingPaper
+Artigo / Article	info:eu-repo/semantics/article
