@@ -32,7 +32,7 @@ require_once 'sys/User.php';
 
 require_once 'Mail/RFC822.php';
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage2/securimage.php';
+include_once $_SERVER['DOCUMENT_ROOT'].'/'.$configArray['Captcha']['cap'].'/securimage.php';
 /**
  * Account action for MyResearch module
  *
@@ -43,7 +43,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage2/securimage.php';
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_module Wiki
  */
-class AccountAdmin extends Action
+class Recover extends Action
 {
     /**
      * Constructor
@@ -64,19 +64,20 @@ class AccountAdmin extends Action
     {
         global $interface;
         global $configArray;
-	
-	$vurl=$configArray['Site']['url'];
+		
+		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
 		 $localhost=$configArray['LocalHost']['lht'];
 		 $captcha=$configArray['Captcha']['cap'];
 		 
+		 $admincode=$configArray['Admin']['code'];
+	//echo $admincode;
 	$local_url=$_SERVER['DOCUMENT_ROOT'];
 	
 	$interface->assign('captcha', $captcha);
 	$interface->assign('localhost', $localhost);
 	
-        
         // Don't allow account creation if a non-DB authentication method
         // is being used!!
         if ($configArray['Authentication']['method'] !== 'DB') {
@@ -89,7 +90,10 @@ class AccountAdmin extends Action
             if (PEAR::isError($result)) {
                 $interface->assign('message', $result->getMessage());
                 $interface->assign('formVars', $_POST);
-                $interface->setTemplate('accountadmin.tpl');
+				if (isset($_POST['type']))
+                $interface->setTemplate('recover.tpl');
+				else
+				 $interface->setTemplate('recover.tpl');
                 $interface->display('layout.tpl');
             } else {
                 // Now that the account is created, log the user in:
@@ -98,8 +102,8 @@ class AccountAdmin extends Action
                 die();
             }
         } else {
-            $interface->setPageTitle('Cuenta de Administrador');
-            $interface->setTemplate('accountadmin.tpl');
+            $interface->setPageTitle('Password Recovery');
+            $interface->setTemplate('recover.tpl');
             $interface->display('layout.tpl');
         }
     }
@@ -133,65 +137,87 @@ class AccountAdmin extends Action
      */
     private function _processInput()
     {
+	
+	   global $configArray;
         // Validate Input
-        if (trim($_POST['username']) == '') {
-            return new PEAR_Error('Username cannot be blank');
-        }
-        if (trim($_POST['password']) == '') {
-            return new PEAR_Error('Password cannot be blank');
-        }
-        if ($_POST['password'] != $_POST['password2']) {
-            return new PEAR_Error('Passwords do not match');
-        }
+        // if (trim($_POST['username']) == '') {
+         //    return new PEAR_Error('Username cannot be blank');
+         //}
+        // if (trim($_POST['password']) == '') {
+         //    return new PEAR_Error('Password cannot be blank');
+         //}
+        // if ($_POST['password'] != $_POST['password2']) {
+        //     return new PEAR_Error('Passwords do not match');
+        // }
         if (!Mail_RFC822::isValidInetAddress($_POST['email'])) {
             return new PEAR_Error('Email address is invalid');
         }
-
+		
+//$admincode=$configArray['Admin']['code'];
+		
         // Create Account
-        $user = new User();
-        $user->username = $_POST['username'];
-        if (!$user->find()) {
+      //   $user = new User();
+       //  $user->username = $_POST['username'];
+      //   if (!$user->find()) {
             // No username match found -- check for duplicate email:
             $user = new User();
             $user->email = $_POST['email'];
-            if (!$user->find()) {
-			
+            if ($user->find()) {
+				$user->fetch();
 				 //session_start();
 			     $securimage = new Securimage();
-				 
-				 //echo $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
-				 //echo ' -- ';
+				 //  echo $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+				 //  echo ' -- ';
 				 // echo $_POST['captcha_code'];echo ' :: ';
 				 // print_r( $securimage->getCode(true,true));
-				  
 				 if ($securimage->check($_POST['captcha_code'])) {
-					//if (($_POST['authorization']==="adminl4r3f")) {
-						// We need to reassign the username since we cleared it out when
-						// we did the search for duplicate email addresses:
-						$user->username = $_POST['username'];
-						$user->password = $_POST['password'];
-						$user->firstname = $_POST['firstname'];
-						$user->lastname = $_POST['lastname'];
-						//$user->laref_country = $_POST['country'];
-						$user->laref_country = $_POST['admin'];
-						$user->laref_institution = $_POST['institution'];
-						$user->admin_country = $_POST['admin'];
-						$user->created = date('Y-m-d h:i:s');
-						$user->insert();
-						$bienvenida="Datos de registro\nAdministrador:".$user->username."\nContraseña:".$user->password."\nFecha:".date('Y-m-d h:i:s');
-						echo $bienvenida;
-						$result2 = $this->sendEmail($user->email, $configArray['Site']['email'], $bienvenida);
-					//}
+					// We need to reassign the username since we cleared it out when
+					// we did the search for duplicate email addresses:
 					
+					 //$user->username = $_POST['username'];
+					 //$user->password = $_POST['password'];
+					 //$user->firstname = $_POST['firstname'];
+					 //$user->lastname = $_POST['lastname'];
+					 
+					//$user->laref_country = $_POST['country'];
+					
+					 //if (isset($_POST['admin']))
+					 //$user->laref_country = $_POST['admin'];
+				 //	else
+					 //$user->laref_country = $_POST['country'];
+				 //	$user->laref_institution = $_POST['institution'];
+					
+					
+					 //if (isset($_POST['admin']))
+					 // $user->admin_country = $_POST['admin'];
+					
+					 //$user->created = date('Y-m-d h:i:s');
+					
+					 //if (isset($_POST['admin']))
+					 //	{
+						//echo $_POST['authorization'];
+						//echo $admincode;
+						//if ((strcmp($_POST['authorization'],$admincode)))
+						//	return new PEAR_Error('El c&oacute;digo de autorizaci&oacute;n proporcionado no es correcto');
+						 //else
+						 //	$user->insert();
+						 //}
+					 //	else
+					 //	{
+					 //	$user->insert();
+					 //	}
+					$bienvenida="Datos de registro\nUsuario:".$user->username."\nContraseña:".$user->password."\nFecha:".date('Y-m-d h:i:s');
+					$result2 = $this->sendEmail($user->email, $configArray['Site']['email'], $bienvenida);
+				
 				} else {
-                return new PEAR_Error('The security code entered was incorrect');
+                return new PEAR_Error('El c&oacute;digo de seguridad proporcionado no es correcto');
 				}
             } else {
-                return new PEAR_Error('That email address is already used');
+                return new PEAR_Error('El correo proporcionado no est&aacute; registrado');
             }
-        } else {
-            return new PEAR_Error('That username is already taken');
-        }
+        // } else {
+         //    return new PEAR_Error('El nombre de usuario proporcionado ya est&aacute; en uso');
+        // }
         
         return true;
     }

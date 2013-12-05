@@ -163,8 +163,8 @@ position: absolute; left: 100%; top:0;
 					<a  href="{$path}/MyResearch/Home"> {translate text="Your Account"}</a>
 						<ul>
 							<li {if !$user } class="hide"{/if}  ><a href="{$url}/MyResearch/Favorites">{translate text='Your Favorites'}</a></li>
-							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/History?require_login">{translate text='Your search terms'}</a></li>	
-							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/Comments">{translate text='Your Comment'}</a>	</li>
+							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/History?require_login">{translate text='Your Search Terms'}</a></li>	
+							<li {if !$user } class="hide"{/if}><a  href="{$url}/Search/Comments">{translate text='Your Comments'}</a>	</li>
 						</ul>
 				</li>
 				<li>
@@ -186,6 +186,9 @@ position: absolute; left: 100%; top:0;
 				</li>
 				<li>
 					<a {if $user} class="hide"{/if} href="{$path}/MyResearch/AccountAdmin">{translate text='Create New Adminstrator Account'}</a>
+				</li>
+				<li>
+					<a href="{$path}/MyResearch/Recover">{translate text='Password Recovery'}</a>
 				</li>
 			</ul>
 		</li>

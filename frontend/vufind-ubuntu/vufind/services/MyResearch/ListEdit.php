@@ -101,17 +101,20 @@ class ListEdit extends Action
                     $interface->assign('listError', $result->getMessage());
                 } else {
                     if (!empty($_REQUEST['recordId'])) {
-                        $url = '../Record/' . urlencode($_REQUEST['recordId']) .
-                            '/Save';
-                    } if (isset($_REQUEST['ids']) && !empty($_REQUEST['ids'])) {
+                        $url = '../Record/' . urlencode($_REQUEST['recordId']) .'/Save';
+                    } 
+					/*if (isset($_REQUEST['ids']) && !empty($_REQUEST['ids'])) {
                         $parts = array();
                         foreach ($_REQUEST['ids'] as $id) {
                             $parts[] = urlencode('ids[]') . '=' . urlencode($id);
                         }
                         $url = '../Cart/Home?saveCart=&' . implode('&', $parts);
-                    } else {
+                    } */
+					else {
                         $url = 'Home';
                     }
+					echo "NUEVA LISTA REGISTRO";
+					echo $url;
                     header('Location: ' . $url);
                     die();
                 }
@@ -142,7 +145,10 @@ class ListEdit extends Action
             $list->user_id = $this->_user->id;
             $list->insert();
             $list->find();
-
+			
+			echo "NUEVA LISTA ";
+			//echo $list->title;
+			
             // Remember that the list was used so it can be the default in future
             // dialog boxes:
             $list->rememberLastUsed();
