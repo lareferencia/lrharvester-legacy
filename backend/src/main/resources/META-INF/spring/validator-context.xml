@@ -314,6 +314,68 @@
 		</property>
 	</bean>
 	
+	<bean id="BRTransformer" class="org.lareferencia.backend.transformer.TransformerImpl">
+	
+		<property name="fieldTransformers">
+				<list>	
+					<!-- DC:TYPE Driver Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="driverTypeRule" />
+						<property name="translationMapFileName"  value="${validator.datadir}/br.dctype.driver.translation.txt"/>
+					</bean>
+					
+					<!-- DC:TYPE Status Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="statusTypeRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dctype.status.translation.txt"/>
+
+					</bean>
+					
+					<!-- DC:LANGUAGE Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:language" />
+						<property name="validationRule" ref="langRule" />
+						<property name="defaultFieldValue" value="spa"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dclanguage.translation.txt"/>
+					</bean>
+				</list>
+		</property>
+	</bean>
+	
+	<bean id="VETransformer" class="org.lareferencia.backend.transformer.TransformerImpl">
+	
+		<property name="fieldTransformers">
+				<list>	
+					<!-- DC:TYPE Driver Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="driverTypeRule" />
+						<property name="translationMapFileName"  value="${validator.datadir}/ve.dctype.driver.translation.txt"/>
+					</bean>
+					
+					<!-- DC:TYPE Status Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="statusTypeRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dctype.status.translation.txt"/>
+
+					</bean>
+					
+					<!-- DC:LANGUAGE Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:language" />
+						<property name="validationRule" ref="langRule" />
+						<property name="defaultFieldValue" value="spa"/>
+						<property name="translationMapFileName"  value="${validator.datadir}/dclanguage.translation.txt"/>
+					</bean>
+				</list>
+		</property>
+	</bean>
+	
     	
 
 </beans>
