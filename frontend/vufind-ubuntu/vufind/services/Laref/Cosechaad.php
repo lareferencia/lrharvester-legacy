@@ -28,7 +28,7 @@ class Cosechaad extends Action
         global $interface;
 		global $output;
 		global $networks;
-		
+	global $user;	
 		 $vurl=$configArray['Site']['url'];
 		 $vbiblio=$configArray['Index']['url'];
 		 $vstats=$configArray['Statistics']['solr'];
@@ -40,9 +40,9 @@ $nname="";
 $nvalidSize=0;
 
 if(isset($_GET["iso"]))
-   $ncountry=$_GET["iso"];
+   $ncountry=$user->admin_country;
    else
- 	$ncountry="AR";
+ 	$ncountry="";
 
 
 $nname=$lnetworks[$ncountry]['name'];
