@@ -342,6 +342,12 @@
 
 					</bean>
 					
+					<!-- DC:DATE Date invalid remove Transformer -->
+					<bean class="org.lareferencia.backend.transformer.RemoveInvalidOccurrenceTransformer">
+						<property name="fieldName" value="dc:date" />
+						<property name="validationRule" ref="dateRule" />
+					</bean>
+					
 					<!-- DC:LANGUAGE Transformer -->
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:language" />
@@ -371,6 +377,12 @@
 						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
 						<property name="translationMapFileName"  value="${validator.datadir}/dctype.status.translation.txt"/>
 
+					</bean>
+					
+					<!-- DC:DATE Date invalid remove Transformer -->
+					<bean class="org.lareferencia.backend.transformer.RemoveInvalidOccurrenceTransformer">
+						<property name="fieldName" value="dc:date" />
+						<property name="validationRule" ref="dateRule" />
 					</bean>
 					
 					<!-- DC:LANGUAGE Transformer -->
