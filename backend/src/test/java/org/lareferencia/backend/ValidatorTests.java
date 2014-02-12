@@ -30,6 +30,7 @@ import org.lareferencia.backend.validator.LengthContentValidationRule;
 import org.lareferencia.backend.validator.RegexContentValidationRule;
 import org.lareferencia.backend.validator.ValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -59,6 +60,8 @@ public class ValidatorTests {
 			"<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Cervantes; allegory; text critique</dc:subject>" +
 			"<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">es</dc:language>" +
 			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>" +
+			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">20</dc:date>" +
+
 			"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://creativa.uaslp.mx/creativa.pl?d=-2&amp;id=7841&amp;t=TESU</dc:identifier>" +
 			//"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://hdl.handle.net/10915/12185@5</dc:identifier>" +
 			//"<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">http://www.memoria.fahce.unlp.edu.ar/art_revistas/pr.3374/pr.3374.pdf</dc:identifier>" +
@@ -117,6 +120,7 @@ public class ValidatorTests {
 	IValidator validator;
 	
 	@Autowired
+	@Qualifier("defaultTransformer")
 	ITransformer transformer;
 	
 	@Test
@@ -290,6 +294,18 @@ public class ValidatorTests {
 		
 	}
 	
+	
+	@Test
+	public void testReplaceTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
+		
+		transformer.transform(record, validator.validate(record));
+				
+		System.out.println( record.toString() );
+		System.out.println( "Remove" );
+		
+	}
 	
 	
 }

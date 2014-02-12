@@ -146,13 +146,7 @@
 		<property name="mandatory" value="true" />
 		<property name="rules">
 			<list>
-				<!-- Regex date validator -->
-				<bean
-					class="org.lareferencia.backend.validator.RegexContentValidationRule">
-					<property name="name" value="date:regex"/>
-					<property name="quantifier" value="1..*" />
-					<property name="regexString" value="(^\d{4}$)|(^\d{4}-\d{2}$)|(^\d{4}-\d{2}-\d{2}$)|(^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
-				</bean>
+				<ref bean="dateRule"/>
 			</list>
 		</property>
 	</bean>
@@ -280,6 +274,14 @@
 		<property name="controlledValuesFileName" value="${validator.datadir}/dclanguage.iso639-3.txt"/>
 	</bean>
 	
+	<!-- Regex date validator -->
+	<bean id="dateRule"
+		class="org.lareferencia.backend.validator.RegexContentValidationRule">
+		<property name="name" value="date:regex"/>
+		<property name="quantifier" value="1..*" />
+		<property name="regexString" value="(^\d{4}$)|(^\d{4}-\d{2}$)|(^\d{4}-\d{2}-\d{2}$)|(^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
+	</bean>
+	
 	
 	
 	<!-- !!!!!!!!!!!!!!!!!!!!!!!! Transformers !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
@@ -301,6 +303,12 @@
 						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
 						<property name="translationMapFileName"  value="${validator.datadir}/dctype.status.translation.txt"/>
 
+					</bean>
+					
+					<!-- DC:DATE Date invalid remove Transformer -->
+					<bean class="org.lareferencia.backend.transformer.RemoveInvalidOccurrenceTransformer">
+						<property name="fieldName" value="dc:date" />
+						<property name="validationRule" ref="dateRule" />
 					</bean>
 					
 					<!-- DC:LANGUAGE Transformer -->

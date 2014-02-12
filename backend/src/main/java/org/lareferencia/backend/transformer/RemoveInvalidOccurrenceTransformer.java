@@ -13,37 +13,40 @@
  ******************************************************************************/
 package org.lareferencia.backend.transformer;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
-import org.lareferencia.backend.validator.FieldValidationResult;
-import org.lareferencia.backend.validator.IContentValidationRule;
+import org.w3c.dom.Node;
 
-@Getter
-@Setter
-public abstract class FieldTransformer {
+public class RemoveInvalidOccurrenceTransformer extends FieldTransformer {
 	
-	protected String fieldName;
-	protected Map<String,String> options;
-	protected IContentValidationRule validationRule;
-	protected String defaultFieldValue;
-	
-	protected boolean applyIfValid = false;
-		
-	public FieldTransformer() {
-		options = new HashMap<String, String>();
-		applyIfValid = false;
+	public RemoveInvalidOccurrenceTransformer() {
+		applyIfValid = true;
 	}
+	
+	@Override
+	public boolean transform(OAIRecordMetadata metadata) {
+		
+		
+		ContentValidationResult result;
+		boolean anyInvalid = false;
+		
+		// Ciclo de búsqueda
+		for (Node node: metadata.getFieldNodes(fieldName) ) {
+			
+			String occr = node.getFirstChild().getNodeValue();			
+			result = validationRule.validate(occr);
+			
+			anyInvalid |= !result.isValid();
+			
+			if ( !result.isValid() ) {
+				Node fieldNode = node.getParentNode();
+				fieldNode.removeChild(node);				
+			}
+			
+		}
+			
+		return anyInvalid;
+	}
+	
 
-	/**
-	 * 
-	 * @param metadata
-	 * @return Retorna true si fue necesario aplicar una transformación
-	 */
-	abstract boolean transform(OAIRecordMetadata metadata);
 }

@@ -8,3 +8,24 @@ fre	fra
 it	ita
 pt	por
 Spanish	spa
+Portugués	por
+Inglés	eng
+pt_BR	por 
+Português	por
+Español	spa
+en_US	eng
+Francés	fra
+EN	eng
+Italiano	ita
+Eng	eng
+Alemán	deu
+Espanhol	spa
+Inglês	eng
+Por	por
+Portuguese	por
+Portugês (Br)	por
+fre	fra
+inglês	eng
+português	por
+pro	por
+pt_PT	por

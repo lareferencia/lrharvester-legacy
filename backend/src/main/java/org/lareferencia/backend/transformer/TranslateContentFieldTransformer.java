@@ -36,6 +36,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	
 	public TranslateContentFieldTransformer() {
 		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
+		this.applyIfValid = false;
 	}
 	
 	public void setTranslationMapFileName(String filename) {
