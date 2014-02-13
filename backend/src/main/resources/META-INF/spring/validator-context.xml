@@ -271,6 +271,7 @@
 	<bean id="langRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="language:iso639-3"/>
+		<property name="quantifier" value="1..*" />
 		<property name="controlledValuesFileName" value="${validator.datadir}/dclanguage.iso639-3.txt"/>
 	</bean>
 	
