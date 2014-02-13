@@ -10,7 +10,7 @@ pt	por
 Spanish	spa
 Portugués	por
 Inglés	eng
-pt_BR	por 
+pt_BR	por
 Português	por
 Español	spa
 en_US	eng
