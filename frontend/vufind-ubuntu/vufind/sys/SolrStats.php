@@ -146,7 +146,7 @@ class SolrStats extends Solr
 
         $xml = $this->getSaveXML($data);
         if ($this->saveRecord($xml)) {
-            $this->commit();
+            //$this->commit();
             return true;
         } else {
             return new PEAR_Error('Could not record statistics');
@@ -177,6 +177,7 @@ class SolrStats extends Solr
             $product = $info[3];
             $product = explode('/', $product);
         } else {
+			if (isset($info[1]))
             $product = explode('; ', $info[1]);
 			if (isset($product[2]))
 				{
@@ -186,14 +187,18 @@ class SolrStats extends Solr
 						$product = explode(' ', $product[2]);
 					}
 				}				
-			else {
+			else 
+			{
                 $product = array('Other');
             }
         }
 
         // Parse System Info
+		if (isset($info[1]))
         $system = $info[1];
-
+		else
+		$system = array('Other');
+		
         // Build new return array
         $info = array('browser' => $product[0],
                       'browserVersion' => isset($product[1]) ? $product[1] : '',

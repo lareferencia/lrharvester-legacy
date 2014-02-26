@@ -150,7 +150,7 @@ class Solr implements IndexEngine
         }
 
         $this->host = $host . '/' . $this->core;
-
+/*
         // Test to see solr is online
         $test_url = $this->host . "/admin/ping";
         $test_client = new Proxy_Request();
@@ -167,7 +167,7 @@ class Solr implements IndexEngine
         } else {
             PEAR::raiseError($result);
         }
-
+*/
         // If we're still processing then solr is online
         $this->client = new Proxy_Request(null, array('useBrackets' => false));
 
@@ -1199,6 +1199,10 @@ class Solr implements IndexEngine
             echo "<pre>Commit</pre>\n";
         }
 
+
+
+        error_log("llamada a commit");
+
         $body = '<commit/>';
 
         $result = $this->_update($body);
@@ -1437,11 +1441,15 @@ class Solr implements IndexEngine
 		*/
 
 		//LAREFERENCIA
+
+
+//error_log($xml);
 $ch = curl_init();
 $title ="";
 $header = array("Content-type:text/xml; charset=utf-8");
 curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-curl_setopt($ch, CURLOPT_URL,'http://200.0.207.91:8080/solr/stats/update?commit=true');
+//curl_setopt($ch, CURLOPT_URL,'http://200.0.207.91:8080/solr/stats/update?commit=true');
+curl_setopt($ch, CURLOPT_URL,'http://localhost:8080/solr/stats/update?commit=false');
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
