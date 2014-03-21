@@ -111,6 +111,22 @@ public class SnapshotManager {
 		try {
 			workersBySnapshotID.get(snapshotID).stop();
 		} catch (NullPointerException e) {
+			
+			// En caso de que no sea un snapshot en actividad pero tenga status harvesting lo pasa a status stopped
+			NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
+			
+			if ( snapshot != null 
+					&& (    snapshot.getStatus().equals( SnapshotStatus.HARVESTING ) || 
+							snapshot.getStatus().equals( SnapshotStatus.INDEXING ) ||
+							snapshot.getStatus().equals( SnapshotStatus.RETRYING )  
+						)
+				)
+							{
+				snapshot.setStatus( SnapshotStatus.HARVESTING_STOPPED );
+				snapshotRepository.save(snapshot);
+				snapshotRepository.flush();
+			}
+			
 			System.err.print("No existe el snapshot");
 		}
 	}

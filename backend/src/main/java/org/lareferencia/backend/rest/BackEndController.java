@@ -211,28 +211,30 @@ public class BackEndController {
 		
 		NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
 		
-		if ( lgkSnapshot != null) {
 		
-			for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
-				if ( !snapshot.getId().equals(lgkSnapshot.getId()) && !snapshot.isDeleted() 
-						&& snapshot.getStatus() != SnapshotStatus.HARVESTING ) { // previene el borrado de harvestings en proceso
-					
-					// borra los resultados de validación
-					recordValidationRepository.deleteBySnapshotID(snapshot.getId());
-					// borra los registros
-					recordRepository.deleteBySnapshotID(snapshot.getId());
-					// borra el log de cosechas
-					networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-					// lo marca borrado
-					snapshot.setDeleted(true);
-					// almacena el estado del snap
-					networkSnapshotRepository.save(snapshot);
-				}
+		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
+			
+			System.out.println("Evaluando para borrado: " + snapshot.getId());
+			
+			if ( (lgkSnapshot == null || !snapshot.getId().equals(lgkSnapshot.getId())) && !snapshot.isDeleted() 
+					&& snapshot.getStatus() != SnapshotStatus.HARVESTING && snapshot.getStatus() != SnapshotStatus.RETRYING 
+					&& snapshot.getStatus() != SnapshotStatus.INDEXING) { // previene el borrado de harvestings en proceso
+				
+				System.out.println("Borrando ... " + snapshot.getId());
+				
+				// borra los resultados de validación
+				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
+				// borra los registros
+				recordRepository.deleteBySnapshotID(snapshot.getId());
+				// borra el log de cosechas
+				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
+				// lo marca borrado
+				snapshot.setDeleted(true);
+				// almacena el estado del snap
+				networkSnapshotRepository.save(snapshot);
 			}
 		}
-		else
-			return new ResponseEntity<String>("No hay snapshots excedentes de:" + network.getName(), HttpStatus.OK);
-
+		
 		
 		return new ResponseEntity<String>("Borrados snapshots excedentes de:" + network.getName(), HttpStatus.OK);
 	}
