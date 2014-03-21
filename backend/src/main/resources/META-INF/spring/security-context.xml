@@ -12,8 +12,7 @@
      <http security="none" pattern="/static/**"/> 
      
      <http security="none" pattern="/login"/> 
-     
-     
+     <http security="none" pattern="/favicon.ico" />
      
      <http auto-config="true">
        <intercept-url pattern="/**" access="ROLE_ADMIN"/>
