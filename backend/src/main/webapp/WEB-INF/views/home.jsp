@@ -44,8 +44,14 @@
 		 
 		
 		  	 // cron editor create network 
-		  	 $('#create_network_cron_selector').cron( { onChange: function() {
-		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', '* ' + $(this).cron('value'));}});
+		  	 $('#create_network_cron_selector').cron( { initial: "0 0 1 1 *",
+													    onChange: function() {
+		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', '* ' + $(this).cron('value'));},
+		  												customValues: {
+											                "Domingos 9AM" : "0 9 * * 0",
+											            }			
+		  	 
+		  	 });
 		  
 		  	 // cron editor edit network 
 		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
@@ -231,6 +237,9 @@
 				});
 		     
 			 
+			 // Oculta el panel Jolokia
+			 $('#jolokia').toggle();
+			 
 		     // carga de redes disponibles
 			 loadNetworkList('./rest/network');
 	  });
@@ -241,8 +250,11 @@
 		<a  href="./logout">logout</a>
 	</div> 
 	
-	<div id="memory" style="width:600;"></div>
-	<div id="harvesters" style="width:600;"></div>
+	<span onclick="$('#jolokia').toggle();toogleJolokia();"><b>Mostrar/Ocultar Status</b><br/></span>
+	<div id="jolokia" class="slidingDiv"> 
+			<div id="memory" style="width:600;"></div>
+			<div id="harvesters" style="width:600;"></div>
+	</div>
 	
 	
 	<div id="buttons">

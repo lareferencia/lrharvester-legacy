@@ -1,4 +1,13 @@
     var j4p = new Jolokia({url: "/jolokia", fetchInterval: 1000});
+    
+    function toogleJolokia() {
+    	if ( j4p.isRunning() )
+    		j4p.stop();
+    	else
+    		j4p.start(2000);
+    }; 
+    
+    
 
     var context = cubism.context()
         .serverDelay(0)
@@ -90,4 +99,4 @@
     };
 		 
     
-    j4p.start(1000);
+    //j4p.start(1000);
