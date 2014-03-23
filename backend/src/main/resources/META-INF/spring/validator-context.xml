@@ -280,7 +280,7 @@
 		class="org.lareferencia.backend.validator.RegexContentValidationRule">
 		<property name="name" value="date:regex"/>
 		<property name="quantifier" value="1..*" />
-		<property name="regexString" value="(^\d{4}$)|(^\d{4}-\d{2}$)|(^\d{4}-\d{2}-\d{2}$)|(^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
+		<property name="regexString" value="(^(19|2\d{1})\d{2}$)|(^(19|2\d{1})\d{2}$-\d{2}$)|(^(19|2\d{1})\d{2}$-\d{2}-\d{2}$)|(^(19|2\d{1})\d{2}$-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
 	</bean>
 	
 	
