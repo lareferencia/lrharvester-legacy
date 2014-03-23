@@ -179,6 +179,7 @@
 								<xsl:when test="//dc:language/text()='pt'">
 								 <field name="language">Portugués</field>
 								</xsl:when>	
+								
 								<xsl:otherwise>
 									<field name="language">
 										<xsl:value-of select="normalize-space()"/>
@@ -330,7 +331,7 @@
                 <!-- URL -->
 				<xsl:for-each select="//dc:identifier">
 					<xsl:choose>
-						<xsl:when test="starts-with(., 'http://')">
+						<xsl:when test="starts-with(., 'http')">
 							<field name="url">
 								<xsl:value-of select="." />
 							</field>

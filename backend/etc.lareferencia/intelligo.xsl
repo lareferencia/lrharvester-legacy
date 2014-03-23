@@ -41,7 +41,7 @@
                  <!-- URL -->
 				<xsl:for-each select="//dc:identifier">
 					<xsl:choose>
-						<xsl:when test="starts-with(., 'http://')">
+						<xsl:when test="starts-with(., 'http')">
 							<field name="url">
 								<xsl:value-of select="." />
 							</field>
