@@ -170,15 +170,24 @@
 								<xsl:when test="//dc:language/text()='nl'">
 								 <field name="language">Holandés</field>
 								</xsl:when>	
-								<xsl:when test="//dc:language/text()='Phoenician'">
-								 <field name="language">Fenicio</field>
-								</xsl:when>	
 								<xsl:when test="//dc:language/text()='por'">
 								 <field name="language">Portugués</field>
 								</xsl:when>	
 								<xsl:when test="//dc:language/text()='pt'">
 								 <field name="language">Portugués</field>
 								</xsl:when>	
+								
+								<!-- Casos de eliminación expresa -->
+								<xsl:when test="//dc:language/text()='Phoenician'">
+								 <!--  field name="language">Fenicio</field-->
+								</xsl:when>
+								<xsl:when test="//dc:language/text()='Elamite'">
+								 <!--  field name="language">Elamite</field-->
+								</xsl:when>	
+								<xsl:when test="//dc:language/text()='Efik'">
+								 <!--  field name="language">Efik</field-->
+								</xsl:when>		
+								
 								
 								<xsl:otherwise>
 									<field name="language">
