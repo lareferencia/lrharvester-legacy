@@ -32,7 +32,9 @@ class Fechas extends Action
 	$output9="";
 	$output10="";
 
-$url9 = $vurl.'/biblio/select?facet=true&facet.field=publishDate&fl=publishDate&q=publishDate'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
+
+$url9 = $vbiblio.'/biblio/select?facet=true&facet.limit=-1&rows=0&facet.sort=index&q=*:*&facet.field=publishDate&facet.mincount=25';
+//$url9 = $vurl.'/biblio/select?facet=true&facet.field=publishDate&fl=publishDate&q=publishDate'.urlencode(':[* TO *]').'&facet.limit=100&rows=0&facet.sort=index';
 $xml9 = simpleXML_load_file($url9,"SimpleXMLElement",LIBXML_NOCDATA);
 
 
