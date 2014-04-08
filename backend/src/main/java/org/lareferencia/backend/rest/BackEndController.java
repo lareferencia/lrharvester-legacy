@@ -21,9 +21,11 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.http.conn.DnsResolver;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
@@ -117,6 +119,12 @@ public class BackEndController {
 	public String home(Locale locale, Model model) {	
 		return "home";
 	}
+	
+	@RequestMapping(value = "/diagnose", params="snapID", method = RequestMethod.GET)
+	public String diagnose(Locale locale, Model model) {	
+		return "diagnose";
+	}
+	
 	
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String login(Locale locale, Model model) {	
@@ -492,6 +500,21 @@ public class BackEndController {
 		
 		return new PageResource<OAIProviderStat>(pageResult,"page","size");
 	}
+	
+	
+	@RequestMapping(value="/public/listOriginsBySnapshotID/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+		
+		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
+		
+	}
+	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
