@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.lareferencia.backend.rest;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,11 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.conn.DnsResolver;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
@@ -120,8 +127,12 @@ public class BackEndController {
 		return "home";
 	}
 	
-	@RequestMapping(value = "/diagnose", params="snapID", method = RequestMethod.GET)
-	public String diagnose(Locale locale, Model model) {	
+	@RequestMapping(value = "/diagnose/{networkISO}/{snapID}", method = RequestMethod.GET)
+	public String diagnose(@PathVariable Long snapID, @PathVariable String networkISO, Locale locale, Model model) {	
+		
+		model.addAttribute("snapID", snapID);
+		model.addAttribute("networkISO", networkISO);
+		
 		return "diagnose";
 	}
 	
@@ -352,9 +363,49 @@ public class BackEndController {
 			throw new Exception("Registro inexistente");
 	}
 	
+	
+	
 	@ResponseBody
-	@RequestMapping(value="/public/transformRecordByID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<OAIRecordTransformationInfo> transformRecordByID(@PathVariable Long id) throws Exception {
+	@RequestMapping(value="/public/harvestMetadataByRecordID/{id}", method=RequestMethod.GET)
+	public String harvestyMetadataByRecordID(@PathVariable Long id) throws Exception {
+		
+		
+		OAIRecord record = recordRepository.findOne( id );	
+		String result = "";
+		
+		if ( record != null ) {
+			
+			NationalNetwork network = record.getSnapshot().getNetwork();
+		
+			ArrayList<OAIOrigin> origins =  new ArrayList<>( network.getOrigins() );
+			String oaiURLBase = origins.get(0).getUri();
+			String recordURL = oaiURLBase +  "?verb=GetRecord&metadataPrefix=oai_dc&identifier=" + record.getIdentifier();
+			
+			HttpClient client = new HttpClient();
+			client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+
+			HttpMethod method = new GetMethod(recordURL);
+			int responseCode = client.executeMethod(method);
+			if (responseCode != 200) {
+			    throw new HttpException("HttpMethod Returned Status Code: " + responseCode + " when attempting: " + recordURL);
+			}
+			
+			
+			
+			
+			result = new String( method.getResponseBody(), "UTF-8"); 
+			
+		}
+		
+		
+		return result;
+		
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/public/transformInfoByRecordID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<OAIRecordTransformationInfo> transformInfoByRecordID(@PathVariable Long id) throws Exception {
 		
 		OAIRecordTransformationInfo result = new OAIRecordTransformationInfo();
 		
@@ -391,6 +442,34 @@ public class BackEndController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(value="/public/transformRecordByID/{id}", method=RequestMethod.GET)
+	public String transformRecordByID(@PathVariable Long id) throws Exception {
+		
+		
+		OAIRecord record = recordRepository.findOne( id );	
+		
+		if ( record != null ) {
+			
+			NationalNetwork network = record.getSnapshot().getNetwork();
+			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			
+			ValidationResult preValidationResult = validator.validate(metadata);
+			transformer.transform(metadata, preValidationResult);
+	
+			
+			return metadata.toString();
+		
+		}
+			else
+				throw new Exception("Registro inexistente");
+			
+	}
+	
+	
+	@ResponseBody
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
 			
@@ -402,6 +481,19 @@ public class BackEndController {
 		return response;
 	}
 
+	@ResponseBody
+	@RequestMapping(value="/public/getSnapshotByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<NetworkSnapshot> getSnapshotByID(@PathVariable Long id) {
+			
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
+			snapshot,
+			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
+		);
+		return response;
+	}
+	
+	
 	@ResponseBody
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByCountryISO/{iso}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String iso) throws Exception {
@@ -514,6 +606,8 @@ public class BackEndController {
 		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
 		
 	}
+	
+	
 	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)

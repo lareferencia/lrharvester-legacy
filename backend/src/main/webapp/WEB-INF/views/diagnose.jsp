@@ -25,11 +25,14 @@
 
 	<link rel="stylesheet" href="<spring:url value="/static/css/nv.d3.css"/>"></link>
 	<link rel="stylesheet" href="<spring:url value="/static/css/bootstrap.min.css"/>" >
+	<link rel="stylesheet" href="<spring:url value="/static/css/jquery.highlight.css"/>" >
     <link rel="stylesheet" href="<spring:url value="/static/css/diagnose.css"/>" >
 	
 	<script type="text/javascript" src="<spring:url value="/d3.v3.min.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/nv.d3.min.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/jquery.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/jquery.highlight.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/vkbeautify.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/rest.js"/>"></script>
 	
     <script type="text/javascript" src="<spring:url value="/bootstrap.min.js"/>"></script>
@@ -38,20 +41,15 @@
 	
 		var snapID = ${snapID};
 		var netISO = '${networkISO}';
-		var mainOriginURL = ""; // to be updated by ws
 		
 		var InvalidRecordsByFieldBaseURL = "/public/listInvalidRecordsInfoByFieldAndSnapshotID";
 		var InvalidRecordsByFieldCountBaseURL = "/public/rejectedFieldCountBySnapshotId";
 		var ListOriginsBySnapshotIDBaseURL = "/public/listOriginsBySnapshotID";
 		var ListSnapshotsByCountryISOBaseURL =  "/public/listSnapshotsByCountryISO";
-		
-		
-		function loadMainOriginURL(snapshotID) { 
-			 $.rest.retrieve(ListOriginsBySnapshotIDBaseURL + "/" + snapID, function(result) {	
-				 mainOriginURL = result[0].uri;
-			 });
-		}
-		
+		var ListSnapshotsByCountryISOBaseURL =  "/public/listSnapshotsByCountryISO";
+		var HarvestMetadataByRecordIDBaseURL = "/public/harvestMetadataByRecordID"; 
+		var TransformMetadataByRecordIDBaseURL = "/public/transformRecordByID/";
+		var ValidateTransformedRecordByIDBaseURL = "/public/validateTransformedRecordByID/";
 		
 		function loadRejectedByFieldCount(snapshotID) { 
 		
@@ -73,14 +71,91 @@
 				
 				  
 				  div.append("span")	
-				 	.attr("class",  "text-muted")
+				 	.attr("class",  function(d) { if (d.value == 0) return "label label-success"; else return "label label-danger"; }) 
 				    .text(function(d) { return d.value + " regs rechazados"; });
-
-			 });
-			 
-			 
+			 });		 
 			
 		}
+		
+		
+	    function requestAndLoadMetadata(serviceURL) {
+			
+			$.ajax({
+		        type: 'GET',
+		        url:  serviceURL,
+		        contentType: "application/xml; charset=utf-8",
+		        async: true,
+		        success: function (result) {	
+			      	$('#modalViewMetadataBody').children(":first").remove();
+			      	$('#modalViewMetadataBody').append('<pre  class="code" lang="html"></pre>');
+		        	$('#modalViewMetadataBody .code').text( vkbeautify.xml(result) );
+		        	$('#modalViewMetadataBody .code').highlight();  
+		        	$('#modalViewMetadata').modal('show');
+		        }		        
+		    });
+			
+		}
+	    
+	    function requestAndLoadValidationResult(recordID) {
+	    	
+	    	serviceURL = ValidateTransformedRecordByIDBaseURL + "/" + recordID;
+	    	
+	    	$.rest.retrieve(serviceURL, function(result) {	
+	    		
+	    		
+	    		 d3.select("#modalViewValidationResultBody").selectAll("h2").remove();
+	    		 d3.select("#modalViewValidationResultBody")
+	    		    .append("h2")
+	    		    .text("")
+	    		    .append("span")
+	    		    .attr("class", function (d) { if (result.valid) return "label label-success"; else return "label label-danger"; })
+	    		    .text( function (d) { if (result.valid) return "registro válido"; else return "registro inválido"; });
+	    		 
+	    		 
+	    		 // convierte el diccionario en un array
+	    		 var fieldResults = $.map(result.fieldResults, function(value, index) { return [value];});
+	    		 // ordena los inválidos primero
+	    		 ///fieldResults = fieldResults.sort( function(a,b) {return a.fieldName - b.fieldName;} );
+	    		 
+	    		 d3.select("#modalViewValidationResultBody").selectAll("div").remove();
+	    		 var field = d3.select("#modalViewValidationResultBody").selectAll("div")
+	    		 	.data(fieldResults)
+	    		 	.enter().append("div")
+	    		 	.attr("class", function (d) { 
+	    		 						if (d.valid) return "alert alert-success"; 
+	    		 						else 
+	    		 							if (d.mandatory) return "alert alert-danger";
+	    		 							else return "alert alert-warning"; 
+	    		 	                }) 
+	    		    .html(function(d) {return "<b>" + d.fieldName + "</b>"; })
+	    		    .append("p").html( function(d) { 
+	    		    	
+	    		    	// si hay resultados de validación
+	    		    	if ( d.results.length > 0 ) {
+	    		    	 
+		    		    	d.results.sort( function(a,b) { return a.ruleName > b.ruleName;})
+		    		    	
+		    		    	return $.map(d.results, function(val,index) {  
+		    		    		 
+		    		    		 var icon = "<span style='margin-right:5px;' class='glyphicon glyphicon-ok'></span>";
+		    		    		 if (!val.valid) icon  = "<span style='margin-right:5px;' class='glyphicon glyphicon-remove'></span>";
+		    		    		
+		    		    	     return icon + val.ruleName + ": " + val.receivedValue;
+		    		    	}).join("<br/>");  
+	    		    	} else
+	    		    		return "<span style='margin-right:5px;' class='glyphicon glyphicon-exclamation-sign'></span> No hay ocurrencias de este campo"
+	    		    		
+	    		    } );
+	    		    
+		    	
+	    		
+	    		
+	    		$('#modalViewValidationResult').modal('show');
+	    		
+	    	});
+	    	
+	    }
+	    
 		
 		function loadRejectedByFieldPage(pageURL) { 
 		
@@ -98,69 +173,65 @@
 				    item.append("td")
 				    	.append("button")
 				    	.attr("class", "btn btn-primary btn-xs")
-				    	.attr("data-toggle","modal")
-				    	.attr("data-targe","#modalViewMetadatal")
-				    	.text("Metadata Origen")
+				    	.text("ver metadatos")
 				    	.attr("onclick", function (d) { 
-				    		
-				    		var xmlMetadataURL = mainOriginURL + "?verb=GetRecord&metadataPrefix=oai_dc&identifier=" + d.identifier;
+				    		return  "requestAndLoadMetadata('"+ HarvestMetadataByRecordIDBaseURL + "/"  + d.id + "');"; });
 				    	
-				    		
-				    		$.ajax({
-			    	            dataType : "xml",
-			    	            url : mainOriginURL,
-			    	            success : function(results) {
-			    	            	$( '#modalViewMetadataBody' ).html(results);
-			    	            }
-			    	        });
-				    		
-				    		return "$( '#modalViewMetadataBody' ).load('" + xmlMetadataURL +  "', function() {$('#modalViewMetadata').modal('show'); });"
-				    	
-				    		 
-				    		
-				    		
-				    		
-				    	});
-				    	
-			        	/*.attr("href", function(d) { return mainOriginURL + "?verb=GetRecord&metadataPrefix=oai_dc&identifier=" + d.identifier; });*/
+				    item.append("td")
+			        .text(function(d) { 
+				       	 switch(d.wasTransformed) {
+							 case true:
+								 return 'Si';
+							   	 break;
+							 case false:
+								 return 'No';
+								 break;
+				       	 }
+				      });
 				    
+				    item.append("td")
+			    	.append("button")
+			    	.attr("class", "btn btn-primary btn-xs")
+			    	.text("ver metadatos")
+			    	.attr("onclick", function (d) { 
+			    		return  "requestAndLoadMetadata('"+ TransformMetadataByRecordIDBaseURL + "/"  + d.id + "');"; });
 				    
-				
-				    
+				    item.append("td")
+			    	.append("button")
+			    	.attr("class", "btn btn-primary btn-xs")
+			    	.text("ver validación")
+			    	.attr("onclick", function (d) { return  "requestAndLoadValidationResult(" + d.id + ");"; });
+			    	
+					    
+		
 				 var links = result.links.filter( function (link) { return link.rel != 'self'; } ); 
-				 links = links.map( function(link) { 
-					 
-					 switch(link.rel) {
-						 case 'next':
-							 link.rel = 'Próxima';
-						   	 break;
-						 case 'previous':
-							 link.rel = 'Anterior';
-							 break;
-						 case 'first':
-							 link.rel = 'Primera';
-						   	 break;
-						 case 'last':
-							 link.rel = 'Última';	 
-						     break; 
-						 default:
-							 break;
-						   
-					 }
-					 
-					 return {"rel":link.rel, "href":link.href}; } );
-				 
+	
 				 d3.select("#rejectedByFieldTotalCount").text( "Registros totales: " + result.totalElements );
 				 
 				 d3.select("#rejectedByFieldPageControls").selectAll("p").remove();
 				 d3.select("#rejectedByFieldPageControls").append("p")
-				 										  .text( "Pagina: " + result.number + " de " + result.totalPages + "  " );
+				 										  .text( "Página: " + result.number + " de " + result.totalPages + "  " );
 				 
-				 d3.select("#rejectedByFieldPageControls").selectAll("button").remove();
-				 d3.select("#rejectedByFieldPageControls").selectAll("button")
+				 d3.select("#rejectedByFieldPageControls").selectAll("li").remove();
+				 d3.select("#rejectedByFieldPageControls").selectAll("li")
 				 				  .data(links)
-				 				  .enter().append("button")
-				 		 		  .text( function(d) { return d.rel; })
+				 				  .enter().append("li")
+				 				  .append('a')
+				 		 		  .html( function(d) { 
+				 		 			
+				 		 			  switch(d.rel) {
+										 case 'next':
+											 return '&raquo;';  	 
+										 case 'previous':
+											 return '&laquo;';
+										 case 'first':
+											 return '&laquo;&laquo;'; 
+										 case 'last':
+											 return '&raquo;&raquo;';	 
+										 default:
+											 break;
+								 		}
+				 		 		   })
 				                  .attr("onclick", function(d){ return "loadRejectedByFieldPage('" + d.href +  "');"; });
 				 	
 			 });
@@ -213,9 +284,7 @@
 		
 		
 		//createHarvestingHistoryChart(netISO);
-		
-		loadMainOriginURL(snapID);
-		
+				
 		loadRejectedByFieldCount(snapID);	
 	
 	</script>
@@ -240,10 +309,7 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#">Ayuda</a></li>
           </ul>
          
         </div>
@@ -255,36 +321,32 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Registros inválidos</a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
+            <li><a href="#">Historial de cosechas</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Registros rechazados por campo</h1>
           
           <!-- Button trigger modal -->
-		
-
-
 
           <div id="rejectedByFieldCountPanel" class="row placeholders"></div>
 
-          <h2 class="sub-header">Listado de registos rechazados por campo:</h2>
+          <!-- h3 class="sub-header">Listado de registos rechazados por campo:</h2-->
           <div class="table-responsive">
             <table class="table table-striped">
              
               <thead>
-                <tr id="rejectedByFieldPageControls" ></tr>
+                <tr><td colspan="4"><ul id="rejectedByFieldPageControls" class="pagination"></ul></td></tr>
                 <tr>
-                  <th>#</th>
-                  <th>XML Origen OAI</th>
-                  <th>XML Cosechado/Transformado</th>
-                  <th>Validación</th>
+                  <th width="80">#</th>
+                  <th width="60">XML Origen</th>
+                  <th width="40">Trasformado</th>
+                  <th width="60">XML Cosechado/Transformado</th>
+                  <th width="60">Validación</th>
                 </tr>
               </thead>
               <tbody id="rejectedByFieldTable"></tbody>
-              <tfoot><tr><td id="rejectedByFieldTotalCount"></td></tr></tfoot>
+              <tfoot><tr><td colspan="4" id="rejectedByFieldTotalCount"></td></tr></tfoot>
             </table>
           </div>
         </div>
@@ -300,10 +362,27 @@
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	        <h4 class="modal-title" id="titleLabel">Metadata</h4>
 	      </div>
-	      <div id="modalViewMetadataBody" class="modal-body" >
+	      <div  class="modal-body" id="modalViewMetadataBody">
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- Modal View Validation Result -->
+	<div class="modal fade" id="modalViewValidationResult" tabindex="-1" role="dialog" aria-labelledby="titleLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title" id="titleLabel">Resultado de validación</h4>
+	      </div>
+	      <div  class="modal-body" id="modalViewValidationResultBody" >
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 	      </div>
 	    </div>
 	  </div>
