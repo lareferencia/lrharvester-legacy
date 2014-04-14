@@ -147,9 +147,6 @@
 	    		    		
 	    		    } );
 	    		    
-		    	
-	    		
-	    		
 	    		$('#modalViewValidationResult').modal('show');
 	    		
 	    	});
@@ -210,7 +207,7 @@
 				 
 				 d3.select("#rejectedByFieldPageControls").selectAll("p").remove();
 				 d3.select("#rejectedByFieldPageControls").append("p")
-				 										  .text( "Página: " + result.number + " de " + result.totalPages + "  " );
+				 										  .text( "Página: " + (result.number+1) + " de " + result.totalPages + "  " );
 				 
 				 d3.select("#rejectedByFieldPageControls").selectAll("li").remove();
 				 d3.select("#rejectedByFieldPageControls").selectAll("li")

@@ -325,6 +325,10 @@
 					  .on("click", function(d) { sendStartIndexingLGKByNetworkID( $.rest.link2id($.rest.relLink(d,"self")) );  } )	   
 					  .text("indexar LGK"); 
 					
+					p.append("td")
+					  .append("button")
+					  .on("click", function(d) { window.open("diagnose/" + d.countryISO  );  } )	   
+					  .text("diagnóstico LGK"); 
 					
 					p.append("td")
 					  .append("button")

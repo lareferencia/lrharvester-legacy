@@ -13,8 +13,7 @@
  ******************************************************************************/
 package org.lareferencia.backend.rest;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,8 +26,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.conn.DnsResolver;
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotStat;
@@ -131,6 +128,25 @@ public class BackEndController {
 	public String diagnose(@PathVariable Long snapID, @PathVariable String networkISO, Locale locale, Model model) {	
 		
 		model.addAttribute("snapID", snapID);
+		model.addAttribute("networkISO", networkISO);
+		
+		return "diagnose";
+	}
+	
+	@RequestMapping(value = "/diagnose/{networkISO}", method = RequestMethod.GET)
+	public String diagnose(@PathVariable String networkISO, Locale locale, Model model) throws Exception {	
+		
+		
+		NationalNetwork network = nationalNetworkRepository.findByCountryISO(networkISO);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		
+		NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+		if ( lgkSnapshot == null )
+			throw new Exception("No se encontró LGKSnapshot");
+		
+		model.addAttribute("snapID", lgkSnapshot.getId());
 		model.addAttribute("networkISO", networkISO);
 		
 		return "diagnose";
