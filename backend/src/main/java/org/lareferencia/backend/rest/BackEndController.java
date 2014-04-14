@@ -381,6 +381,7 @@ public class BackEndController {
 			String oaiURLBase = origins.get(0).getUri();
 			String recordURL = oaiURLBase +  "?verb=GetRecord&metadataPrefix=oai_dc&identifier=" + record.getIdentifier();
 			
+		
 			HttpClient client = new HttpClient();
 			client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 
@@ -389,9 +390,6 @@ public class BackEndController {
 			if (responseCode != 200) {
 			    throw new HttpException("HttpMethod Returned Status Code: " + responseCode + " when attempting: " + recordURL);
 			}
-			
-			
-			
 			
 			result = new String( method.getResponseBody(), "UTF-8"); 
 			
