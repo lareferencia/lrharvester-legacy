@@ -60,6 +60,7 @@
 				 var div = d3.select("#rejectedByFieldCountPanel").selectAll("div")
 				    .data(result)
 				  	.enter().append("div")
+				  	.attr("style","cursor:pointer;")
 				  	.attr("class", "col-xs-6 col-sm-3 placeholder")
 				  	.attr("onclick",  function(d) { 
 				 			var url = InvalidRecordsByFieldBaseURL + "/" + d.field + "/" + snapshotID + "?size=" + 15;
@@ -155,6 +156,8 @@
 	    
 		
 		function loadRejectedByFieldPage(pageURL) { 
+			
+			$('#modalLoading').modal('show');
 		
 			 $.rest.retrieve(pageURL, function(result) {	
 				 
@@ -232,6 +235,8 @@
 				                  .attr("onclick", function(d){ return "loadRejectedByFieldPage('" + d.href +  "');"; });
 				 	
 			 });
+			 
+			 $('#modalLoading').modal('hide');
 		}
 		
 		
@@ -381,6 +386,17 @@
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<!-- Modal View Validation Result -->
+	<div class="modal fade" id="modalLoading" tabindex="-1" role="dialog" aria-labelledby="titleLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header"></div>
+	      <div  class="modal-body" >Aguarde un momento</div>
+	      <div class="modal-footer"></div>
 	    </div>
 	  </div>
 	</div>
