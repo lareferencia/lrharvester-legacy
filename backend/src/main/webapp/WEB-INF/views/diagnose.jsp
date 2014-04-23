@@ -28,14 +28,14 @@
 	<link rel="stylesheet" href="<spring:url value="/static/css/jquery.highlight.css"/>" >
     <link rel="stylesheet" href="<spring:url value="/static/css/diagnose.css"/>" >
 	
-	<script type="text/javascript" src="<spring:url value="/d3.v3.min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/nv.d3.min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery.highlight.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/vkbeautify.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/rest.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/d3.v3.min.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/nv.d3.min.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/jquery.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/jquery.highlight.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/vkbeautify.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/js/rest.js"/>"></script>
 	
-    <script type="text/javascript" src="<spring:url value="/bootstrap.min.js"/>"></script>
+    <script type="text/javascript" src="<spring:url value="/static/js/bootstrap.min.js"/>"></script>
 	
 	<script type="text/javascript">
 	
