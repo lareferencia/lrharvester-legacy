@@ -13,6 +13,8 @@
      
      <http security="none" pattern="/login"/> 
      <http security="none" pattern="/diagnose"/>
+     <http security="none" pattern="/diagnose/**"/>
+     
      
      <http security="none" pattern="/favicon.ico" />
      
