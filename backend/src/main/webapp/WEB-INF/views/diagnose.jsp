@@ -42,14 +42,14 @@
 		var snapID = ${snapID};
 		var netISO = '${networkISO}';
 		
-		var InvalidRecordsByFieldBaseURL = "/public/listInvalidRecordsInfoByFieldAndSnapshotID";
-		var InvalidRecordsByFieldCountBaseURL = "/public/rejectedFieldCountBySnapshotId";
-		var ListOriginsBySnapshotIDBaseURL = "/public/listOriginsBySnapshotID";
-		var ListSnapshotsByCountryISOBaseURL =  "/public/listSnapshotsByCountryISO";
-		var ListSnapshotsByCountryISOBaseURL =  "/public/listSnapshotsByCountryISO";
-		var HarvestMetadataByRecordIDBaseURL = "/public/harvestMetadataByRecordID"; 
-		var TransformMetadataByRecordIDBaseURL = "/public/transformRecordByID/";
-		var ValidateTransformedRecordByIDBaseURL = "/public/validateTransformedRecordByID/";
+		var InvalidRecordsByFieldBaseURL = '<spring:url value="/public/listInvalidRecordsInfoByFieldAndSnapshotID"/>';
+		var InvalidRecordsByFieldCountBaseURL = '<spring:url value="/public/rejectedFieldCountBySnapshotId"/>';
+		var ListOriginsBySnapshotIDBaseURL = '<spring:url value="/public/listOriginsBySnapshotID"/>';
+		var ListSnapshotsByCountryISOBaseURL =  '<spring:url value="/public/listSnapshotsByCountryISO"/>';
+		var ListSnapshotsByCountryISOBaseURL =  '<spring:url value="/public/listSnapshotsByCountryISO"/>';
+		var HarvestMetadataByRecordIDBaseURL = '<spring:url value="/public/harvestMetadataByRecordID"/>'; 
+		var TransformMetadataByRecordIDBaseURL = '<spring:url value="/public/transformRecordByID/"/>';
+		var ValidateTransformedRecordByIDBaseURL = '<spring:url value="/public/validateTransformedRecordByID/"/>';
 		
 		function loadRejectedByFieldCount(snapshotID) { 
 		
