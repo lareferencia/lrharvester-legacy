@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Scope(value="prototype")
 public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener {
 	
-	private static int MAX_RETRIES = 15;
+	private static int MAX_RETRIES = 10;
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
