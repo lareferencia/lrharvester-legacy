@@ -72,11 +72,12 @@ public class IntelligoIndexer implements IIndexer{
 		this.stylesheet = new File(xslFileName);
 		this.outputPath = outputPath;
 		
+		/*
 		try {
 			DetectorFactory.loadProfile(langProfileDirectory);
 		} catch (LangDetectException e) {
 			System.err.println("!!!! Error al cargar los perfiles del detector de idiomas en: " + langProfileDirectory);
-		}
+		}*/
 
 	}
 	

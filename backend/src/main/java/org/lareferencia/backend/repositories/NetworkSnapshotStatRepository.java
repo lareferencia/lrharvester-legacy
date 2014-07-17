@@ -18,9 +18,11 @@ import java.util.List;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 
-@RestResource(path = "stat", rel="stat", exported=false)
+@RepositoryRestResource(path = "stat", collectionResourceRel="stat", exported=false)
 public interface NetworkSnapshotStatRepository extends JpaRepository<NetworkSnapshotStat, Long> { 	
 	
 	 List<NetworkSnapshotStat> findBySnapshotAndStatId(NetworkSnapshot snapshot, Long statId);

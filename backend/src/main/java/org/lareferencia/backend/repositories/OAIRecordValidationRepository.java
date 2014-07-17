@@ -18,7 +18,9 @@ import org.lareferencia.backend.domain.OAIRecordValidationResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.transaction.annotation.Transactional;
 
 /** 
@@ -27,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 
-@RestResource(path = "validation", rel="validation")
+@RepositoryRestResource(path = "validation", collectionResourceRel="validation")
 public interface OAIRecordValidationRepository extends JpaRepository<OAIRecordValidationResult, Long> { 
 	 
 	 @Modifying

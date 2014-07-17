@@ -15,9 +15,10 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.OAISet;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 
-@RestResource(path = "set",rel="set")
+@RepositoryRestResource(path = "set",collectionResourceRel="set")
 public interface OAISetRepository extends JpaRepository<OAISet, Long> { 
 	
 	

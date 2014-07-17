@@ -15,9 +15,9 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RestResource(path = "origin",rel="origin")
+@RepositoryRestResource(path = "origin",collectionResourceRel="origin")
 public interface OAIOriginRepository extends JpaRepository<OAIOrigin, Long> { 
 	
 	

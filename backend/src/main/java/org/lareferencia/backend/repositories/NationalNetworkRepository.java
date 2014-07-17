@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.lareferencia.backend.domain.NationalNetwork;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RestResource(path = "network", rel="network")
+@RepositoryRestResource(path = "network", collectionResourceRel="network")
 public interface NationalNetworkRepository extends JpaRepository<NationalNetwork, Long> { 
 	
 	  List<NationalNetwork> findByPublishedOrderByNameAsc(boolean published);	  

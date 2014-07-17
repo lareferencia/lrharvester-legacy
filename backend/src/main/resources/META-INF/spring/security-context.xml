@@ -15,6 +15,8 @@
      <http security="none" pattern="/diagnose"/>
      <http security="none" pattern="/diagnose/**"/>
      
+     <!--  http security="none" pattern="/rest/**"/ -->
+     
      <http security="none" pattern="/favicon.ico" />
      
      <http auto-config="true">

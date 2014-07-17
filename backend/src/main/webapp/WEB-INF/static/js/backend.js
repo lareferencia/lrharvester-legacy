@@ -1,5 +1,6 @@
 	
 	var origin_base_link = './rest/origin/'; 
+	var set_base_link = './rest/set/'; 	
 	var network_base_link = './rest/network/'; 
 
 	var actual_set_link = null;
@@ -54,10 +55,7 @@
 	}
 	
 	
-	
-	
 	/**** Acciones sobre la lista de orígenes *******/
-	
 	function editOrigins(network_link) {
 		 actual_network_link = network_link;
 		 loadOriginsList(network_link);
@@ -66,7 +64,6 @@
 	
 	
     /**** Acciones sobre la lista de snpashots *******/
-	
 	function showSnapshots(network_link, lgkOnly) {
 		 actual_network_link = network_link;
 		 loadSnapshotList(network_link, lgkOnly);
@@ -121,16 +118,9 @@
 		 $( "#dialog_create_origin" ).dialog("open");
 	}
 	
-	function createOrigin(network_link, success_handler) { 		  
-		  var data = {};
-		  
-		  data['origins'] = $.rest.retrieve_compact(network_link + '/origins').links;
-		  data['snapshots'] = $.rest.retrieve_compact(network_link + '/snapshots').links;
-		  
-		  var new_origin_data = $('#form_create_origin').toJson();
-		  data['origins'].push(new_origin_data);
-		  
-		  $.rest.update(network_link, data, success_handler, error_handler);  		  
+	function createOrigin(network_link, success_handler) { 		 
+		var data = $('#form_create_origin').toJson();
+		$.rest.append( network_link + '/origins', origin_base_link, data, success_handler);
 	}
 	
 	/**
@@ -175,20 +165,14 @@
 		 });
 	}
  	
- 	function createSet(success_handler) { 		  
-		  var data = {};
-		  
-		  data['sets'] = $.rest.retrieve_compact(actual_origin_link + '/sets').links;
-		  
-		  var new_set_data = $('#form_create_set').toJson();
-		  data['sets'].push(new_set_data);
-		  
-		  $.rest.update(actual_origin_link, data, success_handler, error_handler);  		  
+ 	function createSet(origin_link, success_handler) { 		  
+		  var data = $('#form_create_set').toJson();
+		  $.rest.append( origin_link + '/sets', set_base_link, data, success_handler);		  
 	}
  	
  	function updateSet(set_link, success_handler) {
 		  var data = $('#form_edit_set').toJson();
-		  $.rest.update(set_link, data, success_handler, error_handler);  
+		  $.rest.update(set_link, data, success_handler, success_handler);  
 	}
  	
  	
@@ -230,13 +214,9 @@
 	 * @param success_handler
 	 */
  	function updateNetwork(network_link, success_handler) {
-		  
-		  var data = $('#form_edit_network').toJson();
-		  
-		  data['origins'] = $.rest.retrieve_compact(network_link + '/origins').links;
-		  data['snapshots'] = $.rest.retrieve_compact(network_link + '/snapshots').links;
-		  
-		  $.rest.update(network_link, data, success_handler);  
+ 		
+		 var data = $('#form_edit_network').toJson();  
+		 $.rest.update(network_link, data, success_handler);  
 	}
 
 
@@ -284,7 +264,7 @@
 					
 					var p = d3.select(dst_element_id)
 					  .selectAll("tr")
-		    		  .data(result.content)
+		    		  .data(result._embedded.network)
 		              .enter().append("tr");
 					
 					p.append("td")
@@ -363,7 +343,7 @@
 		// lista todo, no solo el lgk
 		if ( lgkOnly == null || !lgkOnly ) {
 			// Esto los da ordenados de mayor fecha a menor
-			service_url = './rest/snapshot/search/findByNetworkIdOrderByStartTimeDesc?limit=50&network_id=' +  $.rest.link2id(network_link);
+			service_url = './rest/snapshot/search/findByNetworkIdOrderByStartTimeDesc?size=50&network_id=' +  $.rest.link2id(network_link);
 		}
 		else {
 			// lista solo el lgk
@@ -378,16 +358,13 @@
 		
 		$.rest.retrieve(service_url, function(result) {
 					
-			var content;
 			
-			if (lgkOnly != null && lgkOnly ) 
-				content = [result];
-			else
-				content = result.content;
-			
+			if ( result._embedded == null )
+				result._embedded = { "snapshot" : []};
+					
 			var p = d3.select(dst_element_id)
 			  .selectAll('tr')
-    		  .data(content)
+    		  .data(result._embedded.snapshot)
               .enter().append('tr');
 			
 			p.append("td")
@@ -410,15 +387,15 @@
 		    
 		    p.append("td")
             .text(function(d) { 
-            	var date = new Date();
-            	date.setTime(d.startTime);
+            	var date = new Date(d.startTime);
+            	//date.setTime(d.startTime);
             	return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
             });
 		    
 		    p.append("td")
 		    .text(function(d) { 
-            	var date = new Date();
-            	date.setTime(d.endTime);
+            	var date = new Date(d.endTime);
+            	//date.setTime(d.endTime);
             	return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
             });
 		    
@@ -472,27 +449,29 @@
 				 
 				 function(result) {
 				
-					
-					var p = d3.select(dst_element_id)
-					  .selectAll("tr")
-		    		  .data(result.content)
-		              .enter().append("tr");
-		    		  
-		            p.append("td")
-		              .text(function(d) { return d.name; });
-		               
-		            p.append("td")
-		              .text(function(d) { return d.spec; });
-		           
-		            p.append("td")
-					  .append("button")
-					  .on("click", function(d) { openEditSet($.rest.relLink(d,"self"));  } )	   
-					  .text("editar"); 
-		            
-		            p.append("td")
-					  .append("button")
-					  .on("click", function(d) { deleteSet($.rest.relLink(d,"self"), refreshSets);  } )	   
-					  .text("borrar"); 
+					if ( '_embedded' in result ) {
+						
+						var p = d3.select(dst_element_id)
+						  .selectAll("tr")
+			    		  .data(result._embedded.set)
+			              .enter().append("tr");
+			    		  
+			            p.append("td")
+			              .text(function(d) { return d.name; });
+			               
+			            p.append("td")
+			              .text(function(d) { return d.spec; });
+			           
+			            p.append("td")
+						  .append("button")
+						  .on("click", function(d) { openEditSet($.rest.relLink(d,"self"));  } )	   
+						  .text("editar"); 
+			            
+			            p.append("td")
+						  .append("button")
+						  .on("click", function(d) { deleteSet($.rest.relLink(d,"self"), refreshSets);  } )	   
+						  .text("borrar"); 
+					}
 				
 		 		}, error_handler
 		 );
@@ -514,39 +493,42 @@
 				 
 				 function(result) {
 				
-					
-					var p = d3.select(dst_element_id)
-					  .selectAll("tr")
-		    		  .data(result.content)
-		              .enter().append("tr");
-		    		  
-		            p.append("td")
-		              .text(function(d) { return d.name; });
-		               
-		            p.append("td")
-		              .text(function(d) {
-		            	  		if (d.uri.length > 80)
-		            	  			return d.uri.substring(0,80) + '...';
-		            	  		else
-		            	  			return d.uri;
-		            	  	});
+					if ( '_embedded' in result ) {
+	
+						var p = d3.select(dst_element_id)
+						  .selectAll("tr")
+			    		  .data(result._embedded.origin)
+			              .enter().append("tr");
+			    		  
+			            p.append("td")
+			              .text(function(d) { return d.name; });
+			               
+			            p.append("td")
+			              .text(function(d) {
+			            	  		if (d.uri.length > 80)
+			            	  			return d.uri.substring(0,80) + '...';
+			            	  		else
+			            	  			return d.uri;
+			            	  	});
+			            
+			            
+			            p.append("td")
+						  .append("button")
+						  .on("click", function(d) { showSets($.rest.relLink(d,"self"));  } )	   
+						  .text("sets"); 
+			            
+			            
+			            p.append("td")
+						  .append("button")
+						  .on("click", function(d) { openEditOrigin($.rest.relLink(d,"self"));  } )	   
+						  .text("editar"); 
+			            
+			            p.append("td")
+						  .append("button")
+						  .on("click", function(d) { deleteOrigin($.rest.relLink(d,"self"), refreshOrigins);  } )	   
+						  .text("borrar"); 
 		            
-		            
-		            p.append("td")
-					  .append("button")
-					  .on("click", function(d) { showSets($.rest.relLink(d,"self"));  } )	   
-					  .text("sets"); 
-		            
-		            
-		            p.append("td")
-					  .append("button")
-					  .on("click", function(d) { openEditOrigin($.rest.relLink(d,"self"));  } )	   
-					  .text("editar"); 
-		            
-		            p.append("td")
-					  .append("button")
-					  .on("click", function(d) { deleteOrigin($.rest.relLink(d,"self"), refreshOrigins);  } )	   
-					  .text("borrar"); 
+					}
 				
 		 		}
 		 );

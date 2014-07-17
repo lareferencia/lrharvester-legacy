@@ -22,10 +22,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RestResource(path = "snapshot", rel="snapshot")
+@RepositoryRestResource(path = "snapshot", collectionResourceRel="snapshot")
 public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot, Long> { 
 	
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id and s.status = 9)")

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -35,7 +36,7 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 			String sizeParam) {
 		super();
 		this.page = page;
-		if(page.hasPreviousPage()) {
+		if(page.hasPrevious()) {
 			String path = createBuilder()
 				.queryParam(pageParam,page.getNumber()-1)
 				.queryParam(sizeParam,page.getSize())
@@ -44,7 +45,7 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 			Link link = new Link(path, Link.REL_PREVIOUS);
 			add(link);
 		}
-		if(page.hasNextPage()) {
+		if(page.hasNext()) {
 			String path = createBuilder()
 				.queryParam(pageParam,page.getNumber()+1)
 				.queryParam(sizeParam,page.getSize())
@@ -106,22 +107,22 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 
 	@Override
 	public boolean hasPreviousPage() {
-		return page.hasPreviousPage();
+		return page.hasPrevious();
 	}
 
 	@Override
 	public boolean isFirstPage() {
-		return page.isFirstPage();
+		return page.isFirst();
 	}
 
 	@Override
 	public boolean hasNextPage() {
-		return page.hasNextPage();
+		return page.hasNext();
 	}
 
 	@Override
 	public boolean isLastPage() {
-		return page.isLastPage();
+		return page.isLast();
 	}
 
 	@Override
@@ -142,6 +143,42 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 	@Override
 	public Sort getSort() {
 		return page.getSort();
+	}
+
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return page.hasNext();
+	}
+
+	@Override
+	public boolean hasPrevious() {
+		// TODO Auto-generated method stub
+		return page.hasPrevious();
+	}
+
+	@Override
+	public boolean isFirst() {
+		// TODO Auto-generated method stub
+		return page.isFirst();
+	}
+
+	@Override
+	public boolean isLast() {
+		// TODO Auto-generated method stub
+		return page.isLast();
+	}
+
+	@Override
+	public Pageable nextPageable() {
+		// TODO Auto-generated method stub
+		return page.nextPageable();
+	}
+
+	@Override
+	public Pageable previousPageable() {
+		// TODO Auto-generated method stub
+		return page.previousPageable();
 	}
 	
 }

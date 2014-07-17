@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.lareferencia.backend.repositories;
 
-import java.util.List;
-
 import org.lareferencia.backend.domain.NetworkSnapshotLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +20,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.repository.annotation.RestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
-@RestResource(path = "log", rel="log", exported=true)
+@RepositoryRestResource(path = "log", collectionResourceRel="log", exported=true)
 public interface NetworkSnapshotLogRepository extends JpaRepository<NetworkSnapshotLog, Long> { 	
 		 
 	 @Query("select nsl from NetworkSnapshotLog nsl where nsl.snapshot.id = :snapshot_id")

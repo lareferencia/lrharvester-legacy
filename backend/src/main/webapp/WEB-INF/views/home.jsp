@@ -210,7 +210,7 @@
 				   
 				   buttons: {
 				        "Agregar set al origen": function() {
-				          createSet(refreshSets);
+				          createSet(actual_origin_link, refreshSets);
 				          $( this ).dialog( "close" );
 				        },
 				        "Cerrar": function() {

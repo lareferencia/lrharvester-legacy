@@ -76,7 +76,7 @@ $.rest = {
 	*/
 	relLink: function (entity, rel) {
 		
-		return entity.links.filter( function(e) { return e.rel == rel; } )[0].href;
+		return entity._links.self.href;
 	},
 	
 	/**
@@ -98,11 +98,11 @@ $.rest = {
 		var result = $.ajax({
 	        type: 'GET',
 	        url:  entity_url,
-	        contentType: "application/json; charset=utf-8",
+	        contentType: "application/hal+json; charset=utf-8",
 	        dataType: 'json',
 	        async: isAsync,
 	        success: success_handler,
-	        accepts: {json:'application/json'},
+	        accepts: {json:'application/hal+json'},
 	        error: error_handler
 	        
 	    });//.responseJSON;
@@ -111,32 +111,7 @@ $.rest = {
 	},
 	
 
-	retrieve_full : function(entity_url, success_handler, error_handler) {
-		
-		var isAsync = true;
-		
-		if ( success_handler == null ) {
-			isAsync = false;
-		}
-		
-		var result = $.ajax({
-	        type: 'GET',
-	        url:  entity_url,
-	        contentType: "application/json; charset=utf-8",
-	        dataType: 'json',
-	        async: isAsync,
-	        success: success_handler,
-	        accepts: {json:'application/x-spring-data-compact+json'},
-	        error: error_handler
-	        
-	    }).responseJSON;
-		
-		for (var i=0;i<result.links.length; i++) {
-			result.content.push( $.rest.retrieve(result.links[i].href) );			  
-		}
-		
-		return result;
-	},
+	
 	
 	
 	
@@ -151,11 +126,11 @@ $.rest = {
 		var result = $.ajax({
 	        type: 'GET',
 	        url:  entity_url,
-	        contentType: "application/json; charset=utf-8",
+	        contentType: "application/hal+json; charset=utf-8",
 	        dataType: 'json',
 	        async: isAsync,
 	        success: success_handler,
-	        accepts: {json:'application/x-spring-data-compact+json'},
+	        accepts: {json:'application/hal+json'},
 	        error: error_handler
 	        
 	    }).responseJSON;
@@ -165,21 +140,15 @@ $.rest = {
 	
 	create : function(entity_url, data, success_handler, error_handler) {
 		
-		var isAsync = true;
-		
-		if ( success_handler == null ) {
-			isAsync = false;
-		}
-		
 		$.ajax({
 	        type: 'POST',
 	        url:  entity_url,
-	        contentType: "application/json; charset=utf-8",
+	        contentType: "application/hal+json; charset=utf-8",
 	        dataType: 'json',
 	        data: JSON.stringify(data),
-	        async: isAsync,
+	        async: true,
 	        success: success_handler,
-	        accepts: {json:'application/json'},
+	        accepts: {json:'application/hal+json'},
 	        error: error_handler
 	        
 	    });
@@ -187,18 +156,68 @@ $.rest = {
 	
 	update: function(entity_url, data, success_handler, error_handler) {
 		$.ajax({
-	        type: 'PUT',
+	        type: 'PATCH',
 	        url: entity_url,
-	        contentType: "application/json; charset=utf-8",
+	        contentType: "application/hal+json; charset=utf-8",
 	        dataType: 'json',
 	        data: JSON.stringify(data),
 	        async: true,
 	        success: success_handler,
-	        accepts: {json:'application/json'},
-	        error: error_handler
-	        
+	        accepts: {json:'application/hal+json'},
+	        error: error_handler   
 	    });
 	},
+	
+	
+	relation: function(entity_url, data, success_handler, error_handler) {
+		$.ajax({
+	        type: 'PUT',
+	        url: entity_url,
+	        contentType: "text/uri-list; charset=utf-8",
+	        data: data,
+	        async: true,
+	        success: success_handler,
+	        accepts: {json:'application/hal+json'},
+	        error: error_handler   
+	    });
+	},
+	
+	append: function(entity_collection_url, item_creation_url, data, handler) {
+		
+		
+		var existingItemsLocations = '';
+		
+		// esta función se ejecuta luego de la obtención de los items existentes en la collección
+		retrieve_success_handler = function(response) { 
+			
+			if ( '_embedded' in response) {
+				// para cada tipo de item (debiera ser sólo uno) 
+				$.each( response._embedded, function( item_name, item_collection ) {
+					
+					// se obtienen las locations
+					$.each(item_collection, function( index, item ) {
+						  existingItemsLocations += item._links.self.href + "\n";
+					});
+	
+				});
+			}
+			
+			// creacion del item
+			$.rest.create(item_creation_url, data, creation_success_handler, creation_success_handler);  		  
+		};
+		
+		
+		// esta función se ejecuta luego de la creación del item, establece la relación del item con la collección
+		creation_success_handler = function(response) { 
+			  var createdResourceLocation = response.getResponseHeader('Location');
+			  $.rest.relation(entity_collection_url, existingItemsLocations + createdResourceLocation, handler, handler);  		  
+		};
+		   
+		// obtención de los items en la colección
+		$.rest.retrieve(entity_collection_url, retrieve_success_handler);
+
+	},
+	
 	
 	destroy: function(entity_url, success_handler, error_handler) {
 		$.ajax({
