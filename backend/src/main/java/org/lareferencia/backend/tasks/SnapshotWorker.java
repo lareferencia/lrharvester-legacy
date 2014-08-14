@@ -374,8 +374,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							for ( String field : validationResult.getFieldResults().keySet() ) {
 								
 								Boolean isFieldValid = validationResult.getFieldResults().get(field).isValid();
+								Boolean isFieldMandatory = validationResult.getFieldResults().get(field).isMandatory();
+
 								
-								if (!isFieldValid) {
+								if (!isFieldValid && isFieldMandatory) {
 								
 									recordValidationResult = new OAIRecordValidationResult(field);
 									recordValidationResult.setSnapshot(snapshot);
