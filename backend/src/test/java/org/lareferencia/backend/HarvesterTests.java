@@ -15,7 +15,7 @@ package org.lareferencia.backend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.IHarvester;

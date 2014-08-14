@@ -17,12 +17,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,7 +36,7 @@ public class SnapshotPersistenceTests {
 
 
 	@Autowired
-	NationalNetworkRepository repository;
+	NetworkRepository repository;
 	
 	@Autowired
 	NetworkSnapshotRepository nsrepository;
@@ -44,7 +44,7 @@ public class SnapshotPersistenceTests {
 	@Test
 	@Transactional
 	public void testSave() throws Exception {
-		NationalNetwork nn = new NationalNetwork();
+		Network nn = new Network();
 		nn.setName("A name");
 		
 		OAIOrigin o = new OAIOrigin();
@@ -59,7 +59,7 @@ public class SnapshotPersistenceTests {
 		o.getSets().add(s);
 	
 
-		nn.setCountryISO("AR");
+		nn.setAcronym("AR");
 		
 		NetworkSnapshot ns = new NetworkSnapshot();
 		nn.getSnapshots().add(ns);

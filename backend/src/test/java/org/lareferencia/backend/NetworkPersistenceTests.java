@@ -18,10 +18,10 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAISet;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,12 +33,12 @@ public class NetworkPersistenceTests {
 
 
 	@Autowired
-	NationalNetworkRepository repository;
+	NetworkRepository repository;
 
 	@Test
 	@Transactional
 	public void testSave() throws Exception {
-		NationalNetwork nn = new NationalNetwork();
+		Network nn = new Network();
 		nn.setName("A name");
 		
 		OAIOrigin o = new OAIOrigin();
@@ -53,7 +53,7 @@ public class NetworkPersistenceTests {
 		o.getSets().add(s);
 	
 		
-		nn.setCountryISO("AR");
+		nn.setAcronym("AR");
 		
 		repository.save(nn);
 		
@@ -63,7 +63,7 @@ public class NetworkPersistenceTests {
 	@Test
 	@Transactional
 	public void testSaveAndGet() throws Exception {
-		NationalNetwork nn = new NationalNetwork();
+		Network nn = new Network();
 		nn.setName("A name");
 		
 		OAIOrigin o = new OAIOrigin();
@@ -81,7 +81,7 @@ public class NetworkPersistenceTests {
 		
 		repository.saveAndFlush(nn);
 	
-		NationalNetwork loadedNN =  repository.findOne( nn.getId() );
+		Network loadedNN =  repository.findOne( nn.getId() );
 	
 		assertEquals(nn,loadedNN);
 		
