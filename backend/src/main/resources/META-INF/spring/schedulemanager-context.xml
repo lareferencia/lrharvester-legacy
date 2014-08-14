@@ -32,8 +32,6 @@
 		
 		<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
 		
-		
-		
 		<!-- Configuración del jmx exporter -->
 		<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
 			  <property name="autodetect" value="true"></property>
@@ -50,9 +48,5 @@
 		<bean id="namingStrategy" class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
 		  <property name="attributeSource" ref="attributeSource"/>
 		</bean>
-
 		
-	
-		
-			
 </beans>

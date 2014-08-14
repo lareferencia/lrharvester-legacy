@@ -15,7 +15,7 @@ package org.lareferencia.backend.tasks;
 
 import java.util.Date;
 
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.support.CronTrigger;
@@ -24,9 +24,9 @@ public class SnapshotCronTrigger implements Trigger {
 	
 	
 	CronTrigger cronTrigger;
-	NationalNetwork network;
+	Network network;
 	
-	public SnapshotCronTrigger(NationalNetwork network) {
+	public SnapshotCronTrigger(Network network) {
 	/** 
 	 * TODO: SnapshotCronTrigger no es una extensión de CronTrigger porque resta implementar un mecanismo que sincronize nextExecutionTime
 	 * con los valores (probablemente cambiantes) de Schedule.

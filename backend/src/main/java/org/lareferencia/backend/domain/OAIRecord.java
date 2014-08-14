@@ -14,6 +14,7 @@
 package org.lareferencia.backend.domain;
 
 import java.util.Date;
+import java.util.regex.*;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,36 +35,49 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 
  */
 @Entity
-@Getter @Setter
+@Getter 
 @JsonIgnoreProperties({"publishedXML","originalXML","snapshot","datestamp"})
 public class OAIRecord extends AbstractEntity {
+	
+	private static final String 
+	  DOMAIN_NAME_PATTERN_STR = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})",
+	  NAME_PATTERN_STR = "[A-Za-z0-9-]{4,}";
+
+	private static final Pattern DomainNamePattern = Pattern.compile(DOMAIN_NAME_PATTERN_STR);
+	private static final Pattern NamePattern = Pattern.compile(NAME_PATTERN_STR);
+
 	
 	@Column(nullable = false)
 	private String identifier;
 	
+	@Setter
+	@Column(nullable = true)
+	private String repositoryDomain;
+	
+	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private Date datestamp;
 	
-	@Lob @Basic(fetch=FetchType.LAZY)
-	private String originalXML;
-	
+	@Setter
 	@Lob @Basic(fetch=FetchType.LAZY)
 	private String publishedXML;
 	
+	@Setter
 	@Column(nullable = false)
 	private RecordStatus status;
 	
+	@Setter
 	@Column(nullable = false)
 	private boolean wasTransformed;
 	
-	@Column(nullable = false)
+	/*@Column(nullable = false)
 	private boolean belongsToCollection;
 	
 	@Lob
 	@Column(nullable = false) 
-	private String belongsToCollectionDetails;
-	
+	private String belongsToCollectionDetails;*/
+	@Setter
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
 	@JoinColumn(name="snapshot_id")
 	private NetworkSnapshot snapshot;
@@ -71,8 +85,8 @@ public class OAIRecord extends AbstractEntity {
 	public OAIRecord() {
 		super();
 		this.status = RecordStatus.UNTESTED;
-		this.belongsToCollection = false;
-		this.belongsToCollectionDetails = "";
+		//this.belongsToCollection = false;
+		//this.belongsToCollectionDetails = "";
 		this.datestamp = new DateTime().toDate();
 	}
 	
@@ -81,8 +95,40 @@ public class OAIRecord extends AbstractEntity {
 		this.status = RecordStatus.UNTESTED;
 		this.identifier = identifier;
 		this.datestamp = new DateTime().toDate();
-		this.belongsToCollection = false;
-		this.belongsToCollectionDetails = "";
-		this.originalXML = originalXMLString;
+		//this.belongsToCollection = false;
+		//this.belongsToCollectionDetails = "";
+		this.publishedXML = originalXMLString;
+		
+		updateRepositoryDomain(identifier);
+
 	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;	
+		
+		updateRepositoryDomain(identifier);
+	}
+	
+	private void updateRepositoryDomain(String identifier) {
+		
+		this.repositoryDomain = "UNK";
+		
+		Matcher matcher = DomainNamePattern.matcher(this.identifier);
+	
+		if ( matcher.find() )
+		
+			this.repositoryDomain = matcher.group();
+		
+		else {
+			
+			matcher = NamePattern.matcher(this.identifier);
+				
+			while ( matcher.find() )
+				if ( matcher.group().length() > this.repositoryDomain.length() )
+					this.repositoryDomain = matcher.group();
+		}
+	}
+	
+	
+	
 }

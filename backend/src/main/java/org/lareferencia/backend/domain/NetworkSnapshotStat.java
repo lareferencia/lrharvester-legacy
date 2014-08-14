@@ -16,17 +16,13 @@ package org.lareferencia.backend.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.springframework.hateoas.Identifiable;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-
 import lombok.Getter;
 import lombok.Setter;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * 
@@ -48,13 +44,13 @@ public class NetworkSnapshotStat extends AbstractEntity  {
 	private String field;
 	
 	@Column(nullable = false)
-	private Integer value;
+	private Long value;
 	
 	public NetworkSnapshotStat() {
 		super();
 	}
 	
-	public NetworkSnapshotStat(Long stat_id, String field, Integer value) {
+	public NetworkSnapshotStat(Long stat_id, String field, Long value) {
 		super();
 		
 		this.field = field;

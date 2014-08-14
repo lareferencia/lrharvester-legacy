@@ -21,18 +21,19 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     
     <!-- Aquí van los listados para diferenciar type en tipo de documento y status -->    
-	<xsl:variable name="type_list">info:eu-repo/semantics/article,info:eu-repo/semantics/masterThesis,info:eu-repo/semantics/doctoralThesis,info:eu-repo/semantics/report</xsl:variable>
+	<xsl:variable name="type_list">info:eu-repo/semantics/article,info:eu-repo/semantics/bachelorThesis,info:eu-repo/semantics/masterThesis,info:eu-repo/semantics/doctoralThesis,info:eu-repo/semantics/book,info:eu-repo/semantics/bookPart,info:eu-repo/semantics/review,info:eu-repo/semantics/conferenceObject,info:eu-repo/semantics/lecture,info:eu-repo/semantics/workingPaper,info:eu-repo/semantics/preprint,info:eu-repo/semantics/report,info:eu-repo/semantics/annotation,info:eu-repo/semantics/contributionToPeriodical,info:eu-repo/semantics/patent,info:eu-repo/semantics/other</xsl:variable>
 	<xsl:variable name="status_list">info:eu-repo/semantics/draft,info:eu-repo/semantics/acceptedVersion,info:eu-repo/semantics/submittedVersion,info:eu-repo/semantics/publishedVersion,info:eu-repo/semantics/updatedVersion</xsl:variable>
-	   
+		   
 	<!--  Aquí se definen los prefijos utilizados para detectar contenidos con trato diferencial -->   
 	<xsl:variable name="driver_prefix">info:eu-repo/semantics/</xsl:variable> 
 	<xsl:variable name="reponame_prefix">reponame:</xsl:variable>  
 	<xsl:variable name="instname_prefix">instname:</xsl:variable>  
 	
-	<xsl:param name="country" />
-	<xsl:param name="country_iso" />
 	
-	<xsl:param name="solr_id" />
+	<xsl:param name="networkAcronym" />
+	<xsl:param name="networkName" />
+	<xsl:param name="institutionName" />
+	
 	<xsl:param name="vufind_id" />
 	<xsl:param name="header_id" />
 	
@@ -41,11 +42,6 @@
             <doc>
                 <!-- ID es parámetro -->
                 <field name="id">
-                	<xsl:value-of select="$solr_id"/>
-                </field>
-                
-                <!-- ID es parámetro -->
-                <field name="oid">
                 	<xsl:value-of select="$vufind_id"/>
                 </field>
                 
@@ -54,18 +50,22 @@
                 	<xsl:value-of select="$header_id"/>
                 </field>         
 	         
-                <!-- COUNTRY es parámetro -->
-                <field name="country">
-                	<xsl:value-of select="$country"/>
-                </field>         
-	
-                <!-- COUNTRY_ISO es parámetro -->
-                <field name="country_iso">
-                	<xsl:value-of select="$country_iso"/>
-                </field>        
                 
-                <!-- FULLRECORD Puede ser agregado desde java, pero hay que evaluar el peso para SolR -->
-                     
+                <field name="instname">
+	                <xsl:value-of select="$institutionName"/>
+	            </field>
+				<field name="institution">
+	                <xsl:value-of select="$institutionName"/>
+	            </field>
+	            
+	            <field name="reponame">
+	                <xsl:value-of select="$networkName"/>
+	            </field>
+				<field name="collection">
+	                <xsl:value-of select="$networkName"/>
+	            </field>
+                
+                                     
                 <!-- RECORDTYPE -->
                 <field name="recordtype">driver</field>         
 

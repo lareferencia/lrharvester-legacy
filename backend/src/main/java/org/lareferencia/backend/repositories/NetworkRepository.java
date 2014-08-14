@@ -15,13 +15,13 @@ package org.lareferencia.backend.repositories;
 
 import java.util.List;
 
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "network", collectionResourceRel="network")
-public interface NationalNetworkRepository extends JpaRepository<NationalNetwork, Long> { 
+public interface NetworkRepository extends JpaRepository<Network, Long> { 
 	
-	  List<NationalNetwork> findByPublishedOrderByNameAsc(boolean published);	  
-	  NationalNetwork findByCountryISO(String iso);
+	  List<Network> findByPublishedOrderByNameAsc(boolean published);	  
+	  Network findByAcronym(String acronym);
 }

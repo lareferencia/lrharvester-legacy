@@ -76,7 +76,7 @@ public class NetworkSnapshot extends AbstractEntity {
 	@Setter
 	@ManyToOne()
 	@JoinColumn(name="network_id"/*, nullable=false*/)
-	private NationalNetwork network;
+	private Network network;
 	
 	@Getter
 	@Setter

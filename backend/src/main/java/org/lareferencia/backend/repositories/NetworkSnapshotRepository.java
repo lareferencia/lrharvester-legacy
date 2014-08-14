@@ -15,7 +15,7 @@ package org.lareferencia.backend.repositories;
 
 import java.util.List;
 
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.springframework.data.domain.Page;
@@ -32,8 +32,8 @@ public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id and s.status = 9)")
 	  NetworkSnapshot findLastGoodKnowByNetworkID(@Param("network_id") Long networkID);
 	  
-	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(NationalNetwork network, SnapshotStatus status);
-	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(NationalNetwork network);
+	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(Network network, SnapshotStatus status);
+	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(Network network);
 
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
 	  Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);

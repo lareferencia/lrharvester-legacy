@@ -21,10 +21,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.SnapshotStatus;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +36,7 @@ import org.springframework.scheduling.TaskScheduler;
 public class SnapshotManager {
 	
 	@Autowired
-	private NationalNetworkRepository networkRepository;
+	private NetworkRepository networkRepository;
 	
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
@@ -72,7 +72,7 @@ public class SnapshotManager {
 	}
 	
 	@Autowired 
-	public void setNationalNetworkRepository(NationalNetworkRepository networkRepository) {
+	public void setNationalNetworkRepository(NetworkRepository networkRepository) {
 		this.networkRepository = networkRepository;
 		
 		scheduleAllNetworks();
@@ -96,9 +96,9 @@ public class SnapshotManager {
 		 *  Son varios los casos a analizar e iran siendo contemplados en futuras
 		 *  iteraciones.
 		 */
-		Collection<NationalNetwork> storedNetworks = networkRepository.findAll();
+		Collection<Network> storedNetworks = networkRepository.findAll();
 		
-		for ( NationalNetwork storedNetwork:storedNetworks ) {
+		for ( Network storedNetwork:storedNetworks ) {
 			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 			worker.setNetworkID(storedNetwork.getId());
 			worker.setManager(this);

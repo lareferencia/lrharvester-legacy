@@ -33,8 +33,8 @@
      <authentication-manager>
        <authentication-provider>
          <user-service>
-           <user name="${backend_admin_user}"
-             password="${backend_admin_pass}"
+           <user name="${admin.user}"
+             password="${admin.pass}"
              authorities="ROLE_ADMIN"/>
          </user-service>
        </authentication-provider>

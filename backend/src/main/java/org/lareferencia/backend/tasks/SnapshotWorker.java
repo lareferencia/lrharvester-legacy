@@ -13,20 +13,15 @@
  ******************************************************************************/
 package org.lareferencia.backend.tasks;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.domain.NationalNetwork;
-import org.lareferencia.backend.domain.NetworkSnapshotLog;
-import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.domain.NetworkSnapshotLog;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAIRecordValidationResult;
@@ -38,17 +33,17 @@ import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
-import org.lareferencia.backend.stats.StatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -58,15 +53,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Scope(value="prototype")
 public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener {
 	
-	private static int MAX_RETRIES = 10;
+	@Value("${harvester.max.retries}")
+	private int MAX_RETRIES;
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
-	
-	private StatsManager statsManager; // se carga como prototype en cada harvesting
-	
+		
 	@Autowired
-	private NationalNetworkRepository networkRepository;
+	private NetworkRepository networkRepository;
 		
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
@@ -106,7 +100,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Setter
 	private Long snapshotID;
 
-	private NationalNetwork network;
+	private Network network;
 	private NetworkSnapshot snapshot;
 
 	@Getter @Setter
@@ -136,9 +130,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Override
 	public void run() {
 		
-		
-		// Se pide al contexto una nueva instacia del statsManager (es prototype) cada cosecha
-		statsManager = applicationContext.getBean("statsManager", StatsManager.class);
 		
 		boolean newSnapshotCreated = true;
 		
@@ -260,16 +251,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		snapshot.setEndTime( new Date() );
 		snapshotRepository.save(snapshot);
 		
-		// Persistencia de las estadísticas en caso de snap exitoso
-		if ( snapshot.getStatus() == SnapshotStatus.VALID) {
-			
-			for ( NetworkSnapshotStat stat: statsManager.getResults() ) {
-				stat.setSnapshot(snapshot);
-				statRepository.save(stat);
-			}
-			
-			statRepository.flush();
-		}
 			
 		// Flush y llamados al GC
 		snapshotRepository.flush();
@@ -318,7 +299,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			
 				for ( String setName:setList) {
 					System.out.println( "Cosechando: " + origin.getName() + " set: " + setName); 
-					harvester.harvest(origin.getUri(), null, null, setName, origin.getMetadataPrefix(), null, 5);
+					harvester.harvest(origin.getUri(), null, null, setName, origin.getMetadataPrefix(), null, MAX_RETRIES);
 				}
 		}	
 		
@@ -380,14 +361,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setPublishedXML( metadata.toString() );
 							
 							
-							///////// Cálculo de estadísticas 
-							statsManager.process(metadata, validationResult);
-	
-							
 							///////// Test de pertenencia a la colección del registro final
-							ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
-							record.setBelongsToCollection( btcValidationResult.isValid() );
-							record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
+							//ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
+							//record.setBelongsToCollection( btcValidationResult.isValid() );
+							//record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
 							
 							//// SE ALMACENA EL REGISTRO
 							recordRepository.save(record);
@@ -396,13 +373,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							OAIRecordValidationResult recordValidationResult;
 							for ( String field : validationResult.getFieldResults().keySet() ) {
 								
-								if ( !validationResult.getFieldResults().get(field).isValid() ) {
-								// solo se almacenan los campos inválidos 
+								Boolean isFieldValid = validationResult.getFieldResults().get(field).isValid();
+								
+								if (!isFieldValid) {
+								
 									recordValidationResult = new OAIRecordValidationResult(field);
 									recordValidationResult.setSnapshot(snapshot);
 									recordValidationResult.setRecord(record);
 									recordValidationRepository.save(recordValidationResult);
+								
 								}
+				
 							}
 	
 						} 

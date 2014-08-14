@@ -32,7 +32,7 @@ public class OAIRecordValidationResult extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private String field;
-	
+		
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
 	@JoinColumn(name="snapshot_id")
 	private NetworkSnapshot snapshot;

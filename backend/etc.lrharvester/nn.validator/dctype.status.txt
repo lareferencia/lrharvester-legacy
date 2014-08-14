@@ -1,0 +1,5 @@
+info:eu-repo/semantics/draft
+info:eu-repo/semantics/acceptedVersion
+info:eu-repo/semantics/submittedVersion
+info:eu-repo/semantics/publishedVersion
+info:eu-repo/semantics/updatedVersion

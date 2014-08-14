@@ -1,0 +1,4 @@
+TESIS/DOC	info:eu-repo/semantics/doctoralThesis
+TESIS/MAG	info:eu-repo/semantics/masterThesis
+Doctorado	info:eu-repo/semantics/doctoralThesis
+

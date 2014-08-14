@@ -24,11 +24,29 @@
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		
+		
+	<!-- Este es el validador por defecto de LAReferencia pueden definirse más y asociarlos a cada red  -->
+	<bean id="defaultValidator" class="org.lareferencia.backend.validator.ValidatorImpl">
+	
+	    <!-- Este propidad se usa para validar en forma completa cada un de los campos según los criterios LaReferencia  -->
+		<property name="fieldValidators">
+			<list>
+				<ref bean="dcTypeValidator" /> 
+				<ref bean="dcIdentifierValidator" /> 
+				<ref bean="dcTitleValidator" /> 
+				<ref bean="dcCreatorValidator" /> 
+				<ref bean="dcDateValidator" /> 
+				<ref bean="dcLanguageValidator" /> 
+				<ref bean="dcRightsValidator" /> 
+				<ref bean="dcSubjectValidator" /> 
+				<ref bean="dcDescriptionValidator" /> 
+				<ref bean="dcRelationValidator" />
+				<ref bean="dcFormatValidator" />  					
+			</list>
 
+		</property>
+	</bean>
 
-	<import resource="file:${validator.path}/rules-context.xml"/>
-	<import resource="file:${validator.path}/fields-context.xml"/>
-	<import resource="file:${validator.path}/validators-context.xml"/>
-	<import resource="file:${validator.path}/transformers-context.xml"/>	
-
+		
 </beans>

@@ -95,9 +95,9 @@ public class IndexerImpl implements IIndexer{
 			// Borrado de los docs del país del snapshot
 			
 			 MessageDigest md = MessageDigest.getInstance("MD5");
-			 String countryISO = snapshot.getNetwork().getCountryISO();
+			 String networkAcronym = snapshot.getNetwork().getAcronym();
 	
-			this.sendUpdateToSolr("<delete><query>country_iso:" + snapshot.getNetwork().getCountryISO() +"</query></delete>");
+			this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
 			
 			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
@@ -109,9 +109,10 @@ public class IndexerImpl implements IIndexer{
 			for (int i = 0; i < totalPages; i++) {
 							
 				Transformer trf = buildTransformer();
-				trf.setParameter("country_iso", countryISO);
-				trf.setParameter("country", snapshot.getNetwork().getName() );
-				
+				trf.setParameter("networkAcronym", networkAcronym);
+				trf.setParameter("networkName", snapshot.getNetwork().getName() );
+				trf.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
+						
 				//page = recordRepository.findBySnapshotIdAndStatusLimited(snapshot.getId(), RecordStatus.VALID, lastId, new PageRequest(0, PAGE_SIZE) );
 				page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
 				
@@ -128,10 +129,8 @@ public class IndexerImpl implements IIndexer{
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
 								
-					// id unico pero mutable para solr
-					trf.setParameter("solr_id", countryISO + "_" + snapshot.getId().toString() + "_" + record.getId().toString()  );
 					// id permantente para vufind
-					trf.setParameter("vufind_id", countryISO + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
+					trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
 					// header id para staff
 					trf.setParameter("header_id", record.getIdentifier() );
 					

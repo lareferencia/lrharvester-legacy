@@ -23,13 +23,13 @@ import javax.xml.transform.TransformerException;
 import org.hibernate.annotations.Synchronize;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import org.oclc.oai.harvester2.verb.ListRecords;
 import org.oclc.oai.harvester2.verb.ListSets;
 
@@ -38,12 +38,14 @@ import org.oclc.oai.harvester2.verb.ListSets;
 public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		IHarvester {
 
-	//private static final int STANDARD_RECORD_SIZE = 100;
 	private static final String METADATA_NODE_NAME = "metadata";
 	private static final Object STATUS_DELETED = "deleted";
-	//private static int MAX_RETRIES = 15;
-	private static int INITIAL_SECONDS_TO_RETRY = 3;
-	private static int RETRY_FACTOR = 2;
+	
+	@Value("${harvester.retry.seconds}")
+	private int INITIAL_SECONDS_TO_RETRY;
+	
+	@Value("${harvester.retry.factor}")
+	private int RETRY_FACTOR;
 	
 	private boolean stopSignalReceived = false;
 

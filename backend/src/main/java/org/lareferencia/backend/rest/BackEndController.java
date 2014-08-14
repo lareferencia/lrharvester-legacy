@@ -16,8 +16,10 @@ package org.lareferencia.backend.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +28,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.OAIOrigin;
@@ -37,15 +39,13 @@ import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
-import org.lareferencia.backend.stats.MetadataOccurrenceCountSnapshotStatProcessor;
-import org.lareferencia.backend.stats.RejectedByFieldSnapshotStatProcessor;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.JsonDateSerializer;
@@ -80,7 +80,7 @@ public class BackEndController {
 	private ApplicationContext applicationContext;
 	
 	@Autowired
-	private NationalNetworkRepository nationalNetworkRepository;
+	private NetworkRepository nationalNetworkRepository;
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
@@ -133,11 +133,11 @@ public class BackEndController {
 		return "diagnose";
 	}
 	
-	@RequestMapping(value = "/diagnose/{networkISO}", method = RequestMethod.GET)
-	public String diagnose(@PathVariable String networkISO, Locale locale, Model model) throws Exception {	
+	@RequestMapping(value = "/diagnose/{networkAcronym}", method = RequestMethod.GET)
+	public String diagnose(@PathVariable String networkAcronym, Locale locale, Model model) throws Exception {	
 		
 		
-		NationalNetwork network = nationalNetworkRepository.findByCountryISO(networkISO);
+		Network network = nationalNetworkRepository.findByAcronym(networkAcronym);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -147,7 +147,7 @@ public class BackEndController {
 			throw new Exception("No se encontró LGKSnapshot");
 		
 		model.addAttribute("snapID", lgkSnapshot.getId());
-		model.addAttribute("networkISO", networkISO);
+		model.addAttribute("networkAcronym", networkAcronym);
 		
 		return "diagnose";
 	}
@@ -172,7 +172,7 @@ public class BackEndController {
 	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> startHarvesting(@PathVariable Long networkID) throws Exception {
 		
-		NationalNetwork network = nationalNetworkRepository.findOne(networkID);
+		Network network = nationalNetworkRepository.findOne(networkID);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -222,7 +222,7 @@ public class BackEndController {
 	@RequestMapping(value="/private/harvestSetBySet/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) throws Exception {
 		
-		NationalNetwork network = nationalNetworkRepository.findOne(networkID);
+		Network network = nationalNetworkRepository.findOne(networkID);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -239,7 +239,7 @@ public class BackEndController {
 	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {
 		
-		NationalNetwork network = nationalNetworkRepository.findOne(id);
+		Network network = nationalNetworkRepository.findOne(id);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -340,10 +340,10 @@ public class BackEndController {
 		
 		if ( record != null ) {
 			
-			NationalNetwork network = record.getSnapshot().getNetwork();
+			Network network = record.getSnapshot().getNetwork();
 			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
 			
-			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			ValidationResult result = validator.validate(metadata);
 			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
 			return response; 
@@ -361,11 +361,11 @@ public class BackEndController {
 		
 		if ( record != null ) {
 			
-			NationalNetwork network = record.getSnapshot().getNetwork();
+			Network network = record.getSnapshot().getNetwork();
 			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
 			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
 
-			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
 			ValidationResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
@@ -391,7 +391,7 @@ public class BackEndController {
 		
 		if ( record != null ) {
 			
-			NationalNetwork network = record.getSnapshot().getNetwork();
+			Network network = record.getSnapshot().getNetwork();
 		
 			ArrayList<OAIOrigin> origins =  new ArrayList<>( network.getOrigins() );
 			String oaiURLBase = origins.get(0).getUri();
@@ -427,11 +427,11 @@ public class BackEndController {
 		
 		if ( record != null ) {
 			
-			NationalNetwork network = record.getSnapshot().getNetwork();
+			Network network = record.getSnapshot().getNetwork();
 			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
 			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
 			
-			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
 			ValidationResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
@@ -439,7 +439,7 @@ public class BackEndController {
 	
 			result.id = id;
 			result.originalHeaderId = record.getIdentifier();
-			result.originalMetadata = record.getOriginalXML();
+			result.originalMetadata = record.getPublishedXML();
 			result.transformedMetadata = metadata.toString();
 			result.isOriginalValid = preValidationResult.isValid();
 			result.isTransformedValid = posValidationResult.isValid();
@@ -464,11 +464,11 @@ public class BackEndController {
 		
 		if ( record != null ) {
 			
-			NationalNetwork network = record.getSnapshot().getNetwork();
+			Network network = record.getSnapshot().getNetwork();
 			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
 			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
 			
-			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getOriginalXML());
+			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
 			ValidationResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
@@ -507,18 +507,44 @@ public class BackEndController {
 		return response;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/public/getSnapshotInfoByID/{id}", method=RequestMethod.GET)
+	public NetworkInfo getSnapshotInfoByID(@PathVariable Long id) throws Exception {
+			
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+		
+		
+		Network network = snapshot.getNetwork();
+		
+		NetworkInfo ninfo = new NetworkInfo();
+		ninfo.networkID = network.getId();
+		ninfo.acronym = network.getAcronym();
+		ninfo.name = network.getName();
+		
+		ninfo.snapshotID = snapshot.getId();
+		ninfo.datestamp = snapshot.getEndTime();
+		ninfo.size = snapshot.getSize();
+		ninfo.validSize = snapshot.getValidSize();
+		ninfo.transformedSize = snapshot.getTransformedSize();
+		
+		return ninfo;
+	}
+	
 	
 	@ResponseBody
-	@RequestMapping(value="/public/lastGoodKnowSnapshotByCountryISO/{iso}", method=RequestMethod.GET)
-	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String iso) throws Exception {
+	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkAcronym/{acronym}", method=RequestMethod.GET)
+	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String acronym) throws Exception {
 		
-		NationalNetwork network = nationalNetworkRepository.findByCountryISO(iso);
+		Network network = nationalNetworkRepository.findByAcronym(acronym);
 		if ( network == null ) // TODO: Implementar Exc
-			throw new Exception("No se encontró RED perteneciente a: " + iso);
+			throw new Exception("No se encontró RED: " + acronym);
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 		if (snapshot == null) // TODO: Implementar Exc
-			throw new Exception("No se encontró snapshot válido de la RED: " + iso);
+			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
 		
 		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
 			snapshot,
@@ -528,12 +554,12 @@ public class BackEndController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/public/listSnapshotsByCountryISO/{iso}", method=RequestMethod.GET)
-	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByCountryISO(@PathVariable String iso) throws Exception {
+	@RequestMapping(value="/public/listSnapshotsByNetworkAcronym/{acronym}", method=RequestMethod.GET)
+	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(@PathVariable String acronym) throws Exception {
 		
-		NationalNetwork network = nationalNetworkRepository.findByCountryISO(iso);
+		Network network = nationalNetworkRepository.findByAcronym(acronym);
 		if ( network == null )
-			throw new Exception("No se encontró RED perteneciente a: " + iso);
+			throw new Exception("No se encontró RED: " + acronym);
 		
 		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(networkSnapshotRepository.findByNetworkOrderByEndTimeAsc(network), HttpStatus.OK);
 		
@@ -545,14 +571,14 @@ public class BackEndController {
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 		
 				
-		List<NationalNetwork> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
 
-		for (NationalNetwork network:allNetworks) {
+		for (Network network:allNetworks) {
 			
 			NetworkInfo ninfo = new NetworkInfo();
 			ninfo.networkID = network.getId();
-			ninfo.country = network.getCountryISO();
+			ninfo.acronym = network.getAcronym();
 			ninfo.name = network.getName();
 			
 			NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
@@ -577,13 +603,13 @@ public class BackEndController {
 	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
 		
-		List<NationalNetwork> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<NetworkHistory> NHistoryList = new ArrayList<NetworkHistory>();
 
-		for (NationalNetwork network:allNetworks) {	
+		for (Network network:allNetworks) {	
 			NetworkHistory nhistory = new NetworkHistory();
 			nhistory.networkID = network.getId();
-			nhistory.country = network.getCountryISO();
+			nhistory.acronym = network.getAcronym();
 			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
 			NHistoryList.add( nhistory );		
 		}
@@ -620,8 +646,19 @@ public class BackEndController {
 		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
 		
 	}
-	
-	
+
+	@RequestMapping(value="/public/listRepositoriesBySnapshotID/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<String> listRepositoriesBySnapshotID(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+		
+		return recordRepository.listRepositoriesBySnapshotId(id);
+		
+	}
 	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
@@ -662,6 +699,48 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
+	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotIDAndRepositoryAndField/{id}/{repository}/{field}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listInvalidRecordsInfoBySnapshotIDAndRepositoryAndField(@PathVariable String field, @PathVariable String repository, @PathVariable Long id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findBySnapshotIdAndRepositoyAndInvalidField(id, repository, field, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
+	
+	@RequestMapping(value="/public/listValidRecordsInfoBySnapshotIDAndRepository/{id}/{repository}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listValidRecordsInfoBySnapshotIDAndRepository( @PathVariable Long id, @PathVariable String repository, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findValidBySnapshotIdAndRepository(id, repository, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
+	
+	
+	
+	
+	
 	
 	@RequestMapping(value="/public/listTransformedRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
@@ -682,7 +761,7 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
-	
+	/*
 	@ResponseBody
 	@RequestMapping(value="/public/metadataOccurrenceCountBySnapshotId/{id}", method=RequestMethod.GET)
 	public List<NetworkSnapshotStat> metadataOccurrenceCountBySnapshotId(@PathVariable Long id) throws Exception {
@@ -696,17 +775,112 @@ public class BackEndController {
 		return stats;
 	}
 	
+	
+	*/
 	@ResponseBody
 	@RequestMapping(value="/public/rejectedFieldCountBySnapshotId/{id}", method=RequestMethod.GET)
 	public List<NetworkSnapshotStat> rejectedFieldCountBySnapshotId(@PathVariable Long id) throws Exception {
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
 		if (snapshot == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró snapshot: " + id);
 		
-		List<NetworkSnapshotStat> stats = statsRepository.findBySnapshotAndStatId(snapshot, RejectedByFieldSnapshotStatProcessor.ID);
+		List<Object[]> oList = recordValidationRepository.invalidRecordCountByField(id);
+		
+		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
+		
+		for( Object[] o : oList ) {
+			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			
+			stats.add(s);
+		}
+		
 			
 		return stats;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/public/rejectedFieldCountBySnapshotIdAndRepository/{id}/{repository}", method=RequestMethod.GET)
+	public List<NetworkSnapshotStat> rejectedFieldCountBySnapshotIdAndRepository(@PathVariable Long id, @PathVariable String repository) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot: " + id);
+		
+		List<Object[]> oList = recordValidationRepository.invalidRecordRepositoryCountByField(id, repository);
+		
+		//System.out.println( "Resultados: " + id + ": " + repository + " : " + oList.size() );
+		
+		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
+		
+		for( Object[] o : oList ) {
+			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			
+			stats.add(s);
+		}
+		
+			
+		return stats;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/public/rejectedRepositoryCountBySnapshotId/{id}", method=RequestMethod.GET)
+	public List<NetworkSnapshotStat> rejectedRepositoryCountBySnapshotId(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot: " + id);
+		
+		List<Object[]> oList = recordValidationRepository.invalidRecordCountByRepository(id);
+		
+		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
+		
+		for( Object[] o : oList ) {
+			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			
+			stats.add(s);
+		}
+		
+			
+		return stats;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/public/rejectedFieldAndRepositoryCountBySnapshotId/{id}", method=RequestMethod.GET)
+	public Map<String, List<NetworkSnapshotStat>> rejectedFieldAndRepositoryCountBySnapshotId(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot: " + id);
+		
+		Map<String,List<NetworkSnapshotStat>> statMap = new Hashtable<String, List<NetworkSnapshotStat>>();
+		
+		List<Object[]> oList = recordValidationRepository.invalidRecordCountByFieldAndRepository(id);
+		
+		
+		for( Object[] o : oList ) {
+			
+			String repository = (String)o[0];
+			
+			List<NetworkSnapshotStat> stats = statMap.get(repository);
+			
+			if (stats == null) {
+				stats = new ArrayList<NetworkSnapshotStat>();
+				statMap.put(repository, stats);
+			}
+			
+			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[1], (Long)o[2]);
+			
+			stats.add(s);
+		}
+		
+			
+		return statMap;
 	}
 	
 	/**************  Clases de retorno de resultados *******************/
@@ -714,8 +888,8 @@ public class BackEndController {
 	@Getter
 	@Setter
 	class NetworkInfo {	
+		public String acronym;
 		private Long   networkID;
-		private String country;
 		private String name;
 		
 		private Long snapshotID;
@@ -724,13 +898,15 @@ public class BackEndController {
 		private Date datestamp;
 		private int size;
 		private int validSize;
+		private int transformedSize;
+
 	}
 	
 	@Getter
 	@Setter
 	class NetworkHistory {	
+		public String acronym;
 		private Long   networkID;
-		private String country;
 		private List<NetworkSnapshot> validSnapshots;
 	}
 	

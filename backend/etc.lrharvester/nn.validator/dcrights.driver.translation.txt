@@ -1,0 +1,6 @@
+acceso abierto	info:eu-repo/semantics/openAccess
+open access	info:eu-repo/semantics/openAccess
+Acceso Abierto	info:eu-repo/semantics/openAccess
+OpenAccess	info:eu-repo/semantics/openAccess
+Open Access	info:eu-repo/semantics/openAccess
+AccesoAbierto	info:eu-repo/semantics/openAccess

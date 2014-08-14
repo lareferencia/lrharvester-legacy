@@ -27,8 +27,8 @@
 
 	
 	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">	
-	    <constructor-arg><value>${solrxslpath}</value></constructor-arg>
-	    <constructor-arg><value>${solrurl}</value></constructor-arg>
+	    <constructor-arg><value>${indexer.path}</value></constructor-arg>
+	    <constructor-arg><value>${solr.url}</value></constructor-arg>
 	</bean>
 	
 	<!-- bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.IntelligoIndexer">

@@ -35,13 +35,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class NationalNetwork extends AbstractEntity {
+public class Network extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private String name;
 	
-	@Column(nullable = false, length = 2)
-	private String countryISO;
+	@Column(nullable = false)
+	private String institutionName;
+	
+	@Column(nullable = false, length = 4)
+	private String acronym;
 	
 	@Column(nullable = false)
 	private boolean published = false;

@@ -31,6 +31,7 @@ import lombok.ToString;
 @ToString
 public class ControlledValueContentValidationRule extends BaseContentValidationRule {
 	
+	private static final int MAX_PRINTED_LINES = 25;
 	
 	public static String RULE_ID="ControlledValue";
 	
@@ -49,19 +50,31 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 	public void setControlledValuesFileName(String filename) {
 		
 	    try {
+	    	
+	    	System.out.println("\n\nCargando validador: valores controlados: " + filename);
+	    	
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
 	    	
-	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
+	        
+	        int lineNumber = 0;
 
 	        while (line != null) {
 	        	
 	        	this.controlledValues.add(line);
 	        	
+	        	if ( lineNumber++ < MAX_PRINTED_LINES )
+	        		System.out.println( filename + " : " + line);
+	        	else
+	        		System.out.print(".");
+
+	        	
 	            line = br.readLine();
 	        }
 	        
 	        br.close();
+	        
+	    	System.out.println("\nFin Carga validador: valores controlados: " + filename + "\n\n");
 	  	  
 	    }
 	    catch  ( FileNotFoundException e ) {
@@ -98,7 +111,17 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 			result.setReceivedValue( content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
 			result.setValid( this.controlledValues.contains(content) );
 		}
-			
+		
+		/**
+		System.out.println("\n\n");
+		if ( this.controlledValues.size() < 20 )
+			for (String contr:this.controlledValues)
+				System.out.println(contr + " --> " + contr.equals(content) );
+		
+		System.out.println( ".." + content + " :: " + this.controlledValues.contains(content) );
+		**/
+		
+		
 		return result;
 	}
 

@@ -23,20 +23,23 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
 import org.w3c.dom.Node;
 
-public class TranslateContentFieldTransformer extends FieldTransformer {
+public class CrossTranslateContentFieldTransformer extends FieldTransformer {
 	
-	private static final int MAX_PRINTED_LINES = 25;
 
-	
 	@Getter
 	Map<String,String> translationMap;
 	
-	public TranslateContentFieldTransformer() {
+	@Setter
+	@Getter
+	String testFieldName;
+	
+	public CrossTranslateContentFieldTransformer() {
 		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 		this.applyIfValid = false;
 	}
@@ -46,10 +49,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	    try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
 
-	    	System.out.println("\n\nCargando transformador: reemplazo de valores: " + filename);
-
-			
-	        StringBuilder sb = new StringBuilder();
+	    	
 	        String line = br.readLine();
 
 	        int lineNumber = 1;
@@ -62,16 +62,13 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	        	
 	        	this.translationMap.put( parsedLine[0], parsedLine[1]);
 	        	
-	        	if ( lineNumber > MAX_PRINTED_LINES )
-	        		System.out.println(filename + " : " + line);
-	            
-	        	line = br.readLine();
+	        	System.out.println("cargado: " + line);
+	            line = br.readLine();
 	            lineNumber++;
 	        }
 	        
-	    	System.out.println("\n\nFin carga transformador: reemplazo de valores: " + filename);
-
 	        br.close();
+	     
 	  	  
 	    }
 	    catch  ( FileNotFoundException e ) {
@@ -91,6 +88,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		ContentValidationResult result;
 		boolean found = false;
 		
+		
 		// Ciclo de búsqueda
 		for (Node node: metadata.getFieldNodes(fieldName) ) {
 			
@@ -105,14 +103,24 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		
 		// ciclo de reemplazo
 		if ( !found )
-			for (Node node: metadata.getFieldNodes( this.getFieldName() ) ) {
-				
+			
+			// recorre las ocurrencias del campo de test
+			for (Node node: metadata.getFieldNodes( this.getTestFieldName() ) ) {
+		
 				String occr = node.getFirstChild().getNodeValue();
 				
-				if (!found && translationMap.containsKey(occr) ) {
-					node.getFirstChild().setNodeValue( translationMap.get(occr) );
-					found = true;
-				}	
+				// recorre los valores del diccionarrio de reemplazo
+				for ( String testValue: translationMap.keySet() ) {
+					
+					//  si el valor del diccionario de reemplazo es prefijo de la ocurrencia
+					if (!found &&  occr.startsWith(testValue) ) {
+
+						// agrega la occurrencia en el campo a modificar de acuerdo al valor del diccionario en la clave detectada como prefijo
+						metadata.addFieldOcurrence(fieldName, translationMap.get(testValue) );
+						
+						found = true;
+					}			
+				}
 			}
 		
 		// creación del campo con el valor por defecto en caso de no haber sido encontrado, solo cuando hay valor por defecto declarado

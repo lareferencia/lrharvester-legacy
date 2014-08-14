@@ -22,15 +22,15 @@ public interface IValidator {
 	
 	
 	public ValidationResult validate(OAIRecordMetadata metadata);
-	public ValidationResult testIfBelongsToCollection(OAIRecordMetadata metadata);
+	//public ValidationResult testIfBelongsToCollection(OAIRecordMetadata metadata);
 	
 	// validadores para la determinación de la validez de registro
 	public List<FieldValidator> getFieldValidators();
-	public void setFieldValidators( List<FieldValidator> validators);
+	public void setFieldValidators( List<FieldValidator> validators );
 	
 	// validadores para la determinación del inclusión en la colección
-	public void setBelongsToCollectionFieldValidators(List<FieldValidator> validators);
-	public List<FieldValidator> getBelongsToCollectionFieldValidators();
+	//public void setBelongsToCollectionFieldValidators(List<FieldValidator> validators);
+	//public List<FieldValidator> getBelongsToCollectionFieldValidators();
 	
 
 }

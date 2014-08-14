@@ -23,7 +23,7 @@ import javax.persistence.PersistenceContext;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -34,7 +34,7 @@ import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.transformer.ITransformer;

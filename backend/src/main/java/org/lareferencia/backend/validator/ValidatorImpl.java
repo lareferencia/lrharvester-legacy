@@ -26,12 +26,12 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 public class ValidatorImpl implements IValidator {
 	
 	List<FieldValidator> fieldValidators;
-	List<FieldValidator> belongsToCollectionFieldValidators;
+	//List<FieldValidator> belongsToCollectionFieldValidators;
 	
 	public ValidatorImpl() {
 		super();
 		fieldValidators = new ArrayList<FieldValidator>();
-		belongsToCollectionFieldValidators = new ArrayList<FieldValidator>();
+		//belongsToCollectionFieldValidators = new ArrayList<FieldValidator>();
 	}
 	
 	private ValidationResult validate(OAIRecordMetadata metadata, List<FieldValidator> validators) {
@@ -54,10 +54,11 @@ public class ValidatorImpl implements IValidator {
 		return result;
 	}
 	
+	/*
 	@Override
 	public ValidationResult testIfBelongsToCollection(OAIRecordMetadata metadata) {
 		return validate(metadata, belongsToCollectionFieldValidators);
-	}
+	}*/
 	
 	@Override
 	public ValidationResult validate(OAIRecordMetadata metadata) {
