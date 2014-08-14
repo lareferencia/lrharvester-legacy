@@ -1,1 +1,0 @@
-<span class="unknown">{translate text="status_unknown_message"}</span>

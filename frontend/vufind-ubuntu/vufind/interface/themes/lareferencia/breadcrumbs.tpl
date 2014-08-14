@@ -1,1 +1,0 @@
-<em>{translate text='LA-Referencia'}</em> <span>&gt;</span>

@@ -1,1 +1,0 @@
-Collections are not supported in this theme.
