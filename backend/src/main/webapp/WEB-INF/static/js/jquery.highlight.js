@@ -260,9 +260,9 @@
 				//replace attributes
 				.replace(/\s+([a-zA-Z\-]{0,15})\=\"([-a-z0-9_ \/\.\#\:\=\;]{0,49})\"/gi,' <span class="atn">$1</span>=<span class="atv">"$2"</span>')
 				//replace open tags
-				.replace(/(&lt;)(\w{0,15})(\s+|&gt;|>)/gi,'$1<span class="tag">$2</span>$3')
+				.replace(/(&lt;)(\w{0,15})(\:\w{0,15})*(\s+|&gt;|>)/gi,'$1<span class="tag">$2$3</span>$4')
 				//replace close tags
-				.replace(/(&lt;)\/(\w{0,15})(&gt;|>)/gi,'$1/<span class="tag">$2</span>$3')
+				.replace(/(&lt;)\/(\w{0,15})(\:\w{0,15})*(&gt;|>)/gi,'$1/<span class="tag">$2$3</span>$4')
 				//replace doctype
 				.replace(/(&lt;!)([-a-z0-9_ \/\.\#\:\"]{0,150})(&gt;|>)/gi,'<span class="dec">$1$2$3</span>')		
 				//replace comments

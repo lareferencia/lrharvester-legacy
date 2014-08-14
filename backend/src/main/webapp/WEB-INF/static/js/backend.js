@@ -189,8 +189,7 @@
  	function createNetwork(success_handler) { 		  
  		
 		  var new_network_data = $('#form_create_network').toJson();
-		  $.rest.create(network_base_link, new_network_data);
-		  refreshNetworks();
+		  $.rest.create(network_base_link, new_network_data, success_handler, success_handler);
 		  
 	}
  	
@@ -216,7 +215,7 @@
  	function updateNetwork(network_link, success_handler) {
  		
 		 var data = $('#form_edit_network').toJson();  
-		 $.rest.update(network_link, data, success_handler);  
+		 $.rest.update(network_link, data, success_handler, success_handler);  
 	}
 
 
@@ -261,6 +260,8 @@
 				
 				function(result) {
 			
+					if ( result._embedded == null )
+						result._embedded = { "network" : []};
 					
 					var p = d3.select(dst_element_id)
 					  .selectAll("tr")
@@ -275,7 +276,7 @@
 		              .text(function(d) { return d.name; });
 		            
 		            p.append("td")
-		              .text(function(d) { return d.countryISO; });
+		              .text(function(d) { return d.acronym; });
 		            
 		            p.append("td")
 		              .text(function(d) { if (d.published) return 'Si'; else return 'No'; });
@@ -307,7 +308,7 @@
 					
 					p.append("td")
 					  .append("button")
-					  .on("click", function(d) { window.open("diagnose/" + d.countryISO  );  } )	   
+					  .on("click", function(d) { window.open("diagnose/" + d.acronym  );  } )	   
 					  .text("diagnóstico LGK"); 
 					
 					p.append("td")

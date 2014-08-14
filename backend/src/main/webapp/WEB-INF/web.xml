@@ -22,6 +22,20 @@
 		<param-value>/WEB-INF/spring/root-context.xml</param-value>
 	</context-param>
 	
+	
+	<!-- Aquí debe apuntarse al archivo de configuración en formato properties en el etc -->
+	<context-param>
+    	<param-name>mainConfigFilePath</param-name>
+    	<param-value>/etc/lrharvester/backend.properties</param-value>
+	</context-param>
+	
+	
+	<!-- Este parámetro indica el incializador que carga las propiedades de contexto -->
+	<context-param>
+    	<param-name>contextInitializerClasses</param-name>
+    	<param-value>org.lareferencia.backend.util.AppContextInitializer</param-value>
+	</context-param>
+	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

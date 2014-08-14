@@ -42,8 +42,17 @@
 		var snapID = ${snapID};
 		var netISO = '${networkISO}';
 		
+		var ValidRecordsByRepositoryBaseURL = '<spring:url value="/public/listValidRecordsInfoBySnapshotIDAndRepository"/>';
 		var InvalidRecordsByFieldBaseURL = '<spring:url value="/public/listInvalidRecordsInfoByFieldAndSnapshotID"/>';
+		var ListInvalidRecordsBySnaphotIDRepositoryFieldBaseURL = '<spring:url value="/public/listInvalidRecordsInfoBySnapshotIDAndRepositoryAndField"/>';
+
+		var GetSnapshotInfoBaseURL = '<spring:url value="/public/getSnapshotInfoByID"/>';
+		
 		var InvalidRecordsByFieldCountBaseURL = '<spring:url value="/public/rejectedFieldCountBySnapshotId"/>';
+		var InvalidRepositoryRecordsByFieldCountBaseURL = '<spring:url value="/public/rejectedFieldCountBySnapshotIdAndRepository"/>';
+		
+		
+		var ListRepositoriesBySnapshotIDBaseURL = '<spring:url value="/public/listRepositoriesBySnapshotID"/>';		
 		var ListOriginsBySnapshotIDBaseURL = '<spring:url value="/public/listOriginsBySnapshotID"/>';
 		var ListSnapshotsByCountryISOBaseURL =  '<spring:url value="/public/listSnapshotsByCountryISO"/>';
 		var ListSnapshotsByCountryISOBaseURL =  '<spring:url value="/public/listSnapshotsByCountryISO"/>';
@@ -51,11 +60,77 @@
 		var TransformMetadataByRecordIDBaseURL = '<spring:url value="/public/transformRecordByID/"/>';
 		var ValidateTransformedRecordByIDBaseURL = '<spring:url value="/public/validateTransformedRecordByID/"/>';
 		
-		function loadRejectedByFieldCount(snapshotID) { 
 		
-			 $.rest.retrieve(InvalidRecordsByFieldCountBaseURL + "/" + snapID, function(result) {	
+		
+		function loadSnapshotInfo(snapshotID) {
+			
+			$.rest.retrieve(GetSnapshotInfoBaseURL + "/" + snapID, function(result) {	
+
+				 d3.select("#diagnoseTitle").text("Diagnóstico de red: " + result.name);
+				 d3.select("#totalTitle").text("Total cosechado: " + result.size);
+				 d3.select("#validTitle").text("Regs. Válidos: " + result.validSize);
+				 d3.select("#transformedTitle").text("Regs. Transformados: " + result.transformedSize);
+
+ 	
+				
+				
+				
+			}); 			
+			
+			
+			
+			
+			
+		}
+		
+		
+		function loadRepositoriesBySnapshotID(snapshotID) { 
+			
+			 $.rest.retrieve(ListRepositoriesBySnapshotIDBaseURL + "/" + snapID, function(result) {	
+				 
+				 d3.select("#repositoryListContainer").selectAll("li").remove();
+				 
+				 var div = d3.select("#repositoryListContainer").selectAll("li")
+				    .data(result)
+				  	.enter().append("li");
+				  	/*.attr("style","cursor:pointer;")
+				  	.attr("class", "col-xs-6 col-sm-3 placeholder")
+				  	.attr("onclick",  function(d) { 
+				 			var url = InvalidRecordsByFieldBaseURL + "/" + d.field + "/" + snapshotID + "?size=" + 15;
+				 			return "loadRejectedByFieldPage('" + url +  "');"; 	 		
+				 	}); */
+				  	
+				  div.append("a")	
+				    .text(function(d) { return d; })
+				 	.attr("onclick",  function(d) { 
+				 		return "loadRejectedByFieldCount(" + snapshotID + ",'" +  d +"')";
+				 	});
+				
+				  /*
+				  div.append("span")	
+				 	.attr("class",  function(d) { if (d.value == 0) return "label label-success"; else return "label label-danger"; }) 
+				    .text(function(d) { return d.value + " regs rechazados"; });*/
+			 });		 
+			
+		}
+		
+		
+		
+		
+		function loadRejectedByFieldCount(snapshotID, repository) { 
+			
+		
+			 $.rest.retrieve(InvalidRepositoryRecordsByFieldCountBaseURL + "/" + snapID + "/" + repository + "/", function(result) {	
+				 
+				 
+				 d3.select("#repositoryDiagnoseTitle").text("Diagnóstico repositorio: " + repository);
+				 
 				 
 				 d3.select("#rejectedByFieldCountPanel").selectAll("div").remove();
+
+				 // borrado de registros residuales de otros llamados
+				 d3.select("#rejectedByFieldTable").selectAll("tr").remove();
+
 				 
 				 var div = d3.select("#rejectedByFieldCountPanel").selectAll("div")
 				    .data(result)
@@ -63,17 +138,33 @@
 				  	.attr("style","cursor:pointer;")
 				  	.attr("class", "col-xs-6 col-sm-3 placeholder")
 				  	.attr("onclick",  function(d) { 
-				 			var url = InvalidRecordsByFieldBaseURL + "/" + d.field + "/" + snapshotID + "?size=" + 15;
+				 			var url = ListInvalidRecordsBySnaphotIDRepositoryFieldBaseURL + "/" + snapshotID + "/" + repository + "/" + d.field + "/" + "?size=" + 15;
 				 			return "loadRejectedByFieldPage('" + url +  "');"; 	 		
 				 	}); 
 				  	
 				  div.append("h4")	
 				    .text(function(d) { return d.field; });
-				
-				  
+				 
 				  div.append("span")	
 				 	.attr("class",  function(d) { if (d.value == 0) return "label label-success"; else return "label label-danger"; }) 
 				    .text(function(d) { return d.value + " regs rechazados"; });
+				  
+				  
+				  var validDiv = d3.select("#rejectedByFieldCountPanel").append("div")
+				  	.attr("style","cursor:pointer;")
+				  	.attr("class", "col-xs-6 col-sm-3 placeholder")
+				  	.attr("onclick",  function(d) { 
+				 			var url = ValidRecordsByRepositoryBaseURL + "/" + snapshotID + "/" + repository + "/" + "?size=" + 15;
+				 			return "loadRejectedByFieldPage('" + url +  "');"; 	 		
+				 	}); 
+				  
+				  validDiv.append("h4")
+				    .text("Válidos"); 
+				  
+				  validDiv.append("span")	
+				 	.attr("class",  "label label-success") 
+				    .text("Registros válidos");
+				  
 			 });		 
 			
 		}
@@ -206,7 +297,7 @@
 		
 				 var links = result.links.filter( function (link) { return link.rel != 'self'; } ); 
 	
-				 d3.select("#rejectedByFieldTotalCount").text( "Registros totales: " + result.totalElements );
+				 d3.select("#rejectedByFieldTotalCount").text( " - registros totales: " + result.totalElements );
 				 
 				 d3.select("#rejectedByFieldPageControls").selectAll("p").remove();
 				 d3.select("#rejectedByFieldPageControls").append("p")
@@ -222,7 +313,7 @@
 				 		 			  switch(d.rel) {
 										 case 'next':
 											 return '&raquo;';  	 
-										 case 'previous':
+										 case 'prev':
 											 return '&laquo;';
 										 case 'first':
 											 return '&laquo;&laquo;'; 
@@ -285,9 +376,11 @@
 		}
 		
 		
-		//createHarvestingHistoryChart(netISO);
+		loadSnapshotInfo(snapID);
+
+		loadRepositoriesBySnapshotID(snapID);
 				
-		loadRejectedByFieldCount(snapID);	
+		//loadRejectedByFieldCount(snapID);	
 	
 	</script>
 	
@@ -307,7 +400,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Diagnóstico de cosecha</a>
+          
+          <span id="diagnoseTitle" class="navbar-brand">Diagnóstico de cosecha</span>
+          <span class="navbar-brand">&nbsp;</span>
+          <span id="totalTitle" style="font-size:14px;" class="navbar-brand"></span>
+          <span id="validTitle" style="font-size:14px;" class="navbar-brand"></span>
+          <span id="transformedTitle" style="font-size:14px;" class="navbar-brand"></span>
+          
+          
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -321,24 +421,31 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Registros inválidos</a></li>
-            <li><a href="#">Historial de cosechas</a></li>
+        
+          <h4>Repositorios detectados</h4>	
+          <ul id="repositoryListContainer" class="nav nav-sidebar">
+            <li class="active"></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Registros rechazados por campo</h1>
+          <h3 id="repositoryDiagnoseTitle" class="page-header">Diagnóstico del repositorio: </h3>
           
           <!-- Button trigger modal -->
 
-          <div id="rejectedByFieldCountPanel" class="row placeholders"></div>
+          <div id="rejectedByFieldCountPanel" class="row placeholders">
+          	<div>Haga click en un repositorio del panel izquierdo para ver los resultados de validación</div>
+          </div>
+
+		<ul id="rejectedByFieldPageControls" class="pagination"></ul>
+		<span id="rejectedByFieldTotalCount"></span>	
 
           <!-- h3 class="sub-header">Listado de registos rechazados por campo:</h2-->
           <div class="table-responsive">
             <table class="table table-striped">
              
               <thead>
-                <tr><td colspan="4"><ul id="rejectedByFieldPageControls" class="pagination"></ul></td></tr>
+              	
+                <tr><td colspan="4"></td></tr>
                 <tr>
                   <th width="80">#</th>
                   <th width="60">XML Origen</th>
@@ -348,7 +455,6 @@
                 </tr>
               </thead>
               <tbody id="rejectedByFieldTable"></tbody>
-              <tfoot><tr><td colspan="4" id="rejectedByFieldTotalCount"></td></tr></tfoot>
             </table>
           </div>
         </div>

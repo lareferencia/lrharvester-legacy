@@ -331,7 +331,9 @@
   	<div id="dialog_edit_network" title="Editar datos de la red nacional">	
 			<form id="form_edit_network">
 				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
+				Institución:<input type="text" name="institutionName" maxlength="255" size="20"/><br/>
+				
+				Acrónimo (ID de 4 dígitos):<input type="text" name="acronym" maxlength="4" size="4"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
 				
 				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
@@ -359,7 +361,8 @@
 	 <div id="dialog_create_network" title="Crear una nueva red nacional">	
 			<form id="form_create_network">
 				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-				ISO País:<input type="text" name="countryISO" maxlength="2" size="2"/><br/> 
+				Institución:<input type="text" name="institutionName" maxlength="255" size="20"/><br/>
+				Acrónimo (ID de 4 dígitos):<input type="text" name="acronym" maxlength="4" size="4"/><br/> 
 				Publicada: <input type="checkbox" name="published" value="1"/><br/>
 				
 				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
