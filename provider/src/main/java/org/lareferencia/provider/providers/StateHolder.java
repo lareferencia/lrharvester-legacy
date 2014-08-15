@@ -98,7 +98,7 @@ public class StateHolder
    public String getResumptionToken() { 
 	
 	   
-	   if (finished)
+	   if (finished || snapshotIdList.size() == 0)
 		   return "";
 	   
 	   

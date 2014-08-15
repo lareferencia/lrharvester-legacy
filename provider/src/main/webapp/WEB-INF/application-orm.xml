@@ -12,14 +12,14 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 
-	<!-- Aquí se consigna el path principal de configuración, la configuración básica se aloja en backend.properties -->
+	<!-- Aquí se consigna el path principal de configuración, el valor backend.properties.path es seteado en web.xml y asignado por el appContextInitializer -->
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    	<property name="location" value="file:/etc/lareferencia/backend.properties"/>
+    	<property name="location" value="file:${backend.properties.path}"/>
   	</bean>
   	
   	<!-- Bean que contiene la dirección de correo del administrador y que se obtiene del archivo de configuración  -->
   	<bean id="adminEmail" class="java.lang.String">
-    	<constructor-arg type="String" value="${adminEmail}"/>
+    	<constructor-arg type="String" value="${admin.email}"/>
     </bean>
 
 	<jpa:repositories base-package="org.lareferencia.backend.repositories" />
@@ -43,10 +43,10 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url"> 
-			<value>jdbc:mysql://${dbhost}/${dbname}</value>
+			<value>jdbc:mysql://${db.host}/${db.name}</value>
 		</property>
-		<property name="username" value="${dbuser}" />
-		<property name="password" value="${dbpasswd}" />
+		<property name="username" value="${db.user}" />
+		<property name="password" value="${db.passwd}" />
 
 	</bean>
 

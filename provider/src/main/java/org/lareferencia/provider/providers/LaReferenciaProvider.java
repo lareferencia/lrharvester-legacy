@@ -19,12 +19,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.lareferencia.backend.domain.NationalNetwork;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
-import org.lareferencia.backend.repositories.NationalNetworkRepository;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.provider.domain.MetadataFormat;
@@ -53,7 +53,7 @@ public class LaReferenciaProvider implements IProvider
   
    /****************/
    @Autowired 
-   NationalNetworkRepository nationalNetworkRepository;
+   NetworkRepository nationalNetworkRepository;
    
    @Autowired 
    NetworkSnapshotRepository networkSnapshotRepository;
@@ -79,14 +79,14 @@ public class LaReferenciaProvider implements IProvider
       final List<SetMembership> setMemberships = new ArrayList<SetMembership>();
       
       
-      List<NationalNetwork> networks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);
+      List<Network> networks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);
           
-      for (NationalNetwork network:networks) {
+      for (Network network:networks) {
     	  
     	  final SetMembership setMembership = new SetMembership();
-          setMembership.setSetSpec(network.getCountryISO());
+          setMembership.setSetSpec(network.getAcronym());
           setMembership.setSetName(network.getName());
-          setMembership.setSetDescription( "Set of: " + network.getName() + " national network");
+          setMembership.setSetDescription( "Set of: " + network.getName() + " network");
           setMemberships.add(setMembership);
     	  
       }
@@ -115,7 +115,7 @@ public class LaReferenciaProvider implements IProvider
        record.setIdentifier( buildIdentifier(oairecord) );
        record.setDate(dateFormat.format(oairecord.getDatestamp()) );
        record.setDeleted(false);
-       record.addSet( oairecord.getSnapshot().getNetwork().getCountryISO() );
+       record.addSet( oairecord.getSnapshot().getNetwork().getAcronym());
        record.setMetadata( oairecord.getPublishedXML() );
     
        return record;
@@ -125,6 +125,8 @@ public class LaReferenciaProvider implements IProvider
    {
       if(oaiRecordRepository == null)
          throw new IllegalStateException("listRecords() expects a non-null oairecord repository");
+      
+      boolean emptyCollection = false;
          
       final List<Record> records = new ArrayList<Record>();
       
@@ -136,7 +138,7 @@ public class LaReferenciaProvider implements IProvider
     	  // CASO DE SET DEFINIDO
     	  if ( set != null && !set.toUpperCase().equals( DRIVER_SET_NAME ) ) {
     		  
-    		  NationalNetwork network = nationalNetworkRepository.findByCountryISO(set);
+    		  Network network = nationalNetworkRepository.findByAcronym(set);
     		  
     		  if ( network == null ) {
     			  throw new NoRecordsMatchException("Set don´t exist");
@@ -158,7 +160,7 @@ public class LaReferenciaProvider implements IProvider
     	  }
     	  else { // CASO DE SET NULL
 	    	  // Se recorren todas las redes publicadas
-	    	  for (NationalNetwork network:nationalNetworkRepository.findByPublishedOrderByNameAsc(true)) {
+	    	  for (Network network:nationalNetworkRepository.findByPublishedOrderByNameAsc(true)) {
 	    		  
 	    		  NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 	    		  
@@ -174,77 +176,69 @@ public class LaReferenciaProvider implements IProvider
 	    	  }
     	  }
     	  // se inicializa el estado
+    	  
+    	  emptyCollection = snapshotIdList.size() == 0;
+    	  
     	  state.initialize(snapshotIdList, totalPageList);
+    		 
+    		  
       } 
     
-      // obtiene la página actual
-      NetworkSnapshot snapshot = networkSnapshotRepository.findOne( state.obtainActualSnapshotID() );
-	  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(state.obtainActualPage(), PAGE_SIZE));
-
-	  // actualiza el estado
-	  state.update();
-   
-      /**   
-      // Dates.
-      final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-      if(session.getFrom() != null && session.getUntil() != null)
-      {
-         final String formattedFrom = dateFormat.format(session.getFrom());
-         final String formattedUntil = dateFormat.format(session.getUntil());
-         query.setQuery(query.getQuery() + " AND lastModifiedDateFacet:[" +  formattedFrom + " TO " + formattedUntil + "]");
-      }
-      else if(session.getFrom() != null)
-      {
-         final String formattedFrom = dateFormat.format(session.getFrom());
-         query.setQuery(query.getQuery() + " AND lastModifiedDateFacet:[" +  formattedFrom + " TO 99999999999999999]");
-      }
-      else if(session.getUntil() != null)
-      {
-         final String formattedUntil = dateFormat.format(session.getUntil());
-         query.setQuery(query.getQuery() + " AND lastModifiedDateFacet:[00000000000000000 TO " + formattedUntil + "]");
-      }
-      */
       
-  
-      try
-      {
-         
-
-         if(page.getContent().size() == 0)
-            throw new NoRecordsMatchException();
-
-  
-         for(OAIRecord oairecord: page.getContent())
-         {
-            final Record record = new Record();
-            
-            // Identifier.
-            record.setIdentifier( buildIdentifier(oairecord) );
-            record.setDate( dateFormat.format(oairecord.getDatestamp()) );
-            record.setDeleted(false);
-            record.addSet( oairecord.getSnapshot().getNetwork().getCountryISO() );
-            
-            if (includeMetadata)
-            	record.setMetadata( oairecord.getPublishedXML() );
-            
-            records.add(record);
-         }
+      
+      if ( !emptyCollection ) {
+      
+	      // obtiene la página actual
+	      NetworkSnapshot snapshot = networkSnapshotRepository.findOne( state.obtainActualSnapshotID() );
+		  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(state.obtainActualPage(), PAGE_SIZE));
+	
+		  // actualiza el estado
+		  state.update();
+	      
+	  
+	      try
+	      {
+	
+	         if(page.getContent().size() == 0)
+	            throw new NoRecordsMatchException();
+	
+	  
+	         for(OAIRecord oairecord: page.getContent())
+	         {
+	            final Record record = new Record();
+	            
+	            // Identifier.
+	            record.setIdentifier( buildIdentifier(oairecord) );
+	            record.setDate( dateFormat.format(oairecord.getDatestamp()) );
+	            record.setDeleted(false);
+	            record.addSet( oairecord.getSnapshot().getNetwork().getAcronym() );
+	            
+	            if (includeMetadata)
+	            	record.setMetadata( oairecord.getPublishedXML() );
+	            
+	            records.add(record);
+	         }
+	      }
+	      finally
+	      {
+	         //session.setMemento(memento);
+	      }
+	       
+      
       }
-      finally
-      {
-         //session.setMemento(memento);
-      }
-       
+      
       return records;
+      
+      
    }
    
 	@Override
 	public List<String> listOrigins() {
 		  final List<String> uris = new ArrayList<String>();
 	      
-	      List<NationalNetwork> networks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);
+	      List<Network> networks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);
 	          
-	      for (NationalNetwork network:networks) {
+	      for (Network network:networks) {
 	    	  for (OAIOrigin origin:network.getOrigins()) {   		  
 	    		  uris.add(origin.getUri());
 	    	  }

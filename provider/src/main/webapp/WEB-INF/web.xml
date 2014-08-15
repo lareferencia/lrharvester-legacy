@@ -22,29 +22,26 @@
     <servlet-name>application</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-  <!--
-  <filter>
-    <filter-name>Acegi Filter Chain Proxy</filter-name>
-    <filter-class>
-   	  org.acegisecurity.util.FilterToBeanProxy
-       </filter-class>
-    <init-param>
-      <param-name>targetClass</param-name>
-      <param-value>
-   		org.acegisecurity.util.FilterChainProxy
-   	  </param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>Acegi Filter Chain Proxy</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  -->
+  
   <listener>
     <listener-class>
        org.springframework.web.context.ContextLoaderListener
      </listener-class>
   </listener>
+  
+  <!-- Aquí debe apuntarse al archivo de configuración en formato properties en el etc -->
+	<context-param>
+    	<param-name>mainConfigFilePath</param-name>
+    	<param-value>/etc/lrharvester/backend.properties</param-value>
+	</context-param>
+	
+  <!-- Este parámetro indica el incializador que carga las propiedades de contexto -->
+	<context-param>
+    	<param-name>contextInitializerClasses</param-name>
+    	<param-value>org.lareferencia.backend.util.AppContextInitializer</param-value>
+	</context-param>
+  
+  
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -52,23 +49,8 @@
        /WEB-INF/application-servlet.xml
        /WEB-INF/application-controllers.xml
        /WEB-INF/application-views.xml
-       
      </param-value>
   </context-param>
-
-   <!--
-   <error-page>
-   	<exception-type>java.lang.Exception</exception-type>
-   	<location>/app/Exception?debug=on</location>
-   </error-page>
-   -->
-
-   <!--
-	<error-page>
-		<error-code>404</error-code>
-		<location>/fedora/provider</location>
-	</error-page>
-   -->
 
 	<welcome-file-list>
 		<welcome-file>/provider</welcome-file>

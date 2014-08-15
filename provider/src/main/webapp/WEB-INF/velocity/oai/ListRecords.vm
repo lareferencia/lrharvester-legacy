@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
 <responseDate>$!{ResponseDate}</responseDate>
-  <!-- Showing $!{ListRecords.size()} records. -->
+  <!-- Showing $!{ListRecords.size()} records. Note: only records from networks in published state will be exposed by oai provider -->
   #parse("oai/common/Request.vm")
   <ListRecords>
 #foreach($record in $ListRecords)
