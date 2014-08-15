@@ -17,8 +17,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
-	<artifactId>lareferencia.backend</artifactId>
-	<version>1.0</version>
+	<artifactId>backend</artifactId>
+	<version>2.0</version>
 	<packaging>jar</packaging>
 	<name>LAReferencia Backend</name>
 	<url></url>
@@ -40,11 +40,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	<dependencies>
 
 		<!-- Hibernate -->
-		<!--  dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.1.Final</version>
-		</dependency-->
 		<dependency>
      		<groupId>org.hibernate</groupId>
 	     	<artifactId>hibernate-entitymanager</artifactId>
@@ -61,11 +56,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <version>5.1.10</version>
             <scope>runtime</scope>
         </dependency>
-		<!--  dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
-		</dependency-->
+
     
 	
 		<!--  Spring -->
