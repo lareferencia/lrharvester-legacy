@@ -81,10 +81,14 @@
 		  .selectAll('tr').remove();
 		
 		$.rest.retrieve(log_service_url, function(result) {
+			
+			if ( result._embedded == null )
+				result._embedded = { "log" : []};
+			
 					
 			var p = d3.select(dst_element_id)
 				      .selectAll('tr')
-				      .data(result.content)
+				      .data(result._embedded.log)
 	                  .enter().append('tr');
 				
 			   p.append("td")
