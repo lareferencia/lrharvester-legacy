@@ -43,32 +43,41 @@ import org.springframework.transaction.annotation.Transactional;
 @RepositoryRestResource(path = "record", collectionResourceRel="record")
 public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> { 
 	
+	 @Transactional
 	 Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot, RecordStatus status, Pageable pageable);
+	 
+	 @Transactional
 	 Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot, boolean wasTransformed, Pageable pageable);
 
+	 @Transactional
 	 Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
 	 
 	 // Esta query sirve para obtener el total de páginas
+	 @Transactional
 	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1")
 	 Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
 
 	 // Esta query sirve para obtener el total de páginas
-     @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2")
+	 @Transactional
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
      
+	 @Transactional
      @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field")
 	 Page<OAIRecord> findBySnapshotIdAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("field") String field, Pageable pageable);
      
+	 @Transactional
      @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field and rv.record.repositoryDomain=:repository")
 	 Page<OAIRecord> findBySnapshotIdAndRepositoyAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, @Param("field") String field, Pageable pageable);
     
-     
+	 @Transactional
      @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository")
  	 Page<OAIRecord> findValidBySnapshotIdAndRepository(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, Pageable pageable);
      
      
      // Esta query sirve para obtener el total de páginas
-     @Query("select DISTINCT rv.record.repositoryDomain from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id")
+	 @Transactional
+	 @Query("select DISTINCT rv.record.repositoryDomain from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id")
 	 List<String> listRepositoriesBySnapshotId(@Param("snapshot_id") Long snapshotID);
      
 	 
