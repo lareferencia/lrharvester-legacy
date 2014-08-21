@@ -38,25 +38,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RepositoryRestResource(path = "validation", collectionResourceRel="validation")
 public interface OAIRecordValidationRepository extends JpaRepository<OAIRecordValidationResult, Long> { 
 	 
-	 @Modifying
-	 @Transactional
-	 @Query("delete from OAIRecordValidationResult r where r.snapshot.id = ?1")
-	 void deleteBySnapshotID(Long snapshot_id);
-	 	 
+	  @Modifying
+	  @Transactional
+	  @Query("delete from OAIRecordValidationResult r where r.snapshot.id = ?1")
+	  void deleteBySnapshotID(Long snapshot_id);
+	 
+	  @Transactional
 	  @Query("select vr.field, count(*) from OAIRecordValidationResult vr where vr.snapshot.id = :snapshot_id group by vr.field")
 	  List<Object[]> invalidRecordCountByField(@Param("snapshot_id") Long snapshot_id);
 	  
+	  @Transactional
 	  @Query("select vr.field, count(*) from OAIRecordValidationResult vr where vr.snapshot.id = :snapshot_id and vr.record.repositoryDomain= :repository group by vr.field")
 	  List<Object[]> invalidRecordRepositoryCountByField(@Param("snapshot_id") Long snapshot_id, @Param("repository") String repository);
 	
+	  @Transactional
 	  @Query("select vr.record.repositoryDomain, count(*) from OAIRecordValidationResult vr where vr.snapshot.id = :snapshot_id group by vr.record.repositoryDomain")
 	  List<Object[]> invalidRecordCountByRepository(@Param("snapshot_id") Long snapshot_id);  
 	  
+	  @Transactional
 	  @Query("select vr.record.repositoryDomain, vr.field, count(*) from OAIRecordValidationResult vr where vr.snapshot.id = :snapshot_id group by vr.record.repositoryDomain, vr.field")
 	  List<Object[]> invalidRecordCountByFieldAndRepository(@Param("snapshot_id") Long snapshot_id);
 	  
-	  
-
-
 	
 }
