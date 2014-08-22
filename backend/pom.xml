@@ -57,7 +57,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <scope>runtime</scope>
         </dependency>
 
-    
+   <dependency>
+	<groupId>postgresql</groupId>
+	<artifactId>postgresql</artifactId>
+	<version>9.1-901-1.jdbc4</version>
+</dependency> 
 	
 		<!--  Spring -->
 		<dependency>
