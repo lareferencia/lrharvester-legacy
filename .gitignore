@@ -14,3 +14,7 @@ Servers/
 backend/.settings
 backend/.classpath
 backend/target/classes/
+
+provider/.settings
+provider/.classpath
+provider/target/classes/
