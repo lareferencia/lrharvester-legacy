@@ -49,20 +49,16 @@
                 	<xsl:value-of select="$networkAcronym"/>
                 </field>
                 
+                <!-- COUNTRY es parámetro -->
+                <field name="network_name">
+                	<xsl:value-of select="$networkName"/>
+                </field>    
+                
                 <!-- ID es parámetro -->
                 <field name="oai_identifier">
                 	<xsl:value-of select="$header_id"/>
                 </field>         
 	         
-                <!-- COUNTRY es parámetro -->
-                <field name="country">
-                	<xsl:value-of select="$networkName"/>
-                </field>         
-	
-                <!-- COUNTRY_ISO es parámetro -->
-                <field name="country_iso">
-                	<xsl:value-of select="$networkAcronym"/>
-                </field>        
                                      
                 <!-- RECORDTYPE -->
                 <field name="recordtype">driver</field>         
