@@ -64,7 +64,7 @@ public class SnapshotPersistenceTests {
 		NetworkSnapshot ns = new NetworkSnapshot();
 		nn.getSnapshots().add(ns);
 		
-		OAIRecord record = new OAIRecord("oai:test/0001", "<xml/>");
+		OAIRecord record = new OAIRecord("oai:test/0001");
 
 	
 		record.setSnapshot(ns);
