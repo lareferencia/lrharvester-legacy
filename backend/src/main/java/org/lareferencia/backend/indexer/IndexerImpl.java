@@ -125,7 +125,7 @@ public class IndexerImpl implements IIndexer{
 				
 				for (OAIRecord record : records) {
 					
-					System.out.println( record.getPublishedXML() );
+					//System.out.println( record.getPublishedXML() );
 					
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 					StringWriter stringWritter = new StringWriter();

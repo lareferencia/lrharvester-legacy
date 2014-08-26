@@ -24,11 +24,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 
 import lombok.Getter;
 import lombok.Setter;
@@ -48,6 +48,7 @@ public class NetworkSnapshotLog extends AbstractEntity  {
 	
 	@Column(nullable = false)
 	@Lob @Basic(fetch=FetchType.LAZY)
+	@Type(type="org.hibernate.type.StringClobType")
 	private String message;
 	
 	@Setter
