@@ -29,6 +29,7 @@ import javax.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -53,6 +54,9 @@ public class OAIRecord extends AbstractEntity {
 	@Column(nullable = false)
 	private String identifier;
 	
+	@Column(nullable = false)
+	private String fingerprint;
+	
 	@Setter
 	@Column(nullable = true)
 	private String repositoryDomain;
@@ -62,7 +66,6 @@ public class OAIRecord extends AbstractEntity {
 	@Column(nullable = false)
 	private Date datestamp;
 	
-	@Setter
 	@Type(type="org.hibernate.type.StringClobType")
 	private String publishedXML;
 	
@@ -105,6 +108,8 @@ public class OAIRecord extends AbstractEntity {
 		updateRepositoryDomain(identifier);
 	}
 	
+	
+	
 	private void updateRepositoryDomain(String identifier) {
 		
 		this.repositoryDomain = "UNK";
@@ -123,6 +128,15 @@ public class OAIRecord extends AbstractEntity {
 				if ( matcher.group().length() > this.repositoryDomain.length() )
 					this.repositoryDomain = matcher.group();
 		}
+	}
+
+	public void setPublishedXML(String publishedXML) {
+		this.publishedXML = publishedXML;
+		
+		if ( this.snapshot != null )
+			this.fingerprint = this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( publishedXML );
+		else
+			this.fingerprint = "NULL";
 	}
 	
 	

@@ -135,7 +135,10 @@ public class IndexerImpl implements IIndexer{
 					//System.out.println( networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );	
 									
 					// id permantente para vufind
-					trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
+					//trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
+					trf.setParameter("vufind_id", record.getFingerprint() );
+					
+					
 					// header id para staff
 					trf.setParameter("header_id", record.getIdentifier() );
 					
