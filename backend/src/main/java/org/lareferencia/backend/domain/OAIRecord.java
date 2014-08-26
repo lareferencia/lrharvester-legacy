@@ -15,6 +15,7 @@ package org.lareferencia.backend.domain;
 
 import java.util.Date;
 import java.util.regex.*;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,9 +25,11 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import lombok.Getter;
 import lombok.Setter;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -60,7 +63,9 @@ public class OAIRecord extends AbstractEntity {
 	private Date datestamp;
 	
 	@Setter
-	@Lob @Basic(fetch=FetchType.LAZY)
+	@Lob 
+	@Type(type="org.hibernate.type.StringClobType")
+	@Basic(fetch=FetchType.LAZY)
 	private String publishedXML;
 	
 	@Setter
