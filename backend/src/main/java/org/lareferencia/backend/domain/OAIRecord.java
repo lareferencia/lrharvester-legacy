@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @Entity
 @Getter 
-@JsonIgnoreProperties({"publishedXML","originalXML","snapshot","datestamp"})
+@JsonIgnoreProperties({"publishedXML","snapshot","datestamp"})
 public class OAIRecord extends AbstractEntity {
 	
 	private static final String 
@@ -63,9 +63,7 @@ public class OAIRecord extends AbstractEntity {
 	private Date datestamp;
 	
 	@Setter
-	@Lob 
 	@Type(type="org.hibernate.type.StringClobType")
-	@Basic(fetch=FetchType.LAZY)
 	private String publishedXML;
 	
 	@Setter

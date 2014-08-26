@@ -97,7 +97,7 @@ public class IndexerImpl implements IIndexer{
 			 MessageDigest md = MessageDigest.getInstance("MD5");
 			 String networkAcronym = snapshot.getNetwork().getAcronym();
 	
-			this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
+			//this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
 			
 			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
@@ -128,9 +128,14 @@ public class IndexerImpl implements IIndexer{
 					//System.out.println( record.getPublishedXML() );
 					
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
+					
+					
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
-								
+					
+
+					System.out.println( networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );	
+									
 					// id permantente para vufind
 					trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
 					// header id para staff
@@ -149,7 +154,7 @@ public class IndexerImpl implements IIndexer{
 				
 			}
 			
-			// commit de los cambios
+			//commit de los cambios
 			this.sendUpdateToSolr("<commit/>");
 				 
 		} catch (Exception e) {
