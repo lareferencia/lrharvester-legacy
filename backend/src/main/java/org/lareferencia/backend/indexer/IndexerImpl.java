@@ -125,6 +125,8 @@ public class IndexerImpl implements IIndexer{
 				
 				for (OAIRecord record : records) {
 					
+					System.out.println( record.getPublishedXML() );
+					
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 					StringWriter stringWritter = new StringWriter();
 					Result output = new StreamResult(stringWritter);
@@ -137,10 +139,6 @@ public class IndexerImpl implements IIndexer{
 					// Se transforma y genera el string del registro
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 					strBuf.append(stringWritter.toString());
-					
-					// Se actualiza el lastID para permitir la paginación con offset 0
-					//lastId = records.get( records.size()-1 ).getId();
-
 				}
 				
 				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
