@@ -74,12 +74,6 @@ public class OAIRecord extends AbstractEntity {
 	@Column(nullable = false)
 	private boolean wasTransformed;
 	
-	/*@Column(nullable = false)
-	private boolean belongsToCollection;
-	
-	@Lob
-	@Column(nullable = false) 
-	private String belongsToCollectionDetails;*/
 	@Setter
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
 	@JoinColumn(name="snapshot_id")
@@ -93,14 +87,13 @@ public class OAIRecord extends AbstractEntity {
 		this.datestamp = new DateTime().toDate();
 	}
 	
-	public OAIRecord(String identifier, String originalXMLString) {
+	public OAIRecord(String identifier) {
 		super();
 		this.status = RecordStatus.UNTESTED;
 		this.identifier = identifier;
 		this.datestamp = new DateTime().toDate();
 		//this.belongsToCollection = false;
 		//this.belongsToCollectionDetails = "";
-		this.publishedXML = originalXMLString;
 		
 		updateRepositoryDomain(identifier);
 

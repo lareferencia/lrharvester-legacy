@@ -322,7 +322,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				for (OAIRecordMetadata  metadata:event.getRecords() ) {
 					
 					try {
-						OAIRecord record = new OAIRecord(metadata.getIdentifier(), metadata.toString());
+						OAIRecord record = new OAIRecord(metadata.getIdentifier());
 						// registra el snapshot al que pertenece
 						record.setSnapshot(snapshot);
 						
@@ -356,15 +356,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setStatus( RecordStatus.INVALID );
 							}
 								
-							// Se almacena la metadata transformada para los registros válidos
-							if ( validationResult.isValid() ) 
-								record.setPublishedXML( metadata.toString() );
+							// Se almacena la metadata transformada 
+							//if ( validationResult.isValid() ) 
+							record.setPublishedXML( metadata.toString() );
 							
-							
-							///////// Test de pertenencia a la colección del registro final
-							//ValidationResult btcValidationResult = validator.testIfBelongsToCollection(metadata);
-							//record.setBelongsToCollection( btcValidationResult.isValid() );
-							//record.setBelongsToCollectionDetails( btcValidationResult.getValidationContentDetails() );
 							
 							//// SE ALMACENA EL REGISTRO
 							recordRepository.save(record);
