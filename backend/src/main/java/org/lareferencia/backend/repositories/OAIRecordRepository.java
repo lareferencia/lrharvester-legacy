@@ -59,7 +59,7 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
      @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field and rv.record.repositoryDomain=:repository order by rv.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndRepositoyAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, @Param("field") String field, Pageable pageable);
     
-     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository order by rv.id asc")
+     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository order by rc.id asc")
  	 Page<OAIRecord> findValidBySnapshotIdAndRepository(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, Pageable pageable);
           
 	 @Query("select DISTINCT rv.record.repositoryDomain from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id")
