@@ -44,27 +44,22 @@ import org.springframework.transaction.annotation.Transactional;
 public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> { 
 	
 	 Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot, RecordStatus status, Pageable pageable);
-	 
-	 
 	 Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot, boolean wasTransformed, Pageable pageable);
-
 	 Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
 	 
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1")
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
 
-	 
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2")
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
-     
-	 
-     @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field")
+     	 
+     @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("field") String field, Pageable pageable);
      
-     @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field and rv.record.repositoryDomain=:repository")
+     @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field and rv.record.repositoryDomain=:repository order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndRepositoyAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, @Param("field") String field, Pageable pageable);
     
-     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository")
+     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository order by rc.id asc")
  	 Page<OAIRecord> findValidBySnapshotIdAndRepository(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, Pageable pageable);
           
 	 @Query("select DISTINCT rv.record.repositoryDomain from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id")
