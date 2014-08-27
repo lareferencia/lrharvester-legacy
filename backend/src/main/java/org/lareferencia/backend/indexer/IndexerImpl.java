@@ -102,9 +102,7 @@ public class IndexerImpl implements IIndexer{
 			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
-			
-			Long lastId = -1L; // Aquí se guarda el ultimo id de cada página para ser usado en el la query optimizada
-			
+						
 
 			for (int i = 0; i < totalPages; i++) {
 							
@@ -113,10 +111,9 @@ public class IndexerImpl implements IIndexer{
 				trf.setParameter("networkName", snapshot.getNetwork().getName() );
 				trf.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
 						
-				//page = recordRepository.findBySnapshotIdAndStatusLimited(snapshot.getId(), RecordStatus.VALID, lastId, new PageRequest(0, PAGE_SIZE) );
 				page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
 				
-				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + i + " de: " + totalPages);
+				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i+1) + " de: " + totalPages);
 								
 				StringBuffer strBuf = new StringBuffer();
 				
@@ -137,8 +134,7 @@ public class IndexerImpl implements IIndexer{
 					// id permantente para vufind
 					//trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
 					trf.setParameter("vufind_id", record.getFingerprint() );
-					
-					
+										
 					// header id para staff
 					trf.setParameter("header_id", record.getIdentifier() );
 					
