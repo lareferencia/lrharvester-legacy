@@ -50,7 +50,7 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
 
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id, rc.snapshot.id, rc.status asc")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
      	 
      @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field order by rv.id asc")

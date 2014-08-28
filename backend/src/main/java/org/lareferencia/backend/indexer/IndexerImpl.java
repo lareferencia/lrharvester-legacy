@@ -100,7 +100,7 @@ public class IndexerImpl implements IIndexer{
 			this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
 			
 			// Update de los registros de a PAGE_SIZE
-			Page<OAIRecord> page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
+			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 						
 
@@ -111,7 +111,7 @@ public class IndexerImpl implements IIndexer{
 				trf.setParameter("networkName", snapshot.getNetwork().getName() );
 				trf.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
 						
-				page = recordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
+				page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i+1) + " de: " + totalPages);
 								
