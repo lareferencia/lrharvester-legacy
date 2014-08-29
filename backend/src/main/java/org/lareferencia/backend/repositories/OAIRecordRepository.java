@@ -50,9 +50,17 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
 
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id, rc.snapshot.id, rc.status asc")
+	 
+	 /*  Paginación optimizada  */
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
-     	 
+     
+	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 and rc.id > ?3 order by rc.id asc")
+	 Page<OAIRecord> findBySnapshotIdAndStatusOptimized(Long snapshotID, RecordStatus status, Long lastRecordID,  Pageable pageable);
+	 /*   */	 
+	 
+	 
+	 
      @Query("select rv.record from OAIRecordValidationResult rv where rv.snapshot.id = :snapshot_id and rv.field=:field order by rv.id asc")
 	 Page<OAIRecord> findBySnapshotIdAndInvalidField(@Param("snapshot_id") Long snapshotID, @Param("field") String field, Pageable pageable);
      

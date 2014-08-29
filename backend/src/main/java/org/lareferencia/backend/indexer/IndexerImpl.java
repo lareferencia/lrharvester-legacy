@@ -104,14 +104,18 @@ public class IndexerImpl implements IIndexer{
 			int totalPages = page.getTotalPages();
 						
 
+			Long lastRecordID = -1L;
+			
 			for (int i = 0; i < totalPages; i++) {
 							
 				Transformer trf = buildTransformer();
 				trf.setParameter("networkAcronym", networkAcronym);
 				trf.setParameter("networkName", snapshot.getNetwork().getName() );
 				trf.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
-						
-				page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(i, PAGE_SIZE) );
+				
+				
+				/** Este pedido paginado pide siempre la primera página restringida a que el id sea mayor al ultimo anterior **/ 		
+				page = recordRepository.findBySnapshotIdAndStatusOptimized(snapshot.getId(), RecordStatus.VALID, lastRecordID, new PageRequest(0, PAGE_SIZE) );
 				
 				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i+1) + " de: " + totalPages);
 								
@@ -141,6 +145,8 @@ public class IndexerImpl implements IIndexer{
 					// Se transforma y genera el string del registro
 					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
 					strBuf.append(stringWritter.toString());
+					
+					lastRecordID = record.getId();
 				}
 				
 				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
