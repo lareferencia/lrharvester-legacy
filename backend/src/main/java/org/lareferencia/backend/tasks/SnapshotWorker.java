@@ -336,16 +336,19 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							// si no es válido lo transforma
 							if ( !validationResult.isValid() && network.isRunTransformation() ) {
 								
-								// transforma y si hubo transformación la registra
-								if ( transformer.transform(metadata, validationResult) ) {
-									snapshot.incrementTransformedSize();
-									
-									// marca si el registro fue transformado
-									record.setWasTransformed(true);
-								}
+								// transforma
+								Boolean wasTransformed = transformer.transform(metadata, validationResult);
+								
+								// marca si el registro fue transformado
+								record.setWasTransformed(wasTransformed);
 								
 								// lo vuelve a validar
 								validationResult = validator.validate(metadata);
+								
+								// Si es válido y hubo transformación incrementa la cuenta de válidos transformados
+								if ( wasTransformed && validationResult.isValid() ) 		
+									snapshot.incrementTransformedSize();
+						
 							}
 							
 							// registra si resultó válido o es irrecuperable (inválido)
