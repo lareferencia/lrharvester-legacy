@@ -589,6 +589,7 @@ public class BackEndController {
 				ninfo.datestamp = snapshot.getEndTime();
 				ninfo.size = snapshot.getSize();
 				ninfo.validSize = snapshot.getValidSize();
+				ninfo.transformedSize = snapshot.getTransformedSize();
 				
 			}		
 			NInfoList.add( ninfo );		
