@@ -633,11 +633,15 @@ public class BackEndController {
 			for (NetworkSnapshot snapshot: networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID) ) {
 				
 				SnapshotStats snapshotStats = new SnapshotStats();
-				snapshotStats.acronym = network.getAcronym();
+				snapshotStats.setAcronym( network.getAcronym() );
+				snapshotStats.setName( network.getName() );
+
 				snapshotStats.setDatestamp( snapshot.getEndTime() );
 				snapshotStats.setSize( snapshot.getSize() );	
 				snapshotStats.setValidSize( snapshot.getValidSize() );	
 				snapshotStats.setTransformedSize( snapshot.getTransformedSize() );	
+				
+				snapshotStatsList.add( snapshotStats );
 				
 			}
 		}
@@ -942,6 +946,7 @@ public class BackEndController {
 	class SnapshotStats {
 		public Date datestamp;
 		public String acronym;
+		public String name;
 		public Integer size;
 		public Integer validSize;
 		public Integer transformedSize;
