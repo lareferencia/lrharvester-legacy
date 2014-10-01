@@ -620,6 +620,32 @@ public class BackEndController {
 		return response;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/public/listValidPublicSnapshotsStats", method=RequestMethod.GET)
+	public List<SnapshotStats> listValidPublicSnapshotHistory() {
+		
+		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<SnapshotStats> snapshotStatsList = new ArrayList<SnapshotStats>();
+
+		for (Network network:allNetworks) {	
+			
+			
+			for (NetworkSnapshot snapshot: networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID) ) {
+				
+				SnapshotStats snapshotStats = new SnapshotStats();
+				snapshotStats.acronym = network.getAcronym();
+				snapshotStats.setDatestamp( snapshot.getEndTime() );
+				snapshotStats.setSize( snapshot.getSize() );	
+				snapshotStats.setValidSize( snapshot.getValidSize() );	
+				snapshotStats.setTransformedSize( snapshot.getTransformedSize() );	
+				
+			}
+		}
+	
+		
+		return snapshotStatsList;
+	}
+	
 	@RequestMapping(value="/public/listProviderStats", method=RequestMethod.GET)
 	@ResponseBody
 	public PageResource<OAIProviderStat> listProviderStats(@RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
@@ -909,6 +935,16 @@ public class BackEndController {
 		public String acronym;
 		private Long   networkID;
 		private List<NetworkSnapshot> validSnapshots;
+	}
+	
+	@Getter
+	@Setter
+	class SnapshotStats {
+		public Date datestamp;
+		public String acronym;
+		public Integer size;
+		public Integer validSize;
+		public Integer transformedSize;
 	}
 	
 	@Getter

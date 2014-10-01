@@ -35,6 +35,9 @@ public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot
 	 
 	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(Network network, SnapshotStatus status);
 	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(Network network);
+	  
+	  List<NetworkSnapshot> findByStatusOrderByEndTimeAsc(SnapshotStatus status);
+
 
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
 	  Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);
