@@ -328,14 +328,28 @@
 				
 				
                 <!-- PUBLISHDATE -->
-                <xsl:if test="//dc:date">
+                <!--  xsl:if test="//dc:date">
                     <field name="publishDate">
                         <xsl:value-of select="substring(//dc:date, 1, 4)"/>
                     </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="substring(//dc:date, 1, 4)"/>
                     </field>
-                </xsl:if>
+                </xsl:if-->
+                
+                <xsl:for-each select="//dc:date">
+				    	<xsl:sort select="."/>
+			            <xsl:if test="position() = 1">
+		
+					    	<field name="publishDate">
+			                	<xsl:value-of select="substring(., 1, 4)"/>
+			                </field>
+			
+			                <field name="publishDateSort">
+			                    <xsl:value-of select="substring(., 1, 4)"/>
+			                </field>
+				    	</xsl:if>
+		        </xsl:for-each>	
 
                 <!-- URL -->
 				<xsl:for-each select="//dc:identifier">
