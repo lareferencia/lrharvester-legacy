@@ -143,7 +143,7 @@
 						</xsl:when-->
 						
 						<xsl:when test="contains($type_list, .)">
-							  <field name="type">
+							  <field name="format">
                            			<xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" />
                        		  </field>
 						</xsl:when>
