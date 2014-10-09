@@ -50,6 +50,10 @@
                 	<xsl:value-of select="$header_id"/>
                 </field>         
 	         
+	         	<field name="thumbnail">
+                       <xsl:value-of select="$networkAcronym"/>_cover.png
+                </field> 
+	         	
                 
                 <field name="instname">
 	                <xsl:value-of select="$institutionName"/>
@@ -103,98 +107,10 @@
                 <xsl:if test="//dc:language">
                     <xsl:for-each select="//dc:language">
                         <xsl:if test="string-length() > 0">
-							<xsl:choose>
-								<xsl:when test="//dc:language/text()='spa'">
-								 <field name="language">Español</field>
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='es'">
-								 <field name="language">Español</field>
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='esp'">
-								 <field name="language">Español</field>
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='in'">
-								 <field name="language">Inglés</field>
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='en'">
-								 <field name="language">Inglés</field>
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='eng'">
-								 <field name="language">Inglés</field>
-								</xsl:when>								
-								<xsl:when test="//dc:language/text()='eng_US'">
-								 <field name="language">Inglés</field>
-								</xsl:when>								
-								<xsl:when test="//dc:language/text()='fr'">
-								 <field name="language">Francés</field>
-								</xsl:when>								
-								<xsl:when test="//dc:language/text()='bg'">
-								 <field name="language">Belga</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='bra'">
-								 <field name="language">Portugués</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='ca'">
-								 <field name="language">Catalán</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='cat'">
-								 <field name="language">Catalán</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='da'">
-								 <field name="language">Danés</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='de'">
-								 <field name="language">Alemán</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='deu'">
-								 <field name="language">Alemán</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='fra'">
-								 <field name="language">Francés</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='General'">
-								 <field name="language">Otro</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='Germanic (Other)'">
-								 <field name="language">Alemán</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='hr'">
-								 <field name="language">Croata</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='it'">
-								 <field name="language">Italiano</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='ita'">
-								 <field name="language">Italiano</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='nl'">
-								 <field name="language">Holandés</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='por'">
-								 <field name="language">Portugués</field>
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='pt'">
-								 <field name="language">Portugués</field>
-								</xsl:when>	
-								
-								<!-- Casos de eliminación expresa -->
-								<xsl:when test="//dc:language/text()='Phoenician'">
-								 <!--  field name="language">Fenicio</field-->
-								</xsl:when>
-								<xsl:when test="//dc:language/text()='Elamite'">
-								 <!--  field name="language">Elamite</field-->
-								</xsl:when>	
-								<xsl:when test="//dc:language/text()='Efik'">
-								 <!--  field name="language">Efik</field-->
-								</xsl:when>		
-								
-								
-								<xsl:otherwise>
-									<field name="language">
-										<xsl:value-of select="normalize-space()"/>
-									</field>
-								</xsl:otherwise>
-							</xsl:choose>						
+							
+							<field name="language">
+								<xsl:value-of select="normalize-space()"/>
+							</field>					
 
                         </xsl:if>
                     </xsl:for-each>
@@ -205,7 +121,8 @@
                    <xsl:if test="starts-with(., $driver_prefix)">
                    
                   	 <xsl:choose>
-						<xsl:when test="contains($type_list, .)">
+						
+						<!-- xsl:when test="contains($type_list, .)">
 							<xsl:choose>
 								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/article'">
 								 <field name="format">Artículo</field><field name="type">Artículo</field>
@@ -216,11 +133,21 @@
 								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/doctoralThesis'">
 								 <field name="format">Tesis de Doctorado</field><field name="type">Tesis de Doctorado</field>
 								</xsl:when>
+								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/report'">
+								 <field name="format">Reporte</field><field name="type">Reporte</field>
+								</xsl:when>
 								<xsl:otherwise>
-									<field name="format">Reporte</field><field name="type">Reporte</field>
+									<field name="format">Reporte</field><field name="type">Otro</field>
 								</xsl:otherwise>
 							</xsl:choose>
+						</xsl:when-->
+						
+						<xsl:when test="contains($type_list, .)">
+							  <field name="type">
+                           			<xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" />
+                       		  </field>
 						</xsl:when>
+						
 						<xsl:when test="contains($status_list, .)">
 							  <field name="status">
                            			<xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" />
@@ -231,7 +158,6 @@
            
                    </xsl:if>
                </xsl:for-each>
- 
  
                 <!-- rights -->
                <xsl:for-each select="//dc:rights">
