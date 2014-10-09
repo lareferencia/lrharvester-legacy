@@ -29,13 +29,13 @@
      </listener-class>
   </listener>
   
-  <!-- AquÃ­ debe apuntarse al archivo de configuraciÃ³n en formato properties en el etc -->
+  <!-- Aquí debe apuntarse al archivo de configuración en formato properties en el etc -->
 	<context-param>
     	<param-name>mainConfigFilePath</param-name>
     	<param-value>/etc/lrharvester/backend.properties</param-value>
 	</context-param>
 	
-  <!-- Este parÃ¡metro indica el incializador que carga las propiedades de contexto -->
+  <!-- Este parámetro indica el incializador que carga las propiedades de contexto -->
 	<context-param>
     	<param-name>contextInitializerClasses</param-name>
     	<param-value>org.lareferencia.backend.util.AppContextInitializer</param-value>
@@ -45,7 +45,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-       /WEB-INF/application-orm.xml
+       /WEB-INF/persistence-context.xml
        /WEB-INF/application-servlet.xml
        /WEB-INF/application-controllers.xml
        /WEB-INF/application-views.xml
