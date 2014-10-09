@@ -180,7 +180,7 @@
                 <!-- AUTHOR -->
                 <xsl:if test="//dc:creator">
                     <xsl:for-each select="//dc:creator">
-                        <xsl:if test="normalize-space()">
+                        <xsl:if test="string-length(normalize-space()) &gt; '4'">
                             <!-- author is not a multi-valued field, so we'll put
                                  first value there and subsequent values in author2.
                              -->
