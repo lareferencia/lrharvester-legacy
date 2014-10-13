@@ -61,6 +61,14 @@
 						<property name="defaultFieldValue" value="spa"/>
 						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
 					</bean>
+					
+					<!-- DC:RIGHTS Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:rights" />
+						<property name="validationRule" ref="rightsRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/openAccess"/>
+						<property name="translationMapFileName"  value="${validator.path}/dcrights.driver.translation.txt"/>
+					</bean>
 				</list>
 		</property>
 	</bean>
@@ -98,6 +106,14 @@
 						<property name="defaultFieldValue" value="spa"/>
 						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
 					</bean>
+					
+					<!-- DC:RIGHTS Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:rights" />
+						<property name="validationRule" ref="rightsRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/openAccess"/>
+						<property name="translationMapFileName"  value="${validator.path}/dcrights.driver.translation.txt"/>
+					</bean>
 				</list>
 		</property>
 	</bean>
@@ -134,6 +150,14 @@
 						<property name="validationRule" ref="langRule" />
 						<property name="defaultFieldValue" value="spa"/>
 						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
+					</bean>
+					
+					<!-- DC:RIGHTS Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:rights" />
+						<property name="validationRule" ref="rightsRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/openAccess"/>
+						<property name="translationMapFileName"  value="${validator.path}/dcrights.driver.translation.txt"/>
 					</bean>
 				</list>
 		</property>

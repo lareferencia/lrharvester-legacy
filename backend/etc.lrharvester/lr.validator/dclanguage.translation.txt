@@ -29,3 +29,44 @@ inglês	eng
 português	por
 pro	por
 pt_PT	por
+Spanish	spa
+SPA	spa
+pt_BR	por
+pt	por
+pro	por
+pr	por
+Portugues	por
+otro	und
+other	und
+None	und
+nl	nld
+la	lat
+jp	jpn
+Italiano	ita
+it	ita
+it	ita
+Inglés	eng
+INGLES	eng
+ING	eng
+in	eng
+hr	hrv
+Germanic (Other)	deu
+General	und
+Fre/Eng	fra
+FRANCES	fra
+Fran	fra
+FRA	fra
+fr	fra
+ESPALOL	spa
+ESP; ING; FRA	mul
+esp	spa
+es	spa
+en_US	eng
+EN	eng
+en	eng
+deu/ger	deu
+da	dan
+ca	cat
+bra	por
+bg belga	bul
+zzz	und

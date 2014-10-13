@@ -99,13 +99,16 @@
                 <!-- LANGUAGE -->
                 <xsl:if test="//dc:language">
                     <xsl:for-each select="//dc:language">
-                        <xsl:if test="string-length() > 0">
-							
+                        <xsl:if test="string-length() = 0">
 							<field name="language">
 								<xsl:value-of select="normalize-space()"/>
 							</field>					
-
                         </xsl:if>
+                        <xsl:else>           
+                        	<field name="language_invalid">
+								<xsl:value-of select="normalize-space()"/>
+							</field>					                    
+                        </xsl:else>
                     </xsl:for-each>
                 </xsl:if>
 
@@ -114,26 +117,6 @@
                    <xsl:if test="starts-with(., $driver_prefix)">
                    
                   	 <xsl:choose>
-						
-						<!-- xsl:when test="contains($type_list, .)">
-							<xsl:choose>
-								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/article'">
-								 <field name="format">Artículo</field><field name="type">Artículo</field>
-								</xsl:when>
-								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/masterThesis'">
-								 <field name="format">Tesis de Maestría</field><field name="type">Tesis de Maestría</field>
-								</xsl:when>
-								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/doctoralThesis'">
-								 <field name="format">Tesis de Doctorado</field><field name="type">Tesis de Doctorado</field>
-								</xsl:when>
-								<xsl:when test="//dc:type/text()='info:eu-repo/semantics/report'">
-								 <field name="format">Reporte</field><field name="type">Reporte</field>
-								</xsl:when>
-								<xsl:otherwise>
-									<field name="format">Reporte</field><field name="type">Otro</field>
-								</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when-->
 						
 						<xsl:when test="contains($type_list, .)">
 							  <field name="format">
@@ -163,7 +146,7 @@
 							</field>
 						</xsl:when>
 						<xsl:otherwise>
-							<field name="rights">
+							<field name="rights_invalid">
 								<xsl:value-of select="." />
 							</field>
 						</xsl:otherwise>
