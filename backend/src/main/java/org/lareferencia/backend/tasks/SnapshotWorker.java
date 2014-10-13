@@ -333,8 +333,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							// prevalidación
 							ValidationResult validationResult = validator.validate(metadata);
 							
-							// si no es válido lo transforma
-							if ( !validationResult.isValid() && network.isRunTransformation() ) {
+							// si corresponde lo transforma
+							if ( network.isRunTransformation() ) {
 								
 								// transforma
 								Boolean wasTransformed = transformer.transform(metadata, validationResult);
