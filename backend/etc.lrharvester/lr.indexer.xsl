@@ -99,16 +99,18 @@
                 <!-- LANGUAGE -->
                 <xsl:if test="//dc:language">
                     <xsl:for-each select="//dc:language">
-                        <xsl:if test="string-length() = 0">
-							<field name="language">
-								<xsl:value-of select="normalize-space()"/>
-							</field>					
-                        </xsl:if>
-                        <xsl:else>           
-                        	<field name="language_invalid">
-								<xsl:value-of select="normalize-space()"/>
-							</field>					                    
-                        </xsl:else>
+                        <xsl:choose>
+	                        <xsl:when test="string-length() = 0">
+								<field name="language">
+									<xsl:value-of select="normalize-space()"/>
+								</field>					
+	                        </xsl:when>
+	                        <xsl:otherwise>           
+	                        	<field name="language_invalid">
+									<xsl:value-of select="normalize-space()"/>
+								</field>					                    
+	                        </xsl:otherwise>
+						</xsl:choose>  
                     </xsl:for-each>
                 </xsl:if>
 
