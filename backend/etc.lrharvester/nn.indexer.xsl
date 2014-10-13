@@ -107,7 +107,7 @@
                 <xsl:if test="//dc:language">
                     <xsl:for-each select="//dc:language">
                         <xsl:choose>
-	                        <xsl:when test="string-length() = 0">
+	                        <xsl:when test="string-length() = 3">
 								<field name="language">
 									<xsl:value-of select="normalize-space()"/>
 								</field>					
