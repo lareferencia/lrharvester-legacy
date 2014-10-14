@@ -68,5 +68,6 @@ deu/ger	deu
 da	dan
 ca	cat
 bra	por
-bg belga	bul
+bg	bul
 zzz	und
+ESP spa
