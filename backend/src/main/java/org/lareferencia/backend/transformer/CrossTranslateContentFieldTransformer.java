@@ -102,7 +102,7 @@ public class CrossTranslateContentFieldTransformer extends FieldTransformer {
 		
 		
 		// ciclo de reemplazo
-		if ( !found )
+		// if ( !found )
 			
 			// recorre las ocurrencias del campo de test
 			for (Node node: metadata.getFieldNodes( this.getTestFieldName() ) ) {

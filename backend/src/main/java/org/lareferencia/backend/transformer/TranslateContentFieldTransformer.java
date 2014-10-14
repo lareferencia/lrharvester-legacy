@@ -91,6 +91,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		ContentValidationResult result;
 		boolean found = false;
 		
+		
 		// Ciclo de búsqueda
 		for (Node node: metadata.getFieldNodes(fieldName) ) {
 			
@@ -104,7 +105,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		
 		
 		// ciclo de reemplazo
-		if ( !found )
+		//if ( !found )
 			for (Node node: metadata.getFieldNodes( this.getFieldName() ) ) {
 				
 				String occr = node.getFirstChild().getNodeValue();
