@@ -609,6 +609,7 @@ public class BackEndController {
 
 		for (Network network:allNetworks) {	
 			NetworkHistory nhistory = new NetworkHistory();
+			nhistory.name = network.getName();
 			nhistory.networkID = network.getId();
 			nhistory.acronym = network.getAcronym();
 			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
@@ -936,6 +937,7 @@ public class BackEndController {
 	@Getter
 	@Setter
 	class NetworkHistory {	
+		public String name;
 		public String acronym;
 		private Long   networkID;
 		private List<NetworkSnapshot> validSnapshots;
