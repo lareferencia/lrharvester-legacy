@@ -36,6 +36,8 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="driverTypeRule" />
+						<property name="deleteDuplicateOccurences" value="true"></property>
+						
 						<property name="translationMapFileName"  value="${validator.path}/dctype.driver.translation.txt"/>
 					</bean>
 					
@@ -58,6 +60,12 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:language" />
 						<property name="validationRule" ref="langRule" />
+						
+						<property name="applyIfValid" value="true"/>
+						<property name="deleteDuplicateOccurences" value="true"/>	
+						<property name="deleteInvalidOccurences" value="true"/>
+					
+					
 						<property name="defaultFieldValue" value="spa"/>
 						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
 					</bean>
@@ -81,6 +89,8 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="driverTypeRule" />
+						<property name="deleteDuplicateOccurences" value="true"></property>
+						
 						<property name="translationMapFileName"  value="${validator.path}/br.dctype.driver.translation.txt"/>
 					</bean>
 					
@@ -88,6 +98,12 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="statusTypeRule" />
+						
+						<property name="applyIfValid" value="true"/>
+						<property name="deleteDuplicateOccurences" value="true"/>	
+						<property name="deleteInvalidOccurences" value="true"/>
+					
+						
 						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
 						<property name="translationMapFileName"  value="${validator.path}/dctype.status.translation.txt"/>
 
@@ -126,6 +142,8 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:type" />
 						<property name="validationRule" ref="driverTypeRule" />
+						<property name="deleteDuplicateOccurences" value="true"></property>
+						
 						<property name="translationMapFileName"  value="${validator.path}/ve.dctype.driver.translation.txt"/>
 					</bean>
 					
@@ -148,6 +166,12 @@
 					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
 						<property name="fieldName" value="dc:language" />
 						<property name="validationRule" ref="langRule" />
+						
+						<property name="applyIfValid" value="true"/>
+						<property name="deleteDuplicateOccurences" value="true"/>	
+						<property name="deleteInvalidOccurences" value="true"/>
+					
+						
 						<property name="defaultFieldValue" value="spa"/>
 						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
 					</bean>
