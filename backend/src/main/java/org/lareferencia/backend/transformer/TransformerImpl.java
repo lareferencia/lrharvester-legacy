@@ -55,7 +55,7 @@ public class TransformerImpl implements ITransformer {
 		for (FieldTransformer transformer: fieldTransformers) {
 			
 			try {
-				// Solo aplica la transformación si ese campo no resultó válido
+				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
 				if ( transformer.isApplyIfValid() || !validationResult.getFieldResults().get( transformer.getFieldName() ).isValid() )
 					anyTransformationOccurred |= transformer.transform(metadata);
 			}

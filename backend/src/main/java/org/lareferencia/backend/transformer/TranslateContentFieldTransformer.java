@@ -19,10 +19,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentValidationResult;
@@ -31,8 +35,13 @@ import org.w3c.dom.Node;
 public class TranslateContentFieldTransformer extends FieldTransformer {
 	
 	private static final int MAX_PRINTED_LINES = 25;
-
 	
+	@Getter @Setter
+	protected boolean deleteDuplicateOccurences = false;
+	
+	@Getter @Setter
+	protected boolean deleteInvalidOccurences = false;
+		
 	@Getter
 	Map<String,String> translationMap;
 	
@@ -88,39 +97,59 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	@Override
 	public boolean transform(OAIRecordMetadata metadata) {
 		
-		ContentValidationResult result;
-		boolean found = false;
+		boolean wasTransformed = false;
+		boolean isFieldValid = false;
 		
-		
-		// Ciclo de búsqueda
-		for (Node node: metadata.getFieldNodes(fieldName) ) {
+		// ciclo de reemplazo y revalidación
+		for (Node node: metadata.getFieldNodes( this.getFieldName() ) ) {
 			
 			String occr = node.getFirstChild().getNodeValue();
 			
-			if (!found) {
-				result = validationRule.validate(occr);
-				found |= result.isValid();
+			// Si encuentra el valor realiza la trasformación y registra que ocurrió
+			if ( translationMap.containsKey(occr) ) {
+				occr = translationMap.get(occr); //reemplazo del valor
+				node.getFirstChild().setNodeValue(occr);
+				wasTransformed = true;
+			}	
+			
+			// luego de reemplazar evalua nuevamente la validez y la registra 
+			boolean isOccurenceValid = this.getValidationRule().validate(occr).isValid();
+			isFieldValid |= isOccurenceValid;
+
+			// Si no es válida la ocurrencia y está indicado remover ocurrencias inválidas
+			if (!isOccurenceValid && this.isDeleteInvalidOccurences()) {
+				Node fieldNode = node.getParentNode();
+				fieldNode.removeChild(node);
 			}
-		 }
+			
+		}
 		
 		
-		// ciclo de reemplazo
-		//if ( !found )
+		// creación del campo con el valor por defecto en caso de no haber reemplazos válidos, solo cuando hay valor por defecto declarado
+	    if ( !isFieldValid && this.getDefaultFieldValue() != null ) 
+	    	metadata.addFieldOcurrence(fieldName, defaultFieldValue);
+		
+		
+		if ( this.isDeleteDuplicateOccurences() ) {
+			
+			Set<String> values =  new TreeSet<String>(CaseInsensitiveComparator.INSTANCE);
+				
+			// ciclo de detección de duplicados
 			for (Node node: metadata.getFieldNodes( this.getFieldName() ) ) {
 				
 				String occr = node.getFirstChild().getNodeValue();
 				
-				if (!found && translationMap.containsKey(occr) ) {
-					node.getFirstChild().setNodeValue( translationMap.get(occr) );
-					found = true;
-				}	
-			}
+				// Si encuentra repetido elimina el nodo
+				if ( values.contains(occr) ) {
+					Node fieldNode = node.getParentNode();
+					fieldNode.removeChild(node);
+				}
+				
+				values.add(occr);
+			}	
+		}
 		
-		// creación del campo con el valor por defecto en caso de no haber sido encontrado, solo cuando hay valor por defecto declarado
-		if ( !found && this.getDefaultFieldValue() != null ) 
-			metadata.addFieldOcurrence(fieldName, defaultFieldValue);
-		
-		return !found;
+		return wasTransformed;
 	}
 	
 	
