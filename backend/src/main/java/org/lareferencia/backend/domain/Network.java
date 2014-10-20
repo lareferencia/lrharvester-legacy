@@ -43,7 +43,7 @@ public class Network extends AbstractEntity {
 	@Column(nullable = false)
 	private String institutionName;
 	
-	@Column(nullable = false, length = 4)
+	@Column(nullable = false, length = 4, unique = true)
 	private String acronym;
 	
 	@Column(nullable = false)
