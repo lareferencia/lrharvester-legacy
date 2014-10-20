@@ -107,9 +107,9 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 			
 			// Si encuentra el valor realiza la trasformación y registra que ocurrió
 			if ( translationMap.containsKey(occr) ) {
-				occr = translationMap.get(occr); //reemplazo del valor
-				node.getFirstChild().setNodeValue(occr);
-				wasTransformed = true;
+				String translatedOccr = translationMap.get(occr); //reemplazo del valor
+				node.getFirstChild().setNodeValue(translatedOccr);
+				wasTransformed = occr != translatedOccr;
 			}	
 			
 			// luego de reemplazar evalua nuevamente la validez y la registra 
