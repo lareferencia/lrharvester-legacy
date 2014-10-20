@@ -25,7 +25,11 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<import resource="classpath:/META-INF/spring/validator-context.xml"/>
+<!-- Aquí se consigna el path principal de configuración, el valor backend.properties.path es seteado en web.xml y asignado por el appContextInitializer -->
+	<import resource="file:/etc/lrharvester/test.validator/rules-context.xml"/>
+	<import resource="file:/etc/lrharvester/test.validator/fields-context.xml"/>
+	<import resource="file:/etc/lrharvester/test.validator/validators-context.xml"/>
+	<import resource="file:/etc/lrharvester/test.validator/transformers-context.xml"/>	
 	
 	
 
