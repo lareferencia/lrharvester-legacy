@@ -83,11 +83,18 @@ public class LaReferenciaProvider implements IProvider
           
       for (Network network:networks) {
     	  
-    	  final SetMembership setMembership = new SetMembership();
-          setMembership.setSetSpec(network.getAcronym());
-          setMembership.setSetName(network.getName());
-          setMembership.setSetDescription( "Set of: " + network.getName() + " network");
-          setMemberships.add(setMembership);
+    	  NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+    	  
+    	  // Solo se lista si existe un snapshot válido y si tiene al menos un registro válido
+    	  if ( lgkSnapshot != null && lgkSnapshot.getValidSize() > 0) {
+    	  
+	    	  final SetMembership setMembership = new SetMembership();
+	          setMembership.setSetSpec(network.getAcronym());
+	          setMembership.setSetName(network.getName());
+	          setMembership.setSetDescription( "Set of: " + network.getName() + " network");
+	          setMemberships.add(setMembership);
+          
+    	  }
     	  
       }
   
@@ -164,7 +171,8 @@ public class LaReferenciaProvider implements IProvider
 	    		  
 	    		  NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 	    		  
-	    		  if ( snapshot != null ) {
+	    		  // Si tiene snapshot válido con registros válidos > 0
+	    		  if ( snapshot != null && snapshot.getValidSize() > 0 ) {
 	    			  
 	    			  // obtiene la primera página de cada snapshot 
 	    			  Page<OAIRecord> page = oaiRecordRepository.findBySnapshotAndStatus(snapshot, RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
