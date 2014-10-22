@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 
 public class TranslateContentFieldTransformer extends FieldTransformer {
 	
-	private static final int MAX_PRINTED_LINES = 25;
+	private static final int MAX_PRINTED_LINES = 30;
 	
 	@Getter @Setter
 	protected boolean deleteDuplicateOccurences = false;
@@ -71,8 +71,10 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	        	
 	        	this.translationMap.put( parsedLine[0], parsedLine[1]);
 	        	
-	        	if ( lineNumber > MAX_PRINTED_LINES )
+	        	if ( lineNumber < MAX_PRINTED_LINES )
 	        		System.out.println(filename + " : " + line);
+	        	else
+	        		System.out.print(".");
 	            
 	        	line = br.readLine();
 	            lineNumber++;
@@ -108,8 +110,10 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 			// Si encuentra el valor realiza la trasformación y registra que ocurrió
 			if ( translationMap.containsKey(occr) ) {
 				String translatedOccr = translationMap.get(occr); //reemplazo del valor
+				wasTransformed |= !occr.equals(translatedOccr);
+				
 				node.getFirstChild().setNodeValue(translatedOccr);
-				wasTransformed = occr != translatedOccr;
+				occr = translatedOccr;
 			}	
 			
 			// luego de reemplazar evalua nuevamente la validez y la registra 
@@ -126,8 +130,10 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 		
 		
 		// creación del campo con el valor por defecto en caso de no haber reemplazos válidos, solo cuando hay valor por defecto declarado
-	    if ( !isFieldValid && this.getDefaultFieldValue() != null ) 
+	    if ( !isFieldValid && this.getDefaultFieldValue() != null ) {
 	    	metadata.addFieldOcurrence(fieldName, defaultFieldValue);
+	    	wasTransformed = true;
+	    }
 		
 		
 		if ( this.isDeleteDuplicateOccurences() ) {

@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.transformer.ITransformer;
+import org.lareferencia.backend.transformer.TranslateContentFieldTransformer;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validator.FieldValidator;
 import org.lareferencia.backend.validator.IContentValidationRule;
@@ -125,6 +126,12 @@ public class ValidatorTests {
 	@Autowired
 	@Qualifier("defaultTransformer")
 	ITransformer transformer;
+	
+	@Autowired
+	@Qualifier("langFieldTransformer")
+	TranslateContentFieldTransformer langFieldTransformer;
+	
+	
 	
 	@Test
 	public void testLengthRule() throws Exception {
@@ -309,9 +316,17 @@ public class ValidatorTests {
 		System.out.println( "Remove" );
 		
 		System.out.println( validator.validate(record) );	
-
-		
 	}
+
+	@Test
+	public void testTransformerRule() throws Exception {
+			
+			OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);			
+			assertTrue( langFieldTransformer.transform(record)  );		
+			System.out.println( record.toString() );			
+	}
+		
+	
 	
 	
 }
