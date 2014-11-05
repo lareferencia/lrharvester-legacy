@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.transformer.TranslateContentFieldTransformer;
+import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validator.FieldValidator;
 import org.lareferencia.backend.validator.IContentValidationRule;
@@ -118,8 +119,26 @@ public class ValidatorTests {
 			"</metadata>";
 	
 	
+	static String brRecord = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
+			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
+			"<dc:creator xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Laia, Marconi Martins de</dc:creator>"
+			+ "<dc:contributor xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Cabral, Ana Maria de Rezende</dc:contributor>" +
+            "<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\">2009</dc:date>" +
+            "<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\">2013-12-09T19:39:52Z</dc:date>" +
+            "<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\">2013-12-09T19:39:52Z</dc:date>" +
+            "<dc:identifier xmlns:dc=\"http://purl.org/dc/elements/1.1/\">http://www.repositorio.fjp.mg.gov.br/handle/123456789/225</dc:identifier>" +
+            "<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\">LAIA, Marconi Martins de. Pol??ticas de governo eletr??nico em Estados</dc:description>" +
+            "<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\">doctoralThesis</dc:type>" +
+            "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Pol??ticas de governo eletr??nico em estados da federa????o brasileira: uma contribui????o para a an??lise segundo a perspectiva neoinstitucional</dc:title>" +
+            "<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\">por</dc:language>" +
+            "<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\">openAccess</dc:rights>" +
+            "<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Governo eletr??nico</dc:subject>" +
+            "<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\">e-Government</dc:subject>" +
+			"</oai_dc:dc>" +
+			"</metadata>";
 	
 	
+		
 	@Autowired
 	IValidator validator;
 	
@@ -324,6 +343,48 @@ public class ValidatorTests {
 			OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);			
 			assertTrue( langFieldTransformer.transform(record)  );		
 			System.out.println( record.toString() );			
+	}
+	
+	@Test
+	public void testRecordTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",brRecord);
+		
+		assertFalse( validator.validate(record).isValid() );	
+		
+		System.out.println( validator.validate(record) );	
+		
+		transformer.transform(record, validator.validate(record));
+		
+		System.out.println( validator.validate(record) );	
+
+		assertTrue( validator.validate(record).isValid() );		
+		
+		System.out.println( record.toString() );
+		
+	}
+	
+	@Test
+	public void testNameHelper() throws Exception {
+		
+		RepositoryNameHelper helper = new RepositoryNameHelper();
+		
+		String name = helper.detectRepositoryDomain("d987b1fc-343c-4d54-854f-e27befabea27/oai:memoria.fahce.unlp.edu.ar:snrd:Jev1154");
+		assertTrue( name.equals("memoria.fahce.unlp.edu.ar") );		
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",brRecord);
+		
+		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
+		System.out.println( name );
+		
+		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Un repo Name");
+
+		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
+		System.out.println( name );
+	
+		
+		System.out.println( record.toString() );
+		
 	}
 		
 	
