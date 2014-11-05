@@ -769,6 +769,25 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
+	@RequestMapping(value="/public/listTransformedRecordsInfoBySnapshotIDAndRepository/{id}/{repository}", method=RequestMethod.GET)
+	@ResponseBody
+	public PageResource<OAIRecord> listTransformedRecordsInfoBySnapshotIDAndRepository( @PathVariable Long id, @PathVariable String repository, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+			
+		if (page == null)
+			page = 0;
+		if (size == null)
+			size = 100;
+		
+		Page<OAIRecord> pageResult = recordRepository.findTransformedBySnapshotIdAndRepository(id, repository, new PageRequest(page, size));	
+		
+		return new PageResource<OAIRecord>(pageResult,"page","size");
+	}
+	
 	
 	
 	

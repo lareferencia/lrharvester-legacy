@@ -43,6 +43,8 @@
 		var netISO = '${networkISO}';
 		
 		var ValidRecordsByRepositoryBaseURL = '<spring:url value="/public/listValidRecordsInfoBySnapshotIDAndRepository"/>';
+		var TransformedRecordsByRepositoryBaseURL = '<spring:url value="/public/listTransformedRecordsInfoBySnapshotIDAndRepository"/>';
+
 		var InvalidRecordsByFieldBaseURL = '<spring:url value="/public/listInvalidRecordsInfoByFieldAndSnapshotID"/>';
 		var ListInvalidRecordsBySnaphotIDRepositoryFieldBaseURL = '<spring:url value="/public/listInvalidRecordsInfoBySnapshotIDAndRepositoryAndField"/>';
 
@@ -164,6 +166,22 @@
 				  validDiv.append("span")	
 				 	.attr("class",  "label label-success") 
 				    .text("Registros válidos");
+				  
+				  
+				  var transformedDiv = d3.select("#rejectedByFieldCountPanel").append("div")
+				  	.attr("style","cursor:pointer;")
+				  	.attr("class", "col-xs-6 col-sm-3 placeholder")
+				  	.attr("onclick",  function(d) { 
+				 			var url = TransformedRecordsByRepositoryBaseURL + "/" + snapshotID + "/" + repository + "/" + "?size=" + 15;
+				 			return "loadRejectedByFieldPage('" + url +  "');"; 	 		
+				 	}); 
+				  
+				  transformedDiv.append("h4")
+				    .text("Transformados"); 
+				  
+				  transformedDiv.append("span")	
+				 	.attr("class",  "label label-success") 
+				    .text("Registros válidos transformados");
 				  
 			 });		 
 			
