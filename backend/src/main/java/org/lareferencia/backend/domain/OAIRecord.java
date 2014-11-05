@@ -43,13 +43,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"publishedXML","snapshot","datestamp"})
 public class OAIRecord extends AbstractEntity {
 	
-	private static final String 
-	  DOMAIN_NAME_PATTERN_STR = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})",
-	  NAME_PATTERN_STR = "[A-Za-z0-9-]{4,}";
-
-	private static final Pattern DomainNamePattern = Pattern.compile(DOMAIN_NAME_PATTERN_STR);
-	private static final Pattern NamePattern = Pattern.compile(NAME_PATTERN_STR);
-
 	
 	@Column(nullable = false)
 	private String identifier;
@@ -97,38 +90,12 @@ public class OAIRecord extends AbstractEntity {
 		this.datestamp = new DateTime().toDate();
 		//this.belongsToCollection = false;
 		//this.belongsToCollectionDetails = "";
-		
-		updateRepositoryDomain(identifier);
-
 	}
 
 	public void setIdentifier(String identifier) {
-		this.identifier = identifier;	
-		
-		updateRepositoryDomain(identifier);
+		this.identifier = identifier;			
 	}
 	
-	
-	
-	private void updateRepositoryDomain(String identifier) {
-		
-		this.repositoryDomain = "UNK";
-		
-		Matcher matcher = DomainNamePattern.matcher(this.identifier);
-	
-		if ( matcher.find() )
-		
-			this.repositoryDomain = matcher.group();
-		
-		else {
-			
-			matcher = NamePattern.matcher(this.identifier);
-				
-			while ( matcher.find() )
-				if ( matcher.group().length() > this.repositoryDomain.length() )
-					this.repositoryDomain = matcher.group();
-		}
-	}
 
 	public void setPublishedXML(String publishedXML) {
 		this.publishedXML = publishedXML;

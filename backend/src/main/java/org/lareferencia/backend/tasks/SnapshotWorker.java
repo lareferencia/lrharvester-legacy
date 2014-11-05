@@ -40,6 +40,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
 import org.lareferencia.backend.transformer.ITransformer;
+import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,35 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Value("${harvester.max.retries}")
 	private int MAX_RETRIES;
+	
+	////// Variables de detección de repositorios tomadas desde la configuración 
+	private RepositoryNameHelper repositoryNameHelper;
+
+	
+	@Value("${reponame.detection}")
+	private Boolean runRepoNameDetection;
+	
+	@Value("${reponame.pattern}")
+	private String repoNameDetectionPatternString;
+
+	@Value("${reponame.append}")
+	private Boolean doRepoNameAppend;
+	
+	@Value("${reponame.field}")
+	private String repoNameField;
+	
+	@Value("${reponame.prefix}")
+	private String repoNamePrefix;
+	
+	@Value("${instname.append}")
+	private Boolean doInstNameAppend;
+	
+	@Value("${instname.field}")
+	private String instNameField;
+	
+	@Value("${instname.prefix}")
+	private String instNamePrefix;
+	//// fin de variables de detección de nombres de repositorios
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
@@ -108,6 +138,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Getter @Setter
 	private SnapshotManager manager;
+
 	
 	public SnapshotWorker() {};
 	
@@ -180,7 +211,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			return;
 		}
 		
-
+		// Se carga el helper para la resolución de nombre de repositorios
+		repositoryNameHelper = new RepositoryNameHelper();
+		repositoryNameHelper.setDetectREPattern(repoNameDetectionPatternString);
+		
 		// Se registra el incicio de tareas en el manager
 		manager.registerWorkerBeginSnapshot(snapshot.getId(), this);
 		
@@ -359,6 +393,26 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								record.setStatus( RecordStatus.INVALID );
 							}
 								
+							
+							// En esta etapa se intenta obtener el nombre del repositorio y el de la institución
+							String repoName = repositoryNameHelper.extractNameFromMetadata(metadata, repoNameField, repoNamePrefix);
+							
+							// Si no existe el repoName en la metadata se intenta recuperarlo usando una expresión regular
+							if ( runRepoNameDetection && repoName.equals( RepositoryNameHelper.UNKNOWN  ) )
+								repoName = repositoryNameHelper.detectRepositoryDomain( metadata.getIdentifier() );
+							
+							// Se establece el nombre del repositorio en el registro
+							record.setRepositoryDomain(repoName);
+							
+							
+							// Si está configurado agrega a la metadata el reponame y el instname
+							if ( doRepoNameAppend )
+								repositoryNameHelper.appendNameToMetadata(metadata, repoNameField, repoNamePrefix, network.getName() );
+							
+							if ( doInstNameAppend )
+								repositoryNameHelper.appendNameToMetadata(metadata, instNameField, instNamePrefix, network.getInstitutionName() );
+							
+							
 							// Se almacena la metadata transformada 
 							//if ( validationResult.isValid() ) 
 							record.setPublishedXML( metadata.toString() );
