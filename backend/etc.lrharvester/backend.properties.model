@@ -6,8 +6,8 @@ db.user=backend
 db.passwd=backend
 
 # indexer config
-indexer.path=/etc/lrharvester/lr_indexer.xsl
-#indexer.path=/etc/lrharvester/nn_indexer.xsl
+indexer.path=/etc/lrharvester/lr.indexer.xsl
+#indexer.path=/etc/lrharvester/nn.indexer.xsl
 solr.url=http://localhost:8080/solr/biblio
 
 # validator config
