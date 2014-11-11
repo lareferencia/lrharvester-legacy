@@ -3,7 +3,7 @@ db.engine = mysql
 db.host=localhost
 db.name=lrharvester
 db.user=backend
-db.passwd=l210279
+db.passwd=backend
 
 # indexer config
 indexer.path=/etc/lrharvester/lr_indexer.xsl
@@ -15,7 +15,7 @@ validator.path=/etc/lrharvester/lr.validator/
 
 # admin config
 admin.user=admin
-admin.pass=l210279
+admin.pass=admin
 admin.email=dummy@gmail.com
 
 #harvester config
@@ -30,11 +30,11 @@ reponame.detection=false
 reponame.pattern=[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})
 
 #parámetros agregar reponame e instname a la metadata desde la definición de cada repositorio (solo para redes nacionales en true)
-reponame.append=false
+reponame.append=true
 reponame.field=dc:source
 reponame.prefix=reponame:
 
-instname.append=false
+instname.append=true
 instname.field=dc:source
 instname.prefix=instname:
 
