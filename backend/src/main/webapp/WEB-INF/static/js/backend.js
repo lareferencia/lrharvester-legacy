@@ -9,7 +9,7 @@
 	
 
 	function refreshNetworks() {
-		loadNetworkList('./rest/network');
+		loadNetworkList('./rest/network?size=1000&sort=id');
 	}
 	
 	function refreshOrigins() {
