@@ -241,7 +241,7 @@
 			 $('#jolokia').toggle();
 			 
 		     // carga de redes disponibles
-			 loadNetworkList('./rest/network');
+			 loadNetworkList('./rest/network?size=1000&sort=id');
 	  });
 	</script>
 
