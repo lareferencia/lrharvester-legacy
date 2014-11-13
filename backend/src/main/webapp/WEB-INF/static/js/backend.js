@@ -277,7 +277,7 @@
 					
 		    		  
 		            p.append("td")
-		              .text(function(d) { return d.name; });
+		              .text(function(d) { return d.institutionName + " - " +  d.name; });
 		            
 		            p.append("td")
 		              .text(function(d) { return d.acronym; });
