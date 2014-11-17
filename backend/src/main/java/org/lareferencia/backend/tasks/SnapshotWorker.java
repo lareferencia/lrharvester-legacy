@@ -398,6 +398,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							String repoName = repositoryNameHelper.extractNameFromMetadata(metadata, repoNameField, repoNamePrefix);
 							
 							// Si no existe el repoName en la metadata se intenta recuperarlo usando una expresión regular
+							
 							if ( runRepoNameDetection && repoName.equals( RepositoryNameHelper.UNKNOWN  ) )
 								repoName = repositoryNameHelper.detectRepositoryDomain( metadata.getIdentifier() );
 							

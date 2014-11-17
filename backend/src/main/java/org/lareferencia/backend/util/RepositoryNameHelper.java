@@ -32,7 +32,7 @@ public class RepositoryNameHelper {
 		}
 	}
 
-	public static String UNKNOWN = "Unknown"; 
+	public static String UNKNOWN = "No_Detectados"; 
 
 	public static final String DOMAIN_NAME_PATTERN_STR = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})";
 	private static final String NAME_PATTERN_STR = "[A-Za-z0-9-]{4,}";
@@ -65,7 +65,23 @@ public class RepositoryNameHelper {
 	}
 	
 	public void appendNameToMetadata(OAIRecordMetadata metadata, String fieldname, String prefix, String value) {
-    	metadata.addFieldOcurrence(fieldname, prefix + value);
+    	
+		Node existingNode = null;
+		
+		for ( Node node: metadata.getFieldNodes(fieldname) ) {
+			
+			String occr = node.getFirstChild().getNodeValue();
+
+			if ( occr.startsWith(prefix) )	
+				existingNode = node;
+		}
+		
+		if ( existingNode != null ) {
+			Node fieldNode = existingNode.getParentNode();
+			fieldNode.removeChild(existingNode);
+		}
+		
+		metadata.addFieldOcurrence(fieldname, prefix + value);
 	}
 	
 }
