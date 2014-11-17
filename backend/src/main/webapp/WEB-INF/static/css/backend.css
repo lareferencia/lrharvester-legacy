@@ -1,6 +1,7 @@
-
-
-
+button {
+	height: 20;
+	background-color: lightblue;
+}
 
 body {
 	font-family: Verdana, Arial, Sans-serif;
