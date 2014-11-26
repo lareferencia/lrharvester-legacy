@@ -152,23 +152,26 @@
                    </xsl:if>
                </xsl:for-each>
  
-                <!-- rights -->
-               <xsl:for-each select="//dc:rights">
-            
-                   <xsl:choose>
-						<xsl:when test="starts-with(., $driver_prefix)">
-							<field name="eu_rights">
-                           		<xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" />
-							</field>
-						</xsl:when>
-						<xsl:otherwise>
-							<field name="rights">
-								<xsl:value-of select="." />
-							</field>
-						</xsl:otherwise>
-					</xsl:choose>
-                   
-               </xsl:for-each>
+          
+
+                <!-- rights --> 
+               <xsl:for-each select="//dc:rights"> 
+             
+                   <xsl:choose> 
+                                                <xsl:when test="starts-with(., $driver_prefix)"> 
+                                                        <field name="eu_rights"> 
+                                        <xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" /> 
+                                                        </field> 
+                                                </xsl:when> 
+                                                <xsl:otherwise> 
+                                                        <field name="rights_invalid"> 
+                                                                <xsl:value-of select="." /> 
+                                                        </field> 
+                                                </xsl:otherwise> 
+                                        </xsl:choose> 
+                    
+               </xsl:for-each> 
+ 
 
                 <!-- AUTHOR -->
                 <xsl:if test="//dc:creator">
