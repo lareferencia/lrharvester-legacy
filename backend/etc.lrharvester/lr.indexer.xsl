@@ -49,15 +49,16 @@
                 	<xsl:value-of select="$networkAcronym"/>
                 </field>
                 
+                <!-- ID es parámetro -->
+                <field name="oai_identifier">
+                	<xsl:value-of select="$header_id"/>
+                </field>   
+                
                 <!-- networkName es parámetro -->
                 <field name="network_name">
                 	<xsl:value-of select="$networkName"/>
                 </field>    
-                
-                <!-- ID es parámetro -->
-                <field name="oai_identifier">
-                	<xsl:value-of select="$header_id"/>
-                </field>     
+                  
                 
                 <field name="thumbnail">
                        <xsl:value-of select="$networkAcronym"/>_cover.png

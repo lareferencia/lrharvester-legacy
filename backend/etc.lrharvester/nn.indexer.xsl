@@ -50,12 +50,21 @@
                 	<xsl:value-of select="$header_id"/>
                 </field>         
 	         
+	         
+	         	<field name="network_acronym">
+                	<xsl:value-of select="$networkAcronym"/>
+                </field>
+                
+                <!-- networkName es parámetro -->
+                <field name="network_name">
+                	<xsl:value-of select="$networkName"/>
+                </field>   
+	         
 	         	<field name="thumbnail">
                        <xsl:value-of select="$networkAcronym"/>_cover.png
                 </field> 
 	         	
-                
-                <field name="instname">
+                <!--  field name="instname">
 	                <xsl:value-of select="$institutionName"/>
 	            </field>
 				<field name="institution">
@@ -67,9 +76,8 @@
 	            </field>
 				<field name="collection">
 	                <xsl:value-of select="$networkName"/>
-	            </field>
-                
-                                     
+	            </field-->
+                           
                 <!-- RECORDTYPE -->
                 <field name="recordtype">driver</field>         
 
@@ -144,23 +152,26 @@
                    </xsl:if>
                </xsl:for-each>
  
-                <!-- rights -->
-               <xsl:for-each select="//dc:rights">
-            
-                   <xsl:choose>
-						<xsl:when test="starts-with(., $driver_prefix)">
-							<field name="eu_rights">
-                           		<xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" />
-							</field>
-						</xsl:when>
-						<xsl:otherwise>
-							<field name="rights">
-								<xsl:value-of select="." />
-							</field>
-						</xsl:otherwise>
-					</xsl:choose>
-                   
-               </xsl:for-each>
+          
+
+                <!-- rights --> 
+               <xsl:for-each select="//dc:rights"> 
+             
+                   <xsl:choose> 
+                                                <xsl:when test="starts-with(., $driver_prefix)"> 
+                                                        <field name="eu_rights"> 
+                                        <xsl:value-of select="substring(., string-length($driver_prefix)+1, string-length(.))" /> 
+                                                        </field> 
+                                                </xsl:when> 
+                                                <xsl:otherwise> 
+                                                        <field name="rights_invalid"> 
+                                                                <xsl:value-of select="." /> 
+                                                        </field> 
+                                                </xsl:otherwise> 
+                                        </xsl:choose> 
+                    
+               </xsl:for-each> 
+ 
 
                 <!-- AUTHOR -->
                 <xsl:if test="//dc:creator">
