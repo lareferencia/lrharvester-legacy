@@ -126,7 +126,7 @@ public class IndexerImpl implements IIndexer{
 				
 				for (OAIRecord record : records) {
 					
-					//System.out.println( record.getPublishedXML() );
+					//System.out.println( record.getId() + ";" + record.getFingerprint() + ";\t RECORDID"  );
 					
 					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
 					
@@ -148,8 +148,13 @@ public class IndexerImpl implements IIndexer{
 					
 					lastRecordID = record.getId();
 				}
-				
-				this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
+			
+
+				try {	
+					this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
+				} catch (Exception e) {
+					System.out.println( e.getMessage() );
+				}
 				
 				trf = null;
 				page = null;
