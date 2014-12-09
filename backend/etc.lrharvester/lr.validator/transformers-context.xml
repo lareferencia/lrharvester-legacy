@@ -75,7 +75,7 @@
 						<property name="fieldName" value="dc:rights" />
 						
 						<property name="applyIfValid" value="true"/>
-                                                <property name="deleteDuplicateOccurences" value="true"/>
+                        <property name="deleteDuplicateOccurences" value="true"/>
 
 						<property name="validationRule" ref="rightsRule" />
 						<property name="defaultFieldValue" value="info:eu-repo/semantics/openAccess"/>
