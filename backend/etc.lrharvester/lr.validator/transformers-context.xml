@@ -137,6 +137,65 @@
 		</property>
 	</bean>
 	
+	
+	<bean id="MXTransformer" class="org.lareferencia.backend.transformer.TransformerImpl">
+	
+		<property name="fieldTransformers">
+				<list>	
+					<!-- DC:TYPE Driver Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="driverTypeRule" />
+						<property name="deleteDuplicateOccurences" value="true"></property>
+						
+						<property name="translationMapFileName"  value="${validator.path}/dctype.driver.translation.txt"/>
+					</bean>
+					
+					<!-- DC:TYPE Status Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:type" />
+						<property name="validationRule" ref="statusTypeRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/publishedVersion"/>
+						<property name="translationMapFileName"  value="${validator.path}/dctype.status.translation.txt"/>
+
+					</bean>
+					
+					<!-- DC:DATE Date invalid remove Transformer -->
+					<bean class="org.lareferencia.backend.transformer.RemoveInvalidOccurrenceTransformer">
+						<property name="fieldName" value="dc:date" />
+						<property name="validationRule" ref="dateRule" />
+					</bean>
+					
+					<!-- DC:LANGUAGE Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:language" />
+						<property name="validationRule" ref="langRule" />
+						
+						<property name="applyIfValid" value="true"/>
+						<property name="deleteDuplicateOccurences" value="true"/>	
+						<property name="deleteInvalidOccurences" value="true"/>
+					
+					
+						<property name="defaultFieldValue" value="spa"/>
+						<property name="translationMapFileName"  value="${validator.path}/dclanguage.translation.txt"/>
+					</bean>
+					
+					<!-- DC:RIGHTS Transformer -->
+					<bean class="org.lareferencia.backend.transformer.TranslateContentFieldTransformer">
+						<property name="fieldName" value="dc:rights" />
+						
+						<property name="applyIfValid" value="false"/>
+                        <property name="deleteDuplicateOccurences" value="true"/>
+
+						<property name="validationRule" ref="rightsRule" />
+						<property name="defaultFieldValue" value="info:eu-repo/semantics/openAccess"/>
+						<property name="translationMapFileName"  value="${validator.path}/dcrights.driver.translation.txt"/>
+					</bean>
+				</list>
+		</property>
+	</bean>
+	
+	
 	<bean id="VETransformer" class="org.lareferencia.backend.transformer.TransformerImpl">
 	
 		<property name="fieldTransformers">

@@ -47,6 +47,40 @@
 
 		</property>
 	</bean>
+	
+	<!-- Este es el validador para Perú, sin reportes  -->
+	<bean id="PEValidator" class="org.lareferencia.backend.validator.ValidatorImpl">
+	
+	    <!-- Este propidad se usa para validar en forma completa cada un de los campos según los criterios LaReferencia  -->
+		<property name="fieldValidators">
+			<list>
+				<!-- DC:TYPE Field Validator -->
+				<bean class="org.lareferencia.backend.validator.FieldValidator">
+					<property name="fieldName" value="dc:type" />
+					<property name="mandatory" value="true" />
+					<property name="rules">
+						<list>
+							<bean class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
+								<property name="name" value="type:driver:peru"/>
+								<property name="quantifier" value="1..1" />
+								<property name="controlledValuesFileName" value="${validator.path}/pe.dctype.driver.txt"/>
+							</bean>
+							<ref bean="statusTypeRule" />	
+						</list>
+					</property>
+				</bean>
+				<ref bean="dcIdentifierValidator" /> 
+				<ref bean="dcTitleValidator" /> 
+				<ref bean="dcCreatorValidator" /> 
+				<ref bean="dcDateValidator" /> 
+				<ref bean="dcLanguageValidator" /> 
+				<ref bean="dcRightsValidator" /> 
+				<ref bean="dcSubjectValidator" /> 
+				<ref bean="dcDescriptionValidator" /> 
+				<ref bean="dcRelationValidator" />
+				<ref bean="dcFormatValidator" />  					
+			</list>
 
-		
+		</property>
+	</bean>		
 </beans>
