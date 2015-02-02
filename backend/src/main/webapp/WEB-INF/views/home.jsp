@@ -324,6 +324,7 @@
 	<div id="dialog_delete_network" title="¿Desea borrar la red nacional?">
   		<p>
   			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y sus snapshots. 
   			Todos los datos de la red nacional, incluidas sus cosechas serás borradas. ¿Está seguro?
   		</p>
   	</div>

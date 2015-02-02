@@ -34,7 +34,6 @@ import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
@@ -258,15 +257,22 @@ public class BackEndController {
 		
 		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
 			
-			System.out.println("Borrando Snapshot: " + snapshot.getId());
+				System.out.println("Borrando Snapshot: " + snapshot.getId());
 					
 				// borra los resultados de validación
+			    System.out.println("Borrando registros de validaciones");
 				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
-				// borra los registros
-				recordRepository.deleteBySnapshotID(snapshot.getId());
+				
 				// borra el log de cosechas
+			    System.out.println("Borrando registros de log");
 				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-				// lo borra
+				
+				// borra los registros
+			    System.out.println("Borrando registros de metadatos");
+				recordRepository.deleteBySnapshotID(snapshot.getId());
+				
+			
+				// borra snapshots
 				networkSnapshotRepository.delete(snapshot);
 		}
 		
