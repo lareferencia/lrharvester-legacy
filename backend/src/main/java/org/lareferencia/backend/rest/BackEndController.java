@@ -34,6 +34,7 @@ import org.lareferencia.backend.domain.NetworkSnapshotStat;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
@@ -43,9 +44,11 @@ import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
+import org.lareferencia.backend.repositories.OAIOriginRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
+import org.lareferencia.backend.repositories.OAISetRepository;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.JsonDateSerializer;
@@ -80,7 +83,14 @@ public class BackEndController {
 	private ApplicationContext applicationContext;
 	
 	@Autowired
-	private NetworkRepository nationalNetworkRepository;
+	private NetworkRepository networkRepository;
+	
+	@Autowired
+	private OAIOriginRepository originRepository;
+	
+	@Autowired 
+	private OAISetRepository setRepository;
+	
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
@@ -137,7 +147,7 @@ public class BackEndController {
 	public String diagnose(@PathVariable String networkAcronym, Locale locale, Model model) throws Exception {	
 		
 		
-		Network network = nationalNetworkRepository.findByAcronym(networkAcronym);
+		Network network = networkRepository.findByAcronym(networkAcronym);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -172,7 +182,7 @@ public class BackEndController {
 	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> startHarvesting(@PathVariable Long networkID) throws Exception {
 		
-		Network network = nationalNetworkRepository.findOne(networkID);
+		Network network = networkRepository.findOne(networkID);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -222,7 +232,7 @@ public class BackEndController {
 	@RequestMapping(value="/private/harvestSetBySet/{networkID}", method=RequestMethod.GET)
 	public ResponseEntity<String> harvestSetBySet(@PathVariable Long networkID) throws Exception {
 		
-		Network network = nationalNetworkRepository.findOne(networkID);
+		Network network = networkRepository.findOne(networkID);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -234,12 +244,59 @@ public class BackEndController {
 	
 	
 	
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/private/deleteNetworkByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> deleteNetworkByID(@PathVariable Long id) throws Exception {
+		
+		Network network = networkRepository.findOne(id);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		System.out.println("Comenzando proceso de borrando Red: " + network.getName() );
+		
+		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
+			
+			System.out.println("Borrando Snapshot: " + snapshot.getId());
+					
+				// borra los resultados de validación
+				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
+				// borra los registros
+				recordRepository.deleteBySnapshotID(snapshot.getId());
+				// borra el log de cosechas
+				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
+				// lo borra
+				networkSnapshotRepository.delete(snapshot);
+		}
+		
+		System.out.println("Borrando Origenes/Sets" );
+
+		
+		for ( OAIOrigin origin : network.getOrigins() ) {
+			setRepository.deleteInBatch( origin.getSets() );
+		}
+		
+		originRepository.deleteInBatch( network.getOrigins() );
+		
+		networkRepository.delete(network);
+		
+		System.out.println("Foinalizando borrado red: " + network.getName());
+
+	
+		return new ResponseEntity<String>("Borrada la red:" + network.getName(), HttpStatus.OK);
+
+	}
+		
+	
+	
+	
 	@Transactional
 	@ResponseBody
 	@RequestMapping(value="/private/deleteAllButLGKSnapshot/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> deleteAllButLGKSnapshot(@PathVariable Long id) throws Exception {
 		
-		Network network = nationalNetworkRepository.findOne(id);
+		Network network = networkRepository.findOne(id);
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
@@ -538,7 +595,7 @@ public class BackEndController {
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkAcronym/{acronym}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String acronym) throws Exception {
 		
-		Network network = nationalNetworkRepository.findByAcronym(acronym);
+		Network network = networkRepository.findByAcronym(acronym);
 		if ( network == null ) // TODO: Implementar Exc
 			throw new Exception("No se encontró RED: " + acronym);
 		
@@ -557,7 +614,7 @@ public class BackEndController {
 	@RequestMapping(value="/public/listSnapshotsByNetworkAcronym/{acronym}", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(@PathVariable String acronym) throws Exception {
 		
-		Network network = nationalNetworkRepository.findByAcronym(acronym);
+		Network network = networkRepository.findByAcronym(acronym);
 		if ( network == null )
 			throw new Exception("No se encontró RED: " + acronym);
 		
@@ -571,7 +628,7 @@ public class BackEndController {
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 		
 				
-		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
 
 		for (Network network:allNetworks) {
@@ -604,7 +661,7 @@ public class BackEndController {
 	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
 	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
 		
-		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<NetworkHistory> NHistoryList = new ArrayList<NetworkHistory>();
 
 		for (Network network:allNetworks) {	
@@ -625,7 +682,7 @@ public class BackEndController {
 	@RequestMapping(value="/public/listValidPublicSnapshotsStats", method=RequestMethod.GET)
 	public List<SnapshotStats> listValidPublicSnapshotHistory() {
 		
-		List<Network> allNetworks = nationalNetworkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
 		List<SnapshotStats> snapshotStatsList = new ArrayList<SnapshotStats>();
 
 		for (Network network:allNetworks) {	

@@ -54,6 +54,11 @@
 		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los snapshots antiguos');}, error_handler); 
 	}
 	
+	function sendDeleteNetworkByID(networkID, success_handler) {
+		service_url = './private/deleteNetworkByID/' + networkID;
+		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red'); success_handler(); }, error_handler); 
+	}
+	
 	
 	/**** Acciones sobre la lista de orígenes *******/
 	function editOrigins(network_link) {
@@ -228,12 +233,14 @@
      * @param network_link
      * @param success_handler
      */
-	function deleteNetwork(network_link, success_handler) {
+	function deleteNetwork(network_id, success_handler) {
 		
 	    $( "#dialog_delete_network" ).dialog({
 	      buttons: {
 	        "Borrar la red": function() {
-	    	  $.rest.destroy(network_link, success_handler ); 
+	          
+	        	sendDeleteNetworkByID(network_id, success_handler);
+	        	
 	          $( this ).dialog( "close" );
 	        },
 	        Cancel: function() {
@@ -327,7 +334,7 @@
 					
 					p.append("td")
 					  .append("button")
-					  .on("click", function(d) { deleteNetwork($.rest.relLink(d,"self"), refreshNetworks );  } )	   
+					  .on("click", function(d) { deleteNetwork($.rest.link2id( $.rest.relLink(d,'self') ), refreshNetworks );  } )	   
 					  .text("borrar"); 
 				},
 				error_handler

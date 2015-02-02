@@ -421,6 +421,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							//// SE ALMACENA EL REGISTRO
 							recordRepository.save(record);
+							recordRepository.flush();
 							
 							/// Almacenamiento de resultados de validación
 							OAIRecordValidationResult recordValidationResult;

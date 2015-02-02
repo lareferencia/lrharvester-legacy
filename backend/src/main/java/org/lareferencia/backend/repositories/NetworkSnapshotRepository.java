@@ -21,6 +21,7 @@ import org.lareferencia.backend.domain.SnapshotStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -41,5 +42,4 @@ public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot
 
 	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
 	  Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);
-
 }
