@@ -56,7 +56,7 @@
 	
 	function sendDeleteNetworkByID(networkID, success_handler) {
 		service_url = './private/deleteNetworkByID/' + networkID;
-		$.rest.retrieve(service_url, success_handler, error_handler); 
+		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red'); refreshNetworks(); } , error_handler); 
 	}
 	
 	
