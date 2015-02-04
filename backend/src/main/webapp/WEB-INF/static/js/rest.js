@@ -95,6 +95,10 @@ $.rest = {
 			isAsync = false;
 		}
 		
+		if (error_handler == null) {		
+			error_handler = success_handler;
+		}
+		
 		var result = $.ajax({
 	        type: 'GET',
 	        url:  entity_url,
