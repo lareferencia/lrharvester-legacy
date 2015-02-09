@@ -287,13 +287,39 @@ public class BackEndController {
 		
 		networkRepository.delete(network);
 		
-		System.out.println("Foinalizando borrado red: " + network.getName());
+		
+		System.out.println("Borrando la red del índice");
+		indexer.delete(network);
+		
+		System.out.println("Finalizando borrado red: " + network.getName());
 
 	
 		return new ResponseEntity<String>("Borrada la red:" + network.getName(), HttpStatus.OK);
 
 	}
 		
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/private/deleteNetworkFromIndexByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> deleteNetworkFromIndexByID(@PathVariable Long id) throws Exception {
+		
+		Network network = networkRepository.findOne(id);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		System.out.println("Comenzando proceso de borrando Red del índice: " + network.getName() );
+		
+	
+		System.out.println("Borrando la red del índice");
+		indexer.delete(network);
+		
+		System.out.println("Finalizando borrado red: " + network.getName() + " del índice");
+
+	
+		return new ResponseEntity<String>("Borrada del índice la red :" + network.getName(), HttpStatus.OK);
+
+	}
 	
 	
 	

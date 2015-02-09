@@ -65,6 +65,13 @@
 				      							   height:200,
 				      							   modal: true
 				      							});
+		  	 
+			 // dialogo de borrar red, setup inicial
+			 $("#dialog_delete_network_from_index").dialog( { autoOpen:false, 
+				                                   resizable: false,
+				      							   height:200,
+				      							   modal: true
+				      							});
 		          
 			 $("#dialog_network_snapshots").dialog( { autoOpen:false, 
                    resizable: false,
@@ -266,21 +273,23 @@
 		    <tr>
 		      <th>ID</th>
 		      <th>Nombre</th>
-		      <th>ISO</th>
+		      <th>ACRON</th>
 		      <th>Publicada</th>
 		    </tr>
   		<tbody id="networks"></tbody>
 		</table>
 		<br/>
 		<div id="help">
-			<p><strong>LKG Snapshot:</strong> ver último snapshot válido (LGK) </p>
+			<p><strong>LKGS:</strong> ver último snapshot válido (LGK) </p>
 			<p><strong>Snapshots:</strong> ver todos los snapshots </p>
 			<p><strong>Orígenes:</strong> editar los orígenes OAI de la red </p>
 			<p><strong>Cosechar:</strong> lanzar un proceso de cosecha </p>
-			<p><strong>Indexar LKG:</strong> indexar el último snapshot válido (LGK) </p>
+			<p><strong>Index LKG:</strong> indexar el último snapshot válido (LGK) </p>
 			<p><strong>Limpiar:</strong> eliminar información de snapshots antiguos </p>
 			<p><strong>Editar:</strong> editar detalles y programar cosechas </p>
-			<p><strong>Borrar:</strong> eliminar la red del sistema (!!) </p>
+			<p><strong>Borrar :</strong> eliminar la red del sistema (!!) </p>
+		    <p><strong>Borrar IDX:</strong> eliminar la red del índice Solr / Vufind (!!) </p>		
+			
 			
 			
 			
@@ -326,6 +335,14 @@
   			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
   			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y sus snapshots. 
   			Todos los datos de la red nacional, incluidas sus cosechas serás borradas. ¿Está seguro?
+  		</p>
+  	</div>
+  	
+  	<div id="dialog_delete_network_from_index" title="¿Desea borrar la red nacional del índice vufind?">
+  		<p>
+  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 
+  			Todos los datos de la red nacional serán removidos del índice ¿Está seguro?
   		</p>
   	</div>
   	

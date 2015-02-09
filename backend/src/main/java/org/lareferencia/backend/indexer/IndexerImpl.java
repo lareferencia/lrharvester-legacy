@@ -14,7 +14,9 @@
 package org.lareferencia.backend.indexer;
 
 import java.io.File;
+
 import org.apache.commons.codec.digest.DigestUtils;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.MessageDigest;
@@ -32,6 +34,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.request.DirectXmlRequest;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
@@ -174,6 +177,35 @@ public class IndexerImpl implements IIndexer{
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return false;
+		}
+
+		return true;
+	}
+	
+	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
+	public synchronized boolean delete(Network network) {
+		
+		 
+		 try {	
+			
+			 // Borrado de la red 
+			String networkAcronym = network.getAcronym();
+	
+			this.sendUpdateToSolr("<delete><query>network_acronym:" + networkAcronym +"</query></delete>");
+								
+			//commit de los cambios
+			this.sendUpdateToSolr("<commit/>");
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				this.sendUpdateToSolr("<rollback/>");
+			} catch (SolrServerException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 			return false;

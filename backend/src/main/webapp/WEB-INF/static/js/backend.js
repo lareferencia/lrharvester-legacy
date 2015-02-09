@@ -59,6 +59,12 @@
 		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red'); refreshNetworks(); } ); 
 	}
 	
+	function sendDeleteNetworkFromIndexByID(networkID, success_handler) {
+		service_url = './private/deleteNetworkFromIndexByID/' + networkID;
+		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red del índice solr'); refreshNetworks(); } ); 
+	}
+	
+	
 	
 	/**** Acciones sobre la lista de orígenes *******/
 	function editOrigins(network_link) {
@@ -251,6 +257,30 @@
 		
 	    $( "#dialog_delete_network" ).dialog("open");
 	}	
+	
+	 /**
+     * Borra una red apuntada por network_link del índice y llama a succces_handler
+     * @param network_link
+     * @param success_handler
+     */
+	function deleteNetworkFromIndex(network_id, success_handler) {
+		
+	    $( "#dialog_delete_network_from_index" ).dialog({
+	      buttons: {
+	        "Borrar la red": function() {
+	          
+	        	sendDeleteNetworkFromIndexByID(network_id, success_handler);
+	        	
+	          $( this ).dialog( "close" );
+	        },
+	        Cancel: function() {
+	          $( this ).dialog( "close" );
+	        }
+	      }
+	    });
+		
+	    $( "#dialog_delete_network_from_index" ).dialog("open");
+	}	
 
 	
 
@@ -295,7 +325,7 @@
 		        	p.append("td")
 					  .append("button")
 					  .on("click", function(d) { showSnapshots($.rest.relLink(d,"self"), true); })	   
-					  .text("LGK snapshot"); 
+					  .text("LGKS"); 
 		            
 					p.append("td")
 					  .append("button")
@@ -315,12 +345,12 @@
 					p.append("td")
 					  .append("button")
 					  .on("click", function(d) { sendStartIndexingLGKByNetworkID( $.rest.link2id($.rest.relLink(d,"self")) );  } )	   
-					  .text("indexar LGK"); 
+					  .text("indexar"); 
 					
 					p.append("td")
 					  .append("button")
 					  .on("click", function(d) { window.open("diagnose/" + d.acronym  );  } )	   
-					  .text("diagnóstico LGK"); 
+					  .text("diagnóstico"); 
 					
 					p.append("td")
 					  .append("button")
@@ -336,6 +366,11 @@
 					  .append("button")
 					  .on("click", function(d) { deleteNetwork($.rest.link2id( $.rest.relLink(d,'self') ), refreshNetworks );  } )	   
 					  .text("borrar"); 
+					
+					p.append("td")
+					  .append("button")
+					  .on("click", function(d) { deleteNetworkFromIndex($.rest.link2id( $.rest.relLink(d,'self') ), refreshNetworks );  } )	   
+					  .text("borrar idx"); 
 				},
 				error_handler
 		);

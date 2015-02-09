@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.request.DirectXmlRequest;
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
@@ -53,6 +54,13 @@ import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
 public class IntelligoIndexer implements IIndexer{
+
+	@Override
+	public boolean delete(Network network) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 	private File stylesheet;
 	private String outputPath;
