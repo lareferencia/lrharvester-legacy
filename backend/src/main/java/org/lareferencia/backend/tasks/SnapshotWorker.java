@@ -237,6 +237,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			harvestNetworkFromRT(snapshot.getResumptionToken());
 
 		
+		// Luego del harvesting el snapshot puede presentar estados diversos
+		
 		// si no fue detenido
 		if ( snapshot.getStatus() != SnapshotStatus.HARVESTING_STOPPED ) {
 		
@@ -284,8 +286,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 		snapshot.setEndTime( new Date() );
 		snapshotRepository.save(snapshot);
-		
-			
+				
 		// Flush y llamados al GC
 		snapshotRepository.flush();
 		
@@ -296,8 +297,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 	
 	/*************************************************************/
-	
-	
 	
 	private void harvestNetworkFromRT(String resumptionToken) {	
 		// Se recorren los orígenes evaluando de cual era el rt TODO: Hay que guardar el origen corriente en el snapshot
@@ -398,7 +397,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							String repoName = repositoryNameHelper.extractNameFromMetadata(metadata, repoNameField, repoNamePrefix);
 							
 							// Si no existe el repoName en la metadata se intenta recuperarlo usando una expresión regular
-							
 							if ( runRepoNameDetection && repoName.equals( RepositoryNameHelper.UNKNOWN  ) )
 								repoName = repositoryNameHelper.detectRepositoryDomain( metadata.getIdentifier() );
 							
