@@ -70,4 +70,4 @@ ca	cat
 bra	por
 bg	bul
 zzz	und
-ESP spa
+ESP	spa

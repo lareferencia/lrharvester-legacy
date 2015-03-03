@@ -255,18 +255,21 @@
 				
 					<!-- DC:TYPE FIELDNAME Driver Transformer -->
 					<bean class="org.lareferencia.backend.transformer.FieldNameTranslateFieldTransformer">
+						<property name="fieldName" value="dc:type" />
 						<property name="sourceFieldName" value="dc:type.driver" />
 						<property name="targetFieldName" value="dc:type" />				
 					</bean>
 					
 						<!-- DC:TYPE FIELDNAME Status Transformer -->
 					<bean class="org.lareferencia.backend.transformer.FieldNameTranslateFieldTransformer">
+						<property name="fieldName" value="dc:type" />
 						<property name="sourceFieldName" value="dc:type.driver.version" />
 						<property name="targetFieldName" value="dc:type" />				
 					</bean>
 					
 					<!-- DC:RIGHTS FIELDNAME Driver Transformer -->
 					<bean class="org.lareferencia.backend.transformer.FieldNameTranslateFieldTransformer">
+						<property name="fieldName" value="dc:rights" />
 						<property name="sourceFieldName" value="dc:rights.accessRights" />
 						<property name="targetFieldName" value="dc:rights" />				
 					</bean>
