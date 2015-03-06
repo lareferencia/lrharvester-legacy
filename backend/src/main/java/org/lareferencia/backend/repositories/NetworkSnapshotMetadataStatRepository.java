@@ -16,17 +16,26 @@ package org.lareferencia.backend.repositories;
 import java.util.List;
 
 import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.NetworkSnapshotMetadataStat;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.transaction.annotation.Transactional;
 
-@RepositoryRestResource(path = "stat", collectionResourceRel="stat", exported=false)
-public interface NetworkSnapshotStatRepository extends JpaRepository<NetworkSnapshotStat, Long> { 	
+@RepositoryRestResource(path = "stat", collectionResourceRel="stat", exported=true)
+public interface NetworkSnapshotMetadataStatRepository extends JpaRepository<NetworkSnapshotMetadataStat, Long> { 	
 	
-	 List<NetworkSnapshotStat> findBySnapshotAndStatId(NetworkSnapshot snapshot, Long statId);
+	 List<NetworkSnapshotMetadataStat> findBySnapshotAndStatID(NetworkSnapshot snapshot, Long statID);
 	 
-	
-	
+	 List<NetworkSnapshotMetadataStat> findBySnapshot(NetworkSnapshot snapshot);
+
+	 
+	 @Modifying
+	 @Transactional
+	 @Query("delete from NetworkSnapshotMetadataStat ms where ms.snapshot.id = ?1")
+	 void deleteBySnapshotID(Long snapshot_id);
+	 
 }

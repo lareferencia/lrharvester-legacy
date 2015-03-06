@@ -15,6 +15,9 @@ package org.lareferencia.backend.tasks;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.crypto.Data;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +25,7 @@ import lombok.Setter;
 import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotLog;
+import org.lareferencia.backend.domain.NetworkSnapshotMetadataStat;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAIRecordValidationResult;
@@ -36,11 +40,15 @@ import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
-import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotMetadataStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
+import org.lareferencia.backend.stats.IMetadataStatProcessor;
+import org.lareferencia.backend.stats.IMetadataStatsManager;
 import org.lareferencia.backend.transformer.ITransformer;
 import org.lareferencia.backend.util.RepositoryNameHelper;
+import org.lareferencia.backend.util.datatable.DataTable;
+import org.lareferencia.backend.util.datatable.JsonRenderer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,12 +105,21 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Autowired
 	private NetworkSnapshotLogRepository snapshotLogRepository;
-
+	
 	@Autowired
-	private NetworkSnapshotStatRepository statRepository;
+	private NetworkSnapshotMetadataStatRepository snapshotStatRepository;
+	
+	@Autowired
+	private NetworkSnapshotMetadataStatRepository statRepository;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	private IMetadataStatsManager originalMetadataStatsManager;
+	
+	@Autowired
+	private IMetadataStatsManager transformedMetadataStatsManager;
 	
 	@Autowired
 	private OAIRecordValidationRepository recordValidationRepository;
@@ -277,6 +294,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					// Graba el status
 					setSnapshotStatus(SnapshotStatus.VALID);
 					
+					// Almacena los resultados de las statísticas de metadatatos
+					if ( network.isRunStats() ) {
+						saveSnapshotMetadataStats( originalMetadataStatsManager.getStats() );
+						saveSnapshotMetadataStats( transformedMetadataStatsManager.getStats() );
+					}
+					
 				}
 					
 			} else {
@@ -366,6 +389,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							// prevalidación
 							ValidationResult validationResult = validator.validate(metadata);
 							
+							// Con el registro original prevalidado se registran las estadísticas previas a las transformación
+							if ( network.isRunStats() )
+								originalMetadataStatsManager.addMetadataObservation(metadata, validationResult);		
+							
 							// si corresponde lo transforma
 							if ( network.isRunTransformation() ) {
 								
@@ -378,6 +405,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								// lo vuelve a validar
 								validationResult = validator.validate(metadata);
 								
+								// Con el registro transformado y validado se registran las estadísticas posteriores a la transformación
+								if ( network.isRunStats() )
+									transformedMetadataStatsManager.addMetadataObservation(metadata, validationResult);		
+											
 								// Si es válido y hubo transformación incrementa la cuenta de válidos transformados
 								if ( wasTransformed && validationResult.isValid() ) 		
 									snapshot.incrementTransformedSize();
@@ -421,8 +452,11 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							recordRepository.save(record);
 							recordRepository.flush();
 							
+							
+							/////////// TODO: Este código debe esta encapsulado en otro lado
 							/// Almacenamiento de resultados de validación
 							OAIRecordValidationResult recordValidationResult;
+							
 							for ( String field : validationResult.getFieldResults().keySet() ) {
 								
 								Boolean isFieldValid = validationResult.getFieldResults().get(field).isValid();
@@ -437,9 +471,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 									recordValidationRepository.save(recordValidationResult);
 								
 								}
-				
 							}
-	
 						} 
 						
 						else { // Si no se valida entonces todo puesto para publicación
@@ -520,6 +552,17 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		snapshotLogRepository.save( new NetworkSnapshotLog(message, this.snapshot) );
 		snapshotLogRepository.flush();
 	}
+	
+	private void saveSnapshotMetadataStats(Map<String, DataTable> statMap) {
+
+		for ( Map.Entry<String, DataTable> entry : statMap.entrySet() ) {
+			String JSONTableString = JsonRenderer.renderDataTable(entry.getValue(),true,true,true).toString() ;
+			NetworkSnapshotMetadataStat metadataStat = new NetworkSnapshotMetadataStat(entry.getKey(), JSONTableString );
+			metadataStat.setSnapshot(snapshot);
+			snapshotStatRepository.save(metadataStat);
+		}
+	}
+	
 
 	@Override
 	public SnapshotStatus getStatus() {

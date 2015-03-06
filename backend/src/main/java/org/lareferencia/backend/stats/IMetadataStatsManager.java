@@ -21,11 +21,11 @@ import org.lareferencia.backend.validator.ValidationResult;
 public interface IMetadataStatsManager  {
 	
 	// agrega una nueva observación 
-	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult);
-	
-	// agrega / lista los procesadores de estadísticas
-	public List<IStatProcessor> getStatProcessors();
-	public void setStatProcessors( List<IStatProcessor> procesors );
+	public void addMetadataObservation(OAIRecordMetadata metadata, ValidationResult validationResult);
+		
+	// agrega / lista los procesadores de estadísticas de los metadatsos originales y post transformación
+	public List<IMetadataStatProcessor> getMetadataStatProcessors();
+	public void setMetadataStatProcessors( List<IMetadataStatProcessor> procesors );
 	
 	// obtiene los resultados
 	public Map<String, DataTable> getStats();

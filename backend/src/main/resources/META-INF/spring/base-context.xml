@@ -31,13 +31,37 @@
 
 	<context:component-scan base-package="org.lareferencia.backend" />
 
-	<!--  bean id="statsManager" class="org.lareferencia.backend.stats.StatsManager" scope="prototype">
-		<property name="statsProcessors">
+	<bean id="originalMetadataStatsManager" class="org.lareferencia.backend.stats.MetadataStatsManagerImpl" scope="prototype">
+		<property name="metadataStatProcessors">
 			<list>
-				<bean class="org.lareferencia.backend.stats.MetadataOccurrenceCountSnapshotStatProcessor"/>
-				<bean class="org.lareferencia.backend.stats.RejectedByFieldSnapshotStatProcessor"/>
+				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
+					<property name="id" value="ORIGINAL_REGISTER_BYFIELD"/>
+					<property name="fieldNames">
+						<list value-type="java.lang.String">
+							<value>dc:type</value>
+							<value>dc:rights</value>	
+						</list>
+					</property>
+				</bean>
+				
 			</list>
 		</property>
-	</bean-->
+	</bean>
+	
+	<bean id="transformedMetadataStatsManager" class="org.lareferencia.backend.stats.MetadataStatsManagerImpl" scope="prototype">
+		<property name="metadataStatProcessors">
+			<list>
+				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
+					<property name="id" value="TRANSFORMED_REGISTER_BYFIELD"/>
+					<property name="fieldNames">
+						<list value-type="java.lang.String">
+							<value>dc:type</value>
+							<value>dc:rights</value>	
+						</list>
+					</property>
+				</bean>				
+			</list>
+		</property>
+	</bean>
 	
 </beans>
