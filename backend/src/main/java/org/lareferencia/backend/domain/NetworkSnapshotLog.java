@@ -26,9 +26,11 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.lareferencia.backend.util.JsonDateSerializer;
 import org.springframework.hateoas.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,5 +70,10 @@ public class NetworkSnapshotLog extends AbstractEntity  {
 		this.snapshot = snapshot;
 		this.timestamp = new DateTime().toDate();
 		
+	}
+	
+	@JsonSerialize(using=JsonDateSerializer.class)
+	public java.util.Date getTimestamp() {
+		return timestamp;
 	}
 }

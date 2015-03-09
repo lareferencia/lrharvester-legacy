@@ -104,9 +104,11 @@
 				
 			   p.append("td")
 			     .text(function(d) { 
-			            	var date = new Date();
-			            	date.setTime(d.timestamp);
-			            	return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); });
+			            	//var date = new Date();
+			            	//date.setTime(d.timestamp);
+			            	//return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 
+			    	 		return d.timestamp;
+			     });
 				
 		       p.append("td")
 		        .text(function(d) { return d.message; });
@@ -436,14 +438,14 @@
             .text(function(d) { 
             	var date = new Date(d.startTime);
             	//date.setTime(d.startTime);
-            	return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
+            	return d.startTime; //date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
             });
 		    
 		    p.append("td")
 		    .text(function(d) { 
             	var date = new Date(d.endTime);
             	//date.setTime(d.endTime);
-            	return date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
+            	return d.endTime; //date.toLocaleDateString() + ' ' +date.toLocaleTimeString().substring(0, 5); 	
             });
 		    
 		    p.append("td")
