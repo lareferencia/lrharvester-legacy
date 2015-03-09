@@ -33,7 +33,7 @@ public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProce
 				incrementFieldCounter(fieldName, DataIndex.NONEMPTY);
 
 			// Si corresponde Incrementa el correspondiente a conteo de registros con campos no válidos
-			if ( fvResultMap.get(fieldName).isValid() )
+			if ( fvResultMap.get(fieldName) != null && fvResultMap.get(fieldName).isValid() )
 				incrementFieldCounter(fieldName, DataIndex.VALID);				
 		}	
 	}
