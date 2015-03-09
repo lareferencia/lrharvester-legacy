@@ -30,7 +30,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.NetworkSnapshotStat;
+import org.lareferencia.backend.domain.NetworkSnapshotMetadataStat;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -41,8 +41,8 @@ import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
+import org.lareferencia.backend.repositories.NetworkSnapshotMetadataStatRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
-import org.lareferencia.backend.repositories.NetworkSnapshotStatRepository;
 import org.lareferencia.backend.repositories.OAIOriginRepository;
 import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
@@ -90,15 +90,14 @@ public class BackEndController {
 	@Autowired 
 	private OAISetRepository setRepository;
 	
+	@Autowired
+	private NetworkSnapshotMetadataStatRepository statRepository;
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
 	
 	@Autowired
 	private NetworkSnapshotLogRepository networkSnapshotLogRepository;
-	
-	@Autowired
-	private NetworkSnapshotStatRepository statsRepository;
 	
 	@Autowired
 	private OAIRecordRepository recordRepository;
@@ -263,6 +262,10 @@ public class BackEndController {
 			    System.out.println("Borrando registros de validaciones");
 				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
 				
+				// borra las estadisticas
+			    System.out.println("Borrando stadísticas de metadatos");
+			    statRepository.deleteBySnapshotID(snapshot.getId());
+				
 				// borra el log de cosechas
 			    System.out.println("Borrando registros de log");
 				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
@@ -346,6 +349,10 @@ public class BackEndController {
 				
 				System.out.println("Borrando ... " + snapshot.getId());
 				
+				
+				// borra las estadisticas
+			    statRepository.deleteBySnapshotID(snapshot.getId());
+			    
 				// borra los resultados de validación
 				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
 				// borra los registros
@@ -740,6 +747,8 @@ public class BackEndController {
 		return snapshotStatsList;
 	}
 	
+	
+	
 	@RequestMapping(value="/public/listProviderStats", method=RequestMethod.GET)
 	@ResponseBody
 	public PageResource<OAIProviderStat> listProviderStats(@RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
@@ -781,6 +790,19 @@ public class BackEndController {
 		
 	}
 	
+	
+	@RequestMapping(value="/public/getMetadataStatsBySnapshotID/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<NetworkSnapshotMetadataStat> getMetadataStatsBySnapshotID(@PathVariable Long id) throws Exception {
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
+		
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + id);
+		
+		
+		return statRepository.findBySnapshot(snapshot);	
+	}
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
@@ -931,7 +953,7 @@ public class BackEndController {
 		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
 		
 		for( Object[] o : oList ) {
-			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			NetworkSnapshotStat s = new NetworkSnapshotStat( (String)o[0], (Long)o[1]);
 			
 			stats.add(s);
 		}
@@ -956,7 +978,7 @@ public class BackEndController {
 		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
 		
 		for( Object[] o : oList ) {
-			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			NetworkSnapshotStat s = new NetworkSnapshotStat( (String)o[0], (Long)o[1]);
 			
 			stats.add(s);
 		}
@@ -979,7 +1001,7 @@ public class BackEndController {
 		List<NetworkSnapshotStat> stats = new ArrayList<NetworkSnapshotStat>();
 		
 		for( Object[] o : oList ) {
-			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[0], (Long)o[1]);
+			NetworkSnapshotStat s = new NetworkSnapshotStat( (String)o[0], (Long)o[1]);
 			
 			stats.add(s);
 		}
@@ -1014,7 +1036,7 @@ public class BackEndController {
 				statMap.put(repository, stats);
 			}
 			
-			NetworkSnapshotStat s = new NetworkSnapshotStat(0L,(String)o[1], (Long)o[2]);
+			NetworkSnapshotStat s = new NetworkSnapshotStat( (String)o[1], (Long)o[2]);
 			
 			stats.add(s);
 		}
@@ -1085,6 +1107,26 @@ public class BackEndController {
 		
 		private boolean isOriginalValid;
 		private boolean isTransformedValid;
+	}
+	
+	
+	@Getter
+	@Setter
+	public class NetworkSnapshotStat {
+		
+		private String field;		
+		private Long value;
+		
+		public NetworkSnapshotStat() {
+			super();
+		}
+		
+		public NetworkSnapshotStat(String field, Long value) {
+			
+			this.field = field;
+			this.value = value;
+			
+		}
 	}
 	
 	

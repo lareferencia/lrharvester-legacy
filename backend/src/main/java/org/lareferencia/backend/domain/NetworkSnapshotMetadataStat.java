@@ -22,7 +22,11 @@ import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.hibernate.annotations.Type;
+import org.lareferencia.backend.util.JsonMetadataStatSerializer;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -30,32 +34,27 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"snapshot","id","statId"})
-public class NetworkSnapshotStat extends AbstractEntity  {
+@JsonIgnoreProperties({"id","snapshot"})
+@JsonSerialize(using=JsonMetadataStatSerializer.class)
+public class NetworkSnapshotMetadataStat extends AbstractEntity  {
 	
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
 	@JoinColumn(name="snapshot_id")
 	private NetworkSnapshot snapshot;
 	
 	@Column(nullable = false)
-	private Long statId;
+	private String statID;
 	
-	@Column(nullable = false)
-	private String field;
-	
-	@Column(nullable = false)
-	private Long value;
-	
-	public NetworkSnapshotStat() {
+	@Type(type="org.hibernate.type.StringClobType")
+	private String JSONString;
+		
+	public NetworkSnapshotMetadataStat() {
 		super();
 	}
 	
-	public NetworkSnapshotStat(Long stat_id, String field, Long value) {
-		super();
-		
-		this.field = field;
-		this.statId = stat_id;
-		this.value = value;
-		
+	public NetworkSnapshotMetadataStat(String statID, String JSONString) {
+		super();	
+		this.statID = statID;
+		this.JSONString = JSONString;
 	}
 }
