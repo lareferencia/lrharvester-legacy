@@ -104,12 +104,12 @@ public class NetworkSnapshot extends AbstractEntity {
 		transformedSize++;
 	}
 	
-	//@JsonSerialize(using=JsonDateSerializer.class)
+	@JsonSerialize(using=JsonDateSerializer.class)
 	public java.util.Date getStartTime() {
 		return startTime;
 	}
 
-	//@JsonSerialize(using=JsonDateSerializer.class)
+	@JsonSerialize(using=JsonDateSerializer.class)
 	public java.util.Date getEndTime() {
 		return endTime;
 	}

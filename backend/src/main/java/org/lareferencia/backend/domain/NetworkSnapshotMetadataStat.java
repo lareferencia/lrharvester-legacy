@@ -19,12 +19,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Type;
-
 import lombok.Getter;
 import lombok.Setter;
 
+import org.hibernate.annotations.Type;
+import org.lareferencia.backend.util.JsonMetadataStatSerializer;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -32,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"id"})
+@JsonIgnoreProperties({"id","snapshot"})
+@JsonSerialize(using=JsonMetadataStatSerializer.class)
 public class NetworkSnapshotMetadataStat extends AbstractEntity  {
 	
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
