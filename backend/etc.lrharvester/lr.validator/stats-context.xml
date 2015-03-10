@@ -32,7 +32,7 @@
 		<property name="metadataStatProcessors">
 			<list>
 				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
-					<property name="id" value="ORIGINAL_REGISTER_BYFIELD"/>
+					<property name="identifier" value="ORIGINAL_REGISTER_BYFIELD"/>
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>
@@ -45,6 +45,11 @@
 					</property>
 				</bean>
 				
+				<bean class="org.lareferencia.backend.stats.ListDomainsStatProcessor">
+					<property name="identifier" value="DOMAINS_COUNT"/>
+					<property name="field" value="dc:identifier"/>					
+				</bean>
+				
 			</list>
 		</property>
 	</bean>
@@ -53,7 +58,7 @@
 		<property name="metadataStatProcessors">
 			<list>
 				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
-					<property name="id" value="TRANSFORMED_REGISTER_BYFIELD"/>
+					<property name="identifier" value="TRANSFORMED_REGISTER_BYFIELD"/>
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>

@@ -32,11 +32,15 @@
 		<property name="metadataStatProcessors">
 			<list>
 				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
-					<property name="id" value="ORIGINAL_REGISTER_BYFIELD"/>
+					<property name="identifier" value="ORIGINAL_REGISTER_BYFIELD"/>
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>
-							<value>dc:rights</value>	
+							<value>dc:rights</value>
+							<value>dc:language</value>	
+							<value>dc:contributor</value>	
+							<value>dc:creator</value>			
+							<value>dc:title</value>				
 						</list>
 					</property>
 				</bean>
@@ -49,11 +53,15 @@
 		<property name="metadataStatProcessors">
 			<list>
 				<bean class="org.lareferencia.backend.stats.RegisterCountByFieldStatProcessor">
-					<property name="id" value="TRANSFORMED_REGISTER_BYFIELD"/>
+					<property name="identifier" value="TRANSFORMED_REGISTER_BYFIELD"/>
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>
-							<value>dc:rights</value>	
+							<value>dc:rights</value>
+							<value>dc:language</value>	
+							<value>dc:contributor</value>	
+							<value>dc:creator</value>			
+							<value>dc:title</value>				
 						</list>
 					</property>
 				</bean>				

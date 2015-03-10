@@ -43,7 +43,7 @@ public class MetadataStatsManagerImpl implements IMetadataStatsManager {
 		Map<String,DataTable> result = new LinkedHashMap<String,DataTable>();
 		
 		for (IMetadataStatProcessor processor : metatadaStatProcesors) 
-			result.put(processor.getId(), processor.getStats() );
+			result.put(processor.getIdentifier(), processor.getStats() );
 		
 		return result;
 	}

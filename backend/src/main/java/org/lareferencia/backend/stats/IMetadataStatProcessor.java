@@ -8,8 +8,8 @@ import org.lareferencia.backend.validator.ValidationResult;
 public interface IMetadataStatProcessor {
 	
 	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult);
-	public String getId();
-	public void setId(String id);
+	public String getIdentifier();
+	public void setIdentifier(String id);
 	public DataTable getStats();
 
 }
