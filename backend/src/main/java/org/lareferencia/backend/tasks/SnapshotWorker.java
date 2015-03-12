@@ -454,6 +454,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							
 							/////////// TODO: Este código debe esta encapsulado en otro lado
+							/// TODO: Esto debe migrarse a metadata stats
 							/// Almacenamiento de resultados de validación
 							OAIRecordValidationResult recordValidationResult;
 							

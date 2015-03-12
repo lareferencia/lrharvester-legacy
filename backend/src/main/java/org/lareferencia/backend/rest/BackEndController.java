@@ -646,6 +646,7 @@ public class BackEndController {
 			snapshot,
 			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
 		);
+		
 		return response;
 	}
 	
@@ -803,6 +804,22 @@ public class BackEndController {
 		
 		return statRepository.findBySnapshot(snapshot);	
 	}
+	
+	@RequestMapping(value="/public/getLGKMetadataStatsByNetworkAcronym/{acronym}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<NetworkSnapshotMetadataStat> getLGKMetadataStatsByNetworkAcronym(@PathVariable String acronym) throws Exception {
+		
+		Network network = networkRepository.findByAcronym(acronym);
+		if ( network == null ) // TODO: Implementar Exc
+			throw new Exception("No se encontró RED: " + acronym);
+		
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
+				
+		return statRepository.findBySnapshot(snapshot);	
+	}
+	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody

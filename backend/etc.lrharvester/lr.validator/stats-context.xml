@@ -23,10 +23,7 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-
-		
-		
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">		
 	
 	<bean id="originalMetadataStatsManager" class="org.lareferencia.backend.stats.MetadataStatsManagerImpl" scope="prototype">
 		<property name="metadataStatProcessors">
@@ -36,19 +33,23 @@
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>
-							<value>dc:rights</value>
-							<value>dc:language</value>	
-							<value>dc:contributor</value>	
-							<value>dc:creator</value>			
-							<value>dc:title</value>				
+							<value>dc:title</value>
+							<value>dc:creator</value>	
+							<value>dc:date</value>	
+							<value>dc:rights</value>			
+							<value>dc:languaje</value>	
+							<value>dc:description</value>	
+							<value>dc:format</value>	
+							<value>dc:source</value>
+							<value>dc:identifier</value>							
 						</list>
 					</property>
 				</bean>
 				
-				<bean class="org.lareferencia.backend.stats.ListDomainsStatProcessor">
+				<!-- bean class="org.lareferencia.backend.stats.ListDomainsStatProcessor">
 					<property name="identifier" value="DOMAINS_COUNT"/>
 					<property name="field" value="dc:identifier"/>					
-				</bean>
+				</bean-->
 				
 			</list>
 		</property>
@@ -62,11 +63,15 @@
 					<property name="fieldNames">
 						<list value-type="java.lang.String">
 							<value>dc:type</value>
-							<value>dc:rights</value>
-							<value>dc:language</value>	
-							<value>dc:contributor</value>	
-							<value>dc:creator</value>			
-							<value>dc:title</value>				
+							<value>dc:title</value>
+							<value>dc:creator</value>	
+							<value>dc:date</value>	
+							<value>dc:rights</value>			
+							<value>dc:languaje</value>	
+							<value>dc:description</value>	
+							<value>dc:format</value>	
+							<value>dc:source</value>
+							<value>dc:identifier</value>				
 						</list>
 					</property>
 				</bean>				
