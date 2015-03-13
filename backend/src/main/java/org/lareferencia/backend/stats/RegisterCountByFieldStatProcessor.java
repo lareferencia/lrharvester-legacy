@@ -62,8 +62,8 @@ public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProce
 			Integer total = counts[DataIndex.ALL.ordinal()];
 			Integer nonempty = counts[DataIndex.NONEMPTY.ordinal()];
 			Integer valid = counts[DataIndex.VALID.ordinal()];
-			Integer noempyOtotal = nonempty / total;
-			Integer validOtotal = valid / total;
+			Integer noempyOtotal = (int) ((double) nonempty * 100 / total);
+			Integer validOtotal =  (int) ((double) valid * 100 / total);
 
 			
 			
