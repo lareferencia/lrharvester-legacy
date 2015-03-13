@@ -41,7 +41,9 @@
 							<value>dc:description</value>	
 							<value>dc:format</value>	
 							<value>dc:source</value>
-							<value>dc:identifier</value>							
+							<value>dc:identifier</value>
+							<value>dc:publisher</value>							
+														
 						</list>
 					</property>
 				</bean>
@@ -71,7 +73,9 @@
 							<value>dc:description</value>	
 							<value>dc:format</value>	
 							<value>dc:source</value>
-							<value>dc:identifier</value>				
+							<value>dc:identifier</value>	
+							<value>dc:publisher</value>							
+										
 						</list>
 					</property>
 				</bean>				

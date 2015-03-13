@@ -48,6 +48,9 @@ public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProce
 		resultTable.addColumn( new ColumnDescription("C2", ValueType.NUMBER , "Total") );
 		resultTable.addColumn( new ColumnDescription("C3", ValueType.NUMBER , "NonEmpty") );
 		resultTable.addColumn( new ColumnDescription("C4", ValueType.NUMBER , "Valid") );
+		resultTable.addColumn( new ColumnDescription("C5", ValueType.TEXT , "NonEmptyOverTotal") );
+		resultTable.addColumn( new ColumnDescription("C6", ValueType.TEXT , "ValidOverTotal") );
+
 		
 		// Para cada campo
 		for (String fieldName: fieldNames) {			
@@ -55,11 +58,21 @@ public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProce
 			// Obtiene el registros de conteos para ese campo
 			Integer[] counts = countMap.get(fieldName);
 			
+			// Calcula los porcentajes relativos
+			Integer total = counts[DataIndex.ALL.ordinal()];
+			Integer nonempty = counts[DataIndex.NONEMPTY.ordinal()];
+			Integer valid = counts[DataIndex.VALID.ordinal()];
+			Integer noempyOtotal = nonempty / total;
+			Integer validOtotal = valid / total;
+
+			
+			
 			// Agrega una fila con los resultados de los conteos
 			try {
-				resultTable.addRowFromValues(fieldName, counts[DataIndex.ALL.ordinal()], 
-														counts[DataIndex.NONEMPTY.ordinal()],
-														counts[DataIndex.VALID.ordinal()] );
+				resultTable.addRowFromValues(fieldName, total, nonempty, valid, 
+														noempyOtotal.toString() + "%",
+														validOtotal.toString() + "%" );
+				
 			} catch (TypeMismatchException e) {
 				e.printStackTrace();
 				System.err.println("Error en los tipos de columnas al contruir DataTable StatProcessor");
