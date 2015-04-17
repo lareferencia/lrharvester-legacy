@@ -72,21 +72,15 @@
 				 d3.select("#totalTitle").text("Total cosechado: " + result.size);
 				 d3.select("#validTitle").text("Regs. Válidos: " + result.validSize);
 				 d3.select("#transformedTitle").text("Regs. Transformados: " + result.transformedSize);
-
- 	
-				
-				
-				
 			}); 			
-			
-			
-			
-			
-			
 		}
 		
 		
 		function loadRepositoriesBySnapshotID(snapshotID) { 
+			
+			
+			 // muestra el modal de loading
+			 $('#modalLoading').modal('show');
 			
 			 $.rest.retrieve(ListRepositoriesBySnapshotIDBaseURL + "/" + snapID, function(result) {	
 				 
@@ -112,6 +106,10 @@
 				  div.append("span")	
 				 	.attr("class",  function(d) { if (d.value == 0) return "label label-success"; else return "label label-danger"; }) 
 				    .text(function(d) { return d.value + " regs rechazados"; });*/
+				    
+				    
+				 // retira el modal de loading
+				 $('#modalLoading').modal('hide');
 			 });		 
 			
 		}
@@ -121,18 +119,23 @@
 		
 		function loadRejectedByFieldCount(snapshotID, repository) { 
 			
+			 // cambia los datos del repositorio
+			 d3.select("#repositoryDiagnoseTitle").text("Diagnóstico repositorio: " + repository);
+			 
+			 
+			 // quita el panel de la llamada anterior
+			 d3.select("#rejectedByFieldCountPanel").selectAll("div").remove();
+
+			 // borrado de registros residuales de otros llamados
+			 d3.select("#rejectedByFieldTable").selectAll("tr").remove();
+			 
+			 
+			 // muestra el modal de loading
+			 $('#modalLoading').modal('show');
+
 		
 			 $.rest.retrieve(InvalidRepositoryRecordsByFieldCountBaseURL + "/" + snapID + "/" + repository + "/", function(result) {	
 				 
-				 
-				 d3.select("#repositoryDiagnoseTitle").text("Diagnóstico repositorio: " + repository);
-				 
-				 
-				 d3.select("#rejectedByFieldCountPanel").selectAll("div").remove();
-
-				 // borrado de registros residuales de otros llamados
-				 d3.select("#rejectedByFieldTable").selectAll("tr").remove();
-
 				 
 				 var div = d3.select("#rejectedByFieldCountPanel").selectAll("div")
 				    .data(result)
@@ -182,6 +185,10 @@
 				  transformedDiv.append("span")	
 				 	.attr("class",  "label label-success") 
 				    .text("Registros válidos transformados");
+				  
+				  
+				 // retira el modal de loading
+				 $('#modalLoading').modal('hide');
 				  
 			 });		 
 			
@@ -266,11 +273,13 @@
 		
 		function loadRejectedByFieldPage(pageURL) { 
 			
-			$('#modalLoading').modal('show');
-		
+			 $('#modalLoading').modal('show');
+			 
+			 // borra los datos de la ejecución anterior
+			 d3.select("#rejectedByFieldTable").selectAll("tr").remove();
+
 			 $.rest.retrieve(pageURL, function(result) {	
 				 
-				 d3.select("#rejectedByFieldTable").selectAll("tr").remove();
 				
 				 var item = d3.select("#rejectedByFieldTable").selectAll("tr")
 				    .data(result.content)
@@ -342,10 +351,13 @@
 								 		}
 				 		 		   })
 				                  .attr("onclick", function(d){ return "loadRejectedByFieldPage('" + d.href +  "');"; });
+				 
+				 // retira el modal de loading
+				 $('#modalLoading').modal('hide');
+
 				 	
 			 });
 			 
-			 $('#modalLoading').modal('hide');
 		}
 		
 		
@@ -519,8 +531,10 @@
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header"></div>
-	      <div  class="modal-body" >Aguarde un momento</div>
-	      <div class="modal-footer"></div>
+	      <div  class="modal-body" >Aguarde un momento ... De acuerdo a la carga del servidor esta acción podría demorar.</div>
+	      <div class="modal-footer">	        
+	      				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	      </div>
 	    </div>
 	  </div>
 	</div>
