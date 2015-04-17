@@ -406,9 +406,14 @@
 		}
 		
 		
-		loadSnapshotInfo(snapID);
-
-		loadRepositoriesBySnapshotID(snapID);
+		
+		// LANZA LA PRIMERA CONSULTA
+		
+		$( document ).ready(function() {
+			loadSnapshotInfo(snapID);
+			loadRepositoriesBySnapshotID(snapID);
+		});
+		
 				
 		//loadRejectedByFieldCount(snapID);	
 	
