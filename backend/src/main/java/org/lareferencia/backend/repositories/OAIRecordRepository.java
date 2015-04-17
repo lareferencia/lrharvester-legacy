@@ -70,7 +70,7 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
      @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.repositoryDomain=:repository order by rc.id asc")
  	 Page<OAIRecord> findValidBySnapshotIdAndRepository(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, Pageable pageable);
      
-     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.wasTransformed=1 and rc.repositoryDomain=:repository order by rc.id asc")
+     @Query("select rc from OAIRecord rc where rc.snapshot.id = :snapshot_id and rc.status=1 and rc.wasTransformed=true and rc.repositoryDomain=:repository order by rc.id asc")
  	 Page<OAIRecord> findTransformedBySnapshotIdAndRepository(@Param("snapshot_id") Long snapshotID, @Param("repository") String repository, Pageable pageable);
      
 	 @Query("select DISTINCT rc.repositoryDomain from OAIRecord rc where rc.snapshot.id = :snapshot_id")
