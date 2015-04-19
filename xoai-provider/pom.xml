@@ -1,0 +1,312 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>xoai</artifactId>
+    <groupId>org.lareferencia.backend</groupId>
+	<version>2.0</version>
+    <packaging>war</packaging>
+    <name>OAI-PMH</name>
+    <description>DSpace OAI-PMH Web Application and API</description>
+
+
+    <properties>
+        <!-- This is the path to the root [dspace-src] directory. -->
+        <root.basedir>${basedir}</root.basedir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.7</java.version>
+        
+        <spring.version>3.2.5.RELEASE</spring.version>
+        <xoai.version>3.2.9</xoai.version>
+        <jtwig.version>2.0.1</jtwig.version>
+        <lucene.version>4.10.2</lucene.version>
+        <solr.version>4.10.2</solr.version>
+        <jena.version>2.12.0</jena.version>
+        <slf4j.version>1.6.1</slf4j.version>
+
+    </properties>
+    
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <build>
+        <!--  filters>
+            <filter>build.properties</filter>
+        </filters-->
+        <plugins>
+        
+         <!-- Define Maven Plugin Settings that should be inherited to ALL submodule POMs.
+           (NOTE: individual POMs can override specific settings). -->
+
+              <plugin>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <version>3.1</version>
+                  <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                  </configuration>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+              </plugin>       
+           
+             
+             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+             </plugin>
+             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+             </plugin>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+             </plugin>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+              </plugin>
+             <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.6</version>
+             </plugin>
+             
+               <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			      <execution>
+			        <id>copy-dependencies</id>
+			        <phase>prepare-package</phase>
+			        <goals>
+			          <goal>copy-dependencies</goal>
+			        </goals>
+			        <configuration>
+			          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+			          <overWriteReleases>true</overWriteReleases>
+			          <overWriteSnapshots>true</overWriteSnapshots>
+			          <overWriteIfNewer>true</overWriteIfNewer>
+			        </configuration>
+			      </execution>
+			    </executions>
+			  </plugin>	
+             
+            <!-- Estos son los plugins originales del sub pom xoai --> 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                    <!-- In version 2.1-alpha-1, this was incorrectly named warSourceExcludes -->
+                    <!--  packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes -->
+                    <!-- warSourceExcludes>WEB-INF/lib/*.jar</warSourceExcludes -->
+                    <webResources>
+                        <resource>
+                            <filtering>true</filtering>
+                            <directory>${basedir}/src/main/webapp</directory>
+                            <includes>
+                                <include>WEB-INF/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+<!--             <plugin> -->
+<!--                 <groupId>com.mycila</groupId> -->
+<!--                 <artifactId>license-maven-plugin</artifactId> -->
+<!--                 <configuration> -->
+<!--                     <excludes> -->
+<!--                         <exclude>src/main/webapp/**</exclude> -->
+<!--                         <exclude>**/*.xsl</exclude> -->
+<!--                     </excludes> -->
+<!--                 </configuration> -->
+<!--             </plugin> -->
+          
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>oracle-support</id>
+            <activation>
+                <property>
+                    <name>db.name</name>
+                    <value>oracle</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc6</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <!-- OAI Data Provider Framework -->
+        <dependency>
+            <groupId>com.lyncode</groupId>
+            <artifactId>xoai</artifactId>
+            <version>${xoai.version}</version>
+        </dependency>
+        <!-- Java Injection and MVC -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <!-- Templating Engine -->
+        <dependency>
+            <groupId>com.lyncode</groupId>
+            <artifactId>jtwig-spring</artifactId>
+            <version>${jtwig.version}</version>
+        </dependency>
+
+
+        <!-- Internal -->
+        <dependency>
+            <groupId>org.dspace</groupId>
+            <artifactId>dspace-api</artifactId>
+           <version>5.1</version>
+        </dependency>
+
+        <!-- Solr (Datasource) -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>${solr.version}</version>
+        </dependency>
+
+
+
+      
+        <!-- Utilities -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lyncode</groupId>
+            <artifactId>builder-commons</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <!-- Testing -->
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lyncode</groupId>
+            <artifactId>test-support</artifactId>
+            <version>1.0.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-mock</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlmatchers</groupId>
+            <artifactId>xml-matchers</artifactId>
+            <version>0.10</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <developers>
+        <developer>
+            <name>DSpace @ Lyncode</name>
+            <email>dspace@lyncode.com</email>
+            <organization>Lyncode</organization>
+            <organizationUrl>http://www.lyncode.com</organizationUrl>
+        </developer>
+        <developer>
+            <id>helix84</id>
+            <name>Ivan Másar</name>
+            <email>helix84@centrum.sk</email>
+        </developer>
+        <developer>
+            <name>Ariel J. Lira</name>
+            <email>arieljlira@gmail.com</email>
+            <organization>SeDiCI</organization>
+            <organizationUrl>http://sedici.unlp.edu.ar</organizationUrl>
+        </developer>
+    </developers>
+</project>

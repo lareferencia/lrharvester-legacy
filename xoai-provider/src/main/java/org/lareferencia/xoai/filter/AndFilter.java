@@ -1,0 +1,46 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.lareferencia.xoai.filter;
+
+import org.lareferencia.xoai.Context;
+import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
+import org.lareferencia.xoai.filter.results.SolrFilterResult;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class AndFilter extends LRFilter {
+    private LRFilter left;
+    private LRFilter right;
+
+    public AndFilter(LRFilter left, LRFilter right) {
+        this.left = left;
+        this.right = right;
+    }
+
+//    @Override
+//    public DatabaseFilterResult buildDatabaseQuery(Context context) {
+//        DatabaseFilterResult leftResult = left.buildDatabaseQuery(context);
+//        DatabaseFilterResult rightResult = right.buildDatabaseQuery(context);
+//        List<Object> param = new ArrayList<Object>();
+//        param.addAll(leftResult.getParameters());
+//        param.addAll(rightResult.getParameters());
+//        return new DatabaseFilterResult("("+leftResult.getQuery()+") AND ("+ rightResult.getQuery() +")", param);
+//    }
+
+    @Override
+    public SolrFilterResult buildSolrQuery() {
+        return new SolrFilterResult("("+left.buildSolrQuery().getQuery()+") AND ("+right.buildSolrQuery().getQuery()+")");
+    }
+
+    @Override
+    public boolean isShown(DSpaceItem item) {
+        return left.isShown(item) && right.isShown(item);
+    }
+}
