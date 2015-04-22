@@ -12,8 +12,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
-import org.dspace.core.I18nUtil;
-import org.dspace.core.LogManager;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.event.Dispatcher;

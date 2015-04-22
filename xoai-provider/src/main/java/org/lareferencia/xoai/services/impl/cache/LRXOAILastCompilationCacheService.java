@@ -8,7 +8,7 @@
 package org.lareferencia.xoai.services.impl.cache;
 
 import org.apache.commons.io.FileUtils;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 import org.lareferencia.xoai.services.api.cache.XOAILastCompilationCacheService;
 
 import java.io.File;

@@ -6,7 +6,7 @@
  * http://www.dspace.org/license/
  */
 
-package org.lareferencia.utils;
+package org.lareferencia.xoai;
 
 import org.dspace.app.util.AbstractDSpaceWebapp;
 

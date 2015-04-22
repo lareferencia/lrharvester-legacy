@@ -18,7 +18,7 @@ import org.dspace.content.Bundle;
 import org.dspace.content.Metadatum;
 import org.dspace.content.Item;
 import org.dspace.content.authority.Choices;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Utils;
 import org.lareferencia.xoai.data.DSpaceItem;

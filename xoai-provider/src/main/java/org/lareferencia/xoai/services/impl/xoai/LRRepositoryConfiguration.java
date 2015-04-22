@@ -118,7 +118,7 @@ public class LRRepositoryConfiguration implements RepositoryConfiguration
     {
         if (name == null)
         {
-            name = configurationService.getProperty("dspace.name");
+            name = configurationService.getProperty("repository.name");
             if (name == null)
             {
                 log.warn("{ OAI 2.0 :: DSpace } Not able to retrieve the dspace.name property from the configuration file");
@@ -131,13 +131,17 @@ public class LRRepositoryConfiguration implements RepositoryConfiguration
 	@Override
 	public List<String> getDescription() {
 		List<String> result = new ArrayList<String>();
-		String descriptionFile = configurationService.getProperty("oai", "description.file");
+		String descriptionFile = configurationService.getProperty("description.file");
+		//String descriptionFile = configurationService.getProperty("oai", "description.file");
+
 		if (descriptionFile == null) {
 			// Try indexed
 			boolean stop = false;
 			List<String> descriptionFiles = new ArrayList<String>();
 			for (int i=0;!stop;i++) {
-				String tmp = configurationService.getProperty("oai", "description.file."+i);
+				//String tmp = configurationService.getProperty("oai", "description.file."+i);
+				String tmp = configurationService.getProperty("description.file."+i);
+
 				if (tmp == null) stop = true;
 				else descriptionFiles.add(tmp);
 			}

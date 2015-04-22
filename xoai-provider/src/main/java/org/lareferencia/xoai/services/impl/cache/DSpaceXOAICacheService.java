@@ -14,7 +14,7 @@ import com.lyncode.xoai.dataprovider.xml.oaipmh.OAIPMH;
 import com.lyncode.xoai.util.Base64Utils;
 
 import org.apache.commons.io.FileUtils;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 import org.lareferencia.xoai.services.api.cache.XOAICacheService;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
 import org.lareferencia.xoai.util.DateUtils;

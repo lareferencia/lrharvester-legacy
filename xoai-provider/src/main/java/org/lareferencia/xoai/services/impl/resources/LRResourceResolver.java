@@ -8,7 +8,7 @@
 package org.lareferencia.xoai.services.impl.resources;
 
 import com.lyncode.xoai.dataprovider.services.api.ResourceResolver;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -21,9 +21,9 @@ import java.io.InputStream;
 
 
 // TODO: baja prioridad, revisar la pertinencia de este resolver
-public class DSpaceResourceResolver implements ResourceResolver {
+public class LRResourceResolver implements ResourceResolver {
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    private final String basePath = ConfigurationManager.getProperty("oai", "config.dir");
+    private final String basePath = ConfigurationManager.getProperty("config.dir");
 
     @Override
     public InputStream getResource(String path) throws IOException {

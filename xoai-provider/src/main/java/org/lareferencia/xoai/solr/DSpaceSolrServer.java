@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 
 /**
  * 

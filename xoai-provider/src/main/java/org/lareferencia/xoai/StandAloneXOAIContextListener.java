@@ -11,7 +11,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;;
 
 /**
  * Class to initialize / cleanup resources used by DSpace when the web application
@@ -24,7 +24,7 @@ public class StandAloneXOAIContextListener implements ServletContextListener
     /**
      * Name of the context parameter giving the path to the DSpace configuration file.
      */
-    public static final String DSPACE_CONFIG_PARAMETER = "dspace-config";
+    public static final String DSPACE_CONFIG_PARAMETER = "xoai-config";
 
     //private AbstractDSpaceWebapp webApp;
 
@@ -101,11 +101,11 @@ public class StandAloneXOAIContextListener implements ServletContextListener
         {
             throw new IllegalStateException(
                     "\n\nDSpace has failed to initialize, during stage 2. Error while attempting to read the \n" +
-                    "DSpace configuration file (Path: '"+dspaceConfig+"'). \n" +
+                    "XOAI configuration file (Path: '"+dspaceConfig+"'). \n" +
                     "This has likely occurred because either the file does not exist, or it's permissions \n" +
                     "are set incorrectly, or the path to the configuration file is incorrect. The path to \n" +
-                    "the DSpace configuration file is stored in a context variable, 'dspace-config', in \n" +
-                    "either the local servlet or global context.\n\n",e);
+                    "the xoai configuration file is stored in a context variable, 'xoai-config', in \n" +
+                    "either the local servlet or global context (IE: web.xml).\n\n",e);
         }
 
         /**

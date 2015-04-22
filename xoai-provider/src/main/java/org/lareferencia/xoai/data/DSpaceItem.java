@@ -14,7 +14,7 @@ import com.lyncode.xoai.dataprovider.data.About;
 import com.lyncode.xoai.dataprovider.data.Item;
 import com.lyncode.xoai.dataprovider.xml.xoai.Element;
 import com.lyncode.xoai.dataprovider.xml.xoai.Element.Field;
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 
 import java.util.ArrayList;
 import java.util.List;

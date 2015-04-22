@@ -88,7 +88,9 @@ public class DSpaceSetSpecResolver implements SetSpecResolver {
     }
 
     private String getSetSpecFormat(Class<?> clazz) {
-        String property = configurationService.getProperty("oai", clazz.getSimpleName().toLowerCase() + ".setSpecFormat");
+        //String property = configurationService.getProperty("oai", clazz.getSimpleName().toLowerCase() + ".setSpecFormat");
+        String property = configurationService.getProperty(clazz.getSimpleName().toLowerCase() + ".setSpecFormat");
+
         return property == null ? DEFAULT_FORMAT : property;
     }
 }

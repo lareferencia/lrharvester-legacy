@@ -32,7 +32,7 @@ import org.lareferencia.xoai.services.impl.context.LRContextService;
 import org.lareferencia.xoai.services.impl.context.LRXOAIManagerResolver;
 import org.lareferencia.xoai.services.impl.database.DSpaceFieldResolver;
 import org.lareferencia.xoai.services.impl.database.LRDummyEarliestDateResolver;
-import org.lareferencia.xoai.services.impl.resources.DSpaceResourceResolver;
+import org.lareferencia.xoai.services.impl.resources.LRResourceResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrQueryResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrServerResolver;
 import org.lareferencia.xoai.services.impl.xoai.BaseLRFilterResolver;
@@ -97,7 +97,7 @@ public class BasicConfiguration {
 
     @Bean
     public ResourceResolver resourceResolver() {
-        return new DSpaceResourceResolver();
+        return new LRResourceResolver();
     }
 
     @Bean

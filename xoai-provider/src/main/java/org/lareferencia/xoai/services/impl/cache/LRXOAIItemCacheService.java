@@ -38,7 +38,9 @@ public class LRXOAIItemCacheService implements XOAIItemCacheService {
     private String getBaseDir()
     {
         if (baseDir == null)
-            baseDir = configurationService.getProperty("oai", "cache.dir") + ITEMDIR;
+            //baseDir = configurationService.getProperty("oai", "cache.dir") + ITEMDIR;
+            baseDir = configurationService.getProperty("cache.dir") + ITEMDIR;
+
         return baseDir;
     }
 

@@ -7,7 +7,7 @@
  */
 package org.lareferencia.xoai.services.impl.config;
 
-import org.dspace.core.ConfigurationManager;
+import org.lareferencia.xoai.ConfigurationManager;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
 
 public class LRConfigurationService implements ConfigurationService {
@@ -16,10 +16,12 @@ public class LRConfigurationService implements ConfigurationService {
         return ConfigurationManager.getProperty(key);
     }
 
-    @Override
+    
+    // se retira la implementacion de configuracion de modulos para simplificar los archivos de config 
+   /* @Override
     public String getProperty(String module, String key)  {
         return ConfigurationManager.getProperty(module, key);
-    }
+    }*/
 
     @Override
     public boolean getBooleanProperty(String module, String key, boolean defaultValue) {
