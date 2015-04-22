@@ -10,8 +10,8 @@ package org.lareferencia.xoai.services.impl.database;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.Item;
-import org.dspace.xoai.services.api.context.ContextService;
-import org.dspace.xoai.services.api.context.ContextServiceException;
+import org.lareferencia.xoai.services.api.context.ContextService;
+import org.lareferencia.xoai.services.api.context.ContextServiceException;
 import org.lareferencia.xoai.services.api.database.CollectionsService;
 
 import java.sql.SQLException;
@@ -27,22 +27,24 @@ public class DSpaceCollectionsService implements CollectionsService {
     public List<Integer> getAllSubCollections(int communityId)
             throws SQLException
     {
-        Queue<Community> comqueue = new LinkedList<Community>();
+        //Queue<Community> comqueue = new LinkedList<Community>();
         List<Integer> list = new ArrayList<Integer>();
-        try {
-            comqueue.add(Community.find(contextService.getContext(), communityId));
-        } catch (ContextServiceException e) {
-            throw new SQLException(e);
-        }
-        while (!comqueue.isEmpty())
-        {
-            Community c = comqueue.poll();
-            for (Community sub : c.getSubcommunities())
-                comqueue.add(sub);
-            for (Collection col : c.getCollections())
-                if (!list.contains(col))
-                    list.add(col.getID());
-        }
+        
+//        try {
+//            comqueue.add(Community.find(contextService.getContext(), communityId));
+//        } catch (ContextServiceException e) {
+//            throw new SQLException(e);
+//        }
+//        while (!comqueue.isEmpty())
+//        {
+//            Community c = comqueue.poll();
+//            for (Community sub : c.getSubcommunities())
+//                comqueue.add(sub);
+//            for (Collection col : c.getCollections())
+//                if (!list.contains(col))
+//                    list.add(col.getID());
+//        }
+        // TODO: Revisar, anulacion listado de subcolecciones
         return list;
     }
 

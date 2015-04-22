@@ -10,18 +10,19 @@ package org.lareferencia.xoai.services.impl.xoai;
 import com.lyncode.xoai.dataprovider.core.DeleteMethod;
 import com.lyncode.xoai.dataprovider.core.Granularity;
 import com.lyncode.xoai.dataprovider.services.api.RepositoryConfiguration;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.lareferencia.xoai.Context;
-import org.dspace.xoai.exceptions.InvalidMetadataFieldException;
+import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
 import org.lareferencia.xoai.services.api.database.EarliestDateResolver;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;

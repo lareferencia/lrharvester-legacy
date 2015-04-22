@@ -15,6 +15,7 @@ import com.lyncode.xoai.dataprovider.data.Item;
 import com.lyncode.xoai.dataprovider.data.ItemIdentifier;
 import com.lyncode.xoai.dataprovider.exceptions.IdDoesNotExistException;
 import com.lyncode.xoai.dataprovider.filter.ScopedFilter;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -25,9 +26,9 @@ import org.lareferencia.xoai.data.DSpaceSolrItem;
 import org.lareferencia.xoai.services.api.database.CollectionsService;
 import org.lareferencia.xoai.services.api.database.HandleResolver;
 import org.lareferencia.xoai.services.api.solr.SolrQueryResolver;
-import org.dspace.xoai.solr.DSpaceSolrSearch;
-import org.dspace.xoai.solr.exceptions.DSpaceSolrException;
-import org.dspace.xoai.solr.exceptions.SolrSearchEmptyException;
+import org.lareferencia.xoai.solr.DSpaceSolrSearch;
+import org.lareferencia.xoai.solr.exceptions.DSpaceSolrException;
+import org.lareferencia.xoai.solr.exceptions.SolrSearchEmptyException;
 
 import java.util.ArrayList;
 import java.util.List;

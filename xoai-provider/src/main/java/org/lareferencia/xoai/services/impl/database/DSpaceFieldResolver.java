@@ -8,10 +8,9 @@
 package org.lareferencia.xoai.services.impl.database;
 
 import org.lareferencia.xoai.Context;
-
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRowIterator;
-import org.dspace.xoai.exceptions.InvalidMetadataFieldException;
+import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.services.api.database.FieldResolver;
 
 import java.sql.SQLException;

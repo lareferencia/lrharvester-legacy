@@ -10,9 +10,10 @@ package org.lareferencia.xoai.services.impl.xoai;
 import com.lyncode.xoai.dataprovider.core.ResumptionToken;
 import com.lyncode.xoai.dataprovider.exceptions.BadResumptionToken;
 import com.lyncode.xoai.dataprovider.services.api.ResumptionTokenFormatter;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.dspace.xoai.util.DateUtils;
+import org.lareferencia.xoai.util.DateUtils;
 
 import java.util.Date;
 

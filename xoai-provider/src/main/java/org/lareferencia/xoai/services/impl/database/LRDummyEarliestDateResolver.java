@@ -12,10 +12,10 @@ import org.apache.log4j.Logger;
 import org.lareferencia.xoai.Context;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRowIterator;
-import org.dspace.xoai.exceptions.InvalidMetadataFieldException;
+import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.services.api.database.EarliestDateResolver;
 import org.lareferencia.xoai.services.api.database.FieldResolver;
-import org.dspace.xoai.util.DateUtils;
+import org.lareferencia.xoai.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;

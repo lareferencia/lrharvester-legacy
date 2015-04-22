@@ -8,7 +8,6 @@
 package org.lareferencia.xoai.app;
 
 import org.apache.log4j.Logger;
-import org.dspace.xoai.services.impl.resources.DSpaceResourceResolver;
 import org.lareferencia.xoai.services.api.cache.XOAICacheService;
 //import org.lareferencia.xoai.services.api.cache.XOAIItemCacheService;
 //import org.lareferencia.xoai.services.api.cache.XOAILastCompilationCacheService;
@@ -33,6 +32,7 @@ import org.lareferencia.xoai.services.impl.context.LRContextService;
 import org.lareferencia.xoai.services.impl.context.LRXOAIManagerResolver;
 import org.lareferencia.xoai.services.impl.database.DSpaceFieldResolver;
 import org.lareferencia.xoai.services.impl.database.LRDummyEarliestDateResolver;
+import org.lareferencia.xoai.services.impl.resources.DSpaceResourceResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrQueryResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrServerResolver;
 import org.lareferencia.xoai.services.impl.xoai.BaseLRFilterResolver;

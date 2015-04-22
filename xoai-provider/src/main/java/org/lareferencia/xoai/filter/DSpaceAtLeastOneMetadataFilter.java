@@ -14,6 +14,7 @@ import com.lyncode.xoai.dataprovider.xml.xoaiconfig.parameters.ParameterList;
 import com.lyncode.xoai.dataprovider.xml.xoaiconfig.parameters.ParameterMap;
 import com.lyncode.xoai.dataprovider.xml.xoaiconfig.parameters.ParameterValue;
 import com.lyncode.xoai.dataprovider.xml.xoaiconfig.parameters.SimpleType;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,7 +22,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.dspace.core.Constants;
 import org.lareferencia.xoai.Context;
 import org.lareferencia.xoai.data.DSpaceItem;
-import org.dspace.xoai.exceptions.InvalidMetadataFieldException;
+import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.filter.data.DSpaceMetadataFilterOperator;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;

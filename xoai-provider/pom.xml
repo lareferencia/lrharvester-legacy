@@ -2,19 +2,19 @@
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>xoai</artifactId>
-    <groupId>org.lareferencia.backend</groupId>
-	<version>2.0</version>
+    <groupId>org.lareferencia.xoai</groupId>
+    <version>2.0</version>
     <packaging>war</packaging>
     <name>OAI-PMH</name>
-    <description>DSpace OAI-PMH Web Application and API</description>
+    <description>LAReferencia XOAI OAI-PMH Web Application and API</description>
 
 
     <properties>
-        <!-- This is the path to the root [dspace-src] directory. -->
+        <!-- This is the path to the root directory. -->
         <root.basedir>${basedir}</root.basedir>
+        
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.7</java.version>
-        
         <spring.version>3.2.5.RELEASE</spring.version>
         <xoai.version>3.2.9</xoai.version>
         <jtwig.version>2.0.1</jtwig.version>
@@ -22,7 +22,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <solr.version>4.10.2</solr.version>
         <jena.version>2.12.0</jena.version>
         <slf4j.version>1.6.1</slf4j.version>
-
     </properties>
     
     <prerequisites>
@@ -30,9 +29,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </prerequisites>
 
     <build>
-        <!--  filters>
-            <filter>build.properties</filter>
-        </filters-->
         <plugins>
         
          <!-- Define Maven Plugin Settings that should be inherited to ALL submodule POMs.
@@ -290,23 +286,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         </dependency>
     </dependencies>
 
-    <developers>
-        <developer>
-            <name>DSpace @ Lyncode</name>
-            <email>dspace@lyncode.com</email>
-            <organization>Lyncode</organization>
-            <organizationUrl>http://www.lyncode.com</organizationUrl>
-        </developer>
-        <developer>
-            <id>helix84</id>
-            <name>Ivan Másar</name>
-            <email>helix84@centrum.sk</email>
-        </developer>
-        <developer>
-            <name>Ariel J. Lira</name>
-            <email>arieljlira@gmail.com</email>
-            <organization>SeDiCI</organization>
-            <organizationUrl>http://sedici.unlp.edu.ar</organizationUrl>
-        </developer>
-    </developers>
 </project>

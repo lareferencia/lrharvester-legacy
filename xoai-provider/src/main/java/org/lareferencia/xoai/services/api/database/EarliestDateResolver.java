@@ -8,7 +8,7 @@
 package org.lareferencia.xoai.services.api.database;
 
 import org.lareferencia.xoai.Context;
-import org.dspace.xoai.exceptions.InvalidMetadataFieldException;
+import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 
 import java.sql.SQLException;
 import java.util.Date;
