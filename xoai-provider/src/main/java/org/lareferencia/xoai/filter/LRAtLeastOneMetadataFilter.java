@@ -26,7 +26,6 @@ import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.filter.data.DSpaceMetadataFilterOperator;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
-import org.lareferencia.xoai.services.api.database.FieldResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;
@@ -36,20 +35,19 @@ import java.util.List;
 /**
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceAtLeastOneMetadataFilter extends LRFilter {
-    private static Logger log = LogManager.getLogger(DSpaceAtLeastOneMetadataFilter.class);
+public class LRAtLeastOneMetadataFilter extends LRFilter {
+    private static Logger log = LogManager.getLogger(LRAtLeastOneMetadataFilter.class);
 
     private String field;
     private DSpaceMetadataFilterOperator operator = DSpaceMetadataFilterOperator.UNDEF;
     private List<String> values;
     private ParameterMap configuration;
 
-    public DSpaceAtLeastOneMetadataFilter(ParameterMap configuration) {
+    public LRAtLeastOneMetadataFilter(ParameterMap configuration) {
         this.configuration = configuration;
     }
 
-    @Autowired
-    FieldResolver fieldResolver;
+
 
     private String getField() {
         if (field == null) {
@@ -149,60 +147,60 @@ public class DSpaceAtLeastOneMetadataFilter extends LRFilter {
         return false;
     }
 
-    private DatabaseFilterResult getWhere(int mdid, List<String> values) {
-        List<String> parts = new ArrayList<String>();
-        List<Object> params = new ArrayList<Object>();
-        params.add(mdid);
-        for (String v : values)
-            this.buildWhere(v, parts, params);
-        if (parts.size() > 0) {
-            String query = "EXISTS (SELECT tmp.* FROM metadatavalue tmp WHERE tmp.resource_id=i.item_id AND tmp.resource_type_id=" + Constants.ITEM+ " AND tmp.metadata_field_id=?"
-                    + " AND ("
-                    + StringUtils.join(parts.iterator(), " OR ")
-                    + "))";
-            return new DatabaseFilterResult(query, params);
-        }
-        return new DatabaseFilterResult();
-    }
-
-    private void buildWhere(String value, List<String> parts,
-                            List<Object> params) {
-        switch (this.getOperator()) {
-            case ENDS_WITH:
-                parts.add("(tmp.text_value LIKE ?)");
-                params.add("%" + value);
-                break;
-            case STARTS_WITH:
-                parts.add("(tmp.text_value LIKE ?)");
-                params.add(value + "%");
-                break;
-            case EQUAL:
-                parts.add("(tmp.text_value LIKE ?)");
-                params.add(value);
-                break;
-            case GREATER:
-                parts.add("(tmp.text_value > ?)");
-                params.add(value);
-                break;
-            case LOWER:
-                parts.add("(tmp.text_value < ?)");
-                params.add(value);
-                break;
-            case LOWER_OR_EQUAL:
-                parts.add("(tmp.text_value <= ?)");
-                params.add(value);
-                break;
-            case GREATER_OR_EQUAL:
-                parts.add("(tmp.text_value >= ?)");
-                params.add(value);
-                break;
-            case CONTAINS:
-            default:
-                parts.add("(tmp.text_value LIKE ?)");
-                params.add("%" + value + "%");
-                break;
-        }
-    }
+//    private DatabaseFilterResult getWhere(int mdid, List<String> values) {
+//        List<String> parts = new ArrayList<String>();
+//        List<Object> params = new ArrayList<Object>();
+//        params.add(mdid);
+//        for (String v : values)
+//            this.buildWhere(v, parts, params);
+//        if (parts.size() > 0) {
+//            String query = "EXISTS (SELECT tmp.* FROM metadatavalue tmp WHERE tmp.resource_id=i.item_id AND tmp.resource_type_id=" + Constants.ITEM+ " AND tmp.metadata_field_id=?"
+//                    + " AND ("
+//                    + StringUtils.join(parts.iterator(), " OR ")
+//                    + "))";
+//            return new DatabaseFilterResult(query, params);
+//        }
+//        return new DatabaseFilterResult();
+//    }
+//
+//    private void buildWhere(String value, List<String> parts,
+//                            List<Object> params) {
+//        switch (this.getOperator()) {
+//            case ENDS_WITH:
+//                parts.add("(tmp.text_value LIKE ?)");
+//                params.add("%" + value);
+//                break;
+//            case STARTS_WITH:
+//                parts.add("(tmp.text_value LIKE ?)");
+//                params.add(value + "%");
+//                break;
+//            case EQUAL:
+//                parts.add("(tmp.text_value LIKE ?)");
+//                params.add(value);
+//                break;
+//            case GREATER:
+//                parts.add("(tmp.text_value > ?)");
+//                params.add(value);
+//                break;
+//            case LOWER:
+//                parts.add("(tmp.text_value < ?)");
+//                params.add(value);
+//                break;
+//            case LOWER_OR_EQUAL:
+//                parts.add("(tmp.text_value <= ?)");
+//                params.add(value);
+//                break;
+//            case GREATER_OR_EQUAL:
+//                parts.add("(tmp.text_value >= ?)");
+//                params.add(value);
+//                break;
+//            case CONTAINS:
+//            default:
+//                parts.add("(tmp.text_value LIKE ?)");
+//                params.add("%" + value + "%");
+//                break;
+//        }
+//    }
 
     @Override
     public SolrFilterResult buildSolrQuery() {

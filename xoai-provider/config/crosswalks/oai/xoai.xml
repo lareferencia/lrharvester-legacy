@@ -254,7 +254,7 @@
         </Filter>
 
         <CustomCondition id="thesisDocumentTypeCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRAtLeastOneMetadataFilter</Class>
             <Configuration>
                 <string name="field">dc.type</string>
                 <string name="operator">contains</string>
@@ -263,21 +263,21 @@
         </CustomCondition>
 
         <CustomCondition id="authorExistsCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceMetadataExistsFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRMetadataExistsFilter</Class>
             <Configuration>
                 <string name="field">dc.contributor.author</string>
             </Configuration>
         </CustomCondition>
 
         <CustomCondition id="titleExistsCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceMetadataExistsFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRMetadataExistsFilter</Class>
             <Configuration>
                 <string name="field">dc.title</string>
             </Configuration>
         </CustomCondition>
 
         <CustomCondition id="driverDocumentTypeCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRAtLeastOneMetadataFilter</Class>
             <Configuration>
                 <string name="field">dc.type</string>
                 <string name="operator">ends_with</string>
@@ -303,7 +303,7 @@
         </CustomCondition>
 
         <CustomCondition id="driverAccessCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRAtLeastOneMetadataFilter</Class>
             <Configuration>
                 <string name="field">dc.rights</string>
                 <string name="operator">contains</string>
@@ -315,11 +315,11 @@
         </CustomCondition>
 
         <CustomCondition id="bitstreamAccessCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceAuthorizationFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRAuthorizationFilter</Class>
         </CustomCondition>
 
         <CustomCondition id="openaireRelationCondition">
-            <Class>org.lareferencia.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Class>org.lareferencia.xoai.filter.LRAtLeastOneMetadataFilter</Class>
             <Configuration>
                 <string name="field">dc.relation</string>
                 <string name="operator">starts_with</string>

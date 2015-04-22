@@ -7,37 +7,30 @@
  */
 package org.lareferencia.xoai.filter;
 
-import com.lyncode.xoai.dataprovider.core.ReferenceSet;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.dspace.content.DSpaceObject;
-import org.lareferencia.xoai.Context;
 import org.lareferencia.xoai.data.DSpaceItem;
-import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
-import org.lareferencia.xoai.services.api.database.CollectionsService;
-import org.lareferencia.xoai.services.api.database.HandleResolver;
 
-import java.util.List;
+import com.lyncode.xoai.dataprovider.core.ReferenceSet;
 
 /**
  *
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceSetSpecFilter extends LRFilter
+public class LRSetSpecFilter extends LRFilter
 {
-    private static Logger log = LogManager.getLogger(DSpaceSetSpecFilter.class);
+    private static Logger log = LogManager.getLogger(LRSetSpecFilter.class);
 
     private String setSpec;
-    private HandleResolver handleResolver;
-    private CollectionsService collectionsService;
+//    private HandleResolver handleResolver;
+//    private CollectionsService collectionsService;
 
-    public DSpaceSetSpecFilter(CollectionsService collectionsService, HandleResolver handleResolver, String spec)
+    public LRSetSpecFilter(/*CollectionsService collectionsService, HandleResolver handleResolver, */String spec)
     {
-        this.collectionsService = collectionsService;
-        this.handleResolver = handleResolver;
+//        this.collectionsService = collectionsService;
+//        this.handleResolver = handleResolver;
         this.setSpec = spec;
     }
 
@@ -113,6 +106,11 @@ public class DSpaceSetSpecFilter extends LRFilter
                 log.error(e.getMessage(), e);
             }
         }
+        else { // sin prefijo se mapea contra item.collections
+        	return new SolrFilterResult("item.collections:"
+                    + ClientUtils.escapeQueryChars(setSpec));
+        }
+        
         return new SolrFilterResult();
     }
 

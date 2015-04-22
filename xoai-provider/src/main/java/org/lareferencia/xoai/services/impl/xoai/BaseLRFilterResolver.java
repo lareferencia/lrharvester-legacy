@@ -20,8 +20,6 @@ import org.lareferencia.xoai.filter.results.SolrFilterResult;
 import org.lareferencia.xoai.services.api.context.ContextService;
 import org.lareferencia.xoai.services.api.context.ContextServiceException;
 
-import org.lareferencia.xoai.services.api.database.FieldResolver;
-
 import org.lareferencia.xoai.services.api.xoai.LRFilterResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,8 +30,6 @@ import static com.lyncode.xoai.dataprovider.filter.Scope.MetadataFormat;
 public class BaseLRFilterResolver implements LRFilterResolver {
     private static final Logger LOGGER = Logger.getLogger(BaseLRFilterResolver.class);
 
-    @Autowired
-    FieldResolver fieldResolver;
 
     @Autowired
     ContextService contextService;
@@ -83,17 +79,17 @@ public class BaseLRFilterResolver implements LRFilterResolver {
 
     @Override
     public Filter getFilter(Class<? extends Filter> filterClass, ParameterMap configuration) {
-        if (filterClass.isAssignableFrom(DSpaceAtLeastOneMetadataFilter.class)) {
-            return new DSpaceAtLeastOneMetadataFilter(configuration);
-        } else if (filterClass.isAssignableFrom(DSpaceAuthorizationFilter.class)) {
-//            try {
-////                return new DSpaceAuthorizationFilter(contextService.getContext());
-//            } catch (ContextServiceException e) {
-//                LOGGER.error(e.getMessage(), e);
-//                return null;
-//            }
-        } else if (filterClass.isAssignableFrom(DSpaceMetadataExistsFilter.class)) {
-            return new DSpaceMetadataExistsFilter(fieldResolver, configuration);
+        if (filterClass.isAssignableFrom(LRAtLeastOneMetadataFilter.class)) {
+            return new LRAtLeastOneMetadataFilter(configuration);
+        } else if (filterClass.isAssignableFrom(LRAuthorizationFilter.class)) {
+            try {
+               return new LRAuthorizationFilter(contextService.getContext());
+            } catch (ContextServiceException e) {
+                LOGGER.error(e.getMessage(), e);
+                return null;
+            }
+        } else if (filterClass.isAssignableFrom(LRMetadataExistsFilter.class)) {
+            return new LRMetadataExistsFilter(configuration);
         }
         LOGGER.error("Filter "+filterClass.getName()+" unknown instantiation");
         return null;

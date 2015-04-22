@@ -13,18 +13,22 @@ import com.lyncode.xoai.dataprovider.services.api.SetRepository;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrResponse;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.util.NamedList;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
-
-
 import org.lareferencia.xoai.Context;
-
 import org.dspace.handle.HandleManager;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
 import org.lareferencia.xoai.data.DSpaceSet;
+import org.lareferencia.xoai.services.api.solr.SolrServerResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -40,14 +44,17 @@ public class LRSetRepository implements SetRepository
     private static final Logger log = LogManager.getLogger(LRSetRepository.class);
 
     private final Context _context;
+    @Autowired SolrServerResolver solrServerResolver;
 
     public LRSetRepository(Context context)
     {
         _context = context;
+        
     }
 
     private int getCommunityCount()
-    {
+    {  	
+    	
 //        String query = "SELECT COUNT(*) as count FROM community";
 //        try
 //        {
@@ -141,6 +148,34 @@ public class LRSetRepository implements SetRepository
     private List<Set> collection(int offset, int length)
     {
         List<Set> array = new ArrayList<Set>();
+        
+//        try {
+//			SolrServer solrServer = solrServerResolver.getServer();
+//			
+//			SolrQuery query = new SolrQuery("*:*");
+//			query.setFacet(true);
+//			query.addFacetField("item.collections");
+//
+//			
+//			SolrResponse response = solrServer.query( query );
+//			
+//			NamedList<Object> result = response.getResponse();
+//			
+//			System.out.println(result);
+//			
+//			
+//          
+//          } catch (SolrServerException e) {
+//			
+//        	log.error(e.getMessage(), e);  
+//        	  
+//			e.printStackTrace();
+//		}
+        
+        
+        
+        
+        
 //        
 //        StringBuffer query = new StringBuffer("SELECT collection_id FROM collection ORDER BY collection_id");
 //        List<Serializable> params = new ArrayList<Serializable>();

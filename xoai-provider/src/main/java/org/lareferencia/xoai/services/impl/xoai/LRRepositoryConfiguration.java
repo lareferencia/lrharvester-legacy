@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.lareferencia.xoai.Context;
 import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
-import org.lareferencia.xoai.services.api.database.EarliestDateResolver;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -43,12 +42,11 @@ public class LRRepositoryConfiguration implements RepositoryConfiguration
     private String name = null;
     private String baseUrl = null;
     private Context context;
-    private EarliestDateResolver dateResolver;
+
     private ConfigurationService configurationService;
 
-    public LRRepositoryConfiguration(EarliestDateResolver dateResolver, ConfigurationService configurationService, Context context)
+    public LRRepositoryConfiguration( ConfigurationService configurationService, Context context)
     {
-        this.dateResolver = dateResolver;
         this.configurationService = configurationService;
         this.context = context;
     }
@@ -92,18 +90,21 @@ public class LRRepositoryConfiguration implements RepositoryConfiguration
     public Date getEarliestDate()
     {
         // Look at the database!
-        try
-        {
-            return dateResolver.getEarliestDate(context);
-        }
-        catch (SQLException e)
-        {
-            log.error(e.getMessage(), e);
-        }
-        catch (InvalidMetadataFieldException e)
-        {
-            log.error(e.getMessage(), e);
-        }
+//        try
+//        {
+//            return dateResolver.getEarliestDate(context);
+//        }
+//        catch (SQLException e)
+//        {
+//            log.error(e.getMessage(), e);
+//        }
+//        catch (InvalidMetadataFieldException e)
+//        {
+//            log.error(e.getMessage(), e);
+//        }
+    	
+    	// FIXME: Tal vez lo más prolijo sea mirar el indice solr?
+    	
         return new Date();
     }
 

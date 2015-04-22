@@ -23,8 +23,6 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.lareferencia.xoai.data.DSpaceSolrItem;
-import org.lareferencia.xoai.services.api.database.CollectionsService;
-import org.lareferencia.xoai.services.api.database.HandleResolver;
 import org.lareferencia.xoai.services.api.solr.SolrQueryResolver;
 import org.lareferencia.xoai.solr.DSpaceSolrSearch;
 import org.lareferencia.xoai.solr.exceptions.DSpaceSolrException;

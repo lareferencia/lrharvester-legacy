@@ -32,7 +32,7 @@ public class DSpaceSolrServer
             try
             {
                 _server = new HttpSolrServer(
-                        ConfigurationManager.getProperty("oai", "solr.url"));
+                        ConfigurationManager.getProperty("solr.url"));
                 log.debug("Solr Server Initialized");
             }            
             catch (Exception e)

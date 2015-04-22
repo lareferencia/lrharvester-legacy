@@ -19,7 +19,6 @@ import org.lareferencia.xoai.data.DSpaceItem;
 import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
-import org.lareferencia.xoai.services.api.database.FieldResolver;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,16 +34,14 @@ import java.util.List;
  * @author Ariel J. Lira <arieljlira@gmail.com>
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceMetadataExistsFilter extends LRFilter {
+public class LRMetadataExistsFilter extends LRFilter {
     private static Logger log = LogManager
-            .getLogger(DSpaceMetadataExistsFilter.class);
+            .getLogger(LRMetadataExistsFilter.class);
 
-    private FieldResolver fieldResolver;
     private List<String> fields;
     private ParameterMap configuration;
 
-    public DSpaceMetadataExistsFilter(FieldResolver fieldResolver, ParameterMap configuration) {
-        this.fieldResolver = fieldResolver;
+    public LRMetadataExistsFilter(ParameterMap configuration) {
         this.configuration = configuration;
     }
 

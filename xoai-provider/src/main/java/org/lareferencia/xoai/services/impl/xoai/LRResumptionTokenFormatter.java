@@ -18,11 +18,11 @@ import org.lareferencia.xoai.util.DateUtils;
 import java.util.Date;
 
 
-public class DSpaceResumptionTokenFormatter implements ResumptionTokenFormatter {
+public class LRResumptionTokenFormatter implements ResumptionTokenFormatter {
     private static Logger log = LogManager
-            .getLogger(DSpaceResumptionTokenFormatter.class);
+            .getLogger(LRResumptionTokenFormatter.class);
 
-    public DSpaceResumptionTokenFormatter() {
+    public LRResumptionTokenFormatter() {
         // TODO Auto-generated constructor stub
     }
 

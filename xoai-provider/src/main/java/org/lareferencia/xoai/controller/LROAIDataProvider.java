@@ -26,7 +26,7 @@ import org.lareferencia.xoai.Context;
 import org.lareferencia.xoai.services.api.xoai.IdentifyResolver;
 import org.lareferencia.xoai.services.api.xoai.ItemRepositoryResolver;
 import org.lareferencia.xoai.services.api.xoai.SetRepositoryResolver;
-import org.lareferencia.xoai.services.impl.xoai.DSpaceResumptionTokenFormatter;
+import org.lareferencia.xoai.services.impl.xoai.LRResumptionTokenFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,7 +65,7 @@ public class LROAIDataProvider
     @Autowired IdentifyResolver identifyResolver;
     @Autowired SetRepositoryResolver setRepositoryResolver;
 
-    private DSpaceResumptionTokenFormatter resumptionTokenFormat = new DSpaceResumptionTokenFormatter();
+    private LRResumptionTokenFormatter resumptionTokenFormat = new LRResumptionTokenFormatter();
 
     @RequestMapping("/")
     public String indexAction (HttpServletResponse response, Model model) throws ServletException {

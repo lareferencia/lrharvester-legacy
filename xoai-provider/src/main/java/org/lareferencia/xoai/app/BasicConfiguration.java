@@ -16,8 +16,6 @@ import org.lareferencia.xoai.services.api.cache.XOAILastCompilationCacheService;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
 import org.lareferencia.xoai.services.api.config.XOAIManagerResolver;
 import org.lareferencia.xoai.services.api.context.ContextService;
-import org.lareferencia.xoai.services.api.database.EarliestDateResolver;
-import org.lareferencia.xoai.services.api.database.FieldResolver;
 import org.lareferencia.xoai.services.api.solr.SolrQueryResolver;
 import org.lareferencia.xoai.services.api.solr.SolrServerResolver;
 import org.lareferencia.xoai.services.api.xoai.IdentifyResolver;
@@ -30,8 +28,6 @@ import org.lareferencia.xoai.services.impl.cache.LRXOAILastCompilationCacheServi
 import org.lareferencia.xoai.services.impl.config.LRConfigurationService;
 import org.lareferencia.xoai.services.impl.context.LRContextService;
 import org.lareferencia.xoai.services.impl.context.LRXOAIManagerResolver;
-import org.lareferencia.xoai.services.impl.database.DSpaceFieldResolver;
-import org.lareferencia.xoai.services.impl.database.LRDummyEarliestDateResolver;
 import org.lareferencia.xoai.services.impl.resources.LRResourceResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrQueryResolver;
 import org.lareferencia.xoai.services.impl.solr.LRSolrServerResolver;
@@ -100,15 +96,15 @@ public class BasicConfiguration {
         return new LRResourceResolver();
     }
 
-    @Bean
-    public FieldResolver databaseService () {
-        return new DSpaceFieldResolver();
-    }
+//    @Bean
+//    public FieldResolver databaseService () {
+//        return new DSpaceFieldResolver();
+//    }
 
-    @Bean
-    public EarliestDateResolver earliestDateResolver () {
-        return new LRDummyEarliestDateResolver();
-    }
+//    @Bean
+//    public EarliestDateResolver earliestDateResolver () {
+//        return new LRDummyEarliestDateResolver();
+//    }
 
     @Bean
     public ItemRepositoryResolver itemRepositoryResolver () {

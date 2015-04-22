@@ -12,14 +12,12 @@ import com.lyncode.xoai.dataprovider.services.api.RepositoryConfiguration;
 import org.lareferencia.xoai.services.api.config.ConfigurationService;
 import org.lareferencia.xoai.services.api.context.ContextService;
 import org.lareferencia.xoai.services.api.context.ContextServiceException;
-import org.lareferencia.xoai.services.api.database.EarliestDateResolver;
 import org.lareferencia.xoai.services.api.xoai.IdentifyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LRIdentifyResolver implements IdentifyResolver {
 	
-    @Autowired
-    private EarliestDateResolver earliestDateResolver;
+  
     @Autowired
     private ConfigurationService configurationService;
     @Autowired
@@ -27,6 +25,6 @@ public class LRIdentifyResolver implements IdentifyResolver {
 
     @Override
     public RepositoryConfiguration getIdentify() throws ContextServiceException {
-        return new LRRepositoryConfiguration(earliestDateResolver, configurationService, contextService.getContext());
+        return new LRRepositoryConfiguration(configurationService, contextService.getContext());
     }
 }

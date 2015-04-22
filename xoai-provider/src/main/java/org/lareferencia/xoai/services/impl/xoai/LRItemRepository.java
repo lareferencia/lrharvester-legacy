@@ -15,11 +15,9 @@ import com.lyncode.xoai.dataprovider.filter.Scope;
 import com.lyncode.xoai.dataprovider.filter.ScopedFilter;
 import com.lyncode.xoai.dataprovider.filter.conditions.Condition;
 import com.lyncode.xoai.dataprovider.services.api.ItemRepository;
-import org.lareferencia.xoai.filter.DSpaceSetSpecFilter;
+import org.lareferencia.xoai.filter.LRSetSpecFilter;
 import org.lareferencia.xoai.filter.DateFromFilter;
 import org.lareferencia.xoai.filter.DateUntilFilter;
-import org.lareferencia.xoai.services.api.database.CollectionsService;
-import org.lareferencia.xoai.services.api.database.HandleResolver;
 
 import java.util.Date;
 import java.util.List;

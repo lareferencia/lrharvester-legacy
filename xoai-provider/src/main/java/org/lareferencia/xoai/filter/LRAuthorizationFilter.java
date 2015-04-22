@@ -29,12 +29,12 @@ import java.util.List;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceAuthorizationFilter extends LRFilter
+public class LRAuthorizationFilter extends LRFilter
 {
-    private static Logger log = LogManager.getLogger(DSpaceAuthorizationFilter.class);
+    private static Logger log = LogManager.getLogger(LRAuthorizationFilter.class);
     private Context context;
 
-    public DSpaceAuthorizationFilter (Context context) {
+    public LRAuthorizationFilter (Context context) {
         this.context = context;
     }
 
