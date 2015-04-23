@@ -13,23 +13,11 @@
  ******************************************************************************/
 package org.lareferencia.backend.indexer;
 
-import java.io.File;
-
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.IOException;
-import java.io.StringWriter;
-import java.security.MessageDigest;
 import java.util.List;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.TransformerException;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -41,16 +29,12 @@ import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
+import org.lareferencia.backend.util.OAIMetadataXSLTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public class IndexerImpl implements IIndexer{
-
-	private File stylesheet;
-	
-	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
 	private static final int PAGE_SIZE = 1000;
 	
@@ -61,44 +45,26 @@ public class IndexerImpl implements IIndexer{
 	private NetworkSnapshotRepository networkSnapshotRepository;
 	
 	private String solrURL;
+	private HttpSolrServer solrServer;
+
+	private OAIMetadataXSLTransformer metadataTransformer;
+
+	private String xslFileName;
 	
 	public IndexerImpl(String xslFileName, String solrURL) throws IndexerException {
-		this.stylesheet = new File(xslFileName);
-		this.solrURL = solrURL;	
+		this.solrURL = solrURL;
+		this.solrServer = new HttpSolrServer(solrURL);
+		this.xslFileName = xslFileName;		
 	}
-	
-	private Transformer buildTransformer() throws IndexerException {
-		
-		Transformer trf; 
 
-		try {
-		
-			StreamSource stylesource = new StreamSource(stylesheet); 
-	        trf = xformFactory.newTransformer(stylesource);
-			
-			trf = MedatadaDOMHelper.buildXSLTTransformer(stylesheet);
-			trf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			trf.setOutputProperty(OutputKeys.INDENT, "no");
-			trf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			
-		} catch (TransformerConfigurationException e) {
-			throw new IndexerException(e.getMessage(), e.getCause());
-		} 
-		
-		return trf;
-		
-	}
-	
 	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
 	public synchronized boolean index(NetworkSnapshot snapshot) {
-		
-		 
+			 
 		 try {	
+
 			// Borrado de los docs del país del snapshot
-			
-			 MessageDigest md = MessageDigest.getInstance("MD5");
-			 String networkAcronym = snapshot.getNetwork().getAcronym();
+			String networkAcronym = snapshot.getNetwork().getAcronym();
 	
 			this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
 			
@@ -106,109 +72,117 @@ public class IndexerImpl implements IIndexer{
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 						
+			metadataTransformer = new OAIMetadataXSLTransformer(xslFileName);
+			metadataTransformer.setParameter("networkAcronym", networkAcronym);
+			metadataTransformer.setParameter("networkName", snapshot.getNetwork().getName() );
+			metadataTransformer.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
+		
 
 			Long lastRecordID = -1L;
 			
 			for (int i = 0; i < totalPages; i++) {
-							
-				Transformer trf = buildTransformer();
-				trf.setParameter("networkAcronym", networkAcronym);
-				trf.setParameter("networkName", snapshot.getNetwork().getName() );
-				trf.setParameter("institutionName", snapshot.getNetwork().getInstitutionName() );
-				
+
+				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i+1) + " de: " + totalPages);
 				
 				/** Este pedido paginado pide siempre la primera página restringida a que el id sea mayor al ultimo anterior **/ 		
-				page = recordRepository.findBySnapshotIdAndStatusOptimized(snapshot.getId(), RecordStatus.VALID, lastRecordID, new PageRequest(0, PAGE_SIZE) );
-				
-				System.out.println( "Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i+1) + " de: " + totalPages);
-								
-				StringBuffer strBuf = new StringBuffer();
-				
+				page = recordRepository.findBySnapshotIdAndStatusOptimized(snapshot.getId(), RecordStatus.VALID, lastRecordID, new PageRequest(0, PAGE_SIZE) );				
 				List<OAIRecord> records = page.getContent();
-
 				
-				for (OAIRecord record : records) {
-					
-					//System.out.println( record.getId() + ";" + record.getFingerprint() + ";\t RECORDID"  );
-					
-					OAIRecordMetadata domRecord = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
-					
-					StringWriter stringWritter = new StringWriter();
-					Result output = new StreamResult(stringWritter);
+				StringBuffer stringBuffer = new StringBuffer();
 
-					//System.out.println( networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );	
-									
-					// id permantente para vufind
-					//trf.setParameter("vufind_id", networkAcronym + "_" +  DigestUtils.md5Hex(record.getPublishedXML()) );
-					trf.setParameter("vufind_id", record.getFingerprint() );
+				for (OAIRecord record : records) {
 										
-					// header id para staff
-					trf.setParameter("header_id", record.getIdentifier() );
+					OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML() );
+													
+					// fingerprint del registro
+					metadataTransformer.setParameter("vufind_id", record.getFingerprint() );
+					// TODO: Creo que sería bueno cambiar el nombre de vufind_id por fingerprint y modificarlo en el xsl
+										
+					// identifier del record
+					metadataTransformer.setParameter("header_id", record.getIdentifier() );
 					
 					// Se transforma y genera el string del registro
-					trf.transform( new DOMSource(domRecord.getDOMDocument()), output);
-					strBuf.append(stringWritter.toString());
+					stringBuffer.append( metadataTransformer.transform(metadata) );
 					
 					lastRecordID = record.getId();
 				}
 			
 
 				try {	
-					this.sendUpdateToSolr("<add>" + strBuf.toString()  + "</add>");
+					this.sendUpdateToSolr("<add>" + stringBuffer.toString()  + "</add>");
 				} catch (Exception e) {
 					System.out.println( e.getMessage() );
 				}
 				
-				trf = null;
 				page = null;
-				strBuf = null;
 				
 			}
 			
 			//commit de los cambios
 			this.sendUpdateToSolr("<commit/>");
 				 
-		} catch (Exception e) {
-			e.printStackTrace();
-			try {
-				this.sendUpdateToSolr("<rollback/>");
-			} catch (SolrServerException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		} catch (TransformerConfigurationException e) {
+			System.err.println("Problemas en la carga del transformador xsl:" + xslFileName );
+			solrRollback();
 			return false;
+		} catch (TransformerException e) {
+			System.err.println("Problemas en el proceso de transformación xsl:" + xslFileName );
+			solrRollback();
+			return false;		
+		} catch (SolrServerException e) {
+			System.err.println("Problemas en el proceso de envío a SOLR:" + solrURL );
+			solrRollback();
+			return false;
+		} catch (IOException e) {
+			System.err.println("Problemas en el proceso de envío a SOLR - E/S:" + solrURL );
+			solrRollback();
+			return false;		
+		} catch (Exception e) {
+			System.err.println("Problemas en indexación - Indeterminado" );
+			solrRollback();
+			e.printStackTrace();
+			return false;		
 		}
-
+		
 		return true;
 	}
 	
+	private void solrRollback() {
+		try {			
+			this.sendUpdateToSolr("<rollback/>");			
+		} catch (SolrServerException e) {
+			System.err.println("Problemas en rollback SOLR - Transformador - SolrServer");	
+		} catch (IOException e) {		
+			System.err.println("Problemas en rollback SOLR - Transformador - Error E/S");
+		}
+	}
+	
+	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
 	public synchronized boolean delete(Network network) {
-		
-		 
+				 
 		 try {	
 			
 			 // Borrado de la red 
 			String networkAcronym = network.getAcronym();
-	
 			this.sendUpdateToSolr("<delete><query>network_acronym:" + networkAcronym +"</query></delete>");
 								
 			//commit de los cambios
 			this.sendUpdateToSolr("<commit/>");
-				 
-		} catch (Exception e) {
-			e.printStackTrace();
-			try {
-				this.sendUpdateToSolr("<rollback/>");
-			} catch (SolrServerException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+				 	
+		} catch (SolrServerException e) {
+			System.err.println("Problemas en el proceso de borrado de red en SOLR:" + solrURL );
+			solrRollback();
 			return false;
+		} catch (IOException e) {
+			System.err.println("Problemas en el proceso de envío a SOLR - E/S:" + solrURL );
+			solrRollback();
+			return false;		
+		} catch (Exception e) {
+			System.err.println("Problemas en borrado durante indexación - Indeterminado" );
+			solrRollback();
+			e.printStackTrace();
+			return false;		
 		}
 
 		return true;
@@ -216,11 +190,8 @@ public class IndexerImpl implements IIndexer{
 	
 	
 	private void sendUpdateToSolr(String data) throws SolrServerException, IOException {
-		HttpSolrServer server = new HttpSolrServer(solrURL);
 		DirectXmlRequest request = new DirectXmlRequest("/update", data);
-		server.request(request);
-		server = null;
-		//System.out.println(data);
+		solrServer.request(request);
 	}
 	
 	
