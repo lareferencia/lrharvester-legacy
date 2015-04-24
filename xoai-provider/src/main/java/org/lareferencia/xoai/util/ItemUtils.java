@@ -21,7 +21,7 @@ import org.dspace.content.authority.Choices;
 import org.lareferencia.xoai.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Utils;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -164,7 +164,7 @@ public class ItemUtils
                     String url = "";
                     String bsName = bit.getName();
                     String sid = String.valueOf(bit.getSequenceID());
-                    String baseUrl = ConfigurationManager.getProperty("oai",
+                    String baseUrl = ConfigurationManager.getProperty(
                             "bitstream.baseUrl");
                     String handle = null;
                     // get handle of parent Item of this bitstream, if there
@@ -239,7 +239,7 @@ public class ItemUtils
         other.getField().add(
                 createValue("handle", item.getHandle()));
         other.getField().add(
-                createValue("identifier", DSpaceItem.buildIdentifier(item.getHandle())));
+                createValue("identifier", RepostioryItem.buildIdentifier(item.getHandle())));
         other.getField().add(
                 createValue("lastModifyDate", item
                         .getLastModified().toString()));

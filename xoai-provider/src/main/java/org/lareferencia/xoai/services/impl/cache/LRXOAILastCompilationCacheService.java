@@ -29,7 +29,7 @@ public class LRXOAILastCompilationCacheService implements XOAILastCompilationCac
     {
         if (file == null)
         {
-            String dir = ConfigurationManager.getProperty("oai", "cache.dir") + DATEFILE;
+            String dir = ConfigurationManager.getProperty( "cache.dir") + DATEFILE;
             file = new File(dir);
         }
         return file;

@@ -23,7 +23,6 @@ public class LRResumptionTokenFormatter implements ResumptionTokenFormatter {
             .getLogger(LRResumptionTokenFormatter.class);
 
     public LRResumptionTokenFormatter() {
-        // TODO Auto-generated constructor stub
     }
 
     @Override

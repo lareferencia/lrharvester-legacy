@@ -10,7 +10,7 @@ package org.lareferencia.xoai.filter;
 import com.lyncode.xoai.dataprovider.data.Filter;
 import com.lyncode.xoai.dataprovider.data.ItemIdentifier;
 import org.lareferencia.xoai.Context;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 
@@ -22,14 +22,14 @@ public abstract class LRFilter implements Filter
 {
     //public abstract DatabaseFilterResult buildDatabaseQuery(Context context);
     public abstract SolrFilterResult buildSolrQuery();
-    public abstract boolean isShown(DSpaceItem item);
+    public abstract boolean isShown(RepostioryItem item);
 
     @Override
     public boolean isItemShown(ItemIdentifier item)
     {
-        if (item instanceof DSpaceItem)
+        if (item instanceof RepostioryItem)
         {
-            return isShown((DSpaceItem) item);
+            return isShown((RepostioryItem) item);
         }
         return false;
     }

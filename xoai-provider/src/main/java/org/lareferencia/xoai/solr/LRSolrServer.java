@@ -19,9 +19,9 @@ import org.lareferencia.xoai.ConfigurationManager;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceSolrServer
+public class LRSolrServer
 {
-    private static Logger log = LogManager.getLogger(DSpaceSolrServer.class);
+    private static Logger log = LogManager.getLogger(LRSolrServer.class);
 
     private static SolrServer _server = null;
 
@@ -31,8 +31,7 @@ public class DSpaceSolrServer
         {
             try
             {
-                _server = new HttpSolrServer(
-                        ConfigurationManager.getProperty("solr.url"));
+                _server = new HttpSolrServer(ConfigurationManager.getProperty("solr.url"));
                 log.debug("Solr Server Initialized");
             }            
             catch (Exception e)

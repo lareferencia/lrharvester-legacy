@@ -181,9 +181,8 @@ public abstract class LRItemRepository implements ItemRepository
         return new Condition() {
             @Override
             public Filter getFilter() {
-                return null;//new DSpaceSetSpecFilter(collectionsService, handleResolver, setSpec);
+                return new LRSetSpecFilter(setSpec);
             }
-            // TODO: Ver como esto puede mapearse de DspaceSetSpecFilter a uno de LR
         };
     }
 

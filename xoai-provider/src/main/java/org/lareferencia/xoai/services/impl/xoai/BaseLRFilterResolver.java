@@ -64,7 +64,11 @@ public class BaseLRFilterResolver implements LRFilterResolver {
 
     @Override
     public String buildSolrQuery(Scope scope, Condition condition) {
-        LRFilter filter = getFilter(condition);
+    
+    	System.out.println(scope);
+    	System.out.println(condition);
+    	
+    	LRFilter filter = getFilter(condition);
         SolrFilterResult result = filter.buildSolrQuery();
         if (result.hasResult())
         {

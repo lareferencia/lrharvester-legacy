@@ -5,7 +5,6 @@
  *
  * http://www.dspace.org/license/
  */
-
 package org.lareferencia.xoai.solr.exceptions;
 
 /**
@@ -13,13 +12,14 @@ package org.lareferencia.xoai.solr.exceptions;
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
 @SuppressWarnings("serial")
-public class DSpaceSolrIndexerException extends Exception
+public class LRSolrException extends Exception
 {
+
     /**
      * Creates a new instance of <code>DSpaceSolrException</code> without detail
      * message.
      */
-    public DSpaceSolrIndexerException()
+    public LRSolrException()
     {
     }
 
@@ -30,12 +30,12 @@ public class DSpaceSolrIndexerException extends Exception
      * @param msg
      *            the detail message.
      */
-    public DSpaceSolrIndexerException(String msg)
+    public LRSolrException(String msg)
     {
         super(msg);
     }
 
-    public DSpaceSolrIndexerException(String msg, Throwable t)
+    public LRSolrException(String msg, Throwable t)
     {
         super(msg, t);
     }

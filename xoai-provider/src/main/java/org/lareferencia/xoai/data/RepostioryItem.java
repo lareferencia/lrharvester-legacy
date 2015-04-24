@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public abstract class DSpaceItem implements Item
+public abstract class RepostioryItem implements Item
 {
 	private static List<Element> filter (List<Element> input, String name) {
     	return Lists.newArrayList(Collections2.filter(input, new MetadataNamePredicate(name)));
@@ -66,7 +66,7 @@ public abstract class DSpaceItem implements Item
     public static String buildIdentifier (String handle) {
         if (_prefix == null)
         {
-            _prefix = ConfigurationManager.getProperty("oai",
+            _prefix = ConfigurationManager.getProperty(
                     "identifier.prefix");
         }
         return "oai:" + _prefix + ":" + handle;

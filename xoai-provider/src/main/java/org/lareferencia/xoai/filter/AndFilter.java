@@ -8,7 +8,7 @@
 package org.lareferencia.xoai.filter;
 
 import org.lareferencia.xoai.Context;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 
@@ -40,7 +40,7 @@ public class AndFilter extends LRFilter {
     }
 
     @Override
-    public boolean isShown(DSpaceItem item) {
+    public boolean isShown(RepostioryItem item) {
         return left.isShown(item) && right.isShown(item);
     }
 }

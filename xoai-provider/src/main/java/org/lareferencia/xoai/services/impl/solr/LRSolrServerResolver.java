@@ -33,9 +33,9 @@ public class LRSolrServerResolver implements SolrServerResolver {
             try
             {
             	
-                server = new HttpSolrServer(configurationService.getProperty( "solr.url"));
+                server = new HttpSolrServer(configurationService.getProperty("solr.url"));
 
-                //server = new HttpSolrServer(configurationService.getProperty("oai", "solr.url"));
+                //server = new HttpSolrServer(configurationService.getProperty( "solr.url"));
                 log.debug("Solr Server Initialized");
             }
             catch (Exception e)

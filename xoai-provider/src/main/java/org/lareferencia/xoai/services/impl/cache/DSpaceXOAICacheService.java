@@ -38,7 +38,7 @@ public class DSpaceXOAICacheService implements XOAICacheService {
 
     private static String getBaseDir() {
         if (baseDir == null) {
-            String dir = ConfigurationManager.getProperty("oai", "cache.dir") + REQUEST_DIR;
+            String dir = ConfigurationManager.getProperty( "cache.dir") + REQUEST_DIR;
             baseDir = dir;
         }
         return baseDir;

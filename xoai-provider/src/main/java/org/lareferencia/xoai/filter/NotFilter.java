@@ -7,7 +7,7 @@
  */
 package org.lareferencia.xoai.filter;
 
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 
 public class NotFilter extends LRFilter {
@@ -30,7 +30,7 @@ public class NotFilter extends LRFilter {
     }
 
     @Override
-    public boolean isShown(DSpaceItem item) {
+    public boolean isShown(RepostioryItem item) {
         return !inFilter.isShown(item);
     }
 }

@@ -15,17 +15,17 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.lareferencia.xoai.solr.exceptions.DSpaceSolrException;
+import org.lareferencia.xoai.solr.exceptions.LRSolrException;
 import org.lareferencia.xoai.solr.exceptions.SolrSearchEmptyException;
 
 /**
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceSolrSearch
+public class LRSolrSearch
 {
     public static SolrDocumentList query(SolrServer server, SolrQuery solrParams)
-            throws DSpaceSolrException
+            throws LRSolrException
     {
         try
         {
@@ -35,7 +35,7 @@ public class DSpaceSolrSearch
         }
         catch (SolrServerException ex)
         {
-            throw new DSpaceSolrException(ex.getMessage(), ex);
+            throw new LRSolrException(ex.getMessage(), ex);
         }
     }
 

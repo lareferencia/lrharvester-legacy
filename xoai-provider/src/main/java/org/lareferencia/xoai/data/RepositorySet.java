@@ -7,8 +7,7 @@
  */
 package org.lareferencia.xoai.data;
 
-import org.dspace.content.Collection;
-import org.dspace.content.Community;
+
 
 import com.lyncode.xoai.dataprovider.core.Set;
 
@@ -16,7 +15,7 @@ import com.lyncode.xoai.dataprovider.core.Set;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceSet extends Set {
+public class RepositorySet extends Set {
 	private static final String DefaultName = "undefined";
 
 	public static String checkName(String name) {
@@ -25,20 +24,24 @@ public class DSpaceSet extends Set {
 		return DefaultName;
 	}
 
-	public static Set newDSpaceCommunitySet(String handle, String name) {
+	
+	public static Set newSet(String handle, String name) {
 
-		return new Set("com_" + handle.replace('/', '_'), checkName(name));
+		return new Set(handle, checkName(name));
+	}
+	
+	public RepositorySet() {
+		
+		super("DUMY_SETSPEC","DUMMY_SETNAME");
+		// FIXME: ENTIENDO QUE ESTO NO ES USADO FUERA DEL CONTEXTO DSPACE
+		
 	}
 
-	public static Set newDSpaceCollectionSet(String handle, String name) {
-		return new Set("col_" + handle.replace('/', '_'), checkName(name));
-	}
-
-	public DSpaceSet(Community c) {
+	/*public RepositorySet(Community c) {
 		super("com_" + c.getHandle().replace('/', '_'), checkName(c.getName()));
 	}
 
-	public DSpaceSet(Collection c) {
+	public RepositorySet(Collection c) {
 		super("col_" + c.getHandle().replace('/', '_'), checkName(c.getName()));
-	}
+	}*/
 }

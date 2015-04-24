@@ -186,6 +186,9 @@ public class ConfigurationManager
         {
             return getProperty(property);
         }
+        
+        warn("Intento de llamado a propiedad del módulo: " + module + " - DEPRECATED");
+
 
         String value = null;
         Properties modProps = getMutableProperties(module);

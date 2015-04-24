@@ -12,6 +12,6 @@ package org.lareferencia.xoai.filter.data;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public enum DSpaceMetadataFilterOperator {
+public enum LRMetadataFilterOperator {
     UNDEF, CONTAINS, EQUAL, GREATER, LOWER, GREATER_OR_EQUAL, LOWER_OR_EQUAL, ENDS_WITH, STARTS_WITH
 }

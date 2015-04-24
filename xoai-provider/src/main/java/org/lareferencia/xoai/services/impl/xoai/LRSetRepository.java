@@ -17,6 +17,9 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.util.NamedList;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -26,7 +29,7 @@ import org.dspace.handle.HandleManager;
 import org.dspace.storage.rdbms.DatabaseManager;
 import org.dspace.storage.rdbms.TableRow;
 import org.dspace.storage.rdbms.TableRowIterator;
-import org.lareferencia.xoai.data.DSpaceSet;
+import org.lareferencia.xoai.data.RepositorySet;
 import org.lareferencia.xoai.services.api.solr.SolrServerResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,51 +46,61 @@ public class LRSetRepository implements SetRepository
 {
     private static final Logger log = LogManager.getLogger(LRSetRepository.class);
 
-    private final Context _context;
-    @Autowired SolrServerResolver solrServerResolver;
+    //private final Context _context;
+    
+    SolrServer solrServer;
+    
 
-    public LRSetRepository(Context context)
+    public LRSetRepository(SolrServerResolver solrServerResolver)
     {
-        _context = context;
+       // _context = context;
+    	try {
+			solrServer = solrServerResolver.getServer();
+		} catch (SolrServerException e) {
+			log.error(e.getMessage(), e);
+		}
+    	
+    	System.out.print("test");
         
+    }
+    
+    
+    private List<FacetField.Count> getFacetValues(String facetFieldName) {
+    	
+    	
+       try {
+    	
+    	SolrQuery query = new SolrQuery("*:*");
+			query.setRows(0);
+			query.setFacet(true);
+			query.addFacetField(facetFieldName);
+			
+			QueryResponse response = solrServer.query( query );
+					
+			return response.getFacetFields().get(0).getValues();
+		
+       
+       } catch (SolrServerException e) {
+			
+     	log.error(e.getMessage(), e);  
+     	  
+			e.printStackTrace();
+		}
+       
+       List<FacetField.Count> list = new ArrayList<FacetField.Count>();
+       
+       return list;  	
     }
 
     private int getCommunityCount()
-    {  	
-    	
-//        String query = "SELECT COUNT(*) as count FROM community";
-//        try
-//        {
-//            TableRowIterator iterator = DatabaseManager.query(_context, query);
-//            if (iterator.hasNext())
-//                return (int) iterator.next().getLongColumn("count");
-//        }
-//        catch (SQLException e)
-//        {
-//            log.error(e.getMessage(), e);
-//        }
-    	
-    	// TODO: reimplementar esto con base LAReferencia
-    	
-        return 1;
+    {  		
+        return getFacetValues("item.communities").size();
     }
 
     private int getCollectionCount()
     {
-//        String query = "SELECT COUNT(*) as count FROM collection";
-//        try
-//        {
-//            TableRowIterator iterator = DatabaseManager.query(_context, query);
-//            if (iterator.hasNext())
-//                return (int) iterator.next().getLongColumn("count");
-//        }
-//        catch (SQLException e)
-//        {
-//            log.error(e.getMessage(), e);
-//        }
     	
-    	// TODO: reimplementar esto con base LAReferencia    	
-        return 1;
+        return getFacetValues("item.collections").size();
     }
 
     /**
@@ -102,38 +115,14 @@ public class LRSetRepository implements SetRepository
     {
         List<Set> array = new ArrayList<Set>();
         
-        
-//        StringBuffer query = new StringBuffer("SELECT community_id FROM community ORDER BY community_id");
-//        List<Serializable> params = new ArrayList<Serializable>();
-//
-//        DatabaseManager.applyOffsetAndLimit(query,params,offset,length);
-//
-//        try
-//        {
-//            TableRowIterator iterator = DatabaseManager.query(_context, query.toString(),
-//                    params.toArray());
-//            int i = 0;
-//            while (iterator.hasNext() && i < length)
-//            {
-//                TableRow row = iterator.next();
-//                int communityID = row.getIntColumn("community_id");
-//                Community community = Community.find(_context, communityID);
-//                array.add(DSpaceSet.newDSpaceCommunitySet(
-//                        community.getHandle(), community.getName()));
-//                i++;
-//            }
-//        }
-//        catch (SQLException e)
-//        {
-//            log.error(e.getMessage(), e);
-//        }
-        
-        
-        
-    	// TODO: reimplementar esto con base LAReferencia
-
-        array.add(DSpaceSet.newDSpaceCommunitySet("set_12345", "UnSetDummy"));
-        
+		
+  		for (FacetField.Count count: getFacetValues("item.communities") ) {
+  		    array.add(RepositorySet.newSet(
+  		    		count.getName(),
+  		    		count.getName()));     
+  		}
+                   
+        // FIXME: HACER CONSTANTES PARA LOS VALORES DE LAS FACETAS
         return array;
     }
 
@@ -147,69 +136,14 @@ public class LRSetRepository implements SetRepository
      */
     private List<Set> collection(int offset, int length)
     {
-        List<Set> array = new ArrayList<Set>();
-        
-//        try {
-//			SolrServer solrServer = solrServerResolver.getServer();
-//			
-//			SolrQuery query = new SolrQuery("*:*");
-//			query.setFacet(true);
-//			query.addFacetField("item.collections");
-//
-//			
-//			SolrResponse response = solrServer.query( query );
-//			
-//			NamedList<Object> result = response.getResponse();
-//			
-//			System.out.println(result);
-//			
-//			
-//          
-//          } catch (SolrServerException e) {
-//			
-//        	log.error(e.getMessage(), e);  
-//        	  
-//			e.printStackTrace();
-//		}
-        
-        
-        
-        
-        
-//        
-//        StringBuffer query = new StringBuffer("SELECT collection_id FROM collection ORDER BY collection_id");
-//        List<Serializable> params = new ArrayList<Serializable>();
-//
-//        DatabaseManager.applyOffsetAndLimit(query,params,offset,length);
-//
-//        try
-//        {
-//            TableRowIterator iterator = DatabaseManager.query(_context, query.toString(),
-//                    params.toArray());
-//            int i = 0;
-//            while (iterator.hasNext() && i < length)
-//            {
-//                TableRow row = iterator.next();
-//                int collectionID = row.getIntColumn("collection_id");
-//                Collection collection = Collection.find(_context, collectionID);
-//                array.add(DSpaceSet.newDSpaceCollectionSet(
-//                        collection.getHandle(),
-//                        collection.getName()));
-//                i++;
-//            }
-//        }
-//        catch (SQLException e)
-//        {
-//            log.error(e.getMessage(), e);
-//        }
-        
-    	// TODO: reimplementar esto con base LAReferencia
-
-        array.add(DSpaceSet.newDSpaceCollectionSet(
-              "col_12345",
-              "UnaColeccionDummy"));
-        
-        
+        List<Set> array = new ArrayList<Set>();	
+				
+		for (FacetField.Count count: getFacetValues("item.collections") ) {
+		    array.add(RepositorySet.newSet(
+		    		count.getName(),
+		    		count.getName()));     
+		}
+             
         return array;
     }
 
@@ -243,8 +177,13 @@ public class LRSetRepository implements SetRepository
         log.debug("Has More Results: "
                 + ((offset + length < communityCount + collectionCount) ? "Yes"
                         : "No"));
+        
+        
+        
         return new ListSetsResult(offset + length < communityCount
                 + collectionCount, array, communityCount + collectionCount);
+        
+        // FIXME: Hay que considerar la implementación de la paginación de sets
     }
 
     @Override
@@ -256,40 +195,21 @@ public class LRSetRepository implements SetRepository
     @Override
     public boolean exists(String setSpec)
     {
-        if (setSpec.startsWith("col_"))
-        {
-//            try
-//            {
-//                DSpaceObject dso = HandleManager.resolveToObject(_context,
-//                        setSpec.replace("col_", "").replace("_", "/"));
-//                if (dso == null || !(dso instanceof Collection))
-//                    return false;
-//                return true;
-//            }
-//            catch (Exception ex)
-//            {
-//                log.error(ex.getMessage(), ex);
-//            }
-        }
-        else if (setSpec.startsWith("com_"))
-        {
-//            try
-//            {
-//                DSpaceObject dso = HandleManager.resolveToObject(_context,
-//                        setSpec.replace("com_", "").replace("_", "/"));
-//                if (dso == null || !(dso instanceof Community))
-//                    return false;
-//                return true;
-//            }
-//            catch (Exception ex)
-//            {
-//                log.error(ex.getMessage(), ex);
-//            }
-        }
-        
-    	// TODO: reimplementar esto con base LAReferencia
+    	
+    	    boolean found = false;
+        	
+      		for (FacetField.Count count: getFacetValues("item.collections") ) {		
+      			found |= count.getName().equals(setSpec);  
+      		}
+                    
+        	
+      		
+      		for (FacetField.Count count: getFacetValues("item.communities") ) {
+      			found |= count.getName().equals(setSpec);      		  
+      		}
+                            
 
-        return false;
+        return found;
     }
 
 }

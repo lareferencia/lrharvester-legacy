@@ -57,7 +57,7 @@ public class LRItemRepositoryResolver implements ItemRepositoryResolver {
     @Override
     public ItemRepository getItemRepository() throws ContextServiceException {
         if (itemRepository == null) {
-            //String storage = configurationService.getProperty("oai", "storage");
+            //String storage = configurationService.getProperty( "storage");
             //if (storage == null || !storage.trim().toLowerCase().equals("database")) {
                 try {
                     itemRepository = new LRItemSolrRepository(solrServerResolver.getServer(), /*, collectionsService, handleResolver, */ solrQueryResolver);

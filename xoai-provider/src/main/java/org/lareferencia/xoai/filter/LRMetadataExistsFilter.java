@@ -15,7 +15,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dspace.core.Constants;
 import org.lareferencia.xoai.Context;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
@@ -89,7 +89,7 @@ public class LRMetadataExistsFilter extends LRFilter {
 //    }
 
     @Override
-    public boolean isShown(DSpaceItem item) {
+    public boolean isShown(RepostioryItem item) {
         for (String field : this.getFields()) {
             //do we have a match? if yes, our job is done
             if (item.getMetadata(field).size() > 0)

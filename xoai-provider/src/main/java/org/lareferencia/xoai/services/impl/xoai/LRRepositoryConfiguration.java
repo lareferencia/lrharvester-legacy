@@ -133,14 +133,14 @@ public class LRRepositoryConfiguration implements RepositoryConfiguration
 	public List<String> getDescription() {
 		List<String> result = new ArrayList<String>();
 		String descriptionFile = configurationService.getProperty("description.file");
-		//String descriptionFile = configurationService.getProperty("oai", "description.file");
+		//String descriptionFile = configurationService.getProperty( "description.file");
 
 		if (descriptionFile == null) {
 			// Try indexed
 			boolean stop = false;
 			List<String> descriptionFiles = new ArrayList<String>();
 			for (int i=0;!stop;i++) {
-				//String tmp = configurationService.getProperty("oai", "description.file."+i);
+				//String tmp = configurationService.getProperty( "description.file."+i);
 				String tmp = configurationService.getProperty("description.file."+i);
 
 				if (tmp == null) stop = true;

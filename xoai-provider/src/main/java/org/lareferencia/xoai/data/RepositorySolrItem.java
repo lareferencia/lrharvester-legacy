@@ -22,10 +22,10 @@ import com.lyncode.xoai.dataprovider.core.ReferenceSet;
  * 
  * @author Lyncode Development Team <dspace@lyncode.com>
  */
-public class DSpaceSolrItem extends DSpaceItem
+public class RepositorySolrItem extends RepostioryItem
 {
     private static Logger log = LogManager
-            .getLogger(DSpaceSolrItem.class);
+            .getLogger(RepositorySolrItem.class);
     
     private String unparsedMD;
     private ItemMetadata metadata;
@@ -34,7 +34,7 @@ public class DSpaceSolrItem extends DSpaceItem
     private List<ReferenceSet> sets;
     private boolean deleted;
     
-    public DSpaceSolrItem (SolrDocument doc) {
+    public RepositorySolrItem (SolrDocument doc) {
     	log.debug("Creating OAI Item from Solr source");
         unparsedMD = (String) doc.getFieldValue("item.compile");
         handle = (String) doc.getFieldValue("item.handle");

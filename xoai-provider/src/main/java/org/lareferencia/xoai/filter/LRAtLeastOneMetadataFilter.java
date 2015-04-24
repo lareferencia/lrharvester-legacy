@@ -21,9 +21,9 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.dspace.core.Constants;
 import org.lareferencia.xoai.Context;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.exceptions.InvalidMetadataFieldException;
-import org.lareferencia.xoai.filter.data.DSpaceMetadataFilterOperator;
+import org.lareferencia.xoai.filter.data.LRMetadataFilterOperator;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class LRAtLeastOneMetadataFilter extends LRFilter {
     private static Logger log = LogManager.getLogger(LRAtLeastOneMetadataFilter.class);
 
     private String field;
-    private DSpaceMetadataFilterOperator operator = DSpaceMetadataFilterOperator.UNDEF;
+    private LRMetadataFilterOperator operator = LRMetadataFilterOperator.UNDEF;
     private List<String> values;
     private ParameterMap configuration;
 
@@ -78,9 +78,9 @@ public class LRAtLeastOneMetadataFilter extends LRFilter {
         return values;
     }
 
-    private DSpaceMetadataFilterOperator getOperator() {
-        if (operator == DSpaceMetadataFilterOperator.UNDEF)
-            operator = DSpaceMetadataFilterOperator.valueOf(getConfiguration()
+    private LRMetadataFilterOperator getOperator() {
+        if (operator == LRMetadataFilterOperator.UNDEF)
+            operator = LRMetadataFilterOperator.valueOf(getConfiguration()
                     .get("operator").asSimpleType().asString().toUpperCase());
         return operator;
     }
@@ -101,7 +101,7 @@ public class LRAtLeastOneMetadataFilter extends LRFilter {
 //    }
 
     @Override
-    public boolean isShown(DSpaceItem item) {
+    public boolean isShown(RepostioryItem item) {
         if (this.getField() == null)
             return true;
         List<String> values = item.getMetadata(this.getField());

@@ -12,7 +12,7 @@ import com.lyncode.xoai.dataprovider.services.api.DateProvider;
 import com.lyncode.xoai.dataprovider.services.impl.BaseDateProvider;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.lareferencia.xoai.Context;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.filter.results.DatabaseFilterResult;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 
@@ -39,7 +39,7 @@ public class DateFromFilter extends LRFilter {
 //    }
 
     @Override
-    public boolean isShown(DSpaceItem item)
+    public boolean isShown(RepostioryItem item)
     {
         if (item.getDatestamp().compareTo(date) >= 0)
             return true;

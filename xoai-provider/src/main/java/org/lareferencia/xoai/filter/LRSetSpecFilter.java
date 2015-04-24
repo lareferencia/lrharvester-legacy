@@ -10,7 +10,7 @@ package org.lareferencia.xoai.filter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.lareferencia.xoai.data.DSpaceItem;
+import org.lareferencia.xoai.data.RepostioryItem;
 import org.lareferencia.xoai.filter.results.SolrFilterResult;
 
 import com.lyncode.xoai.dataprovider.core.ReferenceSet;
@@ -71,7 +71,7 @@ public class LRSetSpecFilter extends LRFilter
 //    }
 
     @Override
-    public boolean isShown(DSpaceItem item)
+    public boolean isShown(RepostioryItem item)
     {
         for (ReferenceSet s : item.getSets())
             if (s.getSetSpec().equals(setSpec))
