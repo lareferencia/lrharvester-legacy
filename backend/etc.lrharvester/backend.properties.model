@@ -1,9 +1,10 @@
 # db config
-db.engine = mysql
+db.engine=postgres
 db.host=localhost
 db.name=lrharvester
 db.user=backend
 db.passwd=backend
+db.port=5432
 
 # indexer config
 indexer.path=/etc/lrharvester/lr.indexer.xsl
