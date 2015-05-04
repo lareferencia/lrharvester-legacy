@@ -26,9 +26,21 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	
+	<!--  	public IndexerImpl(String xslFileName, String solrURL, String solrNetworkIDField)   -->
+	
 	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">	
 	    <constructor-arg><value>${indexer.path}</value></constructor-arg>
-	    <constructor-arg><value>${solr.url}</value></constructor-arg>
+	    <constructor-arg><value>${xoai.solr.url}</value></constructor-arg>
+	    <constructor-arg><value>network_acronym</value></constructor-arg>
+	    
+	    
+	</bean>
+	
+	<bean id="indexerXOAI" class="org.lareferencia.backend.indexer.IndexerImpl">	
+	    <constructor-arg><value>${xoai.indexer.path}</value></constructor-arg>
+	    <constructor-arg><value>${xoai.solr.url}</value></constructor-arg>
+	    <constructor-arg><value>item.communities</value></constructor-arg>
+	    
 	</bean>
 	
 	<!-- bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.IntelligoIndexer">

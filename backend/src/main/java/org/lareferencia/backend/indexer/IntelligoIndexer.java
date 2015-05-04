@@ -55,8 +55,9 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 public class IntelligoIndexer implements IIndexer{
 
-	@Override
-	public boolean delete(Network network) {
+	
+	
+	private boolean delete(Network network) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -113,11 +114,15 @@ public class IntelligoIndexer implements IIndexer{
 	
 	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	public synchronized boolean index(NetworkSnapshot snapshot) {
+	public synchronized boolean index(Network network, NetworkSnapshot snapshot_, boolean deleteOnly) {
 		
 		 
 		 try {	
 			// Borrado de los docs del país del snapshot
+			 
+				// Obtiene el snapshot LGK de la red parámetro
+				NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+				
 			 
 				
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));

@@ -15,10 +15,11 @@ package org.lareferencia.backend.indexer;
 
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
+import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -28,26 +29,57 @@ public class IndexerWorker implements Runnable {
 	
 
 	@Setter
-	private Long snapshotID;
+	private Long networkID;
+	
+	@Setter 
+	private boolean deleteNetworkWithoutReindexing = false;
+	
+	@Autowired
+	private NetworkRepository networkRepository;
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
 	
-	@Autowired
-	@Qualifier("indexer")
+	
+	@Setter
 	IIndexer indexer;
 	
 	public IndexerWorker() {
-		
-		
 	};
+	
 	
 	@Override
 	public void run() {
 		
-		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(this.snapshotID);
-		indexer.index(snapshot); 
-		System.gc();
+		if (indexer == null) {
+			System.out.println("Indexer worker llamado con indexer null");
+		}
+		else {
+		
+			//TODO: Generar excepciones por network null o incorrecto
+			Network network = networkRepository.findOne(this.networkID);
+			NetworkSnapshot snapshot = null; 
+			
+			if ( network == null )
+				System.out.println("Indexer Worker - El id de red es inválido");
+						
+			System.out.println("Borrando red del índice - " + network.getName() + "  - IndexerWorker");
+			
+			if (!deleteNetworkWithoutReindexing) { // Si no es un borrado sin reindexación
+			
+				// Se recupera el LGK Snapshot
+				snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(networkID);
+				
+				if ( snapshot == null )
+					System.out.println("Indexer Worker - La Red no tiene LGK Snapshot es válido");
+				
+				System.out.println("Indexando LGK Snapshot RED: - " + network.getName()  + "  - IndexerWorker");
+			}
+			
+			
+			indexer.index(network, snapshot, deleteNetworkWithoutReindexing);
+
+		}
 	}
 	
 	

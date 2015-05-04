@@ -109,7 +109,7 @@ public class IndexerTests {
 	public void testIntelligoIndexer() throws Exception {
 		
 		
-		indexerIntelligo.index(networkSnapshotRepository.findOne(2L));
+	//	indexerIntelligo.index(networkSnapshotRepository.findOne(2L));
 		
 		
 	}

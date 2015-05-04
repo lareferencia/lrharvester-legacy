@@ -273,7 +273,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				if ( network.isRunIndexing() && network.isPublished() ) {
 					
 					// Indexa
-					boolean isSuccesfullyIndexed = indexer.index(snapshot);
+					boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
 					
 					// Si el indexado es exitoso marca el snap válido
 					if ( isSuccesfullyIndexed ) {
