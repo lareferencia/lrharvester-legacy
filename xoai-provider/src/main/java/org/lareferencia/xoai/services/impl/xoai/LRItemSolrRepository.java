@@ -51,22 +51,36 @@ public class LRItemSolrRepository extends LRItemRepository
 
     @Override
     public Item getItem(String identifier) throws IdDoesNotExistException {
-        if (identifier == null) throw new IdDoesNotExistException();
-        String parts[] = identifier.split(Pattern.quote(":"));
-        if (parts.length == 3)
-        {
-            try
-            {
-                SolrQuery params = new SolrQuery("item.handle:" + parts[2]);
-                return new RepositorySolrItem(LRSolrSearch.querySingle(server, params));
-            }
-            catch (SolrSearchEmptyException ex)
-            {
-                throw new IdDoesNotExistException(ex);
-            }
-        }
-        throw new IdDoesNotExistException();
-    }
+          if (identifier == null) throw new IdDoesNotExistException();   
+		  
+          try
+		  {
+		      SolrQuery params = new SolrQuery("item.handle:\"" + identifier + "\"");
+		      return new RepositorySolrItem(LRSolrSearch.querySingle(server, params));
+		  }
+		  catch (SolrSearchEmptyException ex)
+		  {
+		      throw new IdDoesNotExistException(ex);
+		  }
+      }
+     
+//        String parts[] = identifier.split(Pattern.quote(":"));
+//        
+//        
+//        if (parts.length == 3)
+//        {
+//            try
+//            {
+//                SolrQuery params = new SolrQuery("item.handle:" + parts[2]);
+//                return new RepositorySolrItem(LRSolrSearch.querySingle(server, params));
+//            }
+//            catch (SolrSearchEmptyException ex)
+//            {
+//                throw new IdDoesNotExistException(ex);
+//            }
+//        }
+//        throw new IdDoesNotExistException();
+//    }
 
     @Override
     public ListItemIdentifiersResult getItemIdentifiers(
@@ -93,8 +107,7 @@ public class LRItemSolrRepository extends LRItemRepository
     }
 
     @Override
-    public ListItemsResults getItems(List<ScopedFilter> filters, int offset,
-            int length)
+    public ListItemsResults getItems(List<ScopedFilter> filters, int offset, int length)
     {
         try
         {
