@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
 
-    The contents of this file are subject to the license and copyright
-    detailed in the LICENSE and NOTICE files at the root of the source
-    tree and available online at
-
-    http://www.dspace.org/license/
-
--->
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:oai="http://www.openarchives.org/OAI/2.0/"
 	xmlns:lyn="http://www.lyncode.com/fakeNamespace" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
@@ -34,7 +26,7 @@
                 <div class="container">
                     <div class="navbar navbar-default" role="navigation">
                         <div class="navbar-header">
-                            <a class="navbar-brand" href="#">DSpace OAI-PMH Data Provider</a>
+                            <a class="navbar-brand" href="#">XOAI OAI-PMH Data Provider</a>
                         </div>
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav navbar-right">
@@ -121,13 +113,26 @@
 
 
                     <div class="row-fluid text-center">
-                        <div class="vertical-space"></div>
+                    
+                    	<div class="col-md-6 col-sm-12">
+                   
                         <p><small>Design by Lyncode</small></p>
                         <p>
                             <a href="http://www.lyncode.com">
                                 <img style="height: 20px;" src="static/img/lyncode.png" alt="Lyncode" />
                             </a>
                         </p>
+                        </div>
+                        
+                        <div class="col-md-6 col-sm-12">
+                        
+                        <p><small>Standalone version by LA Referencia</small></p>
+                        <p>
+                            <a href="http://www.lareferencia.info">
+                                <img src="static/img/logo-referencia.png" alt="LAReferencia" />
+                            </a>
+                        </p>
+                        
                     </div>
                 </div>
 			</body>

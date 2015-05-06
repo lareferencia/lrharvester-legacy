@@ -82,7 +82,9 @@ public class LRSetSpecFilter extends LRFilter
     @Override
     public SolrFilterResult buildSolrQuery()
     {
-        if (setSpec.startsWith("col_"))
+        
+        //FIXME: Aqui hay que decidir como tratar los sets  
+    	if (setSpec.startsWith("col_"))
         {
             try
             {

@@ -19,7 +19,7 @@
 			The location of the main DSpace configuration file
 		</description>
 		<param-name>xoai-config</param-name>
-		<param-value>/etc/lrharvester/config/xoai.config</param-value>
+		<param-value>/etc/lrharvester/xoai/xoai.config</param-value>
 	</context-param>
 
 	<!-- context-param>

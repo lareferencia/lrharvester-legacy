@@ -126,38 +126,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                     </execution>
                 </executions>
             </plugin>
-<!--             <plugin> -->
-<!--                 <groupId>com.mycila</groupId> -->
-<!--                 <artifactId>license-maven-plugin</artifactId> -->
-<!--                 <configuration> -->
-<!--                     <excludes> -->
-<!--                         <exclude>src/main/webapp/**</exclude> -->
-<!--                         <exclude>**/*.xsl</exclude> -->
-<!--                     </excludes> -->
-<!--                 </configuration> -->
-<!--             </plugin> -->
+
           
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>oracle-support</id>
-            <activation>
-                <property>
-                    <name>db.name</name>
-                    <value>oracle</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.oracle</groupId>
-                    <artifactId>ojdbc6</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
+   
     <dependencies>
         <!-- OAI Data Provider Framework -->
         <dependency>
@@ -165,6 +139,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <artifactId>xoai</artifactId>
             <version>${xoai.version}</version>
         </dependency>
+   
+        
         <!-- Java Injection and MVC -->
         <dependency>
             <groupId>org.springframework</groupId>
