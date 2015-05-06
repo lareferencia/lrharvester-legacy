@@ -180,11 +180,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		
 		
 		<!-- OCLC Harvester -->
-		<dependency>
-      		<groupId>org.dspace</groupId>
-      		<artifactId>oclc-harvester2</artifactId>
-      		<version>0.1.12</version>
-    	</dependency>
     	<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
@@ -195,6 +190,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	      <artifactId>xercesImpl</artifactId>
 	      <version>2.9.1</version>
     	</dependency>
+    	<dependency>
+		<groupId>net.sf.saxon</groupId>
+			<artifactId>Saxon-HE</artifactId>
+			<version>9.6.0-5</version>
+		</dependency>
+    	
 		
 		
 		<!-- Logging -->
@@ -289,7 +290,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			<artifactId>opencsv</artifactId>
 			<version>2.4</version>
 		</dependency>
-
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		
 		
 		
 		
