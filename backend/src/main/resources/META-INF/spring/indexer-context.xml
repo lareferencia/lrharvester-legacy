@@ -39,8 +39,7 @@
 	<bean id="indexerXOAI" class="org.lareferencia.backend.indexer.IndexerImpl">	
 	    <constructor-arg><value>${xoai.indexer.path}</value></constructor-arg>
 	    <constructor-arg><value>${xoai.solr.url}</value></constructor-arg>
-	    <constructor-arg><value>item.communities</value></constructor-arg>
-	    
+	    <constructor-arg><value>item.collections</value></constructor-arg>
 	</bean>
 	
 	<!-- bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.IntelligoIndexer">

@@ -330,6 +330,26 @@ public class BackEndController {
 
 	}
 	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/private/deleteNetworkFromXOAIIndexByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> deleteNetworkFromXOAIIndexByID(@PathVariable Long id) throws Exception {
+		
+		Network network = networkRepository.findOne(id);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		System.out.println("Comenzando proceso de borrando Red del índice XOAI: " + network.getName() );
+		
+		launchIndexerWorker(id, indexerXOAI, true);
+				
+		System.out.println("Finalizando borrado red: " + network.getName() + " del índice XOAI");
+
+	
+		return new ResponseEntity<String>("Borrada del índice XOAI la red :" + network.getName(), HttpStatus.OK);
+
+	}
+	
 	
 	
 	@Transactional

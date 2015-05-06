@@ -49,6 +49,11 @@
 		$.rest.retrieve(service_url, function(result) { alert('Indexación lanzada');}, error_handler); 
 	}
 	
+	function 	sendStartXOAIIndexingLGKByNetworkID(networkID) {	
+		service_url = './private/indexLGKSnapshotByNetworkID2XOAI/' + networkID;
+		$.rest.retrieve(service_url, function(result) { alert('Indexación XOAI lanzada');}, error_handler); 
+	}
+	
 	function sendDeleteAllButLGKSnapshotByNetworkID(networkID) {
 		service_url = './private/deleteAllButLGKSnapshot/' + networkID;
 		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los snapshots antiguos');}, error_handler); 
@@ -62,6 +67,11 @@
 	function sendDeleteNetworkFromIndexByID(networkID, success_handler) {
 		service_url = './private/deleteNetworkFromIndexByID/' + networkID;
 		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red del índice solr'); refreshNetworks(); } ); 
+	}
+	
+	function sendDeleteNetworkFromXOAIIndexByID(networkID, success_handler) {
+		service_url = './private/deleteNetworkFromXOAIIndexByID/' + networkID;
+		$.rest.retrieve(service_url, function(result) { alert('Se han borrado todos los datos de la red del índice solr XOAI'); refreshNetworks(); } ); 
 	}
 	
 	
@@ -282,7 +292,34 @@
 	    });
 		
 	    $( "#dialog_delete_network_from_index" ).dialog("open");
-	}	
+	}
+	
+	/**
+     * Borra una red apuntada por network_link del índice y llama a succces_handler
+     * @param network_link
+     * @param success_handler
+     */
+	function deleteNetworkFromXOAIIndex(network_id, success_handler) {
+		
+	    $( "#dialog_delete_network_from_xoai_index" ).dialog({
+	      buttons: {
+	        "Borrar la red": function() {
+	          
+	        	sendDeleteNetworkFromXOAIIndexByID(network_id, success_handler);
+	        	
+	          $( this ).dialog( "close" );
+	        },
+	        Cancel: function() {
+	          $( this ).dialog( "close" );
+	        }
+	      }
+	    });
+		
+	    $( "#dialog_delete_network_from_xoai_index" ).dialog("open");
+	}
+	
+	
+	
 
 	
 
@@ -351,6 +388,11 @@
 					
 					p.append("td")
 					  .append("button")
+					  .on("click", function(d) { sendStartXOAIIndexingLGKByNetworkID( $.rest.link2id($.rest.relLink(d,"self")) );  } )	   
+					  .text("indexar XOAI"); 
+					
+					p.append("td")
+					  .append("button")
 					  .on("click", function(d) { window.open("diagnose/" + d.acronym  );  } )	   
 					  .text("diagnóstico"); 
 					
@@ -373,6 +415,11 @@
 					  .append("button")
 					  .on("click", function(d) { deleteNetworkFromIndex($.rest.link2id( $.rest.relLink(d,'self') ), refreshNetworks );  } )	   
 					  .text("borrar idx"); 
+					
+					p.append("td")
+					  .append("button")
+					  .on("click", function(d) { deleteNetworkFromXOAIIndex($.rest.link2id( $.rest.relLink(d,'self') ), refreshNetworks );  } )	   
+					  .text("borrar xoai"); 
 				},
 				error_handler
 		);

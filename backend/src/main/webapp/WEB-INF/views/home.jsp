@@ -346,6 +346,14 @@
   		</p>
   	</div>
   	
+  	<div id="dialog_delete_network_from_xoai_index" title="¿Desea borrar la red nacional del índice XOAI?">
+  		<p>
+  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 
+  			Todos los datos de la red nacional serán removidos del índice ¿Está seguro?
+  		</p>
+  	</div>
+  	
   	<div id="dialog_edit_network" title="Editar datos de la red nacional">	
 			<form id="form_edit_network">
 				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
