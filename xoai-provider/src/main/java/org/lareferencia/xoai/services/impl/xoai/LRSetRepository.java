@@ -60,7 +60,6 @@ public class LRSetRepository implements SetRepository
 			log.error(e.getMessage(), e);
 		}
     	
-    	System.out.print("test");
         
     }
     
