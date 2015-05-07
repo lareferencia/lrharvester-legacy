@@ -72,6 +72,14 @@
 				      							   height:200,
 				      							   modal: true
 				      							});
+			 
+			 
+			 // dialogo de borrar red, setup inicial
+			 $("#dialog_delete_network_from_xoai_index").dialog( { autoOpen:false, 
+				                                   resizable: false,
+				      							   height:200,
+				      							   modal: true
+				      							});
 		          
 			 $("#dialog_network_snapshots").dialog( { autoOpen:false, 
                    resizable: false,
