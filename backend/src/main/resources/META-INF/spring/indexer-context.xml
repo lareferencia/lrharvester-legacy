@@ -30,7 +30,7 @@
 	
 	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">	
 	    <constructor-arg><value>${indexer.path}</value></constructor-arg>
-	    <constructor-arg><value>${xoai.solr.url}</value></constructor-arg>
+	    <constructor-arg><value>${solr.url}</value></constructor-arg>
 	    <constructor-arg><value>network_acronym</value></constructor-arg>
 	    
 	    
