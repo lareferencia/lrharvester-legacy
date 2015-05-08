@@ -45,8 +45,8 @@
                 <!-- ID es parámetro -->
                 <field name="item.handle"><xsl:value-of select="$header_id"/></field>   
                 
-                <field name="item.lastmodified"><xsl:value-of  select="current-dateTime()"/></field>    
-                
+                <field name="item.lastmodified"><xsl:value-of  select="format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')"/></field>    
+
                 <field name="item.submitter">submitter</field>    
                 
                 <field name="item.deleted">false</field>
@@ -85,7 +85,7 @@
                     &lt;element name="others"&gt;
                         &lt;field name="handle"&gt;<xsl:value-of select="$header_id"/>&lt;/field&gt;
                         &lt;field name="identifier"&gt;<xsl:value-of select="$header_id"/>&lt;/field&gt;
-                        &lt;field name="lastModifyDate"&gt;<xsl:value-of  select="current-dateTime()"/>&lt;/field&gt;
+                        &lt;field name="lastModifyDate"&gt;<xsl:value-of  select="format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')"/>&lt;/field&gt;
                     &lt;/element&gt;
 
                     &lt;element name="repository"&gt;
