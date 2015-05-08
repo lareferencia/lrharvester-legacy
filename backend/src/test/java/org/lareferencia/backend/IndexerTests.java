@@ -13,16 +13,27 @@
  ******************************************************************************/
 package org.lareferencia.backend;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.transformer.ITransformer;
+import org.lareferencia.backend.util.OAIMetadataXSLTransformer;
 import org.lareferencia.backend.validator.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.xml.sax.SAXException;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +66,7 @@ public class IndexerTests {
 			"</oai_dc:dc>" +
 			"</metadata>";
 
-	@Autowired
+	/*@Autowired
 	IValidator validator;
 	
 	@Autowired
@@ -63,56 +74,43 @@ public class IndexerTests {
 	
 	@Autowired
 	IIndexer indexer;
-	
-	@Autowired
-	@Qualifier(value="indexerIntelligo")
-	IIndexer indexerIntelligo;
 
 	@Autowired
-	NetworkSnapshotRepository networkSnapshotRepository;
-/*
-	
-	@Test
-	public void testRecordWiredDriverTransformer() throws Exception {
-		
-		OAIRecord orecord = new OAIRecord("dummy", xmlstring);
-		
-		orecord.setPublishedXML( orecord.getOriginalXML() );
+	NetworkSnapshotRepository networkSnapshotRepository;*/
 
-		NationalNetwork network = new NationalNetwork();
+	
+	static String xmlUnescpaedString = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
+			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
+			"<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>" +
+			"</oai_dc:dc>" +
+			"</metadata>";
+	
+
 		
-		network.setCountryISO("MX");
-		network.setName("Mexico");
+	@Test()
+	public void testXMLEscapingAtTransforming() throws ParserConfigurationException, SAXException, IOException, TransformerException, OAIRecordMetadataParseException {
 		
-		NetworkSnapshot snapshot = new NetworkSnapshot();
-		orecord.setSnapshot(snapshot);
 		
-		System.out.println( xmlstring );
+		assertEquals(xmlUnescpaedString.contains("&amp;"),true);
+
 		
-		//Document doc = indexer.transform(orecord, network);
+		OAIRecordMetadata metadata = new OAIRecordMetadata("test", xmlUnescpaedString);
+		assertEquals(metadata.toString().contains("&amp;"),true);
 		
-		//System.out.println(indexer.transform(orecord, network)  );
+		OAIMetadataXSLTransformer metadataTransformer = new OAIMetadataXSLTransformer("/etc/lrharvester/xoai.indexer.xsl");
 		
+		String transformedMD = metadataTransformer.transform(metadata);
+		
+		assertEquals(transformedMD.contains("&amp;"),true);
+
+		
+		
+		System.out.println(transformedMD);
+
 	}
 	
-	@Test
-	public void testSolrIndexer() throws Exception {
 		
-		
-		indexer.index(networkSnapshotRepository.findOne(7L));
-		
-		
-	}
-	
-*/
-	@Test
-	public void testIntelligoIndexer() throws Exception {
-		
-		
-		indexerIntelligo.index(networkSnapshotRepository.findOne(2L));
-		
-		
-	}
+
 	
 	
 	

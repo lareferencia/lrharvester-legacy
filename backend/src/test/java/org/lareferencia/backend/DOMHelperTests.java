@@ -18,11 +18,15 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import javax.validation.constraints.AssertTrue;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,6 +45,13 @@ public class DOMHelperTests {
 			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/publishedVersion</dc:type>" +
 			"</oai_dc:dc>" +
 			"</metadata>";
+	
+	static String xmlUnescpaedString = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
+			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
+			"<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>" +
+			"</oai_dc:dc>" +
+			"</metadata>";
+	
 	
 	@Test()
 	public void testParse() throws ParserConfigurationException, SAXException, IOException {
@@ -67,6 +78,12 @@ public class DOMHelperTests {
 		assertEquals("info:eu-repo/semantics/article",  MedatadaDOMHelper.getNodeList(doc, "//dc:type").item(0).getFirstChild().getNodeValue() );	
 	}
 
-	
 
+	@Test()
+	public void testXMLEscaping() throws ParserConfigurationException, SAXException, IOException, TransformerException, OAIRecordMetadataParseException {
+		
+		OAIRecordMetadata metadata = new OAIRecordMetadata("test", xmlUnescpaedString);
+		System.out.println( metadata.toString() );
+		assertEquals(metadata.toString().contains("&amp;"),true);
+	}
 }

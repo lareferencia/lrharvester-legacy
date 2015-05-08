@@ -54,6 +54,7 @@ import org.lareferencia.backend.util.JsonDateSerializer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -109,7 +110,13 @@ public class BackEndController {
 	private OAIProviderStatRepository oaiProviderStatRepository;
 	
 	@Autowired
+	@Qualifier("indexer")
 	IIndexer indexer;
+	
+	@Autowired
+	@Qualifier("indexerXOAI")
+	IIndexer indexerXOAI;
+	
 	
 	@Autowired
 	TaskScheduler scheduler;
@@ -292,7 +299,8 @@ public class BackEndController {
 		
 		
 		System.out.println("Borrando la red del índice");
-		indexer.delete(network);
+		launchIndexerWorker(id, indexer, true);
+		
 		
 		System.out.println("Finalizando borrado red: " + network.getName());
 
@@ -313,14 +321,32 @@ public class BackEndController {
 		
 		System.out.println("Comenzando proceso de borrando Red del índice: " + network.getName() );
 		
-	
-		System.out.println("Borrando la red del índice");
-		indexer.delete(network);
-		
+		launchIndexerWorker(id, indexer, true);
+				
 		System.out.println("Finalizando borrado red: " + network.getName() + " del índice");
 
 	
 		return new ResponseEntity<String>("Borrada del índice la red :" + network.getName(), HttpStatus.OK);
+
+	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/private/deleteNetworkFromXOAIIndexByID/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> deleteNetworkFromXOAIIndexByID(@PathVariable Long id) throws Exception {
+		
+		Network network = networkRepository.findOne(id);
+		if ( network == null )
+			throw new Exception("No se encontró RED");
+		
+		System.out.println("Comenzando proceso de borrando Red del índice XOAI: " + network.getName() );
+		
+		launchIndexerWorker(id, indexerXOAI, true);
+				
+		System.out.println("Finalizando borrado red: " + network.getName() + " del índice XOAI");
+
+	
+		return new ResponseEntity<String>("Borrada del índice XOAI la red :" + network.getName(), HttpStatus.OK);
 
 	}
 	
@@ -391,17 +417,18 @@ public class BackEndController {
 		
 	}
 	
+	
+	/**
 	@ResponseBody
 	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> indexRecordsBySnapshotID(@PathVariable Long id) {
 		
 		// Se crea un proceso separado para la indexación
-		IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
-		worker.setSnapshotID(id);
-		scheduler.schedule(worker, new Date());
-	
+		callIndexerWorker(indexer, false);
+		
+		
 		return new ResponseEntity<String>("Indexando Snapshot: " + id, HttpStatus.OK);
-	}
+	}*/
 	
 	
 	@ResponseBody
@@ -409,20 +436,30 @@ public class BackEndController {
 	public ResponseEntity<String> indexLGKByNetworkID(@PathVariable Long id) {
 		
 		
-		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
+		
+		try {
+			launchIndexerWorker(id, indexer, false);
+			return new ResponseEntity<String>("XOAI LGK Snapshot RED: " + id, HttpStatus.OK);
 
-		if ( snapshot != null ) {
+		}
+		catch (Exception e) {	
+			return new ResponseEntity<String>(e.getLocalizedMessage(), HttpStatus.OK);
+		} 
+	
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/private/indexLGKSnapshotByNetworkID2XOAI/{id}", method=RequestMethod.GET)
+	public ResponseEntity<String> indexLGKByNetworkID2XOAI(@PathVariable Long id) {
 		
-			// Se crea un proceso separado para la indexación
-			IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
-			worker.setSnapshotID(snapshot.getId());
-			scheduler.schedule(worker, new Date());
-		
-			return new ResponseEntity<String>("Indexando LGK Snapshot RED: " + id, HttpStatus.OK);
-		} else 
-			return new ResponseEntity<String>("No existe LGK Snapshot RED: " + id, HttpStatus.OK);
+		try {
+			launchIndexerWorker(id, indexerXOAI, false);
+			return new ResponseEntity<String>("XOAI LGK Snapshot RED: " + id, HttpStatus.OK);
 
-		
+		}
+		catch (Exception e) {	
+			return new ResponseEntity<String>(e.getLocalizedMessage(), HttpStatus.OK);
+		} 
 	}
 
 	/**************************** FrontEnd  ************************************/
@@ -1062,6 +1099,27 @@ public class BackEndController {
 		return statMap;
 	}
 	
+	
+////TODO: Funciones de servios web que deben ser encapsuladas en otra clase
+	
+	private void launchIndexerWorker(Long networkID, IIndexer specificIndexer, boolean deleteOnly) throws Exception {
+		
+			if ( !deleteOnly ) {
+			// Si no es una acción de borrado hace un check de que exista un LGK Snapshot	
+				NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(networkID);
+			
+				if ( snapshot == null ) 
+					throw new Exception("Lanzamiento de Indexer Worker - No existe LGK para la red ID:" + networkID.toString() ); // TODO: Esta Exception tiene que ser de una jerarquía propia del controller rest
+			}
+	
+			IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
+			worker.setNetworkID(networkID);
+			worker.setIndexer(specificIndexer);
+			worker.setDeleteNetworkWithoutReindexing(deleteOnly);
+			
+			// Esto encola el worker para que trabaje inmeditamente si es posible o cuando el scheduler decida
+			scheduler.schedule(worker, new Date());
+	}
 	/**************  Clases de retorno de resultados *******************/
 	
 	@Getter
@@ -1145,6 +1203,8 @@ public class BackEndController {
 			
 		}
 	}
+	
+	
 	
 	
 }

@@ -72,6 +72,14 @@
 				      							   height:200,
 				      							   modal: true
 				      							});
+			 
+			 
+			 // dialogo de borrar red, setup inicial
+			 $("#dialog_delete_network_from_xoai_index").dialog( { autoOpen:false, 
+				                                   resizable: false,
+				      							   height:200,
+				      							   modal: true
+				      							});
 		          
 			 $("#dialog_network_snapshots").dialog( { autoOpen:false, 
                    resizable: false,
@@ -339,6 +347,14 @@
   	</div>
   	
   	<div id="dialog_delete_network_from_index" title="¿Desea borrar la red nacional del índice vufind?">
+  		<p>
+  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 
+  			Todos los datos de la red nacional serán removidos del índice ¿Está seguro?
+  		</p>
+  	</div>
+  	
+  	<div id="dialog_delete_network_from_xoai_index" title="¿Desea borrar la red nacional del índice XOAI?">
   		<p>
   			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
   			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 

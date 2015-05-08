@@ -13,30 +13,16 @@
  ******************************************************************************/
 package org.lareferencia.backend.indexer;
 
-import java.io.File;
-
-import org.apache.bcel.generic.SWITCH;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.security.MessageDigest;
 import java.util.List;
 
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.client.solrj.request.DirectXmlRequest;
 import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIRecord;
@@ -44,7 +30,6 @@ import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.util.MedatadaDOMHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,8 +40,9 @@ import com.cybozu.labs.langdetect.LangDetectException;
 
 public class IntelligoIndexer implements IIndexer{
 
-	@Override
-	public boolean delete(Network network) {
+	
+	
+	private boolean delete(Network network) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -89,35 +75,19 @@ public class IntelligoIndexer implements IIndexer{
 
 	}
 	
-	private Transformer buildTransformer() throws IndexerException {
-		
-		Transformer trf; 
-
-		try {
-		
-			StreamSource stylesource = new StreamSource(stylesheet); 
-	        trf = xformFactory.newTransformer(stylesource);
-			
-			trf = MedatadaDOMHelper.buildXSLTTransformer(stylesheet);
-			trf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			trf.setOutputProperty(OutputKeys.INDENT, "yes");
-			trf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			
-		} catch (TransformerConfigurationException e) {
-			throw new IndexerException(e.getMessage(), e.getCause());
-		} 
-		
-		return trf;
-		
-	}
+	
 	
 	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	public synchronized boolean index(NetworkSnapshot snapshot) {
+	public synchronized boolean index(Network network, NetworkSnapshot snapshot_, boolean deleteOnly) {
 		
 		 
 		 try {	
 			// Borrado de los docs del país del snapshot
+			 
+				// Obtiene el snapshot LGK de la red parámetro
+				NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+				
 			 
 				
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
@@ -126,7 +96,7 @@ public class IntelligoIndexer implements IIndexer{
 
 			for (int i = 0; i < totalPages; i++) {
 							
-				Transformer trf = buildTransformer();
+				//Transformer trf = buildTransformer();
 				
 				//trf.setParameter("country", snapshot.getNetwork().getName() );
 				
@@ -146,7 +116,7 @@ public class IntelligoIndexer implements IIndexer{
 						Result output = new StreamResult(stringWritter);
 									
 						// id unico pero mutable para solr
-						trf.setParameter("solr_id",  record.getId().toString()  );
+						//trf.setParameter("solr_id",  record.getId().toString()  );
 						
 						/////// DC:DESCRIPTION - Detección y división de idiomas 
 						String ab_es = "";
@@ -160,9 +130,9 @@ public class IntelligoIndexer implements IIndexer{
 								case "pt": ab_pt += ab; break;		
 							}
 						}	
-						trf.setParameter("ab_es",  ab_es);
-						trf.setParameter("ab_en",  ab_en);
-						trf.setParameter("ab_pt",  ab_pt);
+//						trf.setParameter("ab_es",  ab_es);
+//						trf.setParameter("ab_en",  ab_en);
+//						trf.setParameter("ab_pt",  ab_pt);
 						/////////////////////////////////////////////////////////////
 						
 						/////// DC:title - Detección y división de idiomas 
@@ -177,14 +147,14 @@ public class IntelligoIndexer implements IIndexer{
 								case "pt": ti_pt += ti; break;		
 							}
 						}	
-						trf.setParameter("ti_es",  ti_es);
-						trf.setParameter("ti_en",  ti_en);
-						trf.setParameter("ti_pt",  ti_pt);
+//						trf.setParameter("ti_es",  ti_es);
+//						trf.setParameter("ti_en",  ti_en);
+//						trf.setParameter("ti_pt",  ti_pt);
 						/////////////////////////////////////////////////////////////
 						
 						
 						// Se transforma y genera el string del registro
-						trf.transform( new DOMSource(metadata.getDOMDocument()), output);
+//						trf.transform( new DOMSource(metadata.getDOMDocument()), output);
 						strBuf.append(stringWritter.toString());						
 					}
 				

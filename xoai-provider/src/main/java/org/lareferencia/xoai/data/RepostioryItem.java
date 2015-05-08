@@ -64,12 +64,13 @@ public abstract class RepostioryItem implements Item
     
     private static String _prefix = null;
     public static String buildIdentifier (String handle) {
-        if (_prefix == null)
-        {
-            _prefix = ConfigurationManager.getProperty(
-                    "identifier.prefix");
-        }
-        return "oai:" + _prefix + ":" + handle;
+//        if (_prefix == null)
+//        {
+//            _prefix = ConfigurationManager.getProperty(
+//                    "identifier.prefix");
+//        }
+//        return "oai:" + _prefix + ":" + handle;
+    	return handle; // TODO: Revisar si es buena idea no tocar el handle como identificador, si se cambia también hay que revisar LRItemSolrRepos
     }
     public static String parseHandle (String oaiIdentifier) {
     	String[] parts = oaiIdentifier.split(Pattern.quote(":"));

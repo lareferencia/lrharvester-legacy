@@ -43,31 +43,48 @@ public class IndexerImpl implements IIndexer{
 	
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
-	
+
 	private String solrURL;
 	private HttpSolrServer solrServer;
 
 	private OAIMetadataXSLTransformer metadataTransformer;
 
 	private String xslFileName;
+	private String solrNetworkIDField;
 	
-	public IndexerImpl(String xslFileName, String solrURL) throws IndexerException {
+	public IndexerImpl(String xslFileName, String solrURL, String solrNetworkIDField) throws IndexerException {
 		this.solrURL = solrURL;
 		this.solrServer = new HttpSolrServer(solrURL);
-		this.xslFileName = xslFileName;		
+		this.xslFileName = xslFileName;
+		this.solrNetworkIDField = solrNetworkIDField;
+	}
+	
+	
+	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
+	public synchronized boolean index(Network network, NetworkSnapshot snapshot,  boolean deleteOnly) {
+		
+		boolean valid = false;
+		
+		// Primero borra la red del índice
+		valid |= delete(network);
+		
+		// Una vez borrada y si no es una acción de borrado únicamente, indexa el LGK Snapshot
+		if ( !deleteOnly )
+			valid |= index(snapshot);
+		
+		return valid;
 	}
 
 	
-	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	public synchronized boolean index(NetworkSnapshot snapshot) {
+	private boolean index(NetworkSnapshot snapshot) {
 			 
 		 try {	
 
-			// Borrado de los docs del país del snapshot
+				 
+			// Acrónimo
 			String networkAcronym = snapshot.getNetwork().getAcronym();
-	
-			this.sendUpdateToSolr("<delete><query>network_acronym:" + snapshot.getNetwork().getAcronym() +"</query></delete>");
 			
+						
 			// Update de los registros de a PAGE_SIZE
 			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
@@ -101,8 +118,12 @@ public class IndexerImpl implements IIndexer{
 					// identifier del record
 					metadataTransformer.setParameter("header_id", record.getIdentifier() );
 					
+					// metadata como string
+					metadataTransformer.setParameter("record_id", record.getId().toString() );
+						
 					// Se transforma y genera el string del registro
 					stringBuffer.append( metadataTransformer.transform(metadata) );
+					
 					
 					lastRecordID = record.getId();
 				}
@@ -147,25 +168,16 @@ public class IndexerImpl implements IIndexer{
 		return true;
 	}
 	
-	private void solrRollback() {
-		try {			
-			this.sendUpdateToSolr("<rollback/>");			
-		} catch (SolrServerException e) {
-			System.err.println("Problemas en rollback SOLR - Transformador - SolrServer");	
-		} catch (IOException e) {		
-			System.err.println("Problemas en rollback SOLR - Transformador - Error E/S");
-		}
-	}
 	
 	
-	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	public synchronized boolean delete(Network network) {
+	
+	private boolean delete(Network network) {
 				 
 		 try {	
 			
 			 // Borrado de la red 
 			String networkAcronym = network.getAcronym();
-			this.sendUpdateToSolr("<delete><query>network_acronym:" + networkAcronym +"</query></delete>");
+			this.sendUpdateToSolr("<delete><query>" + this.solrNetworkIDField + ":" + networkAcronym +"</query></delete>");
 								
 			//commit de los cambios
 			this.sendUpdateToSolr("<commit/>");
@@ -189,10 +201,19 @@ public class IndexerImpl implements IIndexer{
 	}
 	
 	
+	private void solrRollback() {
+		try {			
+			this.sendUpdateToSolr("<rollback/>");			
+		} catch (SolrServerException e) {
+			System.err.println("Problemas en rollback SOLR - Indexer - SolrServer");	
+		} catch (IOException e) {		
+			System.err.println("Problemas en rollback SOLR - Indexer - Error E/S");
+		}
+	}
+	
 	private void sendUpdateToSolr(String data) throws SolrServerException, IOException {
 		DirectXmlRequest request = new DirectXmlRequest("/update", data);
 		solrServer.request(request);
 	}
-	
 	
 }
