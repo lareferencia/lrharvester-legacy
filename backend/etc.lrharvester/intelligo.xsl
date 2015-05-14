@@ -48,6 +48,10 @@
                 	<xsl:value-of select="$record_id"/>
                 </field>
                 
+                 <field name="md.network_acronym">
+                	<xsl:value-of select="$networkAcronym"/>
+                </field>
+                
                  <!-- URL -->
 				<xsl:for-each select="//dc:identifier">
 					<xsl:choose>
