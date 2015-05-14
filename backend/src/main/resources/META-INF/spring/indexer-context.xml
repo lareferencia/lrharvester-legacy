@@ -42,11 +42,12 @@
 	    <constructor-arg><value>item.collections</value></constructor-arg>
 	</bean>
 	
-	<!-- bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.IntelligoIndexer">
-	    <constructor-arg><value>./intelligo.xsl</value></constructor-arg>
-	    <constructor-arg><value>./lang.detector.profiles</value></constructor-arg>
-		<constructor-arg><value>.</value></constructor-arg>
-	</bean-->
+	<!-- bean id="indexerIntelligo" class="org.lareferencia.backend.indexer.Intelligo4Indexer">
+	    <constructor-arg><value>/etc/lrharvester/intelligo.xsl</value></constructor-arg>
+		<constructor-arg><value>http://intelligo.procesor.solr</value></constructor-arg>
+		<constructor-arg><value>md.network_acronym</value></constructor-arg>
+	    <constructor-arg><value>/etc/lrharvester/lang.detector.profiles</value></constructor-arg>
+	</bean -->
 	
 
 </beans>

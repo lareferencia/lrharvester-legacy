@@ -11,17 +11,27 @@
   
   Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
 -->
-<xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+<xsl:stylesheet version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:fn="http://www.w3.org/2005/xpath-functions"
+	xmlns:xdt="http://www.w3.org/2005/xpath-datatypes"
     xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    
+    xmlns:dc="http://purl.org/dc/elements/1.1/"    
     exclude-result-prefixes="oai_dc dc">
+    
     
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     
-    <xsl:param name="solr_id" />
-    
+	<xsl:param name="networkAcronym" />
+	<xsl:param name="networkName" />
+	<xsl:param name="institutionName" />
+	
+	<xsl:param name="vufind_id" />
+	<xsl:param name="header_id" />
+	<xsl:param name="record_id" />
+	    
     <xsl:param name="ab_es" />
     <xsl:param name="ab_en" />
     <xsl:param name="ab_pt" />
@@ -35,7 +45,7 @@
             <doc>
                 <!-- ID es parámetro -->
                 <field name="id">
-                	<xsl:value-of select="$solr_id"/>
+                	<xsl:value-of select="$record_id"/>
                 </field>
                 
                  <!-- URL -->
@@ -108,14 +118,7 @@
                     </xsl:for-each>
                 </xsl:if>
 
-                <!-- DESCRIPTION 
-                <xsl:if test="//dc:description">
-                    <field name="description">
-                        <xsl:value-of select="//dc:description" />
-                    </field>
-                </xsl:if>
-				-->
-				
+               
                 <!-- PUBLISHDATE -->
                 <xsl:if test="//dc:date">
                     <field name="year">
