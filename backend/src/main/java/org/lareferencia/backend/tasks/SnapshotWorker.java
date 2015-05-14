@@ -494,7 +494,12 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				snapshot.setEndTime( new Date() );
 				
 				// FIXME: Esto evita el problema con la restricción de resumption token mayor a 255
-				snapshot.setResumptionToken( event.getResumptionToken().substring(0, Math.min(event.getResumptionToken().length()-1, 254) ));
+				String resumptionToken = event.getResumptionToken();
+				if (resumptionToken != null && resumptionToken.length() > 255)
+					resumptionToken = resumptionToken.substring(0, 255);
+				
+				
+				snapshot.setResumptionToken(resumptionToken);
 
 				// Graba el status
 				setSnapshotStatus(SnapshotStatus.HARVESTING);
