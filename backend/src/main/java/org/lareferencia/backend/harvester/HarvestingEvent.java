@@ -40,7 +40,9 @@ public class HarvestingEvent {
 			HarvestingEventStatus status, String resumptionToken) {
 		this.records = records;
 		this.status = status;
-		this.resumptionToken = resumptionToken;
+		this.resumptionToken = resumptionToken.substring(0, Math.min(resumptionToken.length()-1, 254));
+		// FIXME: Esto evita el problema con la restricción de resumption token mayor a 255
+		
 	}
 	
 	public HarvestingEvent(String msg,
