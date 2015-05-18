@@ -68,8 +68,6 @@ public class Intelligo4Indexer implements IIndexer{
 		} catch (LangDetectException e) {
 			System.err.println("!!!! Error al cargar los perfiles del detector de idiomas en: " + langProfileDirectory);
 		}
-		
-		
 	}
 	
 	
@@ -276,7 +274,8 @@ public class Intelligo4Indexer implements IIndexer{
 			return detector.detect();
 			
 		} catch (LangDetectException e) {
-			System.err.print("Error creando detector de idioma.");
+			if ( text != null)
+				System.err.println("Error creando detector de idioma: " + text);
 			return "00";
 		}
 	

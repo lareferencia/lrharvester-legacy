@@ -125,10 +125,12 @@
                
                 <!-- PUBLISHDATE -->
                 <xsl:if test="//dc:date">
-                    <field name="year">
-                        <xsl:value-of select="substring(//dc:date, 1, 4)"/>
-                    </field>
-              
+                
+                    <xsl:for-each select="//dc:date">
+                        <field name="year">
+                        	<xsl:value-of select="substring(., 1, 4)"/>
+                    	</field>                   
+                    </xsl:for-each>
                 </xsl:if>
                 
                  <!-- rights -->

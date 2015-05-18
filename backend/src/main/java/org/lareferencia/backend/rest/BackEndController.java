@@ -180,8 +180,7 @@ public class BackEndController {
 	}
 	
 	
-	/************************** Backend 
-	 * @throws Exception ************************************/
+	/************************** Backend *************************************/
 	
 	@ResponseBody
 	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
@@ -195,6 +194,8 @@ public class BackEndController {
 		
 		return new ResponseEntity<String>("Havesting iniciado red:" + networkID, HttpStatus.OK);
 	}
+	
+	
 	
 	@ResponseBody
 	@RequestMapping(value="/private/stopHarvestingBySnapshotID/{id}", method=RequestMethod.GET)
@@ -211,6 +212,7 @@ public class BackEndController {
 	}
 	
 	
+	/*** 
 	@ResponseBody
 	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
 	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) throws Exception {
@@ -223,7 +225,7 @@ public class BackEndController {
 		snapshotManager.relauchHarvesting(snapshotID);
 		
 		return new ResponseEntity<String>("Relauch havesting:" + snapshotID, HttpStatus.OK);
-	}
+	}***/
 	
 	/**
 	 * Este servicio para cada origen explora los sets (no los almacenados sino los provistos por ListSets)
@@ -248,6 +250,70 @@ public class BackEndController {
 	
 	
 	
+	private void cleanSnapshot(NetworkSnapshot snapshot) {
+		
+		System.out.println("Limpiando Snapshot: " + snapshot.getId());
+
+		
+		// borra los resultados de validación
+	    System.out.println("Borrando registros de validaciones");
+		recordValidationRepository.deleteBySnapshotID(snapshot.getId());
+		
+		// borra las estadisticas
+	    System.out.println("Borrando stadísticas de metadatos");
+	    statRepository.deleteBySnapshotID(snapshot.getId());
+		
+		// borra el log de cosechas
+	    System.out.println("Borrando registros de log");
+		networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
+		
+		// borra los registros
+	    System.out.println("Borrando registros de metadatos");
+		recordRepository.deleteBySnapshotID(snapshot.getId());
+		
+		// marcando snapshot borrado
+		snapshot.setDeleted(true);
+		networkSnapshotRepository.save(snapshot);
+
+
+	}
+	
+	private void deleteSnapshot(NetworkSnapshot snapshot) {
+		
+		System.out.println("Borrando Snapshot: " + snapshot.getId());
+		
+		// limpiando snapshot
+		cleanSnapshot(snapshot);
+			
+		// borra snapshot
+		networkSnapshotRepository.delete(snapshot);
+	}
+	
+	private void deleteNetwork(Network network) throws Exception {
+		
+		System.out.println("Comenzando proceso de borrando Red: " + network.getName() );
+
+		
+		System.out.println("Borrando la red del índice Solr");
+		launchIndexerWorker(network.getId(), indexer, true);
+		
+		
+		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
+			deleteSnapshot(snapshot);
+		}
+		
+		System.out.println("Borrando Origenes/Sets" );
+		
+		for ( OAIOrigin origin : network.getOrigins() ) {
+			setRepository.deleteInBatch( origin.getSets() );
+		}
+		
+		originRepository.deleteInBatch( network.getOrigins() );
+		networkRepository.delete(network);
+		
+		System.out.println("Finalizando borrado red: " + network.getName());
+	}
+	
 	
 	
 	@Transactional
@@ -259,52 +325,8 @@ public class BackEndController {
 		if ( network == null )
 			throw new Exception("No se encontró RED");
 		
-		System.out.println("Comenzando proceso de borrando Red: " + network.getName() );
-		
-		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
-			
-				System.out.println("Borrando Snapshot: " + snapshot.getId());
-					
-				// borra los resultados de validación
-			    System.out.println("Borrando registros de validaciones");
-				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
-				
-				// borra las estadisticas
-			    System.out.println("Borrando stadísticas de metadatos");
-			    statRepository.deleteBySnapshotID(snapshot.getId());
-				
-				// borra el log de cosechas
-			    System.out.println("Borrando registros de log");
-				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-				
-				// borra los registros
-			    System.out.println("Borrando registros de metadatos");
-				recordRepository.deleteBySnapshotID(snapshot.getId());
-				
-			
-				// borra snapshots
-				networkSnapshotRepository.delete(snapshot);
-		}
-		
-		System.out.println("Borrando Origenes/Sets" );
+		deleteNetwork(network);
 
-		
-		for ( OAIOrigin origin : network.getOrigins() ) {
-			setRepository.deleteInBatch( origin.getSets() );
-		}
-		
-		originRepository.deleteInBatch( network.getOrigins() );
-		
-		networkRepository.delete(network);
-		
-		
-		System.out.println("Borrando la red del índice");
-		launchIndexerWorker(id, indexer, true);
-		
-		
-		System.out.println("Finalizando borrado red: " + network.getName());
-
-	
 		return new ResponseEntity<String>("Borrada la red:" + network.getName(), HttpStatus.OK);
 
 	}
@@ -376,19 +398,7 @@ public class BackEndController {
 				System.out.println("Borrando ... " + snapshot.getId());
 				
 				
-				// borra las estadisticas
-			    statRepository.deleteBySnapshotID(snapshot.getId());
-			    
-				// borra los resultados de validación
-				recordValidationRepository.deleteBySnapshotID(snapshot.getId());
-				// borra los registros
-				recordRepository.deleteBySnapshotID(snapshot.getId());
-				// borra el log de cosechas
-				networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-				// lo marca borrado
-				snapshot.setDeleted(true);
-				// almacena el estado del snap
-				networkSnapshotRepository.save(snapshot);
+				cleanSnapshot(snapshot);
 			}
 		}
 		
@@ -403,15 +413,8 @@ public class BackEndController {
 		
 		
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
-		snapshot.setDeleted(true);
 		
-		// borra los registros
-		recordRepository.deleteBySnapshotID(id);
-			
-		// borra el log de cosechas
-		networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-		
-		networkSnapshotRepository.save(snapshot);
+		cleanSnapshot(snapshot);
 		
 		return new ResponseEntity<String>("Registros borrados snapshot: " + id.toString(), HttpStatus.OK);
 		

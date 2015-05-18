@@ -27,7 +27,6 @@
 	<xsl:param name="networkAcronym" />
 	<xsl:param name="networkName" />
 	<xsl:param name="institutionName" />
-	<xsl:param name="metadata" />
 	
 	<xsl:param name="vufind_id" />
 	<xsl:param name="header_id" />

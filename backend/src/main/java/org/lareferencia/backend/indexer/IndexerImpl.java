@@ -60,13 +60,19 @@ public class IndexerImpl implements IIndexer{
 	}
 	
 	
+	/* Este método obtiene los datos antes de llamar a _index syncronized para asegurar los parámetros ante un eventual boorado */
+	public boolean index(Network network, NetworkSnapshot snapshot,  boolean deleteOnly) {
+		
+		return _index(network.getAcronym(), snapshot, deleteOnly);
+	}
+	
 	/* Este método es syncronized para asegurar que no se superpongan dos indexaciones y los commits solr (not isolated) se produzan*/
-	public synchronized boolean index(Network network, NetworkSnapshot snapshot,  boolean deleteOnly) {
+	private synchronized boolean _index(String networkAcronym, NetworkSnapshot snapshot,  boolean deleteOnly) {
 		
 		boolean valid = false;
 		
 		// Primero borra la red del índice
-		valid |= delete(network);
+		valid |= delete(networkAcronym);
 		
 		// Una vez borrada y si no es una acción de borrado únicamente, indexa el LGK Snapshot
 		if ( !deleteOnly )
@@ -171,12 +177,11 @@ public class IndexerImpl implements IIndexer{
 	
 	
 	
-	private boolean delete(Network network) {
+	private boolean delete(String networkAcronym) {
 				 
 		 try {	
 			
 			 // Borrado de la red 
-			String networkAcronym = network.getAcronym();
 			this.sendUpdateToSolr("<delete><query>" + this.solrNetworkIDField + ":" + networkAcronym +"</query></delete>");
 								
 			//commit de los cambios
