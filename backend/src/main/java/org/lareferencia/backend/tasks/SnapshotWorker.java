@@ -274,12 +274,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 
 				// Graba el status
 				snapshot.setEndTime( new Date() );
+				
 				// Si está publicada la red y es una red que se indexa
 				if ( network.isRunIndexing() && network.isPublished() ) {
 					
-				        logMessage("Comenzando indexación ...");
+				    logMessage("Comenzando indexación ...");
+				    setSnapshotStatus(SnapshotStatus.INDEXING);
+
 					
-                                        // Indexa
+                    // Indexa
 					boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
 					
 					// Si el indexado es exitoso marca el snap válido
