@@ -263,16 +263,23 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			if ( snapshot.getStatus() != SnapshotStatus.HARVESTING_FINISHED_ERROR ) {
 				
 				logMessage("Cosecha terminada en forma exitosa");			
-				logMessage("Comenzando indexación ...");
 	
+				// Almacena los resultados de las statísticas de metadatatos
+				if ( network.isRunStats() ) {
+                                	logMessage("Almacenando las estadísticas");
+					saveSnapshotMetadataStats( originalMetadataStatsManager.getStats() );
+					saveSnapshotMetadataStats( transformedMetadataStatsManager.getStats() );
+				}
+
+
 				// Graba el status
 				snapshot.setEndTime( new Date() );
-				setSnapshotStatus(SnapshotStatus.INDEXING);
-				
 				// Si está publicada la red y es una red que se indexa
 				if ( network.isRunIndexing() && network.isPublished() ) {
 					
-					// Indexa
+				        logMessage("Comenzando indexación ...");
+					
+                                        // Indexa
 					boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
 					
 					// Si el indexado es exitoso marca el snap válido
@@ -285,7 +292,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					else {
 						// Graba el status
 						setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
-	
 						logMessage("Error en proceso de indexación.");
 					}
 				} 
@@ -293,15 +299,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					// si no está publicada o no se indexa la marca como válida sin indexar
 					// Graba el status
 					setSnapshotStatus(SnapshotStatus.VALID);
-					
-					// Almacena los resultados de las statísticas de metadatatos
-					if ( network.isRunStats() ) {
-						saveSnapshotMetadataStats( originalMetadataStatsManager.getStats() );
-						saveSnapshotMetadataStats( transformedMetadataStatsManager.getStats() );
-					}
-					
 				}
-					
+				
+			
 			} else {
 				logMessage("Cosecha finalizada con errores");
 			}
@@ -557,6 +557,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 	
 	private void logMessage(String message) {
+                System.out.println(message);
 		snapshotLogRepository.save( new NetworkSnapshotLog(message, this.snapshot) );
 		snapshotLogRepository.flush();
 	}
@@ -569,6 +570,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			metadataStat.setSnapshot(snapshot);
 			snapshotStatRepository.save(metadataStat);
 		}
+		snapshotLogRepository.flush();
 	}
 	
 
