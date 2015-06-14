@@ -64,10 +64,11 @@ public class SnapshotPersistenceTests {
 		NetworkSnapshot ns = new NetworkSnapshot();
 		nn.getSnapshots().add(ns);
 		
-		OAIRecord record = new OAIRecord("oai:test/0001");
+		OAIRecord record = new OAIRecord();
 
 	
 		record.setSnapshot(ns);
+		record.setIdentifier("oai:test/0001");
 		
 		repository.save(nn);
 		assertNotNull(ns.getId());	
