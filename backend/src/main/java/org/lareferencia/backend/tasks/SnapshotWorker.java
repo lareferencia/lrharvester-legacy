@@ -381,9 +381,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				for (OAIRecordMetadata  metadata:event.getRecords() ) {
 					
 					try {
-						OAIRecord record = new OAIRecord(metadata.getIdentifier());
+						OAIRecord record = new OAIRecord();
 						// registra el snapshot al que pertenece
 						record.setSnapshot(snapshot);
+						record.setIdentifier(metadata.getIdentifier());
 						
 						snapshot.incrementSize();
 						

@@ -83,27 +83,34 @@ public class OAIRecord extends AbstractEntity {
 		this.datestamp = new DateTime().toDate();
 	}
 	
+	/*
 	public OAIRecord(String identifier) {
 		super();
 		this.status = RecordStatus.UNTESTED;
-		this.identifier = identifier;
 		this.datestamp = new DateTime().toDate();
 		//this.belongsToCollection = false;
 		//this.belongsToCollectionDetails = "";
-	}
+		this.setIdentifier(identifier);
+		
+	}*/
 
 	public void setIdentifier(String identifier) {
-		this.identifier = identifier;			
+		this.identifier = identifier;		
+		
+		if ( this.snapshot != null )
+			this.fingerprint = this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( identifier );
+		else
+			this.fingerprint = "00" + "_" +  DigestUtils.md5Hex( identifier );
 	}
 	
 
 	public void setPublishedXML(String publishedXML) {
 		this.publishedXML = publishedXML;
 		
-		if ( this.snapshot != null )
+		/**if ( this.snapshot != null )
 			this.fingerprint = this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( publishedXML );
 		else
-			this.fingerprint = "NULL";
+			this.fingerprint = "NULL";**/
 	}
 	
 	
