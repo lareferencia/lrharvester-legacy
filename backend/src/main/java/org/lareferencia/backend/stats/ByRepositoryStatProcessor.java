@@ -22,7 +22,8 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 	String repositoryNamePrefix = "reponame:";
 	
 	
-	protected Map<String, Integer[]> countMap;
+	protected Map<String, Integer[]> countMap = new HashMap<String, Integer[]>();	
+;
 	
 	protected enum DataIndex { ALL, VALID, TRANSFORMED }
 	
@@ -82,7 +83,6 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 			Integer valid = counts[DataIndex.VALID.ordinal()];
 			Integer transformed = counts[DataIndex.TRANSFORMED.ordinal()];
 
-			
 			
 			// Agrega una fila con los resultados de los conteos
 			try {
