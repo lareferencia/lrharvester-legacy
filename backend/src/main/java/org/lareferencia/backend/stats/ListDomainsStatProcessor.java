@@ -32,7 +32,7 @@ public class ListDomainsStatProcessor extends BaseStatProcessor {
 	}
 
 	@Override
-	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult) {
+	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult,  Boolean wasTransformed) {
 		
 		for (String url: metadata.getFieldOcurrences(this.field) ) {
 			

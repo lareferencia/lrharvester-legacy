@@ -21,7 +21,7 @@ import org.lareferencia.backend.validator.ValidationResult;
 public interface IMetadataStatsManager  {
 	
 	// agrega una nueva observación 
-	public void addMetadataObservation(OAIRecordMetadata metadata, ValidationResult validationResult);
+	public void addMetadataObservation(OAIRecordMetadata metadata, ValidationResult validationResult,  Boolean wasTransformed);
 		
 	// agrega / lista los procesadores de estadísticas de los metadatsos originales y post transformación
 	public List<IMetadataStatProcessor> getMetadataStatProcessors();

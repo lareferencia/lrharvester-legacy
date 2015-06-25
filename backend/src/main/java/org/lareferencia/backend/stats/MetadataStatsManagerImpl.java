@@ -18,10 +18,10 @@ public class MetadataStatsManagerImpl implements IMetadataStatsManager {
 	List<IMetadataStatProcessor> metatadaStatProcesors;
 
 	@Override
-	public void addMetadataObservation(OAIRecordMetadata metadata, ValidationResult validationResult) {
+	public void addMetadataObservation(OAIRecordMetadata metadata, ValidationResult validationResult,  Boolean wasTransformed) {
 		
 		for (IMetadataStatProcessor processor : metatadaStatProcesors) {
-			processor.addObservation(metadata, validationResult);
+			processor.addObservation(metadata, validationResult, wasTransformed);
 		}
 
 	}

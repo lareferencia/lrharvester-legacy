@@ -395,7 +395,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							// Con el registro original prevalidado se registran las estadísticas previas a las transformación
 							if ( network.isRunStats() )
-								originalMetadataStatsManager.addMetadataObservation(metadata, validationResult);		
+								originalMetadataStatsManager.addMetadataObservation(metadata, validationResult,false);		
 							
 							// si corresponde lo transforma
 							if ( network.isRunTransformation() ) {
@@ -411,7 +411,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								
 								// Con el registro transformado y validado se registran las estadísticas posteriores a la transformación
 								if ( network.isRunStats() )
-									transformedMetadataStatsManager.addMetadataObservation(metadata, validationResult);		
+									transformedMetadataStatsManager.addMetadataObservation(metadata, validationResult, wasTransformed);		
 											
 								// Si es válido y hubo transformación incrementa la cuenta de válidos transformados
 								if ( wasTransformed && validationResult.isValid() ) 		

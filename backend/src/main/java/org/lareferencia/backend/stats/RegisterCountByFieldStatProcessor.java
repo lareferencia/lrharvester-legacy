@@ -14,7 +14,7 @@ import org.lareferencia.backend.validator.ValidationResult;
 public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProcessor {
 
 	@Override
-	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult) {
+	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult,  Boolean wasTransformed) {
 		
 		// Obtiene el resultado de validacions de cada campo
 		Map<String, FieldValidationResult> fvResultMap = validationResult.getFieldResults();
