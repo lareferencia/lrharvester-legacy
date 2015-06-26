@@ -1,18 +1,14 @@
 package org.lareferencia.backend.stats;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.stats.BaseCountByFieldStatProcessor.DataIndex;
 import org.lareferencia.backend.util.datatable.ColumnDescription;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.TypeMismatchException;
 import org.lareferencia.backend.util.datatable.ValueType;
 import org.lareferencia.backend.validator.ValidationResult;
-
-import lombok.Getter;
 
 
 public class ByRepositoryStatProcessor extends BaseStatProcessor {
@@ -23,7 +19,7 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 	
 	
 	protected Map<String, Integer[]> countMap = new HashMap<String, Integer[]>();	
-;
+
 	
 	protected enum DataIndex { ALL, VALID, TRANSFORMED }
 	
@@ -46,7 +42,7 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 
 		for (String occr: metadata.getFieldOcurrences(repositoryNameField) ) {
 			
-			if ( occr.startsWith(repositoryNameField) ) {
+			if ( occr.startsWith(repositoryNamePrefix) ) {
 				
 				String repoName = occr.substring( repositoryNameField.length() );
 				
