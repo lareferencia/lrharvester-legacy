@@ -370,22 +370,44 @@ public class ValidatorTests {
 		RepositoryNameHelper helper = new RepositoryNameHelper();
 		
 		String name = helper.detectRepositoryDomain("d987b1fc-343c-4d54-854f-e27befabea27/oai:memoria.fahce.unlp.edu.ar:snrd:Jev1154");
-		assertTrue( name.equals("memoria.fahce.unlp.edu.ar") );		
+		assertTrue( name.equals("memoria.fahce.unlp.edu.ar") );				
+	}
+	
+	@Test
+	public void testAppendToMetadata() throws Exception {
 		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",brRecord);
+		RepositoryNameHelper helper = new RepositoryNameHelper();
+		
+		String name = null;	
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", brRecord);
 		
 		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( name );
+		System.out.println( "Nombre Original del registro: " +  name );
 		
-		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Un repo Name");
+		
+		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Un repo Name", false);
+		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
+		System.out.println( "Nombre agregado por append: " + name );
+		
+		System.out.println( record.toString() );
+		
+		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Otro repo Name", false);
+		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
+		System.out.println( "Nombre luego del agregado con replace = false " + name );
+		
+		System.out.println( record.toString() );
 
+		
+		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Otro repo Name", true);
 		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( name );
+		System.out.println( "Nombre luego del agregado con replace = true "  + name);
 	
 		
 		System.out.println( record.toString() );
 		
 	}
+
 		
 	
 	

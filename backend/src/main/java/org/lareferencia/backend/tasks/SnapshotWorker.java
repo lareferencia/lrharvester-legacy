@@ -78,6 +78,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Value("${reponame.append}")
 	private Boolean doRepoNameAppend;
 	
+	@Value("${reponame.replaceExisting}")
+	private Boolean doRepoNameReplace;
+	
 	@Value("${reponame.field}")
 	private String repoNameField;
 	
@@ -86,6 +89,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Value("${instname.append}")
 	private Boolean doInstNameAppend;
+	
+	@Value("${instname.replaceExisting}")
+	private Boolean doInstNameReplace;
 	
 	@Value("${instname.field}")
 	private String instNameField;
@@ -441,10 +447,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							
 							// Si está configurado agrega a la metadata el reponame y el instname
 							if ( doRepoNameAppend )
-								repositoryNameHelper.appendNameToMetadata(metadata, repoNameField, repoNamePrefix, network.getName() );
+								repositoryNameHelper.appendNameToMetadata(metadata, repoNameField, repoNamePrefix, network.getName(), doRepoNameReplace );
 							
 							if ( doInstNameAppend )
-								repositoryNameHelper.appendNameToMetadata(metadata, instNameField, instNamePrefix, network.getInstitutionName() );
+								repositoryNameHelper.appendNameToMetadata(metadata, instNameField, instNamePrefix, network.getInstitutionName(), doInstNameReplace );
 							
 							
 							// Se almacena la metadata transformada 

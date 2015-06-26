@@ -64,7 +64,7 @@ public class RepositoryNameHelper {
 		return name;
 	}
 	
-	public void appendNameToMetadata(OAIRecordMetadata metadata, String fieldname, String prefix, String value) {
+	public void appendNameToMetadata(OAIRecordMetadata metadata, String fieldname, String prefix, String value, Boolean replaceExisting) {
     	
 		Node existingNode = null;
 		
@@ -76,12 +76,17 @@ public class RepositoryNameHelper {
 				existingNode = node;
 		}
 		
-		if ( existingNode != null ) {
-			Node fieldNode = existingNode.getParentNode();
-			fieldNode.removeChild(existingNode);
+		if ( existingNode != null)
+		{	
+			if ( replaceExisting ) {
+				Node fieldNode = existingNode.getParentNode();
+				fieldNode.removeChild(existingNode);
+				metadata.addFieldOcurrence(fieldname, prefix + value);
+			}
+			
+		} else {
+			metadata.addFieldOcurrence(fieldname, prefix + value);
 		}
-		
-		metadata.addFieldOcurrence(fieldname, prefix + value);
 	}
 	
 }

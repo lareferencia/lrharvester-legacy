@@ -36,10 +36,12 @@ reponame.pattern=[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})
 
 #par�metros agregar reponame e instname a la metadata desde la definici�n de cada repositorio (solo para redes nacionales en true)
 reponame.append=true
+reponame.replaceExisting=false
 reponame.field=dc:source
 reponame.prefix=reponame:
 
 instname.append=true
+instname.replaceExisting=false
 instname.field=dc:source
 instname.prefix=instname:
 
