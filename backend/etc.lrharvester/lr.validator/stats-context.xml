@@ -78,6 +78,9 @@
 										
 						</list>
 					</property>
+				</bean>
+				<bean class="org.lareferencia.backend.stats.ByRepositoryStatProcessor">
+                                        <property name="identifier" value="COUNTS_BYREPOSITORY"/>
 				</bean>				
 			</list>
 		</property>
