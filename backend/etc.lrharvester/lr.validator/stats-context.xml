@@ -35,15 +35,18 @@
 							<value>dc:type</value>
 							<value>dc:title</value>
 							<value>dc:creator</value>	
+							<value>dc:contributor</value>
+							<value>dc:coverage</value>	
 							<value>dc:date</value>	
-							<value>dc:rights</value>			
+							<value>dc:rights</value>	
+							<value>dc:relation</value>			
 							<value>dc:language</value>	
 							<value>dc:description</value>	
+							<value>dc:subject</value>		
 							<value>dc:format</value>	
 							<value>dc:source</value>
 							<value>dc:identifier</value>
-							<value>dc:publisher</value>							
-														
+							<value>dc:publisher</value>																
 						</list>
 					</property>
 				</bean>
@@ -67,15 +70,18 @@
 							<value>dc:type</value>
 							<value>dc:title</value>
 							<value>dc:creator</value>	
+							<value>dc:contributor</value>
+							<value>dc:coverage</value>	
 							<value>dc:date</value>	
-							<value>dc:rights</value>			
+							<value>dc:rights</value>	
+							<value>dc:relation</value>			
 							<value>dc:language</value>	
 							<value>dc:description</value>	
+							<value>dc:subject</value>		
 							<value>dc:format</value>	
 							<value>dc:source</value>
-							<value>dc:identifier</value>	
-							<value>dc:publisher</value>							
-										
+							<value>dc:identifier</value>
+							<value>dc:publisher</value>									
 						</list>
 					</property>
 				</bean>
