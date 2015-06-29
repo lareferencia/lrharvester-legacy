@@ -15,8 +15,9 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 	
 	
 	String repositoryNameField = "dc:source";
+
 	String repositoryNamePrefix = "reponame:";
-	
+	String institutionNamePrefix = "instname:";
 	
 	protected Map<String, Integer[]> countMap = new HashMap<String, Integer[]>();	
 
@@ -40,21 +41,30 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 	@Override
 	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult, Boolean wasTransformed) {
 
+		String institution = "";
+		String repository = "ALL";
+		
 		for (String occr: metadata.getFieldOcurrences(repositoryNameField) ) {
 			
-			if ( occr.startsWith(repositoryNamePrefix) ) {
-				
-				String repoName = occr.substring( repositoryNameField.length() );
-				
-				updateCounter(repoName, DataIndex.ALL);
-				
-				if (validationResult.isValid())
-					updateCounter(repoName, DataIndex.VALID);
-				
-				if (wasTransformed)
-					updateCounter(repoName, DataIndex.TRANSFORMED);	
-			}
+			if ( occr.startsWith(institutionNamePrefix) ) 
+				institution = occr.substring( institutionNamePrefix.length() );
+			
+			
+			if ( occr.startsWith(repositoryNamePrefix) ) 
+				repository = occr.substring( repositoryNamePrefix.length() );
 		}
+		
+		String key = institution + " - " + repository;
+		
+		updateCounter(key, DataIndex.ALL);
+		
+		if (validationResult.isValid())
+			updateCounter(key, DataIndex.VALID);
+		
+		if (wasTransformed)
+			updateCounter(key, DataIndex.TRANSFORMED);
+			
+			
 	}
 
 	@Override
