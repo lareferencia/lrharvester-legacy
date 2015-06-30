@@ -13,6 +13,7 @@ import org.lareferencia.backend.validator.ValidationResult;
 
 public class ByRepositoryStatProcessor extends BaseStatProcessor {
 	
+	private static String SEPARATOR = "#@#";
 	
 	String repositoryNameField = "dc:source";
 
@@ -54,7 +55,7 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 				repository = occr.substring( repositoryNamePrefix.length() );
 		}
 		
-		String key = institution + " - " + repository;
+		String key = institution.trim() + SEPARATOR + repository.trim();
 		
 		updateCounter(key, DataIndex.ALL);
 		
@@ -73,26 +74,29 @@ public class ByRepositoryStatProcessor extends BaseStatProcessor {
 		DataTable resultTable = new DataTable();
 		
 		// Construye las columnas de la tablas de resultados
-		resultTable.addColumn( new ColumnDescription("C1", ValueType.TEXT , "Field") );
-		resultTable.addColumn( new ColumnDescription("C2", ValueType.NUMBER , "Total") );
-		resultTable.addColumn( new ColumnDescription("C3", ValueType.NUMBER , "Valid") );
-		resultTable.addColumn( new ColumnDescription("C4", ValueType.NUMBER , "Trasformed") );
+		resultTable.addColumn( new ColumnDescription("C1", ValueType.TEXT , "Institution") );
+		resultTable.addColumn( new ColumnDescription("C2", ValueType.TEXT , "Repository") );
+		resultTable.addColumn( new ColumnDescription("C3", ValueType.NUMBER , "Total") );
+		resultTable.addColumn( new ColumnDescription("C4", ValueType.NUMBER , "Valid") );
+		resultTable.addColumn( new ColumnDescription("C5", ValueType.NUMBER , "Trasformed") );
 
 		// Para cada campo
-		for ( String repository: countMap.keySet() ) {			
+		for ( String key: countMap.keySet() ) {			
 			
 			// Obtiene el registros de conteos para ese campo
-			Integer[] counts = countMap.get(repository);
+			Integer[] counts = countMap.get(key);
 			
 			// Calcula los porcentajes relativos
 			Integer total = counts[DataIndex.ALL.ordinal()];
 			Integer valid = counts[DataIndex.VALID.ordinal()];
 			Integer transformed = counts[DataIndex.TRANSFORMED.ordinal()];
 
+			String inst = key.split(SEPARATOR)[0];
+			String repo = key.split(SEPARATOR)[1];
 			
 			// Agrega una fila con los resultados de los conteos
 			try {
-				resultTable.addRowFromValues(repository, total, valid, transformed);
+				resultTable.addRowFromValues(inst, repo, total, valid, transformed);
 				
 			} catch (TypeMismatchException e) {
 				e.printStackTrace();
