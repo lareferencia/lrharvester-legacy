@@ -74,6 +74,9 @@ public class Network extends AbstractEntity {
 	private boolean runStats = false;
 	
 	@Column(nullable = false)
+	private boolean runXOAI = false;
+	
+	@Column(nullable = false)
 	private String validatorName;
 	
 	@Column(nullable = false)

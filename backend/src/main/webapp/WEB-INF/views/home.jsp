@@ -376,6 +376,7 @@
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
+				Exportar XOAI: <input type="checkbox" name="runXOAI" value="1"/><br/>
 				Ejecutar estadísticas: <input type="checkbox" name="runStats" value="1"/><br/>
 				
 				<br/>
@@ -407,6 +408,7 @@
 				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
 				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
 				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
+				Exportar XOAI: <input type="checkbox" name="runXOAI" value="1"/><br/>
 				Ejecutar estadísticas: <input type="checkbox" name="runStats" value="1"/><br/>
 				
 				<br/>
