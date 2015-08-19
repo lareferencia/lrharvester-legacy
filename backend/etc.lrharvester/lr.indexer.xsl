@@ -72,29 +72,48 @@
                     <xsl:value-of select="normalize-space(string(//oai_dc:dc))"/>
                 </field>
 
+
+
+        	<xsl:if test="//dc:source[starts-with(., $instname_prefix)]">
+			<field name="instname">
+                		<xsl:value-of select="substring(//dc:source[starts-with(., $instname_prefix)], string-length($instname_prefix)+1, string-length(.))" />
+            		</field>
+			<field name="institution">
+                		<xsl:value-of select="substring(//dc:source[starts-with(., $instname_prefix)], string-length($instname_prefix)+1, string-length(.))" />
+            		</field>
+		</xsl:if>	
+			
+		<xsl:if test="//dc:source[starts-with(., $reponame_prefix)]">
+			<field name="reponame">
+                   		<xsl:value-of select="substring(//dc:source[starts-with(., $reponame_prefix)], string-length($reponame_prefix)+1, string-length(.))" />
+               		</field>
+			<field name="collection">
+                   		<xsl:value-of select="substring(//dc:source[starts-with(., $reponame_prefix)], string-length($reponame_prefix)+1, string-length(.))" />
+               		</field>
+		</xsl:if>
                 <!-- Instname y reponame-->
-                 <xsl:if test="//dc:source">
+                 <!--xsl:if test="//dc:source">
                     <xsl:for-each select="//dc:source">
                     	<xsl:choose>
-							<xsl:when test="starts-with(., $instname_prefix)">
+						<xsl:when test="starts-with(., $instname_prefix)">
 							 	<field name="instname">
-	                    			<xsl:value-of select="substring(., string-length($instname_prefix)+1, string-length(.))" />
-	                			</field>
+	                    					<xsl:value-of select="substring(., string-length($instname_prefix)+1, string-length(.))" />
+	                					</field>
 								<field name="institution">
-	                    			<xsl:value-of select="substring(., string-length($instname_prefix)+1, string-length(.))" />
-	                			</field>
+	                    					<xsl:value-of select="substring(., string-length($instname_prefix)+1, string-length(.))" />
+	                					</field>
 							</xsl:when>
 							<xsl:when test="starts-with(., $reponame_prefix)">
 							 	<field name="reponame">
-	                    			<xsl:value-of select="substring(., string-length($reponame_prefix)+1, string-length(.))" />
-	                			</field>
+	                    					<xsl:value-of select="substring(., string-length($reponame_prefix)+1, string-length(.))" />
+	                					</field>
 								<field name="collection">
-	                    			<xsl:value-of select="substring(., string-length($reponame_prefix)+1, string-length(.))" />
-	                			</field>
+	                    					<xsl:value-of select="substring(., string-length($reponame_prefix)+1, string-length(.))" />
+	                					</field>
 							</xsl:when>
 						</xsl:choose>      
                     </xsl:for-each>
-                 </xsl:if>
+                 </xsl:if-->
                 
                 
                 <!-- LANGUAGE -->
