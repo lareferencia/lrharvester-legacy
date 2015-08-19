@@ -52,6 +52,7 @@ import org.lareferencia.backend.util.datatable.JsonRenderer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -144,8 +145,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private IValidator validator;	
 	private ITransformer transformer;
 	
+
+	
 	@Autowired
-	private IIndexer indexer;
+	@Qualifier("indexer")
+	IIndexer indexer;
+	
+	@Autowired
+	@Qualifier("indexerXOAI")
+	IIndexer indexerXOAI;
 	
 	@Setter
 	private Long networkID;
@@ -282,27 +290,53 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				snapshot.setEndTime( new Date() );
 				
 				// Si está publicada la red y es una red que se indexa
-				if ( network.isRunIndexing() && network.isPublished() ) {
+				if ( network.isPublished() ) {
 					
-				    logMessage("Comenzando indexación ...");
-				    setSnapshotStatus(SnapshotStatus.INDEXING);
-
+					if ( network.isRunIndexing() ) {
 					
-                    // Indexa
-					boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
-					
-					// Si el indexado es exitoso marca el snap válido
-					if ( isSuccesfullyIndexed ) {
-						// Graba el status
-						setSnapshotStatus(SnapshotStatus.VALID);
+					    logMessage("Comenzando indexación ...");
+					    setSnapshotStatus(SnapshotStatus.INDEXING);
 	
-						logMessage("Indexación terminada con éxito.") ;
+	                    // Indexa
+						boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
+						
+						// Si el indexado es exitoso marca el snap válido
+						if ( isSuccesfullyIndexed ) {
+							// Graba el status
+							setSnapshotStatus(SnapshotStatus.VALID);
+		
+							logMessage("Indexación terminada con éxito.") ;
+						}
+						else {
+							// Graba el status
+							setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
+							logMessage("Error en proceso de indexación.");
+						}
 					}
-					else {
-						// Graba el status
-						setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
-						logMessage("Error en proceso de indexación.");
+					
+					if ( network.isRunXOAI()) {
+						
+					    logMessage("Comenzando indexación XOAI ...");
+					    setSnapshotStatus(SnapshotStatus.INDEXING);
+	
+	                    // Indexa
+						boolean isSuccesfullyXOAIIndexed = indexerXOAI.index(snapshot.getNetwork(), snapshot, false);
+						
+						// Si el indexado es exitoso marca el snap válido
+						if ( isSuccesfullyXOAIIndexed ) {
+							// Graba el status
+							setSnapshotStatus(SnapshotStatus.VALID);
+		
+							logMessage("Indexación XOAI terminada con éxito.") ;
+						}
+						else {
+							// Graba el status
+							setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
+							logMessage("Error en proceso de indexación XOAI.");
+						}
 					}
+					
+					
 				} 
 				else {
 					// si no está publicada o no se indexa la marca como válida sin indexar
