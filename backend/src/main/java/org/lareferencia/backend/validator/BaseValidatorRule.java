@@ -13,48 +13,41 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-public class LengthContentValidationRule extends BaseContentValidationRule {
+public abstract class BaseValidatorRule implements IValidatorRule {
 	
-	public static String RULE_ID="Length";
+	protected String  ruleID;
+	protected String  name;
+	protected String  description;
+	protected Boolean mandatory = false;
+	protected String  quantifier = IValidatorRule.QUANTIFIER_ONE_OR_MORE;
 	
-	public LengthContentValidationRule() {
-		super();
-	}
+	protected Map<String,String> parameters = new HashMap<String, String>();
 
-	private Integer minLength = 0;
-	private Integer maxLength = Integer.MAX_VALUE;
-
-	public LengthContentValidationRule(Integer min,  Integer max) {
-		super();
-		this.maxLength = max;
-		this.minLength = min;
-	}
-
-	@Override
-	public ContentValidationResult validate(String content) {
-		
-		ContentValidationResult result = new ContentValidationResult();
-		//result.setRuleID(RULE_ID);		
-		//result.setExpectedValue( minLength.toString() + " >= Length >= " + maxLength.toString()) ;
-		
-		result.setRuleName(this.name);
-		
-		if (content == null) {
-			result.setReceivedValue("NULL");
-			result.setValid(false);
-		} else {
-			result.setReceivedValue( new Integer(content.length()).toString() );
-			result.setValid( content.length() >= minLength && content.length() <= maxLength );
-		}
-			
-		return result;
+	public BaseValidatorRule() {
+		this.ruleID = "EMPTY";
+		this.name = "EMPTY";
+		this.mandatory = false;
+		this.quantifier = IValidatorRule.QUANTIFIER_ONE_OR_MORE;
+		parameters = new HashMap<String, String>();
+	};
+	
+	public BaseValidatorRule(String ruleID, String name, Boolean mandatory, String quantifier) {
+		this.ruleID = ruleID;
+		this.name = name;
+		this.mandatory = mandatory;
+		this.quantifier = quantifier;
+		parameters = new HashMap<String, String>();
 	}
 	
+	public String getParameterValue(String pname) {
+		return parameters.get(pname);
+	}
 }

@@ -13,35 +13,38 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Map;
 
-@Getter
-@Setter
-@ToString
-/**
- * La clase abstracta BaseContentVRule implementa los mecanismos comunes para la evaluación de contenidos de distintas
- * ocurrencias de un mismo metadato.
- * @author lmatas
- *
- */
-public abstract class BaseContentValidationRule implements IContentValidationRule {
-	
-	protected static int MAX_EXPECTED_LENGTH = 255; 
-	
-	protected String quantifier = IContentValidationRule.QUANTIFIER_ZERO_OR_MORE;
-	protected String name = "";
-	
-	public BaseContentValidationRule() {
-	}
-	
-	
-	/** 
-	 *  Esta función abstracta será implementada en las derivadas y determina la valides de un string
-	 * @param item
-	 * @return
-	 */
-	public abstract ContentValidationResult validate(String content);
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
+
+public interface IValidatorRule {
+	
+	public static final String QUANTIFIER_ZERO = "0..0";
+	public static final String QUANTIFIER_ALL = "ALL";
+	public static final String QUANTIFIER_ZERO_OR_MORE = "0..*";
+	public static final String QUANTIFIER_ONE_OR_MORE = "1..*";
+	public static final String QUANTIFIER_ONE_ONLY = "1..1";
+
+	public ValidationRuleResult validate(OAIRecordMetadata metadata);
+		
+	public void setRuleID(String id);
+	public String getRuleID();
+
+	public void setName(String name);
+	public String getName();
+	
+	public void setDescription(String description);
+	public String getDescription();
+	
+	public void setMandatory(Boolean mandatory);
+	public Boolean getMandatory();
+	
+	public void setQuantifier(String quantifier);
+	public String getQuantifier();
+	
+	public Map<String, String> getParameters();
+	public void setParameters(Map<String,String> parameters);
+	
+	public String getParameterValue(String pname);
 }

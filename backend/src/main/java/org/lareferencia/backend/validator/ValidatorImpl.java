@@ -25,44 +25,29 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 @Setter
 public class ValidatorImpl implements IValidator {
 	
-	List<FieldValidator> fieldValidators;
-	//List<FieldValidator> belongsToCollectionFieldValidators;
+	List<IValidatorRule> rules;
 	
 	public ValidatorImpl() {
 		super();
-		fieldValidators = new ArrayList<FieldValidator>();
-		//belongsToCollectionFieldValidators = new ArrayList<FieldValidator>();
+		rules = new ArrayList<IValidatorRule>();
 	}
 	
-	private ValidationResult validate(OAIRecordMetadata metadata, List<FieldValidator> validators) {
+	public ValidationResult validate(OAIRecordMetadata metadata) {
 	
 		ValidationResult result = new ValidationResult();
 		boolean isRecordValid = true;
 		
-		for (FieldValidator validator:validators) {
-			
-			String fieldName = validator.getFieldName();
-			
-			FieldValidationResult fieldResult = validator.validate(metadata);
-			result.getFieldResults().put( fieldName, fieldResult );
-			
-			isRecordValid &= ( fieldResult.isValid() || !validator.isMandatory() );
+		for (IValidatorRule rule:rules) {				
+			ValidationRuleResult ruleResult = rule.validate(metadata);			
+			result.getRulesResults().put(rule.getRuleID(), ruleResult );		
+			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
 		}
 		
 		result.setValid(isRecordValid);
 		
 		return result;
 	}
-	
-	/*
-	@Override
-	public ValidationResult testIfBelongsToCollection(OAIRecordMetadata metadata) {
-		return validate(metadata, belongsToCollectionFieldValidators);
-	}*/
-	
-	@Override
-	public ValidationResult validate(OAIRecordMetadata metadata) {
-		return validate(metadata, fieldValidators);
-	}
 
+
+	
 }

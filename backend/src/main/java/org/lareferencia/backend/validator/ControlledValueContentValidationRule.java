@@ -29,24 +29,78 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ControlledValueContentValidationRule extends BaseContentValidationRule {
+public class ControlledValueContentValidationRule extends BaseContentValidatorRule {
 	
 	private static final int MAX_PRINTED_LINES = 25;
+	private static final int MAX_EXPECTED_LENGTH = 255;
 	
-	public static String RULE_ID="ControlledValue";
+	public static String RULE_ID="ControlledValueValidationRule";
+	public static String RULE_NAME="ControlledValueValidationRule";
+	
+	protected static final String PARAM_CSV_CONTROLED_VALUES = "controlledValues";
+
 	
 	private List<String> controlledValues;
 	
-	public ControlledValueContentValidationRule() {
-		super();
-		controlledValues = new ArrayList<String>();
-	}
 
-	public ControlledValueContentValidationRule(List<String> controlledValues) {
-		super();
-		this.controlledValues = controlledValues;
+	public ControlledValueContentValidationRule(boolean mandatory, String quantifier) {
+		super(RULE_ID, RULE_NAME, mandatory, quantifier);				
+		this.parameters.put(PARAM_CSV_CONTROLED_VALUES, UNDEFINED_PARAM_VALUE);
 	}
 	
+	
+	@Override
+	public OccurrenceValidationResult validate(String content) {
+		
+		OccurrenceValidationResult result = new OccurrenceValidationResult();
+				
+		if (content == null) {
+			result.setReceivedValue("NULL");
+			result.setValid(false);
+		} else {
+			result.setReceivedValue( content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setValid( this.controlledValues.contains(content) );
+		}
+			
+		return result;	
+	}
+	
+	@Override
+	protected void updateParameters() {
+		
+		super.updateParameters();
+		
+		try {
+			if ( getParameterValue(PARAM_CSV_CONTROLED_VALUES) != UNDEFINED_PARAM_VALUE )
+				setControlledValuesFromCsvString(getParameterValue(PARAM_CSV_CONTROLED_VALUES) );
+				
+		} catch (NumberFormatException e) {
+			System.err.println( "Parámetros inválidos en definición de regla:" + this.ruleID );
+			System.err.println( this.parameters );
+		}
+	
+	};
+	
+	
+	public void setControlledValuesFromCsvString(String csvString) {
+	    	
+    	System.out.println("\n\nCargando validador: valores controlados desde cadena CSV");
+    	
+		String[] values = csvString.split(";;");
+
+	    for(int i=0; i<values.length; i++) {
+        	
+        	this.controlledValues.add( values[i] );
+        	
+        	if ( i < MAX_PRINTED_LINES )
+        		System.out.println( values[i] );
+        	else
+        		System.out.print(".");
+        }
+        	        
+    	System.out.println("\nFin Carga validador: valores controlados desde cadena CSV"); 
+	}
+
 	public void setControlledValuesFileName(String filename) {
 		
 	    try {
@@ -85,46 +139,5 @@ public class ControlledValueContentValidationRule extends BaseContentValidationR
 			e.printStackTrace();
 		}
 	}
-	
-	public ControlledValueContentValidationRule(List<String> controlledValues, String quantifier) {
-		super();
-		this.controlledValues = controlledValues;
-		this.quantifier = quantifier;
-	}
 
-	@Override
-	public ContentValidationResult validate(String content) {
-		
-		ContentValidationResult result = new ContentValidationResult();
-		//result.setRuleID(RULE_ID);
-		
-		// Se recorta el diccionario si resulta muy grande, enumerando solo los primeros 255 chars
-		//String expected = controlledValues.toString();
-		//result.setExpectedValue( expected.length() > MAX_EXPECTED_LENGTH ? expected.substring(0, MAX_EXPECTED_LENGTH) : expected ) ;
-		
-		result.setRuleName(this.name);
-		
-		if (content == null) {
-			result.setReceivedValue("NULL");
-			result.setValid(false);
-		} else {
-			result.setReceivedValue( content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
-			result.setValid( this.controlledValues.contains(content) );
-		}
-		
-		/**
-		System.out.println("\n\n");
-		if ( this.controlledValues.size() < 20 )
-			for (String contr:this.controlledValues)
-				System.out.println(contr + " --> " + contr.equals(content) );
-		
-		System.out.println( ".." + content + " :: " + this.controlledValues.contains(content) );
-		**/
-		
-		
-		return result;
-	}
-
-
-	
 }

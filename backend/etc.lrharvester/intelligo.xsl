@@ -62,6 +62,13 @@
 						</xsl:when>
 					</xsl:choose>
 				</xsl:for-each>
+				
+				 <!-- TITLE -->
+                <xsl:if test="//dc:title[normalize-space()]">
+                    <field name="title">
+                        <xsl:value-of select="//dc:title[normalize-space()]"/>
+                    </field>
+                </xsl:if>
                  
                 
                 <!-- LANGUAGE -->
@@ -97,13 +104,6 @@
                 </xsl:if>
                 
 
-                <!-- TITLE -->
-                <xsl:if test="//dc:title[normalize-space()]">
-                    <field name="title">
-                        <xsl:value-of select="//dc:title[normalize-space()]"/>
-                    </field>
-                </xsl:if>
-
                 <!-- PUBLISHER -->
                 <xsl:if test="//dc:publisher[normalize-space()]">
                     <field name="publisher">
@@ -133,7 +133,7 @@
                     </xsl:for-each>
                 </xsl:if>
                 
-                 <!-- rights -->
+               <!-- rights -->
                <xsl:for-each select="//dc:rights">
             
               		<field name="rights">

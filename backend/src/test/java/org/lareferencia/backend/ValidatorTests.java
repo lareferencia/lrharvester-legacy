@@ -21,18 +21,10 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.transformer.ITransformer;
-import org.lareferencia.backend.transformer.TranslateContentFieldTransformer;
-import org.lareferencia.backend.util.RepositoryNameHelper;
+import org.lareferencia.backend.validator.ContentLengthValidationRule;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
-import org.lareferencia.backend.validator.FieldValidator;
-import org.lareferencia.backend.validator.IContentValidationRule;
-import org.lareferencia.backend.validator.IValidator;
-import org.lareferencia.backend.validator.LengthContentValidationRule;
+import org.lareferencia.backend.validator.IValidatorRule;
 import org.lareferencia.backend.validator.RegexContentValidationRule;
-import org.lareferencia.backend.validator.ValidatorImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -138,7 +130,7 @@ public class ValidatorTests {
 			"</metadata>";
 	
 	
-		
+	/**	
 	@Autowired
 	IValidator validator;
 	
@@ -149,19 +141,22 @@ public class ValidatorTests {
 	@Autowired
 	@Qualifier("langFieldTransformer")
 	TranslateContentFieldTransformer langFieldTransformer;
-	
+	**/
 	
 	
 	@Test
 	public void testLengthRule() throws Exception {
 		
 		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", xmlstring);
 		
-		LengthContentValidationRule clrule = new LengthContentValidationRule();
-		clrule.setMinLength(2);
-		clrule.setMaxLength(100);
-	
+		ContentLengthValidationRule clrule = new ContentLengthValidationRule(true, IValidatorRule.QUANTIFIER_ALL);
+		clrule.getParameters().put("maxLength", "100");
+		clrule.getParameters().put("minLength", "2");
+		clrule.getParameters().put("fieldname", "dc:type");
+
+		System.out.println( clrule.getParameters() );
+		
 		
 		for (String content: record.getFieldOcurrences("dc:type")) {	
 			assertTrue("dc:type  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
@@ -171,8 +166,12 @@ public class ValidatorTests {
 		for (String content: record.getFieldOcurrences("dc:title")) {	
 			assertTrue("dc:title  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
 			System.out.println( clrule.validate(content) );
-
 		}
+		
+		
+		System.out.println("\nMetadata Validation");
+		assertTrue( clrule.validate(record).getValid() );
+		System.out.println( clrule.validate(record) );
 	
 	}
 	
@@ -184,7 +183,9 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
 
 		
-		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
+		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule(false, IValidatorRule.QUANTIFIER_ALL);
+		ccrule.getParameters().put("fieldname", "dc:type");
+
 
 		ArrayList<String> cclist = new ArrayList<String>();
 		cclist.add("info:eu-repo/semantics/publishedVersion");
@@ -203,21 +204,22 @@ public class ValidatorTests {
 			System.out.println( ccrule.validate(content) );
 
 		}
+		
+		System.out.println("\nMetadata Validation");
+		assertTrue( ccrule.validate(record).getValid() );
+		System.out.println( ccrule.validate(record) );
+		
 	}
+	
 	
 	@Test
 	public void testRegexRule() throws Exception {
 			
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
 
 		
-		RegexContentValidationRule rerule = new RegexContentValidationRule();
+		RegexContentValidationRule rerule = new RegexContentValidationRule(true, IValidatorRule.QUANTIFIER_ONE_OR_MORE);
 
-		rerule.setRegexString("info.*");
-		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + rerule, rerule.validate(content).isValid()  );
-			System.out.println( rerule.validate(content) );		
-		}
 		
 		rerule.setRegexString("noamatchexpresion");
 		for (String content: record.getFieldOcurrences("dc:type")) {	
@@ -241,10 +243,15 @@ public class ValidatorTests {
 		assertFalse(rerule.validate("200a-02-02").isValid()  );	
 		
 		
-		
-		
+		System.out.println("\nMetadata Validation");
+
+		rerule.getParameters().put("fieldname", "dc:date");
+		rerule.getParameters().put("regexString", "(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
+		System.out.println( rerule.validate(record) );
+
+			
 	}
-	
+	/*
 	@Test
 	public void testFieldValidator() throws Exception {
 		
@@ -257,9 +264,9 @@ public class ValidatorTests {
 		ArrayList<String> typeList2 = new ArrayList<String>();
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
-		FieldValidator fvalidator = new FieldValidator("dc:type",true);
-		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
-		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		BaseValidatorRule fvalidator = new BaseValidatorRule("dc:type",true);
+		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList1, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
+		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList2, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
 	
 		System.out.println( fvalidator.validate(record) );		
 	}
@@ -278,12 +285,12 @@ public class ValidatorTests {
 		ArrayList<String> typeList2 = new ArrayList<String>();
 		typeList2.add("info:eu-repo/semantics/publishedVersion");
 				
-		FieldValidator type_validator = new FieldValidator("dc:type",true);
-		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList1, IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
-		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList2, IContentValidationRule.QUANTIFIER_ONE_OR_MORE));
+		BaseValidatorRule type_validator = new BaseValidatorRule("dc:type",true);
+		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList1, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
+		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList2, IValidatorRule.QUANTIFIER_ONE_OR_MORE));
 	
-		FieldValidator identifier_validator = new FieldValidator("dc:identifier",true);
-		identifier_validator.getRules().add( new RegexContentValidationRule("^http.*",IContentValidationRule.QUANTIFIER_ONE_OR_MORE) );
+		BaseValidatorRule identifier_validator = new BaseValidatorRule("dc:identifier",true);
+		identifier_validator.getRules().add( new RegexContentValidationRule("^http.*",IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
 		
 		
 		IValidator validator = new ValidatorImpl();
@@ -409,7 +416,7 @@ public class ValidatorTests {
 	}
 
 		
-	
+	**/
 	
 	
 }

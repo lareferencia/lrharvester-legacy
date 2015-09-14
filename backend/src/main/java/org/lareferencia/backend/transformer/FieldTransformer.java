@@ -20,9 +20,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.ContentValidationResult;
-import org.lareferencia.backend.validator.FieldValidationResult;
-import org.lareferencia.backend.validator.IContentValidationRule;
+import org.lareferencia.backend.validator.OccurrenceValidationResult;
+import org.lareferencia.backend.validator.ValidationRuleResult;
+import org.lareferencia.backend.validator.IValidatorRule;
 
 @Getter
 @Setter
@@ -30,7 +30,7 @@ public abstract class FieldTransformer {
 	
 	protected String fieldName;
 	protected Map<String,String> options;
-	protected IContentValidationRule validationRule;
+	protected IValidatorRule validationRule;
 	protected String defaultFieldValue;
 	
 	protected boolean applyIfValid = false;

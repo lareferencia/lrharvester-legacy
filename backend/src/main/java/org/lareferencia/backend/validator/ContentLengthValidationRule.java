@@ -13,31 +13,29 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
-import java.util.regex.Pattern;
-
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
-
-@ToString(exclude={"pattern"})
-public class RegexContentValidationRule extends BaseContentValidatorRule {
+@Getter
+@Setter
+@ToString
+public class ContentLengthValidationRule extends BaseContentValidatorRule {
 	
-	private static final int MAX_EXPECTED_LENGTH = 255;
+	public static String RULE_ID="ContentLengthValidationRule";
+	public static String RULE_NAME="ContentLengthValidationRule";
 
-	public static String RULE_ID = "ContentRegexValidationRule";
-	public static String RULE_NAME = "ContentRegexValidationRule";
+	protected static final String PARAM_MAX_LENGTH = "maxLength";
+	protected static final String PARAM_MIN_LENGTH = "minLength";
 	
-	protected static final String PARAM_REGEX_STRING = "regexString";
+	private Integer minLength = 0;
+	private Integer maxLength = Integer.MAX_VALUE;
 
-	
-	private @Getter String regexString;
-	private Pattern pattern;
-	
-
-	public RegexContentValidationRule(boolean mandatory, String quantifier) {
+	public ContentLengthValidationRule(boolean mandatory, String quantifier) {
 		super(RULE_ID, RULE_NAME, mandatory, quantifier);
-		this.parameters.put(PARAM_REGEX_STRING, UNDEFINED_PARAM_VALUE);
-
+		
+		this.parameters.put(PARAM_MAX_LENGTH, UNDEFINED_PARAM_VALUE);
+		this.parameters.put(PARAM_MIN_LENGTH, UNDEFINED_PARAM_VALUE);
 	}
 	
 	@Override
@@ -47,37 +45,34 @@ public class RegexContentValidationRule extends BaseContentValidatorRule {
 		
 		try {
 		
-			if ( getParameterValue(PARAM_REGEX_STRING) != UNDEFINED_PARAM_VALUE )
-				 setRegexString( getParameterValue(PARAM_REGEX_STRING) );
+			if ( getParameterValue(PARAM_MAX_LENGTH) != UNDEFINED_PARAM_VALUE )
+				this.maxLength = Integer.decode( getParameterValue(PARAM_MAX_LENGTH) );
 			
-		} catch (Exception e) {
+			if ( getParameterValue(PARAM_MIN_LENGTH) != UNDEFINED_PARAM_VALUE )
+				this.minLength = Integer.decode( getParameterValue(PARAM_MIN_LENGTH) );
+	
+		} catch (NumberFormatException e) {
 			System.err.println( "Parámetros inválidos en definición de regla:" + this.ruleID );
 			System.err.println( this.parameters );
 		}
 	
 	};
-	
-	
-	public void setRegexString(String reString) {
-		this.regexString = reString;
-		this.pattern = Pattern.compile(reString);
-	}
+
 
 	@Override
 	public OccurrenceValidationResult validate(String content) {
-	
+		
 		OccurrenceValidationResult result = new OccurrenceValidationResult();
 		
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
-			result.setValid( pattern.matcher(content).matches() );
+			result.setReceivedValue( new Integer(content.length()).toString() );
+			result.setValid( content.length() >= minLength && content.length() <= maxLength );
 		}
 			
 		return result;
 	}
-
 	
 }

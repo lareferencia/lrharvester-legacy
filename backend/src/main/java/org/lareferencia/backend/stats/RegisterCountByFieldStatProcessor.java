@@ -7,7 +7,7 @@ import org.lareferencia.backend.util.datatable.ColumnDescription;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.TypeMismatchException;
 import org.lareferencia.backend.util.datatable.ValueType;
-import org.lareferencia.backend.validator.FieldValidationResult;
+import org.lareferencia.backend.validator.ValidationRuleResult;
 import org.lareferencia.backend.validator.ValidationResult;
 
 
@@ -17,7 +17,7 @@ public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProce
 	public void addObservation(OAIRecordMetadata metadata, ValidationResult validationResult,  Boolean wasTransformed) {
 		
 		// Obtiene el resultado de validacions de cada campo
-		Map<String, FieldValidationResult> fvResultMap = validationResult.getFieldResults();
+		Map<String, ValidationRuleResult> fvResultMap = validationResult.getFieldResults();
 
 		// Para cada campo 
 		for (String fieldName : fieldNames) {

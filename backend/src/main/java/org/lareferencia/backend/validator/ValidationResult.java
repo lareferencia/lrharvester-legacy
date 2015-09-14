@@ -22,27 +22,25 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
 public class ValidationResult {
 	
 	private boolean valid;
-	private Map<String,FieldValidationResult> fieldResults;
+	private Map<String,ValidationRuleResult> rulesResults;
 	
 	public ValidationResult() {
-		fieldResults = new HashMap<String,FieldValidationResult>();
+		rulesResults = new HashMap<String,ValidationRuleResult>();
 	}
 	
 	public String getValidationContentDetails() {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		for ( Entry<String, FieldValidationResult> entry:fieldResults.entrySet() ) {
+		for ( Entry<String, ValidationRuleResult> entry:rulesResults.entrySet() ) {
 			
-			for ( ContentValidationResult result: entry.getValue().getResults() ) {
+			for ( OccurrenceValidationResult result: entry.getValue().getResults() ) {
 				// Solo detalla los valores inválidos o válidos, según el caso
-				if ( result.isValid() == this.isValid()  ) {
-					sb.append( entry.getKey() + ":" + result.getReceivedValue() );
-				}
+				sb.append( entry.getKey() + ":" + result.getReceivedValue() );
+				
 				sb.append(";");
 			}
 		}
@@ -53,13 +51,16 @@ public class ValidationResult {
 		return sb.toString();
 	}
 	
+	
+	
+	
 	@Override
 	public String toString() {
 		
 		String toStr = "Validation: ";
 		toStr += " record valid=" + valid + "\n\n";
 		
-		for ( Entry<String, FieldValidationResult> entry:fieldResults.entrySet() ) {
+		for ( Entry<String, ValidationRuleResult> entry:rulesResults.entrySet() ) {
 			
 			toStr += entry.getKey() + ":\n";
 			toStr += entry.getValue().toString() + "\n\n";

@@ -14,7 +14,7 @@
 package org.lareferencia.backend.transformer;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.ContentValidationResult;
+import org.lareferencia.backend.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
 public class RemoveInvalidOccurrenceTransformer extends FieldTransformer {
@@ -27,7 +27,7 @@ public class RemoveInvalidOccurrenceTransformer extends FieldTransformer {
 	public boolean transform(OAIRecordMetadata metadata) {
 		
 		
-		ContentValidationResult result;
+		OccurrenceValidationResult result;
 		boolean anyInvalid = false;
 		
 		// Ciclo de búsqueda

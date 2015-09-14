@@ -13,29 +13,48 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-public class ContentValidationResult {
+public class ValidationRuleResult {
 	
-	private boolean valid;
-	private String ruleName;
-	//private String expectedValue;
-	private String receivedValue;
+	private String  quantifier;
+	private Boolean mandatory;
+	private Boolean valid;
+	private String ruleID;
 
-	public ContentValidationResult() {
+	
+	private List<OccurrenceValidationResult> results;
+
+
+	public ValidationRuleResult() {
+		results = new ArrayList<OccurrenceValidationResult>();
 	}
 
-	public ContentValidationResult(boolean valid, String name,
-			/*String expectedValue*/ String receivedValue) {
+	public ValidationRuleResult(boolean idValid, boolean mandatory, String quantifier,
+			List<OccurrenceValidationResult> contentResults) {
 		super();
-		this.valid = valid;
-		this.ruleName = name;
-		//this.expectedValue = expectedValue;
-		this.receivedValue = receivedValue;
+		this.valid = idValid;
+		this.mandatory = mandatory;
+		this.results = contentResults;
+		this.quantifier = quantifier;
 	}
+	
+	@Override
+	public String toString() {
+		
+		String toStr = "\trule valid=" + valid + "\tmandatory:" + mandatory + "\n";
+
+		for ( OccurrenceValidationResult cr: results ) {
+			toStr += "\t" + cr.toString() + ":\n";
+		}
+		
+		return toStr;
+	}
+
 }
