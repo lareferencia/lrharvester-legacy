@@ -22,32 +22,24 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class ControlledValueContentValidationRule extends BaseContentValidatorRule {
 	
 	private static final int MAX_PRINTED_LINES = 25;
 	private static final int MAX_EXPECTED_LENGTH = 255;
 	
 	public static String RULE_ID="ControlledValueValidationRule";
-	public static String RULE_NAME="ControlledValueValidationRule";
-	
-	protected static final String PARAM_CSV_CONTROLED_VALUES = "controlledValues";
+	public static String RULE_NAME="ControlledValueValidationRule";	
 
-	
+	@JsonProperty("controlledValues")
 	private List<String> controlledValues;
-	
-
-	public ControlledValueContentValidationRule(boolean mandatory, String quantifier) {
-		super(RULE_ID, RULE_NAME, mandatory, quantifier);				
-		this.parameters.put(PARAM_CSV_CONTROLED_VALUES, UNDEFINED_PARAM_VALUE);
-	}
-	
 	
 	@Override
 	public OccurrenceValidationResult validate(String content) {
@@ -64,22 +56,6 @@ public class ControlledValueContentValidationRule extends BaseContentValidatorRu
 			
 		return result;	
 	}
-	
-	@Override
-	protected void updateParameters() {
-		
-		super.updateParameters();
-		
-		try {
-			if ( getParameterValue(PARAM_CSV_CONTROLED_VALUES) != UNDEFINED_PARAM_VALUE )
-				setControlledValuesFromCsvString(getParameterValue(PARAM_CSV_CONTROLED_VALUES) );
-				
-		} catch (NumberFormatException e) {
-			System.err.println( "Parámetros inválidos en definición de regla:" + this.ruleID );
-			System.err.println( this.parameters );
-		}
-	
-	};
 	
 	
 	public void setControlledValuesFromCsvString(String csvString) {
@@ -140,4 +116,15 @@ public class ControlledValueContentValidationRule extends BaseContentValidatorRu
 		}
 	}
 
+
+	@Override
+	public String toString() {
+		return "ControlledValueContentValidationRule [controlledValues="
+				+ controlledValues + ", name=" + name + ", description="
+				+ description + ", mandatory=" + mandatory + ", quantifier="
+				+ quantifier + "]";
+	}
+
+	
+	
 }

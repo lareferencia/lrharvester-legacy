@@ -11,12 +11,38 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.domain;
+package org.lareferencia.backend.validator;
 
-public enum ValidationType {
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+public abstract class AbstractValidatorRule implements IValidatorRule {
 	
-	PREVALIDATION,
-	POSTVALIDATION
+	@JsonProperty("name")
+	protected String  name;
+	
+	@JsonProperty("description")
+	protected String  description;
+	
+	@JsonProperty("mandatory")
+	protected Boolean mandatory = false;
+	
+	@JsonProperty("quantifier")
+	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
+	
+
+	public AbstractValidatorRule() {
+		this.name = "EMPTY";
+		this.mandatory = false;
+		this.quantifier = QuantifierValues.ONE_OR_MORE;
+	};
 	
 }
-

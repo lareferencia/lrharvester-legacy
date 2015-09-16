@@ -16,7 +16,12 @@ package org.lareferencia.backend.validator;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
@@ -25,17 +30,15 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
  * @author lmatas
  *
  */
-public abstract class BaseContentValidatorRule extends BaseValidatorRule {
+@Getter
+@Setter
+public abstract class BaseContentValidatorRule extends AbstractValidatorRule {
 	
-
-	protected static final String PARAM_FIEDLNAME = "fieldname";
-	protected static final String UNDEFINED_PARAM_VALUE = "NoDefinido";
+	@JsonProperty("fieldname")
 	private String fieldname;
 
 
-	public BaseContentValidatorRule(String ruleID, String name, Boolean mandatory, String quantifier) {
-		super(ruleID, name, mandatory, quantifier);
-		this.parameters.put(PARAM_FIEDLNAME, UNDEFINED_PARAM_VALUE);
+	public BaseContentValidatorRule() {
 	}
 
 	/** 
@@ -46,23 +49,14 @@ public abstract class BaseContentValidatorRule extends BaseValidatorRule {
 	public ValidationRuleResult validate(OAIRecordMetadata metadata) {
 		
 		
-		// Primero se llama a la función update parameters, 
-		// esta función debe cargar todos los parámetros dentro de las variables para permitir
-		// el procesamiento correcto de las clases derivadas. 
-		updateParameters();
 		
 		ValidationRuleResult result = new ValidationRuleResult();
 		
 		List<OccurrenceValidationResult> results = new ArrayList<OccurrenceValidationResult>();
 		int validOccurrencesCount = 0;
-		
-		result.setMandatory(mandatory); 
-		result.setQuantifier(quantifier);
-		result.setRuleID( this.getRuleID() );
-		
+			
 		List<String> occurrences = metadata.getFieldOcurrences( fieldname  );
 
-		
 		for (int i=0; i<occurrences.size(); i++) {	
 			
 			// Se valida cada ocurrencia y se obtiene el resultado
@@ -74,31 +68,46 @@ public abstract class BaseContentValidatorRule extends BaseValidatorRule {
 			// Se suman las ocurrencias válidas
 			validOccurrencesCount += occurrenceResult.isValid() ? 1:0;	
 		 }
-			
+		
+					
 		boolean isRuleValid; 
 		
-		if  ( quantifier.equals(IValidatorRule.QUANTIFIER_ONE_ONLY) ) 
+		switch (quantifier) {
+		
+		case ONE_ONLY :
 			isRuleValid = validOccurrencesCount == 1;
-		else if ( quantifier.equals(IValidatorRule.QUANTIFIER_ONE_OR_MORE) ) 
-			isRuleValid = validOccurrencesCount >= 1;			
-		else if ( quantifier.equals(IValidatorRule.QUANTIFIER_ZERO_OR_MORE) ) 
+			break;
+			
+		case ONE_OR_MORE:
+			isRuleValid = validOccurrencesCount >= 1;
+			break;
+			
+		case ZERO_OR_MORE:
 			isRuleValid = validOccurrencesCount >= 0;
-		else if ( quantifier.equals(IValidatorRule.QUANTIFIER_ZERO) ) 
+			break;
+			
+		case ZERO_ONLY:
 			isRuleValid = validOccurrencesCount == 0;
-		else if ( quantifier.equals(IValidatorRule.QUANTIFIER_ALL) ) 
+			break;
+			
+		case ALL:
 			isRuleValid = validOccurrencesCount == occurrences.size();
-		else
+			break;
+		
+		default:
 			isRuleValid = false;
-				
+			break;
+		}
+						
+		result.setRule(this);
 		result.setResults(results);
 		result.setValid(isRuleValid);
 		return result;
+		
+	
 	}
 
 	
-	protected void updateParameters() {
-		this.fieldname = getParameterValue(PARAM_FIEDLNAME);
-	}
 
 	/** 
 	 *  Esta función abstracta será implementada en las derivadas y determina la valides de un string

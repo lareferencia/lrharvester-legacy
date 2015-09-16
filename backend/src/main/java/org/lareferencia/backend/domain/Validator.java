@@ -11,16 +11,49 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.repositories;
+package org.lareferencia.backend.domain;
 
-import org.lareferencia.backend.domain.OAIProviderStat;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
-@RepositoryRestResource(path = "providerStat", collectionResourceRel="providerStat", exported=false)
-public interface OAIProviderStatRepository extends JpaRepository<OAIProviderStat, String> { 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * NationalNetwork Entity
+ */
+@Entity
+@Getter
+@Setter
+public class Validator extends AbstractEntity {
 	
-	//OAIProviderStat findByIpAddress(String ipAddress);
+	@Column(nullable = false)
+	private String name;
+	
+	@Column(nullable = true)
+	private String description;
+	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="validator_id")
+	@LazyCollection(LazyCollectionOption.FALSE) 
+	private Collection<ValidatorRule> rules = new LinkedHashSet<ValidatorRule>();
+
+	public Validator() {
+		super();
+		rules = new LinkedHashSet<ValidatorRule>();
+	}
+	
+	
+
+
 }

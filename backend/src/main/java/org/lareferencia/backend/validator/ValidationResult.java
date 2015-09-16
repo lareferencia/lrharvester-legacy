@@ -13,7 +13,9 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,21 +27,21 @@ import lombok.Setter;
 public class ValidationResult {
 	
 	private boolean valid;
-	private Map<String,ValidationRuleResult> rulesResults;
+	private List<ValidationRuleResult> rulesResults;
 	
 	public ValidationResult() {
-		rulesResults = new HashMap<String,ValidationRuleResult>();
+		rulesResults = new ArrayList<ValidationRuleResult>();
 	}
 	
 	public String getValidationContentDetails() {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		for ( Entry<String, ValidationRuleResult> entry:rulesResults.entrySet() ) {
+		for ( ValidationRuleResult  entry:rulesResults ) {
 			
-			for ( OccurrenceValidationResult result: entry.getValue().getResults() ) {
+			for ( OccurrenceValidationResult result: entry.getResults() ) {
 				// Solo detalla los valores inválidos o válidos, según el caso
-				sb.append( entry.getKey() + ":" + result.getReceivedValue() );
+				sb.append( entry.getRule().getName() + ":" + result.getReceivedValue() );
 				
 				sb.append(";");
 			}
@@ -60,10 +62,10 @@ public class ValidationResult {
 		String toStr = "Validation: ";
 		toStr += " record valid=" + valid + "\n\n";
 		
-		for ( Entry<String, ValidationRuleResult> entry:rulesResults.entrySet() ) {
+		for ( ValidationRuleResult entry:rulesResults ) {
 			
-			toStr += entry.getKey() + ":\n";
-			toStr += entry.getValue().toString() + "\n\n";
+			toStr += entry.getRule().getName() + ":\n";
+			toStr += entry.toString() + "\n\n";
 		}
 		return toStr;
 	}

@@ -51,6 +51,7 @@ import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.JsonRenderer;
 import org.lareferencia.backend.validator.IValidator;
 import org.lareferencia.backend.validator.ValidationResult;
+import org.lareferencia.backend.validator.ValidationRuleResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -502,15 +503,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							/// Almacenamiento de resultados de validación
 							OAIRecordValidationResult recordValidationResult;
 							
-							for ( String field : validationResult.getFieldResults().keySet() ) {
+							for ( ValidationRuleResult ruleResult : validationResult.getRulesResults() ) {
 								
-								Boolean isFieldValid = validationResult.getFieldResults().get(field).isValid();
-								Boolean isFieldMandatory = validationResult.getFieldResults().get(field).isMandatory();
+								Boolean isFieldValid = ruleResult.getValid();
+								Boolean isFieldMandatory = ruleResult.getRule().getMandatory();
 
 								
 								if (!isFieldValid && isFieldMandatory) {
 								
-									recordValidationResult = new OAIRecordValidationResult(field);
+									recordValidationResult = new OAIRecordValidationResult(ruleResult.getRule().getName());
 									recordValidationResult.setSnapshot(snapshot);
 									recordValidationResult.setRecord(record);
 									recordValidationRepository.save(recordValidationResult);

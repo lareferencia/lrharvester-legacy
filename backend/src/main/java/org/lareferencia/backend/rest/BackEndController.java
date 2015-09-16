@@ -106,8 +106,6 @@ public class BackEndController {
 	@Autowired
 	private OAIRecordValidationRepository recordValidationRepository;
 	
-	@Autowired 
-	private OAIProviderStatRepository oaiProviderStatRepository;
 	
 	@Autowired
 	@Qualifier("indexer")
@@ -790,21 +788,7 @@ public class BackEndController {
 	
 	
 	
-	@RequestMapping(value="/public/listProviderStats", method=RequestMethod.GET)
-	@ResponseBody
-	public PageResource<OAIProviderStat> listProviderStats(@RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
-		
-		if (page == null)
-			page = 0;
-		if (size == null)
-			size = 100;
-		
-		Page<OAIProviderStat> pageResult = oaiProviderStatRepository.findAll( new PageRequest(page, size, new Sort(Sort.Direction.DESC,"requestCount")));	
-		
-		return new PageResource<OAIProviderStat>(pageResult,"page","size");
-	}
-	
-	
+
 	@RequestMapping(value="/public/listOriginsBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
 	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id) throws Exception {

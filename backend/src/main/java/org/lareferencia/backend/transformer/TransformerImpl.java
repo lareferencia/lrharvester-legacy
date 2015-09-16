@@ -22,7 +22,7 @@ import java.util.TreeMap;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.OccurrenceValidationResult;
 import org.lareferencia.backend.validator.IValidatorRule;
-import org.lareferencia.backend.validator.BaseValidatorRule;
+import org.lareferencia.backend.validator.AbstractValidatorRule;
 import org.lareferencia.backend.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

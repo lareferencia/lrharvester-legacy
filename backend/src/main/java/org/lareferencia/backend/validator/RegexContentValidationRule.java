@@ -15,7 +15,10 @@ package org.lareferencia.backend.validator;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 
@@ -26,36 +29,13 @@ public class RegexContentValidationRule extends BaseContentValidatorRule {
 
 	public static String RULE_ID = "ContentRegexValidationRule";
 	public static String RULE_NAME = "ContentRegexValidationRule";
-	
-	protected static final String PARAM_REGEX_STRING = "regexString";
 
+
+	@Getter
+	@JsonProperty("name")
+	private String regexString;
 	
-	private @Getter String regexString;
 	private Pattern pattern;
-	
-
-	public RegexContentValidationRule(boolean mandatory, String quantifier) {
-		super(RULE_ID, RULE_NAME, mandatory, quantifier);
-		this.parameters.put(PARAM_REGEX_STRING, UNDEFINED_PARAM_VALUE);
-
-	}
-	
-	@Override
-	protected void updateParameters() {
-		
-		super.updateParameters();
-		
-		try {
-		
-			if ( getParameterValue(PARAM_REGEX_STRING) != UNDEFINED_PARAM_VALUE )
-				 setRegexString( getParameterValue(PARAM_REGEX_STRING) );
-			
-		} catch (Exception e) {
-			System.err.println( "Parámetros inválidos en definición de regla:" + this.ruleID );
-			System.err.println( this.parameters );
-		}
-	
-	};
 	
 	
 	public void setRegexString(String reString) {

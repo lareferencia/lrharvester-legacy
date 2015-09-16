@@ -20,6 +20,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -76,8 +77,11 @@ public class Network extends AbstractEntity {
 	@Column(nullable = false)
 	private boolean runXOAI = false;
 	
-	@Column(nullable = false)
-	private String validatorName;
+	@Getter
+	@Setter
+	@ManyToOne()
+	@JoinColumn(name="validator_id", nullable=true)
+	private Validator validator;
 	
 	@Column(nullable = false)
 	private String transformerName;

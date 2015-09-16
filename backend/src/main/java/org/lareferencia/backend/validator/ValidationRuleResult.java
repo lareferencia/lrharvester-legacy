@@ -23,32 +23,28 @@ import lombok.Setter;
 @Setter
 public class ValidationRuleResult {
 	
-	private String  quantifier;
-	private Boolean mandatory;
+
 	private Boolean valid;
-	private String ruleID;
-
+	private IValidatorRule rule;
 	
-	private List<OccurrenceValidationResult> results;
 
+
+	private List<OccurrenceValidationResult> results;
 
 	public ValidationRuleResult() {
 		results = new ArrayList<OccurrenceValidationResult>();
 	}
 
-	public ValidationRuleResult(boolean idValid, boolean mandatory, String quantifier,
-			List<OccurrenceValidationResult> contentResults) {
-		super();
-		this.valid = idValid;
-		this.mandatory = mandatory;
+	public ValidationRuleResult(IValidatorRule rule, Boolean isValid, List<OccurrenceValidationResult> contentResults) {
+		this.valid = isValid;
 		this.results = contentResults;
-		this.quantifier = quantifier;
+		this.rule = rule;
 	}
 	
 	@Override
 	public String toString() {
 		
-		String toStr = "\trule valid=" + valid + "\tmandatory:" + mandatory + "\n";
+		String toStr = "\t" + this.rule + "\n";
 
 		for ( OccurrenceValidationResult cr: results ) {
 			toStr += "\t" + cr.toString() + ":\n";

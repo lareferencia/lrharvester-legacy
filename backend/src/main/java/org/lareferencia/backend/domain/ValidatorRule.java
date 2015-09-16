@@ -11,43 +11,30 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.hibernate.annotations.Type;
 
+/**
+ * NationalNetwork Entity
+ */
+@Entity
 @Getter
 @Setter
-public class ValidatorImpl implements IValidator {
+public class ValidatorRule extends AbstractEntity {
 	
-	List<IValidatorRule> rules;
+	@Column(nullable = false)
+	private String name;
 	
-	public ValidatorImpl() {
-		super();
-		rules = new ArrayList<IValidatorRule>();
-	}
+	@Column(nullable = true)
+	private String description;
 	
-	public ValidationResult validate(OAIRecordMetadata metadata) {
-	
-		ValidationResult result = new ValidationResult();
-		boolean isRecordValid = true;
-		
-		for (IValidatorRule rule:rules) {				
-			ValidationRuleResult ruleResult = rule.validate(metadata);			
-			result.getRulesResults().add( ruleResult );		
-			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
-		}
-		
-		result.setValid(isRecordValid);
-		
-		return result;
-	}
-
-
-	
+	@Type(type="org.hibernate.type.StringClobType")
+	private String JSONSerialization;
 }

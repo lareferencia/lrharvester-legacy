@@ -13,50 +13,27 @@
  ******************************************************************************/
 package org.lareferencia.backend.validator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class ContentLengthValidationRule extends BaseContentValidatorRule {
 	
 	public static String RULE_ID="ContentLengthValidationRule";
 	public static String RULE_NAME="ContentLengthValidationRule";
-
-	protected static final String PARAM_MAX_LENGTH = "maxLength";
-	protected static final String PARAM_MIN_LENGTH = "minLength";
 	
+	@JsonProperty("minLength")
 	private Integer minLength = 0;
+	
+	@JsonProperty("maxLength")
 	private Integer maxLength = Integer.MAX_VALUE;
 
-	public ContentLengthValidationRule(boolean mandatory, String quantifier) {
-		super(RULE_ID, RULE_NAME, mandatory, quantifier);
-		
-		this.parameters.put(PARAM_MAX_LENGTH, UNDEFINED_PARAM_VALUE);
-		this.parameters.put(PARAM_MIN_LENGTH, UNDEFINED_PARAM_VALUE);
+	public ContentLengthValidationRule() {
 	}
-	
-	@Override
-	protected void updateParameters() {
-		
-		super.updateParameters();
-		
-		try {
-		
-			if ( getParameterValue(PARAM_MAX_LENGTH) != UNDEFINED_PARAM_VALUE )
-				this.maxLength = Integer.decode( getParameterValue(PARAM_MAX_LENGTH) );
-			
-			if ( getParameterValue(PARAM_MIN_LENGTH) != UNDEFINED_PARAM_VALUE )
-				this.minLength = Integer.decode( getParameterValue(PARAM_MIN_LENGTH) );
-	
-		} catch (NumberFormatException e) {
-			System.err.println( "Parámetros inválidos en definición de regla:" + this.ruleID );
-			System.err.println( this.parameters );
-		}
-	
-	};
 
 
 	@Override
@@ -73,6 +50,15 @@ public class ContentLengthValidationRule extends BaseContentValidatorRule {
 		}
 			
 		return result;
+	}
+
+
+	@Override
+	public String toString() {
+		return "ContentLengthValidationRule [minLength=" + minLength
+				+ ", maxLength=" + maxLength + ", name=" + name
+				+ ", description=" + description + ", mandatory=" + mandatory
+				+ ", quantifier=" + quantifier + "]";
 	}
 	
 }
