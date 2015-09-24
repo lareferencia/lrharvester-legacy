@@ -30,7 +30,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ControlledValueContentValidationRule extends BaseContentValidatorRule {
+public class ControlledValueContentValidationRule extends AbstractValidatorFieldContentRule {
 	
 	private static final int MAX_PRINTED_LINES = 25;
 	private static final int MAX_EXPECTED_LENGTH = 255;

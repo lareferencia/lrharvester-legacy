@@ -13,37 +13,27 @@
  ******************************************************************************/
 package org.lareferencia.backend.transformer;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.OccurrenceValidationResult;
-import org.lareferencia.backend.validator.IValidatorRule;
-import org.lareferencia.backend.validator.AbstractValidatorRule;
 import org.lareferencia.backend.validator.ValidationResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Node;
 
 @Component
 public class TransformerImpl implements ITransformer {
 	
-	List<FieldTransformer> fieldTransformers;
+	List<AbstractTransformerRule> rules;
 
 
 	@Override
-	public List<FieldTransformer> getFieldTransformers() {
-		return fieldTransformers;
+	public List<AbstractTransformerRule> getFieldTransformers() {
+		return rules;
 	}
 
 
 	@Override
-	public void setFieldTransformers(List<FieldTransformer> transformers) {
-		this.fieldTransformers = transformers;	
+	public void setFieldTransformers(List<AbstractTransformerRule> transformers) {
+		this.rules = transformers;	
 	}
 
 
@@ -52,11 +42,10 @@ public class TransformerImpl implements ITransformer {
 		
 		boolean anyTransformationOccurred = false; 
 		
-		for (FieldTransformer transformer: fieldTransformers) {
+		for (AbstractTransformerRule transformer: rules) {
 			
 			try {
 				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
-				if ( transformer.isApplyIfValid() || !validationResult.getFieldResults().get( transformer.getFieldName() ).isValid() )
 					anyTransformationOccurred |= transformer.transform(metadata);
 			}
 			catch (Exception e) {

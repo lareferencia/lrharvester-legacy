@@ -13,14 +13,28 @@
  ******************************************************************************/
 package org.lareferencia.backend.transformer;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.validator.IValidatorFieldContentRule;
 import org.lareferencia.backend.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
-public class RemoveInvalidOccurrenceTransformer extends FieldTransformer {
+@Getter
+@Setter
+public class FieldNormalizeRule extends AbstractTransformerRule {
 	
-	public RemoveInvalidOccurrenceTransformer() {
-		applyIfValid = true;
+	
+	private IValidatorFieldContentRule validationRule;
+	private String fieldName;
+	private Boolean removeInvalidOccurrences = true;
+	private Boolean removeDuplicatedOccurrences = true;
+		
+	public FieldNormalizeRule() {
 	}
 	
 	@Override
@@ -29,18 +43,32 @@ public class RemoveInvalidOccurrenceTransformer extends FieldTransformer {
 		
 		OccurrenceValidationResult result;
 		boolean anyInvalid = false;
+		Set<String> occurencesHistory = new HashSet<String>();
 		
 		// Ciclo de búsqueda
 		for (Node node: metadata.getFieldNodes(fieldName) ) {
 			
 			String occr = node.getFirstChild().getNodeValue();			
-			result = validationRule.validate(occr);
+
 			
-			anyInvalid |= !result.isValid();
+			if ( removeInvalidOccurrences ) {
 			
-			if ( !result.isValid() ) {
-				Node fieldNode = node.getParentNode();
-				fieldNode.removeChild(node);				
+				result = validationRule.validate(occr);
+				
+				anyInvalid |= !result.isValid();
+				
+				if ( !result.isValid() ) {
+					metadata.removeFieldNode(node);			
+				}
+			}
+			
+			if ( removeDuplicatedOccurrences ) {
+				
+				if ( occurencesHistory.contains(occr) ) {
+					anyInvalid |= true;
+					metadata.removeFieldNode(node);
+				}
+				
 			}
 			
 		}

@@ -21,7 +21,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ContentLengthValidationRule extends BaseContentValidatorRule {
+public class ContentLengthValidationRule extends AbstractValidatorFieldContentRule {
 	
 	public static String RULE_ID="ContentLengthValidationRule";
 	public static String RULE_NAME="ContentLengthValidationRule";

@@ -172,6 +172,11 @@ public class OAIRecordMetadata {
 		}
 	}
 	
+	public void removeFieldNode(Node node) {
+		Node fieldNode = node.getParentNode();
+		fieldNode.removeChild(node);
+	}
+	
 	
 	public List<Node> getFieldNodes(String fieldName) {
 
@@ -194,6 +199,8 @@ public class OAIRecordMetadata {
 			return new ArrayList<Node>(0);
 		}
 	}
+	
+
 	
 	public static Document parseXML(String xmlstring) throws ParserConfigurationException, SAXException, IOException {
 		InputSource is = new InputSource();

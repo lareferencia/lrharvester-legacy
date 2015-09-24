@@ -13,31 +13,23 @@
  ******************************************************************************/
 package org.lareferencia.backend.transformer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.OccurrenceValidationResult;
-import org.lareferencia.backend.validator.ValidationRuleResult;
 import org.lareferencia.backend.validator.IValidatorRule;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 @Getter
 @Setter
-public abstract class FieldTransformer {
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+public abstract class AbstractTransformerRule implements ITransformerRule {
 	
-	protected String fieldName;
-	protected Map<String,String> options;
-	protected IValidatorRule validationRule;
-	protected String defaultFieldValue;
-	
-	protected boolean applyIfValid = false;
-		
-	public FieldTransformer() {
-		options = new HashMap<String, String>();
-		applyIfValid = false;
+	public AbstractTransformerRule() {
 	}
 
 	/**
@@ -45,5 +37,5 @@ public abstract class FieldTransformer {
 	 * @param metadata
 	 * @return Retorna true si fue necesario aplicar una transformación
 	 */
-	abstract boolean transform(OAIRecordMetadata metadata);
+	public abstract boolean transform(OAIRecordMetadata metadata);
 }

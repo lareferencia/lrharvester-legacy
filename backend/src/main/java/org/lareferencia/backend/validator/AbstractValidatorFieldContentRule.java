@@ -32,13 +32,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @Getter
 @Setter
-public abstract class BaseContentValidatorRule extends AbstractValidatorRule {
+public abstract class AbstractValidatorFieldContentRule extends AbstractValidatorRule implements IValidatorFieldContentRule {
 	
 	@JsonProperty("fieldname")
 	private String fieldname;
 
 
-	public BaseContentValidatorRule() {
+	public AbstractValidatorFieldContentRule() {
 	}
 
 	/** 
@@ -114,5 +114,5 @@ public abstract class BaseContentValidatorRule extends AbstractValidatorRule {
 	 * @param String
 	 * @return
 	 */
-	protected abstract OccurrenceValidationResult validate(String string);	
+	public abstract OccurrenceValidationResult validate(String string);	
 }

@@ -29,7 +29,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
-public class CrossTranslateContentFieldTransformer extends FieldTransformer {
+public class FieldContentTranslateRule extends AbstractTransformerRule {
 
 	@Getter
 	Map<String, String> translationMap;
@@ -37,11 +37,26 @@ public class CrossTranslateContentFieldTransformer extends FieldTransformer {
 	@Setter
 	@Getter
 	String testFieldName;
+	
+	@Setter
+	@Getter
+	String writeFieldName;
+	
+	@Setter
+	@Getter
+	Boolean replaceOccurrence = true;
+	
+	@Setter
+	@Getter
+	Boolean testValueAsPrefix = false;
+	
+	
+	
+	
 
-	public CrossTranslateContentFieldTransformer() {
+	public FieldContentTranslateRule() {
 		this.translationMap = new TreeMap<String, String>(
 				CaseInsensitiveComparator.INSTANCE);
-		this.applyIfValid = false;
 	}
 
 	public void setTranslationMapFileName(String filename) {
@@ -87,37 +102,58 @@ public class CrossTranslateContentFieldTransformer extends FieldTransformer {
 	public boolean transform(OAIRecordMetadata metadata) {
 
 		OccurrenceValidationResult result;
-		boolean found = false;
+		boolean wasTransformed = false;
 
-		// ciclo de reemplazo
+		
 		// recorre las ocurrencias del campo de test
-		for (Node node : metadata.getFieldNodes(this.getTestFieldName())) {
+		for (Node node : metadata.getFieldNodes(testFieldName) ) {
 
 			String occr = node.getFirstChild().getNodeValue();
-
-			// recorre los valores del diccionarrio de reemplazo
-			for (String testValue : translationMap.keySet()) {
-
-				// si el valor del diccionario de reemplazo es prefijo de la
-				// ocurrencia
-				if (!found && occr.startsWith(testValue)) {
-
-					// agrega la occurrencia en el campo a modificar de acuerdo
-					// al valor del diccionario en la clave detectada como
-					// prefijo
-					metadata.addFieldOcurrence(fieldName, translationMap.get(testValue));
-
-					found = true;
+			
+			// Busca el valor completo, no el prefijo
+			if ( !testValueAsPrefix ) {
+			
+				// Si encuentra el valor realiza la trasformación y registra que ocurrió
+				if ( translationMap.containsKey(occr) ) {
+					
+					String translatedOccr = translationMap.get(occr); // se obtiene el valor de reemplazo
+					wasTransformed |= !occr.equals(translatedOccr); // registra que será transformado
+					
+					if ( replaceOccurrence ) { // Si esta marcao el reemplazo del valor
+						// borra la ocurrencia del test node
+						metadata.removeFieldNode(node);
+					}
+					
+					metadata.addFieldOcurrence(writeFieldName, translatedOccr);
+				}	
+			
+			}
+			else { // Busca el prefijo 
+			
+				Boolean found = false;
+				// recorre los valores del diccionarrio de reemplazo
+				for (String testValue : translationMap.keySet()) {
+					
+					// si el valor del diccionario de reemplazo es prefijo de la
+					// ocurrencia	
+					if (!found && occr.startsWith(testValue)) {
+						
+						wasTransformed = true;
+						String translatedOccr = translationMap.get(testValue); // se obtiene el valor de reemplazo
+				
+						if ( replaceOccurrence ) { // Si esta marcao el reemplazo del valor
+							// borra la ocurrencia del test node
+							metadata.removeFieldNode(node);
+						}
+						
+						metadata.addFieldOcurrence(writeFieldName, translatedOccr);
+	
+					}
 				}
 			}
 		}
 
-		// creación del campo con el valor por defecto en caso de no haber sido
-		// encontrado, solo cuando hay valor por defecto declarado
-		if (!found && this.getDefaultFieldValue() != null)
-			metadata.addFieldOcurrence(fieldName, defaultFieldValue);
-
-		return found;
+		return wasTransformed;
 	}
 
 	public void setTranslationMap(Map<String, String> translationMap) {

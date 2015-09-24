@@ -20,7 +20,7 @@ import lombok.Setter;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.w3c.dom.Node;
 
-public class FieldNameTranslateFieldTransformer extends FieldTransformer {
+public class FieldNameTranslateFieldTransformer extends AbstractTransformerRule {
 
 	@Getter
 	Map<String, String> translationMap;
@@ -35,7 +35,6 @@ public class FieldNameTranslateFieldTransformer extends FieldTransformer {
 	
 
 	public FieldNameTranslateFieldTransformer() {
-		this.applyIfValid = false;
 	}
 
 	@Override

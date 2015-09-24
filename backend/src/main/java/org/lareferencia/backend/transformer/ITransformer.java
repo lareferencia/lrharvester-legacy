@@ -20,8 +20,8 @@ import org.lareferencia.backend.validator.ValidationResult;
 
 public interface ITransformer {
 	
-	public List<FieldTransformer> getFieldTransformers();
-	public void setFieldTransformers( List<FieldTransformer> validators);
+	public List<AbstractTransformerRule> getFieldTransformers();
+	public void setFieldTransformers( List<AbstractTransformerRule> validators);
 	
 	/**
 	 * 

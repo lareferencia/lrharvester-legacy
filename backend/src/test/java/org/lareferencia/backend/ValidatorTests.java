@@ -24,6 +24,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.ContentLengthValidationRule;
 import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validator.IValidatorRule;
+import org.lareferencia.backend.validator.QuantifierValues;
 import org.lareferencia.backend.validator.RegexContentValidationRule;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -150,12 +151,14 @@ public class ValidatorTests {
 		
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", xmlstring);
 		
-		ContentLengthValidationRule clrule = new ContentLengthValidationRule(true, IValidatorRule.QUANTIFIER_ALL);
-		clrule.getParameters().put("maxLength", "100");
-		clrule.getParameters().put("minLength", "2");
-		clrule.getParameters().put("fieldname", "dc:type");
+		ContentLengthValidationRule clrule = new ContentLengthValidationRule();
+		clrule.setQuantifier(QuantifierValues.ALL);
+		
+		
+		clrule.setMaxLength(100);
+		clrule.setMinLength(2);
+		clrule.setFieldname("dc:type");
 
-		System.out.println( clrule.getParameters() );
 		
 		
 		for (String content: record.getFieldOcurrences("dc:type")) {	
@@ -183,8 +186,9 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
 
 		
-		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule(false, IValidatorRule.QUANTIFIER_ALL);
-		ccrule.getParameters().put("fieldname", "dc:type");
+		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
+		ccrule.setQuantifier(QuantifierValues.ALL);
+		ccrule.setFieldname("dc:type");
 
 
 		ArrayList<String> cclist = new ArrayList<String>();
@@ -218,8 +222,10 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
 
 		
-		RegexContentValidationRule rerule = new RegexContentValidationRule(true, IValidatorRule.QUANTIFIER_ONE_OR_MORE);
+		RegexContentValidationRule rerule = new RegexContentValidationRule();
+		rerule.setQuantifier(QuantifierValues.ONE_OR_MORE);
 
+	
 		
 		rerule.setRegexString("noamatchexpresion");
 		for (String content: record.getFieldOcurrences("dc:type")) {	
@@ -245,8 +251,8 @@ public class ValidatorTests {
 		
 		System.out.println("\nMetadata Validation");
 
-		rerule.getParameters().put("fieldname", "dc:date");
-		rerule.getParameters().put("regexString", "(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
+		rerule.setFieldname("dc:date");
+		rerule.setRegexString("(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
 		System.out.println( rerule.validate(record) );
 
 			

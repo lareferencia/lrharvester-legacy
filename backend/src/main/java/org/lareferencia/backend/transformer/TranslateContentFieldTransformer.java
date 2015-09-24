@@ -32,7 +32,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
-public class TranslateContentFieldTransformer extends FieldTransformer {
+public class TranslateContentFieldTransformer extends AbstractTransformerRule {
 	
 	private static final int MAX_PRINTED_LINES = 30;
 	
@@ -47,7 +47,6 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 	
 	public TranslateContentFieldTransformer() {
 		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
-		this.applyIfValid = false;
 	}
 	
 	public void setTranslationMapFileName(String filename) {
@@ -122,8 +121,7 @@ public class TranslateContentFieldTransformer extends FieldTransformer {
 
 			// Si no es válida la ocurrencia y está indicado remover ocurrencias inválidas
 			if (!isOccurenceValid && this.isDeleteInvalidOccurences()) {
-				Node fieldNode = node.getParentNode();
-				fieldNode.removeChild(node);
+				metadata.removeFieldNode(node);
 			}
 			
 		}
