@@ -35,7 +35,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Validator extends AbstractEntity {
+public class Transformer extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private String name;
@@ -44,12 +44,12 @@ public class Validator extends AbstractEntity {
 	private String description;
 	
 	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="validator_id")
+	@JoinColumn(name="transformer_id")
 	@LazyCollection(LazyCollectionOption.FALSE) 
-	private Collection<ValidatorRule> rules = new LinkedHashSet<ValidatorRule>();
+	private Collection<TransformerRule> rules = new LinkedHashSet<TransformerRule>();
 
-	public Validator() {
+	public Transformer() {
 		super();
-		rules = new LinkedHashSet<ValidatorRule>();
+		rules = new LinkedHashSet<TransformerRule>();
 	}
 }

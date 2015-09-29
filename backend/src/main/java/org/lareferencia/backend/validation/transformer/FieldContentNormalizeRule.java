@@ -11,7 +11,7 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.transformer;
+package org.lareferencia.backend.validation.transformer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,21 +20,34 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.IValidatorFieldContentRule;
-import org.lareferencia.backend.validator.OccurrenceValidationResult;
+import org.lareferencia.backend.validation.validator.AbstractValidatorFieldContentRule;
+import org.lareferencia.backend.validation.validator.IValidatorFieldContentRule;
+import org.lareferencia.backend.validation.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
 @Getter
 @Setter
-public class FieldNormalizeRule extends AbstractTransformerRule {
+public class FieldContentNormalizeRule extends AbstractTransformerRule {
 	
 	
+	@Override
+	public String toString() {
+		return "FieldContentNormalizeRule [validationRule=" + validationRule
+				+ ", fieldName=" + fieldName + ", removeInvalidOccurrences="
+				+ removeInvalidOccurrences + ", removeDuplicatedOccurrences="
+				+ removeDuplicatedOccurrences + "]";
+	}
+
 	private IValidatorFieldContentRule validationRule;
+	
+	
 	private String fieldName;
-	private Boolean removeInvalidOccurrences = true;
-	private Boolean removeDuplicatedOccurrences = true;
+	
+	
+	private Boolean removeInvalidOccurrences = false;
+	private Boolean removeDuplicatedOccurrences = false;
 		
-	public FieldNormalizeRule() {
+	public FieldContentNormalizeRule() {
 	}
 	
 	@Override
@@ -42,7 +55,7 @@ public class FieldNormalizeRule extends AbstractTransformerRule {
 		
 		
 		OccurrenceValidationResult result;
-		boolean anyInvalid = false;
+		boolean wasTransformed = false;
 		Set<String> occurencesHistory = new HashSet<String>();
 		
 		// Ciclo de búsqueda
@@ -55,7 +68,7 @@ public class FieldNormalizeRule extends AbstractTransformerRule {
 			
 				result = validationRule.validate(occr);
 				
-				anyInvalid |= !result.isValid();
+				wasTransformed |= !result.isValid();
 				
 				if ( !result.isValid() ) {
 					metadata.removeFieldNode(node);			
@@ -65,15 +78,17 @@ public class FieldNormalizeRule extends AbstractTransformerRule {
 			if ( removeDuplicatedOccurrences ) {
 				
 				if ( occurencesHistory.contains(occr) ) {
-					anyInvalid |= true;
+					wasTransformed |= true;
 					metadata.removeFieldNode(node);
 				}
+				
+				occurencesHistory.add(occr);
 				
 			}
 			
 		}
 			
-		return anyInvalid;
+		return wasTransformed;
 	}
 	
 

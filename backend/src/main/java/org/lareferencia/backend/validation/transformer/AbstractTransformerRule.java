@@ -11,13 +11,31 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.transformer;
 
+import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 
-public interface IValidatorFieldContentRule extends IValidatorRule {
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.validation.validator.IValidatorRule;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
+@Getter
+@Setter
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+public abstract class AbstractTransformerRule implements ITransformerRule {
 	
+	public AbstractTransformerRule() {
+	}
 
-	OccurrenceValidationResult validate(String string);	
-
+	/**
+	 * 
+	 * @param metadata
+	 * @return Retorna true si fue necesario aplicar una transformación
+	 */
+	public abstract boolean transform(OAIRecordMetadata metadata);
 }

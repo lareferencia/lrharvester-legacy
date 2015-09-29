@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.util.RepositoryNameHelper;
+import org.lareferencia.backend.validation.transformer.FieldContentNormalizeRule;
+import org.lareferencia.backend.validation.transformer.FieldContentTranslateRule;
+import org.lareferencia.backend.validation.transformer.FieldNameTranslateRule;
+import org.lareferencia.backend.validation.transformer.ITransformerRule;
 import org.lareferencia.backend.validation.validator.ContentLengthValidationRule;
 import org.lareferencia.backend.validation.validator.ControlledValueContentValidationRule;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
@@ -31,7 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ValidatorTests {
+public class TransformerTests {
 	
 	static String xmlstring = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
 			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
@@ -102,6 +107,7 @@ public class ValidatorTests {
 			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Volume monográfico. El cervantismo argentino : una historia tentativa</dc:description>" +
 			"<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Centro de Estudios de Teoría y Crítica Literaria</dc:description>" +
 			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/article</dc:type>" +
+			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/article</dc:type>" +
 			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">artículo</dc:type>" +
 			"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">published</dc:type>" +
 			//"<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Articulo</dc:type>" +
@@ -145,46 +151,140 @@ public class ValidatorTests {
 	**/
 	
 	
-	@Test
-	public void testLengthRule() throws Exception {
-		
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", xmlstring);
-		
-		ContentLengthValidationRule clrule = new ContentLengthValidationRule();
-		clrule.setQuantifier(QuantifierValues.ALL);
-		
-		
-		clrule.setMaxLength(100);
-		clrule.setMinLength(2);
-		clrule.setFieldname("dc:type");
-
-		
-		
-		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
-			System.out.println( clrule.validate(content) );
-		}
-		
-		for (String content: record.getFieldOcurrences("dc:title")) {	
-			assertTrue("dc:title  " + clrule, clrule.validate(content).isValid() == content.length() >= 2 && content.length() <= 100  );
-			System.out.println( clrule.validate(content) );
-		}
-		
-		
-		System.out.println("\nMetadata Validation");
-		assertTrue( clrule.validate(record).getValid() );
-		System.out.println( clrule.validate(record) );
 	
+	@Test
+	public void testSameFieldContentTranslateTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
+		
+		FieldContentTranslateRule trule = new FieldContentTranslateRule();
+		trule.setTestFieldName("dc:type");
+		trule.setWriteFieldName("dc:type");
+		trule.getTranslationMap().put("artículo", "Article");
+	
+		trule.transform( record );
+		
+		System.out.println( record.toString() );
+		
+		
+
+		Boolean found = false;
+		for (String occr : record.getFieldOcurrences("dc:type") ) {
+			found |= occr.equals("artículo");
+		}
+		
+		assertFalse(found);	
+		
+		found = false;
+		for (String occr : record.getFieldOcurrences("dc:type") ) {
+			found |= occr.equals("Article");
+		}
+		
+		assertTrue(found);	
 	}
 	
+
+	@Test
+	public void testDifferentFieldContentTranslateTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
+		
+		FieldContentTranslateRule trule = new FieldContentTranslateRule();
+		trule.setTestFieldName("dc:type");
+		trule.setWriteFieldName("dc:test");
+		trule.getTranslationMap().put("artículo", "Article");
+		trule.setReplaceOccurrence(false);
+	
+		trule.transform( record );
+		
+		System.out.println( record.toString() );
+		
+		Boolean found = false;
+		for (String occr : record.getFieldOcurrences("dc:type") ) {
+			found |= occr.equals("artículo");
+		}	
+		assertTrue(found);	
+		
+		found = false;
+		for (String occr : record.getFieldOcurrences("dc:test") ) {
+			found |= occr.equals("Article");
+		}
+		assertTrue(found);	
+	}
 	
 	@Test
-	public void testControlledValueRule() throws Exception {
+	public void testDifferentPrefixFieldContentTranslateTransformer() throws Exception {
 		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
 		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
+		FieldContentTranslateRule trule = new FieldContentTranslateRule();
+		trule.setTestFieldName("dc:type");
+		trule.setWriteFieldName("dc:test");
+		trule.getTranslationMap().put("artí", "Article");
+		trule.setReplaceOccurrence(true);
+	
+		trule.transform( record );
 
+		Boolean found = false;
+		for (String occr : record.getFieldOcurrences("dc:test") ) {
+			found |= occr.equals("Article");
+		}
+		assertFalse(found);	
+		
+		////////////
+		
+		trule.setTestValueAsPrefix(true);
+		trule.transform( record );
+
+		
+		found = false;
+		for (String occr : record.getFieldOcurrences("dc:test") ) {
+			found |= occr.equals("Article");
+		}
+		assertTrue(found);	
+
+	}
+	
+	@Test
+	public void testFieldNameTranslateTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
+		
+		FieldNameTranslateRule trule = new FieldNameTranslateRule();
+		trule.setSourceFieldName("dc:type");
+		trule.setTargetFieldName("dc:test");
+
+		Boolean found = false;
+		for (String occr : record.getFieldOcurrences("dc:test") ) {
+			found = true;
+		}
+		assertFalse(found);	
+		
+	
+		trule.transform( record );
+			
+
+		found = false;
+		for (String occr : record.getFieldOcurrences("dc:test") ) {
+			found = true;
+		}
+		assertTrue(found);	
+	}
+	
+	@Test
+	public void testFieldContentNormalizeTransformer() throws Exception {
+		
+		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
+		
+		int k = 0;
+		for (String occr : record.getFieldOcurrences("dc:type") ) {
+
+			if ( occr.equals("info:eu-repo/semantics/article") )
+				k++;
+		
+		}
+		assertTrue(k==2);	
+		
 		
 		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
 		ccrule.setQuantifier(QuantifierValues.ALL);
@@ -192,237 +292,38 @@ public class ValidatorTests {
 
 
 		ArrayList<String> cclist = new ArrayList<String>();
-		cclist.add("info:eu-repo/semantics/publishedVersion");
 		cclist.add("info:eu-repo/semantics/article");
-		
-		
 		ccrule.setControlledValues(cclist);
-		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertTrue("dc:type  " + ccrule, ccrule.validate(content).isValid()  );
-			System.out.println( ccrule.validate(content) );
+		
+		FieldContentNormalizeRule trule = new FieldContentNormalizeRule();
+		trule.setFieldName("dc:type");
+		trule.setRemoveDuplicatedOccurrences(true);
+		trule.setRemoveInvalidOccurrences(true);
+		trule.setValidationRule(ccrule);
 
+		trule.transform(record);
+	
+		int occurrencesSize = 0;
+		k = 0;
+		for (String occr : record.getFieldOcurrences("dc:type") ) {
+
+			occurrencesSize++;
+			
+			if ( occr.equals("info:eu-repo/semantics/article") )
+				k++;
+		
 		}
 		
-		for (String content: record.getFieldOcurrences("dc:title")) {	
-			assertFalse("dc:type  " + ccrule, ccrule.validate(content).isValid()  );
-			System.out.println( ccrule.validate(content) );
-
-		}
+		assertTrue(k==1);
+		assertTrue(occurrencesSize==1);	
 		
-		System.out.println("\nMetadata Validation");
-		assertTrue( ccrule.validate(record).getValid() );
-		System.out.println( ccrule.validate(record) );
 		
+		System.out.println( record.toString() );		
 	}
 	
 	
-	@Test
-	public void testRegexRule() throws Exception {
-			
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
-
-		
-		RegexContentValidationRule rerule = new RegexContentValidationRule();
-		rerule.setQuantifier(QuantifierValues.ONE_OR_MORE);
 
 	
-		
-		rerule.setRegexString("noamatchexpresion");
-		for (String content: record.getFieldOcurrences("dc:type")) {	
-			assertFalse("dc:type  " + rerule, rerule.validate(content).isValid()  );
-			System.out.println( rerule.validate(content) );
-		}
-		
-		rerule.setRegexString("^(http|https)\\://((?!hdl\\.handle\\.net/123456789.*$)[a-zA-Z0-9/\\-\\.\\s\\_\\?\\=\\&\\;\\:\\@])+");
-		assertTrue(rerule.validate("http://hdl.handle.net/10915/121 85").isValid()  );
-		assertTrue(rerule.validate("https://server.com:8080/janium-bin/janium_zui.pl?jzd=/janium/fotos/bpp-f-009/0502.jzd&amp;amp;fn=8502").isValid());
-		assertFalse(rerule.validate("http://hdl.handle.net/123456789/15").isValid()  );
-		assertTrue(rerule.validate("http://www.maxwell.lambda.ele.puc-rio.br/Busca_etds.php?strSecao=resultado&nrSeq=11212@1").isValid());
-		assertTrue(rerule.validate("http://creativa.uaslp.mx/creativa.pl?d=-2&id=7841&t=TESU").isValid() );		
-		
-		
-		rerule.setRegexString("(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
-		assertTrue(rerule.validate("2000").isValid()  );
-		assertTrue(rerule.validate("2000-02").isValid()  );
-		assertTrue(rerule.validate("2000-02-02").isValid()  );
-		assertFalse(rerule.validate("200").isValid()  );
-		assertFalse(rerule.validate("200a-02-02").isValid()  );	
-		
-		
-		System.out.println("\nMetadata Validation");
-
-		rerule.setFieldname("dc:date");
-		rerule.setRegexString("(^\\d{4}$)|(^\\d{4}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}$)|(^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}([+-]\\d{2}:\\d{2}|Z)$)");
-		System.out.println( rerule.validate(record) );
-
-			
-	}
-	/*
-	@Test
-	public void testFieldValidator() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
-
-	
-		ArrayList<String> typeList1 = new ArrayList<String>();
-		typeList1.add("info:eu-repo/semantics/article");
-		
-		ArrayList<String> typeList2 = new ArrayList<String>();
-		typeList2.add("info:eu-repo/semantics/publishedVersion");
-				
-		BaseValidatorRule fvalidator = new BaseValidatorRule("dc:type",true);
-		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList1, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
-		fvalidator.getRules().add(  new ControlledValueContentValidationRule(typeList2, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
-	
-		System.out.println( fvalidator.validate(record) );		
-	}
-	
-
-	
-	@Test
-	public void testRecordValidator() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
-
-	
-		ArrayList<String> typeList1 = new ArrayList<String>();
-		typeList1.add("info:eu-repo/semantics/article");
-		
-		ArrayList<String> typeList2 = new ArrayList<String>();
-		typeList2.add("info:eu-repo/semantics/publishedVersion");
-				
-		BaseValidatorRule type_validator = new BaseValidatorRule("dc:type",true);
-		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList1, IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
-		type_validator.getRules().add( new ControlledValueContentValidationRule(typeList2, IValidatorRule.QUANTIFIER_ONE_OR_MORE));
-	
-		BaseValidatorRule identifier_validator = new BaseValidatorRule("dc:identifier",true);
-		identifier_validator.getRules().add( new RegexContentValidationRule("^http.*",IValidatorRule.QUANTIFIER_ONE_OR_MORE) );
-		
-		
-		IValidator validator = new ValidatorImpl();
-		validator.getFieldValidators().add( type_validator );
-		validator.getFieldValidators().add(identifier_validator);
-
-		
-		System.out.println( validator.validate(record) );		
-	}
-	
-	@Test
-	public void testRecordWiredDriverValidator() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
-
-		
-		System.out.println( validator.validate(record) );	
-		assertTrue( validator.validate(record).isValid() );		
-
-	}
-	
-	@Test
-	public void testRecordWiredDriverTransformer() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
-		
-		assertFalse( validator.validate(record).isValid() );	
-		System.out.println( validator.validate(record) );	
-		
-		transformer.transform(record, validator.validate(record));
-		
-		System.out.println( validator.validate(record) );	
-
-		assertTrue( validator.validate(record).isValid() );		
-		
-		System.out.println( record.toString() );
-		
-	}
-	
-	
-	@Test
-	public void testReplaceTransformer() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);
-		
-		transformer.transform(record, validator.validate(record));
-				
-		System.out.println( record.toString() );
-		System.out.println( "Remove" );
-		
-		System.out.println( validator.validate(record) );	
-	}
-
-	@Test
-	public void testTransformerRule() throws Exception {
-			
-			OAIRecordMetadata record = new OAIRecordMetadata("dumyid",invalidRecord);			
-			assertTrue( langFieldTransformer.transform(record)  );		
-			System.out.println( record.toString() );			
-	}
-	
-	@Test
-	public void testRecordTransformer() throws Exception {
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",brRecord);
-		
-		assertFalse( validator.validate(record).isValid() );	
-		
-		System.out.println( validator.validate(record) );	
-		
-		transformer.transform(record, validator.validate(record));
-		
-		System.out.println( validator.validate(record) );	
-
-		assertTrue( validator.validate(record).isValid() );		
-		
-		System.out.println( record.toString() );
-		
-	}
-	
-	@Test
-	public void testNameHelper() throws Exception {
-		
-		RepositoryNameHelper helper = new RepositoryNameHelper();
-		
-		String name = helper.detectRepositoryDomain("d987b1fc-343c-4d54-854f-e27befabea27/oai:memoria.fahce.unlp.edu.ar:snrd:Jev1154");
-		assertTrue( name.equals("memoria.fahce.unlp.edu.ar") );				
-	}
-	
-	@Test
-	public void testAppendToMetadata() throws Exception {
-		
-		RepositoryNameHelper helper = new RepositoryNameHelper();
-		
-		String name = null;	
-		
-		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", brRecord);
-		
-		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( "Nombre Original del registro: " +  name );
-		
-		
-		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Un repo Name", false);
-		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( "Nombre agregado por append: " + name );
-		
-		System.out.println( record.toString() );
-		
-		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Otro repo Name", false);
-		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( "Nombre luego del agregado con replace = false " + name );
-		
-		System.out.println( record.toString() );
-
-		
-		helper.appendNameToMetadata(record, "dc:source", "reponame:", "Otro repo Name", true);
-		name = helper.extractNameFromMetadata(record, "dc:source", "reponame:");
-		System.out.println( "Nombre luego del agregado con replace = true "  + name);
-	
-		
-		System.out.println( record.toString() );
-		
-	}
-
-		
-	**/
 	
 	
 }

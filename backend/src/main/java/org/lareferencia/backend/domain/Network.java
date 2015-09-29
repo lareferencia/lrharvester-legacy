@@ -83,7 +83,12 @@ public class Network extends AbstractEntity {
 	@JoinColumn(name="validator_id", nullable=true)
 	private Validator validator;
 	
-	@Column(nullable = false)
-	private String transformerName;
+	@Getter
+	@Setter
+	@ManyToOne()
+	@JoinColumn(name="transformer_id", nullable=true)
+	private Validator transformer;
+	
+
 
 }

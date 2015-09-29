@@ -11,17 +11,16 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
-
-public interface IValidator {
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+public interface IValidatorFieldContentRule extends IValidatorRule {
 	
-	public ValidationResult validate(OAIRecordMetadata metadata);
-	
-	public List<IValidatorRule> getRules();
-	public void setRules( List<IValidatorRule> rules );
+
+	OccurrenceValidationResult validate(String string);	
+
 }

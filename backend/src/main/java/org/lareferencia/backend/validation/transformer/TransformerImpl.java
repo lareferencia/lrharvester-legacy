@@ -11,43 +11,53 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.transformer;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.validation.validator.ValidationResult;
+import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
-public class ValidatorImpl implements IValidator {
+@Component
+public class TransformerImpl implements ITransformer {
 	
-	List<IValidatorRule> rules;
-	
-	public ValidatorImpl() {
-		super();
-		rules = new ArrayList<IValidatorRule>();
-	}
-	
-	public ValidationResult validate(OAIRecordMetadata metadata) {
-	
-		ValidationResult result = new ValidationResult();
-		boolean isRecordValid = true;
-		
-		for (IValidatorRule rule:rules) {				
-			ValidationRuleResult ruleResult = rule.validate(metadata);			
-			result.getRulesResults().add( ruleResult );		
-			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
-		}
-		
-		result.setValid(isRecordValid);
-		
-		return result;
+	List<AbstractTransformerRule> rules;
+
+
+	@Override
+	public List<AbstractTransformerRule> getFieldTransformers() {
+		return rules;
 	}
 
 
-	
-}
+	@Override
+	public void setFieldTransformers(List<AbstractTransformerRule> transformers) {
+		this.rules = transformers;	
+	}
+
+
+	@Override
+	public boolean transform(OAIRecordMetadata metadata, ValidationResult validationResult) throws Exception {
+		
+		boolean anyTransformationOccurred = false; 
+		
+		for (AbstractTransformerRule transformer: rules) {
+			
+			try {
+				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
+					anyTransformationOccurred |= transformer.transform(metadata);
+			}
+			catch (Exception e) {
+				throw new Exception("Ocurrio un problema durante la transformacion de " + metadata.getIdentifier(), e);
+			}
+		}	
+		
+		return anyTransformationOccurred;
+	}
+		
+		
+		
+}	
+
+

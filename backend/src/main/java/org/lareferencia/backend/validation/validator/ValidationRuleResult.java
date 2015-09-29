@@ -11,54 +11,46 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-public class ContentLengthValidationRule extends AbstractValidatorFieldContentRule {
+public class ValidationRuleResult {
 	
-	public static String RULE_ID="ContentLengthValidationRule";
-	public static String RULE_NAME="ContentLengthValidationRule";
-	
-	@JsonProperty("minLength")
-	private Integer minLength = 0;
-	
-	@JsonProperty("maxLength")
-	private Integer maxLength = Integer.MAX_VALUE;
 
-	public ContentLengthValidationRule() {
+	private Boolean valid;
+	private IValidatorRule rule;
+	
+
+
+	private List<OccurrenceValidationResult> results;
+
+	public ValidationRuleResult() {
+		results = new ArrayList<OccurrenceValidationResult>();
 	}
 
-
-	@Override
-	public OccurrenceValidationResult validate(String content) {
-		
-		OccurrenceValidationResult result = new OccurrenceValidationResult();
-		
-		if (content == null) {
-			result.setReceivedValue("NULL");
-			result.setValid(false);
-		} else {
-			result.setReceivedValue( new Integer(content.length()).toString() );
-			result.setValid( content.length() >= minLength && content.length() <= maxLength );
-		}
-			
-		return result;
+	public ValidationRuleResult(IValidatorRule rule, Boolean isValid, List<OccurrenceValidationResult> contentResults) {
+		this.valid = isValid;
+		this.results = contentResults;
+		this.rule = rule;
 	}
-
-
+	
 	@Override
 	public String toString() {
-		return "ContentLengthValidationRule [minLength=" + minLength
-				+ ", maxLength=" + maxLength + ", name=" + name
-				+ ", description=" + description + ", mandatory=" + mandatory
-				+ ", quantifier=" + quantifier + "]";
+		
+		String toStr = "\t" + this.rule + "\n";
+
+		for ( OccurrenceValidationResult cr: results ) {
+			toStr += "\t" + cr.toString() + ":\n";
+		}
+		
+		return toStr;
 	}
-	
+
 }

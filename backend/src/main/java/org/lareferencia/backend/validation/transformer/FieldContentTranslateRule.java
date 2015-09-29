@@ -11,7 +11,7 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.transformer;
+package org.lareferencia.backend.validation.transformer;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.OccurrenceValidationResult;
+import org.lareferencia.backend.validation.validator.OccurrenceValidationResult;
 import org.w3c.dom.Node;
 
 public class FieldContentTranslateRule extends AbstractTransformerRule {
@@ -49,10 +49,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	@Setter
 	@Getter
 	Boolean testValueAsPrefix = false;
-	
-	
-	
-	
+
 
 	public FieldContentTranslateRule() {
 		this.translationMap = new TreeMap<String, String>(

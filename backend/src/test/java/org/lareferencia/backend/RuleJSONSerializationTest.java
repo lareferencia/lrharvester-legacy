@@ -29,12 +29,14 @@ import org.lareferencia.backend.repositories.ValidatorRepository;
 import org.lareferencia.backend.repositories.ValidatorRuleRepository;
 import org.lareferencia.backend.util.parameters.AbstractProperty;
 import org.lareferencia.backend.util.parameters.PropertyA;
-import org.lareferencia.backend.validator.AbstractValidatorRule;
-import org.lareferencia.backend.validator.ContentLengthValidationRule;
-import org.lareferencia.backend.validator.ControlledValueContentValidationRule;
-import org.lareferencia.backend.validator.IValidatorRule;
-import org.lareferencia.backend.validator.QuantifierValues;
-import org.lareferencia.backend.validator.ValidationRuleSerializer;
+import org.lareferencia.backend.validation.RuleSerializer;
+import org.lareferencia.backend.validation.transformer.FieldContentNormalizeRule;
+import org.lareferencia.backend.validation.transformer.ITransformerRule;
+import org.lareferencia.backend.validation.validator.AbstractValidatorRule;
+import org.lareferencia.backend.validation.validator.ContentLengthValidationRule;
+import org.lareferencia.backend.validation.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validation.validator.IValidatorRule;
+import org.lareferencia.backend.validation.validator.QuantifierValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,7 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ValidatorJSONSerializationTest {
+public class RuleJSONSerializationTest {
 	
 	
 	@Autowired
@@ -136,18 +138,27 @@ public class ValidatorJSONSerializationTest {
 	
 	@Test
 	public void testValidatorRuleSerializaer() throws Exception {
-		
-		
+			
 		   ControlledValueContentValidationRule rule = new ControlledValueContentValidationRule();
 		   ContentLengthValidationRule rule2 = new ContentLengthValidationRule();
+			
+		   FieldContentNormalizeRule trule = new FieldContentNormalizeRule();
+		   trule.setFieldName("dc:type");
+		   trule.setRemoveDuplicatedOccurrences(true);
+		   trule.setRemoveInvalidOccurrences(true);
+		   trule.setValidationRule(rule);
 		   
-		   ValidationRuleSerializer serializer = new ValidationRuleSerializer();
-		   List<IValidatorRule> rules = new ArrayList<IValidatorRule>();
-		   rules.add(rule);
-		   rules.add(rule2);
-		   serializer.setPrototypes(rules);
+		   RuleSerializer serializer = new RuleSerializer();
 		   
-		 
+		   List<IValidatorRule> vrules = new ArrayList<IValidatorRule>();
+		   vrules.add(rule);
+		   vrules.add(rule2);
+		   serializer.setValidatorPrototypes(vrules);
+		   
+		   List<ITransformerRule> trules = new ArrayList<ITransformerRule>();
+		   trules.add(trule);
+		   serializer.setTransformerPrototypes(trules);
+		   
 		   rule.setName("DescriptionNotZero");
 		   rule.setDescription("Chequea que no se description vacia");
 		   rule.setFieldname("dc:date");
@@ -159,11 +170,11 @@ public class ValidatorJSONSerializationTest {
 	       
 	       rule.setControlledValues(valores);
 	       
-	       String jsonString = serializer.serializeToJsonString(rule);
+	       String jsonString = serializer.serializeTransformerToJsonString(trule);
 	       
 	       System.out.println(jsonString);
 	       
-	       System.out.println(serializer.deserializeFromJsonString(jsonString));
+	       System.out.println(serializer.deserializeTransformerFromJsonString(jsonString));
 	       
 	}
 	

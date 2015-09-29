@@ -11,46 +11,19 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class ValidationRuleResult {
-	
-
-	private Boolean valid;
-	private IValidatorRule rule;
+public interface IValidatorRule {
 	
 
 
-	private List<OccurrenceValidationResult> results;
-
-	public ValidationRuleResult() {
-		results = new ArrayList<OccurrenceValidationResult>();
-	}
-
-	public ValidationRuleResult(IValidatorRule rule, Boolean isValid, List<OccurrenceValidationResult> contentResults) {
-		this.valid = isValid;
-		this.results = contentResults;
-		this.rule = rule;
-	}
-	
-	@Override
-	public String toString() {
+	public ValidationRuleResult validate(OAIRecordMetadata metadata);
 		
-		String toStr = "\t" + this.rule + "\n";
-
-		for ( OccurrenceValidationResult cr: results ) {
-			toStr += "\t" + cr.toString() + ":\n";
-		}
-		
-		return toStr;
-	}
+	public String getName();
+	public String getDescription();
+	public Boolean getMandatory();
 
 }

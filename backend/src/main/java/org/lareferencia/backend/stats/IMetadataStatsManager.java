@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.util.datatable.DataTable;
-import org.lareferencia.backend.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidationResult;
 
 public interface IMetadataStatsManager  {
 	

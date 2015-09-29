@@ -11,19 +11,30 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.domain;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
+import lombok.Getter;
+import lombok.Setter;
 
-public interface IValidatorRule {
+import org.hibernate.annotations.Type;
+
+/**
+ * NationalNetwork Entity
+ */
+@Entity
+@Getter
+@Setter
+public class TransformerRule extends AbstractEntity {
 	
-
-
-	public ValidationRuleResult validate(OAIRecordMetadata metadata);
-		
-	public String getName();
-	public String getDescription();
-	public Boolean getMandatory();
-
+	@Column(nullable = false)
+	private String name;
+	
+	@Column(nullable = true)
+	private String description;
+	
+	@Type(type="org.hibernate.type.StringClobType")
+	private String JSONSerialization;
 }

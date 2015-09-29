@@ -11,63 +11,43 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+
 @Getter
 @Setter
-public class ValidationResult {
+public class ValidatorImpl implements IValidator {
 	
-	private boolean valid;
-	private List<ValidationRuleResult> rulesResults;
+	List<IValidatorRule> rules;
 	
-	public ValidationResult() {
-		rulesResults = new ArrayList<ValidationRuleResult>();
+	public ValidatorImpl() {
+		super();
+		rules = new ArrayList<IValidatorRule>();
 	}
 	
-	public String getValidationContentDetails() {
+	public ValidationResult validate(OAIRecordMetadata metadata) {
+	
+		ValidationResult result = new ValidationResult();
+		boolean isRecordValid = true;
 		
-		StringBuilder sb = new StringBuilder();
-		
-		for ( ValidationRuleResult  entry:rulesResults ) {
-			
-			for ( OccurrenceValidationResult result: entry.getResults() ) {
-				// Solo detalla los valores inválidos o válidos, según el caso
-				sb.append( entry.getRule().getName() + ":" + result.getReceivedValue() );
-				
-				sb.append(";");
-			}
+		for (IValidatorRule rule:rules) {				
+			ValidationRuleResult ruleResult = rule.validate(metadata);			
+			result.getRulesResults().add( ruleResult );		
+			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
 		}
 		
-		if ( sb.length() > 0 && sb.charAt( sb.length() - 1) == ';' )
-			sb.deleteCharAt( sb.length() - 1);
+		result.setValid(isRecordValid);
 		
-		return sb.toString();
-	}
-	
-	
-	
-	
-	@Override
-	public String toString() {
-		
-		String toStr = "Validation: ";
-		toStr += " record valid=" + valid + "\n\n";
-		
-		for ( ValidationRuleResult entry:rulesResults ) {
-			
-			toStr += entry.getRule().getName() + ":\n";
-			toStr += entry.toString() + "\n\n";
-		}
-		return toStr;
+		return result;
 	}
 
+
+	
 }

@@ -1,4 +1,4 @@
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
 public enum QuantifierValues {
 	

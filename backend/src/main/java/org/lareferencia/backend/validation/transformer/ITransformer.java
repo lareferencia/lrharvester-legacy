@@ -11,12 +11,12 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.transformer;
+package org.lareferencia.backend.validation.transformer;
 
 import java.util.List;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidationResult;
 
 public interface ITransformer {
 	

@@ -10,7 +10,7 @@
  * 
  ******************************************************************************/
 
-package org.lareferencia.backend.transformer;
+package org.lareferencia.backend.validation.transformer;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ import lombok.Setter;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.w3c.dom.Node;
 
-public class FieldNameTranslateFieldTransformer extends AbstractTransformerRule {
+public class FieldNameTranslateRule extends AbstractTransformerRule {
 
 	@Getter
 	Map<String, String> translationMap;
@@ -34,7 +34,7 @@ public class FieldNameTranslateFieldTransformer extends AbstractTransformerRule 
 	String targetFieldName;
 	
 
-	public FieldNameTranslateFieldTransformer() {
+	public FieldNameTranslateRule() {
 	}
 
 	@Override

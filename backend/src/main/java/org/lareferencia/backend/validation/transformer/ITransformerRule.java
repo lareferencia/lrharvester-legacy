@@ -1,4 +1,4 @@
-package org.lareferencia.backend.transformer;
+package org.lareferencia.backend.validation.transformer;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 

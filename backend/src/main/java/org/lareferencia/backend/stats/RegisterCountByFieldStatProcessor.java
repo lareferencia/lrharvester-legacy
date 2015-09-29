@@ -7,8 +7,8 @@ import org.lareferencia.backend.util.datatable.ColumnDescription;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.TypeMismatchException;
 import org.lareferencia.backend.util.datatable.ValueType;
-import org.lareferencia.backend.validator.ValidationRuleResult;
-import org.lareferencia.backend.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidationRuleResult;
 
 
 public class RegisterCountByFieldStatProcessor extends BaseCountByFieldStatProcessor {

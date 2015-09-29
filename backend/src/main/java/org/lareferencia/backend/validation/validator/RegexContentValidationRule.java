@@ -11,38 +11,53 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.validator;
+package org.lareferencia.backend.validation.validator;
 
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter
-@Setter
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-public abstract class AbstractValidatorRule implements IValidatorRule {
+
+@ToString(exclude={"pattern"})
+public class RegexContentValidationRule extends AbstractValidatorFieldContentRule {
 	
+	private static final int MAX_EXPECTED_LENGTH = 255;
+
+	public static String RULE_ID = "ContentRegexValidationRule";
+	public static String RULE_NAME = "ContentRegexValidationRule";
+
+
+	@Getter
 	@JsonProperty("name")
-	protected String  name;
+	private String regexString;
 	
-	@JsonProperty("description")
-	protected String  description;
+	private Pattern pattern;
 	
-	@JsonProperty("mandatory")
-	protected Boolean mandatory = false;
 	
-	@JsonProperty("quantifier")
-	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
-	
+	public void setRegexString(String reString) {
+		this.regexString = reString;
+		this.pattern = Pattern.compile(reString);
+	}
 
-	public AbstractValidatorRule() {
-		this.name = "EMPTY";
-		this.mandatory = false;
-		this.quantifier = QuantifierValues.ONE_OR_MORE;
-	};
+	@Override
+	public OccurrenceValidationResult validate(String content) {
+	
+		OccurrenceValidationResult result = new OccurrenceValidationResult();
+		
+		if (content == null) {
+			result.setReceivedValue("NULL");
+			result.setValid(false);
+		} else {
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setValid( pattern.matcher(content).matches() );
+		}
+			
+		return result;
+	}
+
 	
 }
