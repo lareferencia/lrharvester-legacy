@@ -50,13 +50,11 @@ public abstract class AbstractValidatorFieldContentRule extends AbstractValidato
 	 * @param metadata
 	 * @return
 	 */
-	public ValidationRuleResult validate(OAIRecordMetadata metadata) {
+	public ValidatorRuleResult validate(OAIRecordMetadata metadata) {
 		
+		ValidatorRuleResult result = new ValidatorRuleResult();
 		
-		
-		ValidationRuleResult result = new ValidationRuleResult();
-		
-		List<OccurrenceValidationResult> results = new ArrayList<OccurrenceValidationResult>();
+		List<FieldContentValidatorResult> results = new ArrayList<FieldContentValidatorResult>();
 		int validOccurrencesCount = 0;
 			
 		List<String> occurrences = metadata.getFieldOcurrences( fieldname  );
@@ -64,7 +62,7 @@ public abstract class AbstractValidatorFieldContentRule extends AbstractValidato
 		for (int i=0; i<occurrences.size(); i++) {	
 			
 			// Se valida cada ocurrencia y se obtiene el resultado
-			OccurrenceValidationResult occurrenceResult = this.validate( occurrences.get(i) );
+			FieldContentValidatorResult occurrenceResult = this.validate( occurrences.get(i) );
 			
 			// Se agrega a la lista de ocurrencias
 			results.add(occurrenceResult);
@@ -118,5 +116,5 @@ public abstract class AbstractValidatorFieldContentRule extends AbstractValidato
 	 * @param String
 	 * @return
 	 */
-	public abstract OccurrenceValidationResult validate(String string);	
+	public abstract FieldContentValidatorResult validate(String string);	
 }

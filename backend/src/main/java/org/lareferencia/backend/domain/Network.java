@@ -44,14 +44,9 @@ public class Network extends AbstractEntity {
 	@Column(nullable = false)
 	private String institutionName;
 	
-	@Column(nullable = false, length = 4, unique = true)
+	@Column(nullable = false, length = 20, unique = true)
 	private String acronym;
-	
-	@Column(nullable = false)
-	private boolean published = false;
-		
-	private String scheduleCronExpression;	
-	
+				
 	@OneToMany(cascade=CascadeType.ALL/*, orphanRemoval=true*/)
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
@@ -61,6 +56,9 @@ public class Network extends AbstractEntity {
 	@JoinColumn(name="network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
+	
+	@Column(nullable = false)
+	private boolean published = false;
 	
 	@Column(nullable = false)
 	private boolean runIndexing = true;
@@ -77,6 +75,8 @@ public class Network extends AbstractEntity {
 	@Column(nullable = false)
 	private boolean runXOAI = false;
 	
+	private String scheduleCronExpression;	
+	
 	@Getter
 	@Setter
 	@ManyToOne()
@@ -87,7 +87,7 @@ public class Network extends AbstractEntity {
 	@Setter
 	@ManyToOne()
 	@JoinColumn(name="transformer_id", nullable=true)
-	private Validator transformer;
+	private Transformer transformer;
 	
 
 

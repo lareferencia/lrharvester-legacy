@@ -11,42 +11,53 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.domain;
+package org.lareferencia.backend.validation.validator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-/**
- * 
- */
-@Entity
-@Getter 
-@Setter
-public class OAIRecordValidationResult extends AbstractEntity {
+
+@ToString(exclude={"pattern"})
+public class RegexFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 	
-	@Column(nullable = false)
-	private String field;
+	private static final int MAX_EXPECTED_LENGTH = 255;
+
+	public static String RULE_ID = "ContentRegexValidationRule";
+	public static String RULE_NAME = "ContentRegexValidationRule";
+
+
+	@Getter
+	@JsonProperty("name")
+	private String regexString;
+	
+	private Pattern pattern;
+	
+	
+	public void setRegexString(String reString) {
+		this.regexString = reString;
+		this.pattern = Pattern.compile(reString);
+	}
+
+	@Override
+	public FieldContentValidatorResult validate(String content) {
+	
+		FieldContentValidatorResult result = new FieldContentValidatorResult();
 		
-	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
-	@JoinColumn(name="snapshot_id")
-	private NetworkSnapshot snapshot;
-	
-	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
-	@JoinColumn(name="record_id")
-	private OAIRecord record;
-	
-	public OAIRecordValidationResult() {
-		super();
+		if (content == null) {
+			result.setReceivedValue("NULL");
+			result.setValid(false);
+		} else {
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setValid( pattern.matcher(content).matches() );
+		}
+			
+		return result;
 	}
-	
-	public OAIRecordValidationResult(String field) {
-		this.field = field;
-	}
+
 	
 }

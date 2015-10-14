@@ -15,41 +15,35 @@ package org.lareferencia.backend.validation.transformer;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TransformerImpl implements ITransformer {
 	
-	List<AbstractTransformerRule> rules;
+	
+	@Getter
+	@Setter
+	List<ITransformerRule> rules;
 
 
 	@Override
-	public List<AbstractTransformerRule> getFieldTransformers() {
-		return rules;
-	}
-
-
-	@Override
-	public void setFieldTransformers(List<AbstractTransformerRule> transformers) {
-		this.rules = transformers;	
-	}
-
-
-	@Override
-	public boolean transform(OAIRecordMetadata metadata, ValidationResult validationResult) throws Exception {
+	public boolean transform(OAIRecordMetadata metadata, ValidatorResult validationResult) throws Exception {
 		
 		boolean anyTransformationOccurred = false; 
 		
-		for (AbstractTransformerRule transformer: rules) {
+		for (ITransformerRule rule: rules) {
 			
 			try {
 				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
-					anyTransformationOccurred |= transformer.transform(metadata);
+					anyTransformationOccurred |= rule.transform(metadata);
 			}
 			catch (Exception e) {
-				throw new Exception("Ocurrio un problema durante la transformacion de " + metadata.getIdentifier(), e);
+				throw new Exception("Ocurrio un problema durante la transformacion de " + metadata.getIdentifier() + " con la regla: " + rule.getName()   , e);
 			}
 		}	
 		

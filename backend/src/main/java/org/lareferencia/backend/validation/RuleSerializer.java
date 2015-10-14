@@ -17,6 +17,7 @@ import org.lareferencia.backend.validation.validator.AbstractValidatorFieldConte
 import org.lareferencia.backend.validation.validator.AbstractValidatorRule;
 import org.lareferencia.backend.validation.validator.IValidatorFieldContentRule;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
-
+@Component
 public class RuleSerializer {
 
 	@Getter

@@ -26,10 +26,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 
-	<import resource="file:${validator.path}/stats-context.xml"/>
-	<import resource="file:${validator.path}/rules-context.xml"/>
+	<!--  import resource="file:${validator.path}/rules-context.xml"/>
 	<import resource="file:${validator.path}/fields-context.xml"/>
 	<import resource="file:${validator.path}/validators-context.xml"/>
-	<import resource="file:${validator.path}/transformers-context.xml"/>	
+	<import resource="file:${validator.path}/transformers-context.xml"/-->	
 
 </beans>

@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validation.validator.AbstractValidatorFieldContentRule;
 import org.lareferencia.backend.validation.validator.IValidatorFieldContentRule;
-import org.lareferencia.backend.validation.validator.OccurrenceValidationResult;
+import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
 import org.w3c.dom.Node;
 
 @Getter
@@ -54,7 +54,7 @@ public class FieldContentNormalizeRule extends AbstractTransformerRule {
 	public boolean transform(OAIRecordMetadata metadata) {
 		
 		
-		OccurrenceValidationResult result;
+		FieldContentValidatorResult result;
 		boolean wasTransformed = false;
 		Set<String> occurencesHistory = new HashSet<String>();
 		

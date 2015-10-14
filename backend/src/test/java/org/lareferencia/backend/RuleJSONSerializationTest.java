@@ -33,8 +33,8 @@ import org.lareferencia.backend.validation.RuleSerializer;
 import org.lareferencia.backend.validation.transformer.FieldContentNormalizeRule;
 import org.lareferencia.backend.validation.transformer.ITransformerRule;
 import org.lareferencia.backend.validation.validator.AbstractValidatorRule;
-import org.lareferencia.backend.validation.validator.ContentLengthValidationRule;
-import org.lareferencia.backend.validation.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule;
+import org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-  
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
+
 
 
 
@@ -57,7 +59,7 @@ public class RuleJSONSerializationTest {
 	@Autowired
 	private ValidatorRepository validatorRepository;
 	
-	
+	/*
 	@Test
 	public void testPropertySerialization() throws Exception {
 		
@@ -81,8 +83,48 @@ public class RuleJSONSerializationTest {
 
 	       mapper.writerWithDefaultPrettyPrinter().writeValue(new FileWriter(new File(outputFile)), rule);
 
+	}*/
+	
+	@Test
+	public void testSchemaSerialization() throws Exception {
+		
+		
+		ControlledValueFieldContentValidatorRule ccrule = new ControlledValueFieldContentValidatorRule();
+		ccrule.setName("Nombre V");
+		ccrule.setDescription("Desc V");
+		ccrule.setQuantifier(QuantifierValues.ALL);
+		ccrule.setFieldname("dc:type");
+		ccrule.setMandatory(true);
+
+		ArrayList<String> cclist = new ArrayList<String>();
+		cclist.add("info:eu-repo/semantics/article");
+		cclist.add("info:eu-repo/semantics/doctoralThesis");
+
+		ccrule.setControlledValues(cclist);
+		
+		FieldContentNormalizeRule trule = new FieldContentNormalizeRule();
+		trule.setName("Nombre");
+		trule.setDescription("Descripción");
+		trule.setFieldName("dc:type");
+		trule.setRemoveDuplicatedOccurrences(true);
+		trule.setRemoveInvalidOccurrences(true);
+		trule.setValidationRule(ccrule);
+	       
+	       ObjectMapper mapper = new ObjectMapper();
+	       mapper.registerSubtypes( FieldContentNormalizeRule.class, ControlledValueFieldContentValidatorRule.class );
+	       
+	       String jsonString = mapper.writeValueAsString(trule);
+	       System.out.println(jsonString);
+	       
+	       SchemaFactoryWrapper ruleWrapper = new SchemaFactoryWrapper();
+	      	       
+	       mapper.acceptJsonFormatVisitor(FieldContentNormalizeRule.class, ruleWrapper);
+	       
+	       JsonSchema schema = ruleWrapper.finalSchema();
+	       System.out.println(mapper.writeValueAsString(schema));
 	}
 	
+	/***
 	@Test
 	public void testPropertyDeserialization() throws Exception {
 		
@@ -178,7 +220,7 @@ public class RuleJSONSerializationTest {
 	       
 	}
 	
-	
+	**/
 	
 	
 	

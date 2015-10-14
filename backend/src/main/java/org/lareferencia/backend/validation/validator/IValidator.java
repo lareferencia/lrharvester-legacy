@@ -20,7 +20,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 public interface IValidator {
 	
-	public ValidationResult validate(OAIRecordMetadata metadata);
+	public ValidatorResult validate(OAIRecordMetadata metadata);
 	
 	public List<IValidatorRule> getRules();
 	public void setRules( List<IValidatorRule> rules );

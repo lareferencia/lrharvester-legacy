@@ -27,13 +27,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	</description>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
-		<spring.framework.version>4.0.5.RELEASE</spring.framework.version>
-		<spring.framework.security.version>3.2.4.RELEASE</spring.framework.security.version>
+		<spring.framework.version>4.1.7.RELEASE</spring.framework.version>
+		<spring.framework.security.version>4.0.2.RELEASE</spring.framework.security.version>
 		<hibernate.version>4.3.5.Final</hibernate.version>
 		<hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
 		<jackson.version>2.4.1</jackson.version>
-		<spring.data.rest>2.2.0.M1</spring.data.rest>
-		<spring.data.jpa>1.7.0.M1</spring.data.jpa>
+		<spring.data.rest>2.4.0.RELEASE</spring.data.rest>
+		<spring.data.jpa>1.9.0.RELEASE</spring.data.jpa>
+		<spring.data.solr>1.5.0.RELEASE</spring.data.solr>
 		<logback.version>1.0.6</logback.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>			
 	</properties>
@@ -156,6 +157,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			<artifactId>spring-data-rest-webmvc</artifactId>
 			<version>${spring.data.rest}</version>
 		</dependency>
+		<dependency>
+	        <groupId>org.springframework.data</groupId>
+	        <artifactId>spring-data-solr</artifactId>
+	        <version>${spring.data.solr}</version>
+	    </dependency>
 		
 		
 		
@@ -246,7 +252,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -274,6 +280,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
 			<version>2.1.2</version>
+		</dependency>
+		<dependency>
+		<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jsonSchema</artifactId>
+			<version>2.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -410,6 +421,25 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 											<goal>
 												copy-dependencies
 											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-war-plugin
+										</artifactId>
+										<versionRange>
+											[2.1.1,)
+										</versionRange>
+										<goals>
+											<goal>war</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

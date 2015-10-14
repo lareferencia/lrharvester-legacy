@@ -26,11 +26,11 @@ import org.lareferencia.backend.validation.transformer.FieldContentNormalizeRule
 import org.lareferencia.backend.validation.transformer.FieldContentTranslateRule;
 import org.lareferencia.backend.validation.transformer.FieldNameTranslateRule;
 import org.lareferencia.backend.validation.transformer.ITransformerRule;
-import org.lareferencia.backend.validation.validator.ContentLengthValidationRule;
-import org.lareferencia.backend.validation.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule;
+import org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
-import org.lareferencia.backend.validation.validator.RegexContentValidationRule;
+import org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -286,7 +286,7 @@ public class TransformerTests {
 		assertTrue(k==2);	
 		
 		
-		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
+		ControlledValueFieldContentValidatorRule ccrule = new ControlledValueFieldContentValidatorRule();
 		ccrule.setQuantifier(QuantifierValues.ALL);
 		ccrule.setFieldname("dc:type");
 

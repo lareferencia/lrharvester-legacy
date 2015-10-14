@@ -13,51 +13,61 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.validator;
 
-import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-
-@ToString(exclude={"pattern"})
-public class RegexContentValidationRule extends AbstractValidatorFieldContentRule {
+@Getter
+@Setter
+public class ValidatorResult {
 	
-	private static final int MAX_EXPECTED_LENGTH = 255;
-
-	public static String RULE_ID = "ContentRegexValidationRule";
-	public static String RULE_NAME = "ContentRegexValidationRule";
-
-
-	@Getter
-	@JsonProperty("name")
-	private String regexString;
+	private boolean valid;
+	private List<ValidatorRuleResult> rulesResults;
 	
-	private Pattern pattern;
-	
-	
-	public void setRegexString(String reString) {
-		this.regexString = reString;
-		this.pattern = Pattern.compile(reString);
+	public ValidatorResult() {
+		rulesResults = new ArrayList<ValidatorRuleResult>();
 	}
-
-	@Override
-	public OccurrenceValidationResult validate(String content) {
 	
-		OccurrenceValidationResult result = new OccurrenceValidationResult();
+	public String getValidationContentDetails() {
 		
-		if (content == null) {
-			result.setReceivedValue("NULL");
-			result.setValid(false);
-		} else {
-			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
-			result.setValid( pattern.matcher(content).matches() );
-		}
+		StringBuilder sb = new StringBuilder();
+		
+		for ( ValidatorRuleResult  entry:rulesResults ) {
 			
-		return result;
+			for ( FieldContentValidatorResult result: entry.getResults() ) {
+				// Solo detalla los valores inválidos o válidos, según el caso
+				sb.append( entry.getRule().getName() + ":" + result.getReceivedValue() );
+				
+				sb.append(";");
+			}
+		}
+		
+		if ( sb.length() > 0 && sb.charAt( sb.length() - 1) == ';' )
+			sb.deleteCharAt( sb.length() - 1);
+		
+		return sb.toString();
+	}
+	
+	
+	
+	
+	@Override
+	public String toString() {
+		
+		String toStr = "Validation: ";
+		toStr += " record valid=" + valid + "\n\n";
+		
+		for ( ValidatorRuleResult entry:rulesResults ) {
+			
+			toStr += entry.getRule().getName() + ":\n";
+			toStr += entry.toString() + "\n\n";
+		}
+		return toStr;
 	}
 
-	
 }

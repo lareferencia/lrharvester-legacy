@@ -29,6 +29,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public abstract class AbstractTransformerRule implements ITransformerRule {
 	
+	
+	private String name;
+	private String description;
+	
 	public AbstractTransformerRule() {
 	}
 

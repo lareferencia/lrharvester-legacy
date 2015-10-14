@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.ContentLengthValidationRule;
-import org.lareferencia.backend.validation.validator.ControlledValueContentValidationRule;
+import org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule;
+import org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
-import org.lareferencia.backend.validation.validator.RegexContentValidationRule;
+import org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -151,7 +151,7 @@ public class ValidatorTests {
 		
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid", xmlstring);
 		
-		ContentLengthValidationRule clrule = new ContentLengthValidationRule();
+		ContentLengthFieldContentValidatorRule clrule = new ContentLengthFieldContentValidatorRule();
 		clrule.setQuantifier(QuantifierValues.ALL);
 		
 		
@@ -186,7 +186,7 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",xmlstring);
 
 		
-		ControlledValueContentValidationRule ccrule = new ControlledValueContentValidationRule();
+		ControlledValueFieldContentValidatorRule ccrule = new ControlledValueFieldContentValidatorRule();
 		ccrule.setQuantifier(QuantifierValues.ALL);
 		ccrule.setFieldname("dc:type");
 
@@ -222,7 +222,7 @@ public class ValidatorTests {
 		OAIRecordMetadata record = new OAIRecordMetadata("dumyid",validRecord);
 
 		
-		RegexContentValidationRule rerule = new RegexContentValidationRule();
+		RegexFieldContentValidatorRule rerule = new RegexFieldContentValidatorRule();
 		rerule.setQuantifier(QuantifierValues.ONE_OR_MORE);
 
 	

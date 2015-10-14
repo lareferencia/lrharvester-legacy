@@ -32,13 +32,13 @@ public class ValidatorImpl implements IValidator {
 		rules = new ArrayList<IValidatorRule>();
 	}
 	
-	public ValidationResult validate(OAIRecordMetadata metadata) {
+	public ValidatorResult validate(OAIRecordMetadata metadata) {
 	
-		ValidationResult result = new ValidationResult();
+		ValidatorResult result = new ValidatorResult();
 		boolean isRecordValid = true;
 		
 		for (IValidatorRule rule:rules) {				
-			ValidationRuleResult ruleResult = rule.validate(metadata);			
+			ValidatorRuleResult ruleResult = rule.validate(metadata);			
 			result.getRulesResults().add( ruleResult );		
 			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
 		}

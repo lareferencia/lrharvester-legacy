@@ -16,12 +16,12 @@ package org.lareferencia.backend.validation.transformer;
 import java.util.List;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidatorResult;
 
 public interface ITransformer {
 	
-	public List<AbstractTransformerRule> getFieldTransformers();
-	public void setFieldTransformers( List<AbstractTransformerRule> validators);
+	public List<ITransformerRule> getRules();
+	public void setRules( List<ITransformerRule> validators);
 	
 	/**
 	 * 
@@ -30,7 +30,7 @@ public interface ITransformer {
 	 * @return Retorna true si hizo alguna transformación
 	 * @throws Exception
 	 */
-	public boolean transform(OAIRecordMetadata metadata, ValidationResult validationResult) throws Exception;
+	public boolean transform(OAIRecordMetadata metadata, ValidatorResult validationResult) throws Exception;
 	//TODO: Implementar Exceptions específicas
 	
 }

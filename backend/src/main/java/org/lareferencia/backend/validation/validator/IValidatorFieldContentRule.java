@@ -21,6 +21,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 public interface IValidatorFieldContentRule extends IValidatorRule {
 	
 
-	OccurrenceValidationResult validate(String string);	
+	FieldContentValidatorResult validate(String string);	
 
 }

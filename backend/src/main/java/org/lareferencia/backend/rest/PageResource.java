@@ -20,6 +20,7 @@ package org.lareferencia.backend.rest;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -105,25 +106,7 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 		return page.getTotalElements();
 	}
 
-	@Override
-	public boolean hasPreviousPage() {
-		return page.hasPrevious();
-	}
-
-	@Override
-	public boolean isFirstPage() {
-		return page.isFirst();
-	}
-
-	@Override
-	public boolean hasNextPage() {
-		return page.hasNext();
-	}
-
-	@Override
-	public boolean isLastPage() {
-		return page.isLast();
-	}
+	
 
 	@Override
 	public Iterator<T> iterator() {
@@ -179,6 +162,12 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 	public Pageable previousPageable() {
 		// TODO Auto-generated method stub
 		return page.previousPageable();
+	}
+
+	@Override
+	public <S> Page<S> map(Converter<? super T, ? extends S> arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

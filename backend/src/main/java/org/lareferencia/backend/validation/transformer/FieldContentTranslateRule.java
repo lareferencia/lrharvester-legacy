@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.OccurrenceValidationResult;
+import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
 import org.w3c.dom.Node;
 
 public class FieldContentTranslateRule extends AbstractTransformerRule {
@@ -98,7 +98,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	@Override
 	public boolean transform(OAIRecordMetadata metadata) {
 
-		OccurrenceValidationResult result;
+		FieldContentValidatorResult result;
 		boolean wasTransformed = false;
 
 		

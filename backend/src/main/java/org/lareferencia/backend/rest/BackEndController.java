@@ -16,10 +16,8 @@ package org.lareferencia.backend.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +28,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.NetworkSnapshotMetadataStat;
 import org.lareferencia.backend.domain.OAIOrigin;
-import org.lareferencia.backend.domain.OAIProviderStat;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
@@ -41,24 +37,21 @@ import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerWorker;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
-import org.lareferencia.backend.repositories.NetworkSnapshotMetadataStatRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIOriginRepository;
-import org.lareferencia.backend.repositories.OAIProviderStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
 import org.lareferencia.backend.repositories.OAISetRepository;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
+import org.lareferencia.backend.validation.ValidationManager;
 import org.lareferencia.backend.validation.transformer.ITransformer;
 import org.lareferencia.backend.validation.validator.IValidator;
-import org.lareferencia.backend.validation.validator.ValidationResult;
+import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -91,9 +84,7 @@ public class BackEndController {
 	@Autowired 
 	private OAISetRepository setRepository;
 	
-	@Autowired
-	private NetworkSnapshotMetadataStatRepository statRepository;
-	
+		
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
 	
@@ -103,9 +94,9 @@ public class BackEndController {
 	@Autowired
 	private OAIRecordRepository recordRepository;
 	
-	@Autowired
-	private OAIRecordValidationRepository recordValidationRepository;
 	
+	@Autowired
+	private ValidationManager validationManager;
 	
 	@Autowired
 	@Qualifier("indexer")
@@ -123,19 +114,32 @@ public class BackEndController {
 	SnapshotManager snapshotManager;
 	
 	
-	//private static final Logger logger = LoggerFactory.getLogger(BackEndController.class);
-	
-	//private static SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-	
-	/**
+	/******************************************************
 	 * Login Services
-	 */
+	 ******************************************************/
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {	
 		return "home";
 	}
+	
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login(Locale locale, Model model) {	
+		return "login";
+	}
+	
+	@RequestMapping(value="/login", params="errorLogin", method = RequestMethod.GET)
+	public String loginFailed(Locale locale, Model model) {
+		model.addAttribute("loginFailed", true);
+		return "login";
+	}
+	
+	
+	/******************************************************
+	 * Diagnose Services
+	 ******************************************************/
+	
 	
 	@RequestMapping(value = "/diagnose/{networkISO}/{snapID}", method = RequestMethod.GET)
 	public String diagnose(@PathVariable Long snapID, @PathVariable String networkISO, Locale locale, Model model) {	
@@ -166,19 +170,10 @@ public class BackEndController {
 	}
 	
 	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String login(Locale locale, Model model) {	
-		return "login";
-	}
+	/******************************************************
+	 * Harvesting Services
+	 ******************************************************/
 	
-	@RequestMapping(value="/login", params="errorLogin", method = RequestMethod.GET)
-	public String loginFailed(Locale locale, Model model) {
-		model.addAttribute("loginFailed", true);
-		return "login";
-	}
-	
-	
-	/************************** Backend *************************************/
 	
 	@ResponseBody
 	@RequestMapping(value="/private/startHarvestingByNetworkID/{networkID}", method=RequestMethod.GET)
@@ -210,21 +205,6 @@ public class BackEndController {
 	}
 	
 	
-	/*** 
-	@ResponseBody
-	@RequestMapping(value="/private/resumeHarvestingBySnapshotID/{snapshotID}", method=RequestMethod.GET)
-	public ResponseEntity<String> resumeHarvestingBySnapshotID(@PathVariable Long snapshotID) throws Exception {
-		
-		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
-		
-		if (snapshot == null) // TODO: Implementar Exc
-			throw new Exception("No se encontró snapshot con id: " + snapshotID);
-		
-		snapshotManager.relauchHarvesting(snapshotID);
-		
-		return new ResponseEntity<String>("Relauch havesting:" + snapshotID, HttpStatus.OK);
-	}***/
-	
 	/**
 	 * Este servicio para cada origen explora los sets (no los almacenados sino los provistos por ListSets)
 	 * y para cada uno de ellos realiza una cosecha. Si los sets son disjuntos la coschecha final es completa y
@@ -252,14 +232,11 @@ public class BackEndController {
 		
 		System.out.println("Limpiando Snapshot: " + snapshot.getId());
 
-		
 		// borra los resultados de validación
 	    System.out.println("Borrando registros de validaciones");
-		recordValidationRepository.deleteBySnapshotID(snapshot.getId());
 		
 		// borra las estadisticas
 	    System.out.println("Borrando stadísticas de metadatos");
-	    statRepository.deleteBySnapshotID(snapshot.getId());
 		
 		// borra el log de cosechas
 	    System.out.println("Borrando registros de log");
@@ -419,28 +396,13 @@ public class BackEndController {
 	}
 	
 	
-	/**
-	@ResponseBody
-	@RequestMapping(value="/private/indexValidRecordsBySnapshotID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<String> indexRecordsBySnapshotID(@PathVariable Long id) {
-		
-		// Se crea un proceso separado para la indexación
-		callIndexerWorker(indexer, false);
-		
-		
-		return new ResponseEntity<String>("Indexando Snapshot: " + id, HttpStatus.OK);
-	}*/
-	
-	
 	@ResponseBody
 	@RequestMapping(value="/private/indexLGKSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<String> indexLGKByNetworkID(@PathVariable Long id) {
 		
-		
-		
 		try {
 			launchIndexerWorker(id, indexer, false);
-			return new ResponseEntity<String>("XOAI LGK Snapshot RED: " + id, HttpStatus.OK);
+			return new ResponseEntity<String>("Index LGK Snapshot RED: " + id, HttpStatus.OK);
 
 		}
 		catch (Exception e) {	
@@ -467,7 +429,7 @@ public class BackEndController {
 
 	@ResponseBody
 	@RequestMapping(value="/public/validateOriginalRecordByID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<ValidationResult> validateOriginalRecordByID(@PathVariable Long id) throws Exception {
+	public ResponseEntity<ValidatorResult> validateOriginalRecordByID(@PathVariable Long id) throws Exception {
 		
 		OAIRecord record = recordRepository.findOne(id);
 		
@@ -475,11 +437,11 @@ public class BackEndController {
 		if ( record != null ) {
 			
 			Network network = record.getSnapshot().getNetwork();
-			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
+			IValidator validator = validationManager.createValidatorFromModel( network.getValidator() );
 			
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
-			ValidationResult result = validator.validate(metadata);
-			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(result, HttpStatus.OK);
+			ValidatorResult result = validator.validate(metadata);
+			ResponseEntity<ValidatorResult> response = new ResponseEntity<ValidatorResult>(result, HttpStatus.OK);
 			return response; 
 		}	
 		else
@@ -489,23 +451,23 @@ public class BackEndController {
 	
 	@ResponseBody
 	@RequestMapping(value="/public/validateTransformedRecordByID/{id}", method=RequestMethod.GET)
-	public ResponseEntity<ValidationResult> validateTransformedRecordByID(@PathVariable Long id) throws Exception {
+	public ResponseEntity<ValidatorResult> validateTransformedRecordByID(@PathVariable Long id) throws Exception {
 		
 		OAIRecord record = recordRepository.findOne(id);	
 		
 		if ( record != null ) {
 			
 			Network network = record.getSnapshot().getNetwork();
-			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
-			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			IValidator validator = validationManager.createValidatorFromModel( network.getValidator() );
+			ITransformer transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
-			ValidationResult preValidationResult = validator.validate(metadata);
+			ValidatorResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
-			ValidationResult posValidationResult = validator.validate(metadata);
+			ValidatorResult posValidationResult = validator.validate(metadata);
 	
-			ResponseEntity<ValidationResult> response = new ResponseEntity<ValidationResult>(posValidationResult, HttpStatus.OK);
+			ResponseEntity<ValidatorResult> response = new ResponseEntity<ValidatorResult>(posValidationResult, HttpStatus.OK);
 		
 			return response;
 		}
@@ -562,14 +524,14 @@ public class BackEndController {
 		if ( record != null ) {
 			
 			Network network = record.getSnapshot().getNetwork();
-			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
-			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			IValidator validator = validationManager.createValidatorFromModel( network.getValidator() );
+			ITransformer transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 			
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
-			ValidationResult preValidationResult = validator.validate(metadata);
+			ValidatorResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
-			ValidationResult posValidationResult = validator.validate(metadata);
+			ValidatorResult posValidationResult = validator.validate(metadata);
 	
 			result.id = id;
 			result.originalHeaderId = record.getIdentifier();
@@ -599,12 +561,12 @@ public class BackEndController {
 		if ( record != null ) {
 			
 			Network network = record.getSnapshot().getNetwork();
-			IValidator validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
-			ITransformer transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			IValidator validator = validationManager.createValidatorFromModel( network.getValidator() );
+			ITransformer transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 			
 			OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 			
-			ValidationResult preValidationResult = validator.validate(metadata);
+			ValidatorResult preValidationResult = validator.validate(metadata);
 			transformer.transform(metadata, preValidationResult);
 	
 			
@@ -815,7 +777,7 @@ public class BackEndController {
 		
 	}
 	
-	
+	/*
 	@RequestMapping(value="/public/getMetadataStatsBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
 	public List<NetworkSnapshotMetadataStat> getMetadataStatsBySnapshotID(@PathVariable Long id) throws Exception {
@@ -842,7 +804,7 @@ public class BackEndController {
 			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
 				
 		return statRepository.findBySnapshot(snapshot);	
-	}
+	}*/
 	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
@@ -980,6 +942,8 @@ public class BackEndController {
 	
 	
 	*/
+	
+	/*
 	@ResponseBody
 	@RequestMapping(value="/public/rejectedFieldCountBySnapshotId/{id}", method=RequestMethod.GET)
 	public List<NetworkSnapshotStat> rejectedFieldCountBySnapshotId(@PathVariable Long id) throws Exception {
@@ -1084,7 +1048,7 @@ public class BackEndController {
 		
 			
 		return statMap;
-	}
+	}*/
 	
 	
 ////TODO: Funciones de servios web que deben ser encapsuladas en otra clase
@@ -1164,8 +1128,8 @@ public class BackEndController {
 		private String originalMetadata;
 		private String transformedMetadata;
 		
-		private ValidationResult preValidationResult;
-		private ValidationResult posValidationResult;
+		private ValidatorResult preValidationResult;
+		private ValidatorResult posValidationResult;
 		
 		private boolean isOriginalValid;
 		private boolean isTransformedValid;

@@ -13,24 +13,41 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.validator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-public class OccurrenceValidationResult {
+public class ValidatorRuleResult {
 	
-	private boolean valid;
-	private String receivedValue;
+	private Boolean valid;
+	private IValidatorRule rule;
+	
+	private List<FieldContentValidatorResult> results;
 
-	public OccurrenceValidationResult() {
+	public ValidatorRuleResult() {
+		results = new ArrayList<FieldContentValidatorResult>();
 	}
 
-	public OccurrenceValidationResult(boolean valid, String name, String receivedValue) {
-		super();
-		this.valid = valid;
-		this.receivedValue = receivedValue;
+	public ValidatorRuleResult(IValidatorRule rule, Boolean isValid, List<FieldContentValidatorResult> contentResults) {
+		this.valid = isValid;
+		this.results = contentResults;
+		this.rule = rule;
 	}
+	
+	@Override
+	public String toString() {
+		
+		String toStr = "\t" + this.rule + "\n";
+
+		for ( FieldContentValidatorResult cr: results ) {
+			toStr += "\t" + cr.toString() + ":\n";
+		}
+		
+		return toStr;
+	}
+
 }

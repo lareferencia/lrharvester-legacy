@@ -17,13 +17,19 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 
 public interface IValidatorRule {
+
+	public ValidatorRuleResult validate(OAIRecordMetadata metadata);
 	
-
-
-	public ValidationRuleResult validate(OAIRecordMetadata metadata);
-		
-	public String getName();
-	public String getDescription();
+	public Long    getID();
+	public void    setID(Long id);
+	
+	public String  getName();
+	public void    setName(String name);
+	
+	public String  getDescription();
+	public void setDescription(String desc);
+	
 	public Boolean getMandatory();
+	public void setMandatory(Boolean mandatory);
 
 }

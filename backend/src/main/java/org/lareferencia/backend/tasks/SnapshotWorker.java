@@ -17,18 +17,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.crypto.Data;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import org.lareferencia.backend.domain.Network;
 import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.NetworkSnapshotLog;
-import org.lareferencia.backend.domain.NetworkSnapshotMetadataStat;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
-import org.lareferencia.backend.domain.OAIRecordValidationResult;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.SnapshotStatus;
@@ -40,18 +36,15 @@ import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
-import org.lareferencia.backend.repositories.NetworkSnapshotMetadataStatRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
-import org.lareferencia.backend.repositories.OAIRecordValidationRepository;
-import org.lareferencia.backend.stats.IMetadataStatProcessor;
-import org.lareferencia.backend.stats.IMetadataStatsManager;
 import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.JsonRenderer;
+import org.lareferencia.backend.validation.ValidationManager;
 import org.lareferencia.backend.validation.transformer.ITransformer;
 import org.lareferencia.backend.validation.validator.IValidator;
-import org.lareferencia.backend.validation.validator.ValidationResult;
-import org.lareferencia.backend.validation.validator.ValidationRuleResult;
+import org.lareferencia.backend.validation.validator.ValidatorResult;
+import org.lareferencia.backend.validation.validator.ValidatorRuleResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +52,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+
 
 @Component
 @Scope(value="prototype")
@@ -104,6 +99,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
+	
+	@Autowired
+	private ValidationManager validationManager;
 		
 	@Autowired
 	private NetworkRepository networkRepository;
@@ -115,22 +113,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	private NetworkSnapshotLogRepository snapshotLogRepository;
 	
 	@Autowired
-	private NetworkSnapshotMetadataStatRepository snapshotStatRepository;
-	
-	@Autowired
-	private NetworkSnapshotMetadataStatRepository statRepository;
-	
-	@Autowired
 	private OAIRecordRepository recordRepository;
-	
-	@Autowired
-	private IMetadataStatsManager originalMetadataStatsManager;
-	
-	@Autowired
-	private IMetadataStatsManager transformedMetadataStatsManager;
-	
-	@Autowired
-	private OAIRecordValidationRepository recordValidationRepository;
 	
 	private IHarvester harvester;
 	
@@ -192,50 +175,24 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	 */
 	@Override
 	public void run() {
-		
-		
-		boolean newSnapshotCreated = true;
-		
-		if ( snapshotID != null ) { // Este es el caso en que se retorma un snapshot bloqueado 
-	
-			snapshot = snapshotRepository.findOne( snapshotID );
-			
-			if ( snapshot != null && snapshot.getStatus().equals(SnapshotStatus.HARVESTING_STOPPED) ) { // tiene que estar detenido
-				
-				network = snapshot.getNetwork(); 
-				newSnapshotCreated = false;
-				
-				// cambia el status
-				setSnapshotStatus(SnapshotStatus.HARVESTING);
-				
-			} else {
-				System.err.println("El snapshot no existe o está ya está siendo procesado. El worker no puede continuar");
-				return;
-			}
 						
-	
-		} else { // este es el caso donde se inicia un nuevo snapshot
+		network = networkRepository.findOne( networkID );
 			
-			network = networkRepository.findOne( networkID );
-				
-			if ( network != null ) {			
-				snapshot = new NetworkSnapshot();
-				snapshot.setNetwork(network);		
-				snapshotRepository.save(snapshot);
-			} else {
-				System.err.println("La Red no existe!! El worker no puede continuar");
-				return;
-			}
-				
+		if ( network != null ) {			
+			snapshot = new NetworkSnapshot();
+			snapshot.setNetwork(network);		
+			snapshotRepository.save(snapshot);
+		} else {
+			System.err.println("La Red no existe!! El worker no puede continuar");
+			return;
 		}
-			
 		
 		// Se cargan el validador y el transformador de acuerdo a la configuración de la red
 		try {
 			logMessage("Cargando validador y transformador  ..."); 
 
-			validator = applicationContext.getBean(network.getValidatorName(), IValidator.class);
-			transformer = applicationContext.getBean(network.getTransformerName(), ITransformer.class);
+			validator = validationManager.createValidatorFromModel( network.getValidator() );
+			transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 			
 		} catch (Exception e) {		
 			logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
@@ -258,16 +215,10 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		// inicialización del harvester
 		harvester.reset();
 		
-		if ( newSnapshotCreated ) // caso de harvesting desde cero
-			
-			if ( harvestBySet )
-				harvestEntireNetworkBySet();
-			else
-				harvestEntireNetwork();
-		
-		else // caso de retomar desde un rt anterior
-			harvestNetworkFromRT(snapshot.getResumptionToken());
-
+		if ( harvestBySet )
+			harvestEntireNetworkBySet();
+		else
+			harvestEntireNetwork();
 		
 		// Luego del harvesting el snapshot puede presentar estados diversos
 		
@@ -279,13 +230,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				
 				logMessage("Cosecha terminada en forma exitosa");			
 	
-				// Almacena los resultados de las statísticas de metadatatos
-				if ( network.isRunStats() ) {
-                                	logMessage("Almacenando las estadísticas");
-					saveSnapshotMetadataStats( originalMetadataStatsManager.getStats() );
-					saveSnapshotMetadataStats( transformedMetadataStatsManager.getStats() );
-				}
-
 
 				// Graba el status
 				snapshot.setEndTime( new Date() );
@@ -365,13 +309,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	/*************************************************************/
 	
-	private void harvestNetworkFromRT(String resumptionToken) {	
-		// Se recorren los orígenes evaluando de cual era el rt TODO: Hay que guardar el origen corriente en el snapshot
-		for ( OAIOrigin origin:network.getOrigins() ) {
-			harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), resumptionToken, MAX_RETRIES);
-		}
-	}
-	
+
 	private void harvestEntireNetwork() {
 		// Ciclo principal de procesamiento, dado por la estructura de la red nacional
 		// Se recorren los orígenes 
@@ -432,11 +370,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						if ( network.isRunValidation() ) {
 						
 							// prevalidación
-							ValidationResult validationResult = validator.validate(metadata);
+							ValidatorResult validationResult = validator.validate(metadata);
 							
-							// Con el registro original prevalidado se registran las estadísticas previas a las transformación
-							if ( network.isRunStats() )
-								originalMetadataStatsManager.addMetadataObservation(metadata, validationResult,false);		
 							
 							// si corresponde lo transforma
 							if ( network.isRunTransformation() ) {
@@ -449,11 +384,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 								
 								// lo vuelve a validar
 								validationResult = validator.validate(metadata);
-								
-								// Con el registro transformado y validado se registran las estadísticas posteriores a la transformación
-								if ( network.isRunStats() )
-									transformedMetadataStatsManager.addMetadataObservation(metadata, validationResult, wasTransformed);		
-											
+												
 								// Si es válido y hubo transformación incrementa la cuenta de válidos transformados
 								if ( wasTransformed && validationResult.isValid() ) 		
 									snapshot.incrementTransformedSize();
@@ -498,26 +429,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							recordRepository.flush();
 							
 							
-							/////////// TODO: Este código debe esta encapsulado en otro lado
-							/// TODO: Esto debe migrarse a metadata stats
-							/// Almacenamiento de resultados de validación
-							OAIRecordValidationResult recordValidationResult;
 							
-							for ( ValidationRuleResult ruleResult : validationResult.getRulesResults() ) {
-								
-								Boolean isFieldValid = ruleResult.getValid();
-								Boolean isFieldMandatory = ruleResult.getRule().getMandatory();
-
-								
-								if (!isFieldValid && isFieldMandatory) {
-								
-									recordValidationResult = new OAIRecordValidationResult(ruleResult.getRule().getName());
-									recordValidationResult.setSnapshot(snapshot);
-									recordValidationResult.setRecord(record);
-									recordValidationRepository.save(recordValidationResult);
-								
-								}
-							}
 						} 
 						
 						else { // Si no se valida entonces todo puesto para publicación
@@ -534,8 +446,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				}
 			
 				recordRepository.flush();
-				recordValidationRepository.flush();
-
 				snapshot.setEndTime( new Date() );
 				
 				// FIXME: Esto evita el problema con la restricción de resumption token mayor a 255
@@ -607,16 +517,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		snapshotLogRepository.flush();
 	}
 	
-	private void saveSnapshotMetadataStats(Map<String, DataTable> statMap) {
-
-		for ( Map.Entry<String, DataTable> entry : statMap.entrySet() ) {
-			String JSONTableString = JsonRenderer.renderDataTable(entry.getValue(),true,true,true).toString() ;
-			NetworkSnapshotMetadataStat metadataStat = new NetworkSnapshotMetadataStat(entry.getKey(), JSONTableString );
-			metadataStat.setSnapshot(snapshot);
-			snapshotStatRepository.save(metadataStat);
-		}
-		snapshotLogRepository.flush();
-	}
+	
 	
 
 	@Override

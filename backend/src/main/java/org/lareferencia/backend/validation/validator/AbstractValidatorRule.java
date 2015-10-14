@@ -14,6 +14,7 @@
 package org.lareferencia.backend.validation.validator;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -25,6 +26,9 @@ import lombok.Setter;
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public abstract class AbstractValidatorRule implements IValidatorRule {
+	
+	@JsonIgnore
+	protected Long ID;
 	
 	@JsonProperty("name")
 	protected String  name;

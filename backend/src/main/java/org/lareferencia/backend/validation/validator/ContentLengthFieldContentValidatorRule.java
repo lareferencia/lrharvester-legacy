@@ -21,7 +21,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ContentLengthValidationRule extends AbstractValidatorFieldContentRule {
+public class ContentLengthFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 	
 	public static String RULE_ID="ContentLengthValidationRule";
 	public static String RULE_NAME="ContentLengthValidationRule";
@@ -32,14 +32,14 @@ public class ContentLengthValidationRule extends AbstractValidatorFieldContentRu
 	@JsonProperty("maxLength")
 	private Integer maxLength = Integer.MAX_VALUE;
 
-	public ContentLengthValidationRule() {
+	public ContentLengthFieldContentValidatorRule() {
 	}
 
 
 	@Override
-	public OccurrenceValidationResult validate(String content) {
+	public FieldContentValidatorResult validate(String content) {
 		
-		OccurrenceValidationResult result = new OccurrenceValidationResult();
+		FieldContentValidatorResult result = new FieldContentValidatorResult();
 		
 		if (content == null) {
 			result.setReceivedValue("NULL");

@@ -30,7 +30,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ControlledValueContentValidationRule extends AbstractValidatorFieldContentRule {
+public class ControlledValueFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 	
 	private static final int MAX_PRINTED_LINES = 25;
 	private static final int MAX_EXPECTED_LENGTH = 255;
@@ -42,9 +42,9 @@ public class ControlledValueContentValidationRule extends AbstractValidatorField
 	private List<String> controlledValues;
 	
 	@Override
-	public OccurrenceValidationResult validate(String content) {
+	public FieldContentValidatorResult validate(String content) {
 		
-		OccurrenceValidationResult result = new OccurrenceValidationResult();
+		FieldContentValidatorResult result = new FieldContentValidatorResult();
 				
 		if (content == null) {
 			result.setReceivedValue("NULL");
