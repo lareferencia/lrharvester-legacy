@@ -49,7 +49,7 @@ public class RepositoryNameHelper {
 		return result;
 	}
 	
-	public String extractNameFromMetadata(OAIRecordMetadata metadata, String fieldname, String prefix) {
+	static public String extractNameFromMetadata(OAIRecordMetadata metadata, String fieldname, String prefix) {
 		
 		String name = UNKNOWN;
 		

@@ -17,6 +17,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.w3c.dom.Node;
 
@@ -38,7 +39,10 @@ public class FieldNameTranslateRule extends AbstractTransformerRule {
 	}
 
 	@Override
-	public boolean transform(OAIRecordMetadata metadata) {
+	public boolean transform(OAIRecord record) {
+		
+		OAIRecordMetadata metadata = record.getMetadata();
+
 
 		boolean wasTransformed = false;
 	

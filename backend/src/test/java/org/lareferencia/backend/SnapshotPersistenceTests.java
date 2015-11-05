@@ -68,7 +68,7 @@ public class SnapshotPersistenceTests {
 
 	
 		record.setSnapshot(ns);
-		record.setIdentifier("oai:test/0001");
+		/*record.setIdentifier("oai:test/0001");*/
 		
 		repository.save(nn);
 		assertNotNull(ns.getId());	

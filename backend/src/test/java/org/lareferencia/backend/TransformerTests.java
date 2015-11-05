@@ -151,7 +151,7 @@ public class TransformerTests {
 	**/
 	
 	
-	
+	/*
 	@Test
 	public void testSameFieldContentTranslateTransformer() throws Exception {
 		
@@ -321,7 +321,7 @@ public class TransformerTests {
 		System.out.println( record.toString() );		
 	}
 	
-	
+	*/
 
 	
 	

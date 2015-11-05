@@ -23,7 +23,7 @@
 	   <solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="solrTemplate" multicore-support="true"/>
 
 	   <!-- Configures HTTP Solr server -->
-        <solr:solr-server id="solrServer" url="http://localhost:8092/solr/"/>
+        <solr:solr-server id="solrServer" url="http://localhost:8983/solr/"/>
  
         <!-- Configures Solr template -->
         <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
@@ -32,6 +32,31 @@
             <value>vstats</value>
             </constructor-arg>
         </bean>
+        
+    <bean id="driverTypeRule"
+		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
+		<property name="ID" value="1"/>
+		<property name="name" value="type:driver"/>
+		<property name="quantifier" value="ONE_OR_MORE"/>
+		<property name="fieldname" value="dc:type"/>
+		<property name="mandatory" value="true"/>
+		<property name="controlledValues">
+			<list>
+				<value>info:eu-repo/semantics/article</value>	
+			</list> 
+		</property>
+	</bean>
+	
+	<!-- Este es el validador por defecto de LAReferencia pueden definirse más y asociarlos a cada red  -->
+	<bean id="defaultValidator" class="org.lareferencia.backend.validation.validator.ValidatorImpl">
+	
+	    <!-- Este propidad se usa para validar en forma completa cada un de los campos según los criterios LaReferencia  -->
+		<property name="rules">
+			<list>
+				<ref bean="driverTypeRule" /> 
+			</list>
+		</property>
+	</bean>
 	
 
 </beans>

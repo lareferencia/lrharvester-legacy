@@ -41,6 +41,12 @@ public class ControlledValueFieldContentValidatorRule extends AbstractValidatorF
 	@JsonProperty("controlledValues")
 	private List<String> controlledValues;
 	
+	public ControlledValueFieldContentValidatorRule() {
+		super();
+		this.controlledValues = new ArrayList<String>();
+	}
+	
+	
 	@Override
 	public FieldContentValidatorResult validate(String content) {
 		
@@ -124,6 +130,9 @@ public class ControlledValueFieldContentValidatorRule extends AbstractValidatorF
 				+ description + ", mandatory=" + mandatory + ", quantifier="
 				+ quantifier + "]";
 	}
+
+
+
 
 	
 	

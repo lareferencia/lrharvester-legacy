@@ -18,6 +18,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class TransformerImpl implements ITransformer {
 
 
 	@Override
-	public boolean transform(OAIRecordMetadata metadata, ValidatorResult validationResult) throws Exception {
+	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception {
 		
 		boolean anyTransformationOccurred = false; 
 		
@@ -40,10 +41,10 @@ public class TransformerImpl implements ITransformer {
 			
 			try {
 				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
-					anyTransformationOccurred |= rule.transform(metadata);
+					anyTransformationOccurred |= rule.transform(record);
 			}
 			catch (Exception e) {
-				throw new Exception("Ocurrio un problema durante la transformacion de " + metadata.getIdentifier() + " con la regla: " + rule.getName()   , e);
+				throw new Exception("Ocurrio un problema durante la transformacion de " + record.getIdentifier() + " con la regla: " + rule.getName()   , e);
 			}
 		}	
 		

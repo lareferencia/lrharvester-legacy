@@ -23,9 +23,11 @@ import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule;
 import org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule;
+import org.lareferencia.backend.validation.validator.IValidator;
 import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
 import org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -131,10 +133,10 @@ public class ValidatorTests {
 			"</metadata>";
 	
 	
-	/**	
+	
 	@Autowired
 	IValidator validator;
-	
+	/**
 	@Autowired
 	@Qualifier("defaultTransformer")
 	ITransformer transformer;
@@ -144,7 +146,7 @@ public class ValidatorTests {
 	TranslateContentFieldTransformer langFieldTransformer;
 	**/
 	
-	
+	/*
 	@Test
 	public void testLengthRule() throws Exception {
 		
@@ -257,7 +259,7 @@ public class ValidatorTests {
 
 			
 	}
-	/*
+	/**
 	@Test
 	public void testFieldValidator() throws Exception {
 		
@@ -306,6 +308,8 @@ public class ValidatorTests {
 		
 		System.out.println( validator.validate(record) );		
 	}
+	*/
+	/*
 	
 	@Test
 	public void testRecordWiredDriverValidator() throws Exception {
@@ -316,8 +320,8 @@ public class ValidatorTests {
 		System.out.println( validator.validate(record) );	
 		assertTrue( validator.validate(record).isValid() );		
 
-	}
-	
+	}*/
+	/*
 	@Test
 	public void testRecordWiredDriverTransformer() throws Exception {
 		

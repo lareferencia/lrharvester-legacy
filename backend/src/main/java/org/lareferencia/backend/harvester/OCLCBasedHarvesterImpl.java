@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerException;
 import org.hibernate.annotations.Synchronize;
 import org.lareferencia.backend.harvester.OAIRecordMetadata.OAIRecordMetadataParseException;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
+import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	private static final String METADATA_NODE_NAME = "metadata";
 	private static final Object STATUS_DELETED = "deleted";
 	
+
 	@Value("${harvester.retry.seconds}")
 	private int INITIAL_SECONDS_TO_RETRY;
 	
@@ -103,9 +105,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					break;
 
 				}
-				catch (Exception e) {
-				//TODO: Esto es compatible solo con 1.7
-				//} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
+			    catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 					
 					
 					String message = buildErrorMessage(e, batchIndex, actualRetry);
@@ -122,7 +122,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = secondsToNextRetry * RETRY_FACTOR;
 				}
 				
-			} while (actualRetry < maxRetries);
+			} while (actualRetry < maxRetries && !stopSignalReceived);
 			
 			if ( actualRetry == maxRetries ) {
 				String message = "Número de reintentos máximos alcanzados.  Abortando proceso de cosecha.";
@@ -219,7 +219,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		
 		//System.out.println( listRecords.toString() );
 		
-				
+		// Determina la dirección de cosecha
+		String origin = listRecords.getSingleString("/" + namespace + ":OAI-PMH/" + namespace + ":request");
+		System.out.println( origin );
+						
 		for (int i=0; i<nodes.getLength(); i++) {
 			
 			
@@ -229,16 +232,24 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				
 				
 			try {
-				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");						
-				identifier = identifier.replace("&", "");
+				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");
+				//System.out.println( identifier);
+				
+				String setSpec = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":setSpec");
+				
+				//identifier = identifier.replace("&", "");
 				
 				status = listRecords.getSingleString(nodes.item(i), namespace + ":header/@status");						
 
 				if ( ! status.equals(STATUS_DELETED) ) {
 				
 					metadataString = getMetadataString(nodes.item(i), listRecords.getDocument());
+					
+					OAIRecordMetadata metadata = new OAIRecordMetadata(identifier,metadataString);
+					metadata.setOrigin(origin);
+					metadata.setSetSpec(setSpec);
 	
-					result.getRecords().add( new OAIRecordMetadata(identifier,  metadataString) );	
+					result.getRecords().add( metadata );	
 				}
 				
 			} catch (OAIRecordMetadataParseException e){

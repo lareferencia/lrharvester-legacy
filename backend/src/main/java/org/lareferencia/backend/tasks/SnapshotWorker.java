@@ -27,6 +27,7 @@ import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
+import org.lareferencia.backend.domain.RecordValidationResult;
 import org.lareferencia.backend.domain.SnapshotStatus;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
@@ -37,6 +38,7 @@ import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
+import org.lareferencia.backend.repositories.RecordValidationResultRepository;
 import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.JsonRenderer;
@@ -61,41 +63,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	
 	@Value("${harvester.max.retries}")
 	private int MAX_RETRIES;
-	
-	////// Variables de detección de repositorios tomadas desde la configuración 
-	private RepositoryNameHelper repositoryNameHelper;
-
-	
-	@Value("${reponame.detection}")
-	private Boolean runRepoNameDetection;
-	
-	@Value("${reponame.pattern}")
-	private String repoNameDetectionPatternString;
-
-	@Value("${reponame.append}")
-	private Boolean doRepoNameAppend;
-	
-	@Value("${reponame.replaceExisting}")
-	private Boolean doRepoNameReplace;
-	
-	@Value("${reponame.field}")
-	private String repoNameField;
-	
-	@Value("${reponame.prefix}")
-	private String repoNamePrefix;
-	
-	@Value("${instname.append}")
-	private Boolean doInstNameAppend;
-	
-	@Value("${instname.replaceExisting}")
-	private Boolean doInstNameReplace;
-	
-	@Value("${instname.field}")
-	private String instNameField;
-	
-	@Value("${instname.prefix}")
-	private String instNamePrefix;
-	//// fin de variables de detección de nombres de repositorios
 	
 	@Autowired 
 	private ApplicationContext applicationContext;
@@ -126,10 +93,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	}
 	
 	// No son autowired, se cargan en cada ejecución de acuerdo a la conf de cada red
-	private IValidator validator;	
+	//private IValidator validator;	
 	private ITransformer transformer;
 	
-
+	@Autowired
+	RecordValidationResultRepository validationResultRepository;
+	
+	@Autowired
+	IValidator validator;
+	
 	
 	@Autowired
 	@Qualifier("indexer")
@@ -187,22 +159,24 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			return;
 		}
 		
-		// Se cargan el validador y el transformador de acuerdo a la configuración de la red
-		try {
-			logMessage("Cargando validador y transformador  ..."); 
-
-			validator = validationManager.createValidatorFromModel( network.getValidator() );
-			transformer = validationManager.createTransformerFromModel( network.getTransformer() );
+		
+		if ( network.isRunValidation() ) {
 			
-		} catch (Exception e) {		
-			logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
-			setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
-			return;
+//			// Se cargan el validador y el transformador de acuerdo a la configuración de la red
+//			try {
+//				logMessage("Cargando validador y transformador  ..."); 
+//	
+//				validator = validationManager.createValidatorFromModel( network.getValidator() );
+//				transformer = validationManager.createTransformerFromModel( network.getTransformer() );
+//				
+//			} catch (Exception e) {		
+//				logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
+//				setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
+//				return;
+//			}
+			
 		}
 		
-		// Se carga el helper para la resolución de nombre de repositorios
-		repositoryNameHelper = new RepositoryNameHelper();
-		repositoryNameHelper.setDetectREPattern(repoNameDetectionPatternString);
 		
 		// Se registra el incicio de tareas en el manager
 		manager.registerWorkerBeginSnapshot(snapshot.getId(), this);
@@ -229,7 +203,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			if ( snapshot.getStatus() != SnapshotStatus.HARVESTING_FINISHED_ERROR ) {
 				
 				logMessage("Cosecha terminada en forma exitosa");			
-	
+				setSnapshotStatus(SnapshotStatus.VALID);
 
 				// Graba el status
 				snapshot.setEndTime( new Date() );
@@ -257,7 +231,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
 							logMessage("Error en proceso de indexación.");
 						}
-					}
+					} 
+						
 					
 					if ( network.isRunXOAI()) {
 						
@@ -353,37 +328,31 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		switch ( event.getStatus() ) {
 			
 			case OK:			
-					
-				//List<OAIRecord> records = new ArrayList<OAIRecord>(100);
-			
+								
 				// Agrega los records al snapshot actual			
 				for (OAIRecordMetadata  metadata:event.getRecords() ) {
 					
 					try {
-						OAIRecord record = new OAIRecord();
-						// registra el snapshot al que pertenece
-						record.setSnapshot(snapshot);
-						record.setIdentifier(metadata.getIdentifier());
-						
+						OAIRecord record = new OAIRecord(snapshot,metadata);
 						snapshot.incrementSize();
 						
 						if ( network.isRunValidation() ) {
 						
 							// prevalidación
-							ValidatorResult validationResult = validator.validate(metadata);
+							ValidatorResult validationResult = validator.validate(record);
 							
 							
 							// si corresponde lo transforma
 							if ( network.isRunTransformation() ) {
 								
 								// transforma
-								Boolean wasTransformed = transformer.transform(metadata, validationResult);
+								Boolean wasTransformed = transformer.transform(record, validationResult);
 								
 								// marca si el registro fue transformado
 								record.setWasTransformed(wasTransformed);
 								
 								// lo vuelve a validar
-								validationResult = validator.validate(metadata);
+								validationResult = validator.validate(record);
 												
 								// Si es válido y hubo transformación incrementa la cuenta de válidos transformados
 								if ( wasTransformed && validationResult.isValid() ) 		
@@ -400,33 +369,14 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							}
 								
 							
-							// En esta etapa se intenta obtener el nombre del repositorio y el de la institución
-							String repoName = repositoryNameHelper.extractNameFromMetadata(metadata, repoNameField, repoNamePrefix);
-							
-							// Si no existe el repoName en la metadata se intenta recuperarlo usando una expresión regular
-							if ( runRepoNameDetection && repoName.equals( RepositoryNameHelper.UNKNOWN  ) )
-								repoName = repositoryNameHelper.detectRepositoryDomain( metadata.getIdentifier() );
-							
-							// Se establece el nombre del repositorio en el registro
-							record.setRepositoryDomain(repoName);
-							
-							
-							// Si está configurado agrega a la metadata el reponame y el instname
-							if ( doRepoNameAppend )
-								repositoryNameHelper.appendNameToMetadata(metadata, repoNameField, repoNamePrefix, network.getName(), doRepoNameReplace );
-							
-							if ( doInstNameAppend )
-								repositoryNameHelper.appendNameToMetadata(metadata, instNameField, instNamePrefix, network.getInstitutionName(), doInstNameReplace );
-							
-							
-							// Se almacena la metadata transformada 
-							//if ( validationResult.isValid() ) 
-							record.setPublishedXML( metadata.toString() );
-							
-							
 							//// SE ALMACENA EL REGISTRO
 							recordRepository.save(record);
 							recordRepository.flush();
+							
+							// Se almacenan las estadísticas de cosecha
+							RecordValidationResult rvresult = new RecordValidationResult(record, validationResult);
+							validationResultRepository.save(rvresult);
+						
 							
 							
 							
@@ -435,7 +385,6 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						else { // Si no se valida entonces todo puesto para publicación
 							// TODO: Chequear esto
 							record.setStatus( RecordStatus.UNTESTED );
-							record.setPublishedXML( metadata.toString() );
 						}
 						
 

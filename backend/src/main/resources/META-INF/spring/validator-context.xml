@@ -18,17 +18,43 @@
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:solr="http://www.springframework.org/schema/data/solr"
+	
+	
+	
 	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd 	
+		http://www.springframework.org/schema/data/solr 
+		http://www.springframework.org/schema/data/solr/spring-solr.xsd">
 
 
 	<!--  import resource="file:${validator.path}/rules-context.xml"/>
 	<import resource="file:${validator.path}/fields-context.xml"/>
 	<import resource="file:${validator.path}/validators-context.xml"/>
 	<import resource="file:${validator.path}/transformers-context.xml"/-->	
+	
+	
+	<solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="solrTemplate" multicore-support="true"/>
+	
+	<!-- Configures HTTP Solr server -->
+    <solr:solr-server id="solrServer" url="http://localhost:8983/solr/"/>
+
+    <!-- Configures Solr template -->
+    <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+        <constructor-arg index="0" ref="solrServer"/>
+        <constructor-arg index="1">
+        <value>vstats</value>
+        </constructor-arg>
+    </bean>
+	
+	<import resource="file:${validator.path}/validator-2.0-context.xml"/>
+	
+	
+	
+	
 
 </beans>

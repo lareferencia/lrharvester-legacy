@@ -19,6 +19,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,7 +51,9 @@ public abstract class AbstractValidatorFieldContentRule extends AbstractValidato
 	 * @param metadata
 	 * @return
 	 */
-	public ValidatorRuleResult validate(OAIRecordMetadata metadata) {
+	public ValidatorRuleResult validate(OAIRecord record) {
+		
+		OAIRecordMetadata metadata = record.getMetadata();
 		
 		ValidatorRuleResult result = new ValidatorRuleResult();
 		

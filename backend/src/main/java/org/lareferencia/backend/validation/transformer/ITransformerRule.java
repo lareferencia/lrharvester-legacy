@@ -1,6 +1,6 @@
 package org.lareferencia.backend.validation.transformer;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.domain.OAIRecord;
 
 public interface ITransformerRule {
 	
@@ -8,7 +8,7 @@ public interface ITransformerRule {
 	public String getName();
 	public String getDescription();
 	
-	abstract boolean transform(OAIRecordMetadata metadata);
+	abstract boolean transform(OAIRecord record);
 
 
 }

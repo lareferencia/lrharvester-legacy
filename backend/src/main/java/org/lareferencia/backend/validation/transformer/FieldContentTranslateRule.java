@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
 import org.w3c.dom.Node;
@@ -96,7 +97,10 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	}
 
 	@Override
-	public boolean transform(OAIRecordMetadata metadata) {
+	public boolean transform(OAIRecord record) {
+		
+		OAIRecordMetadata metadata = record.getMetadata();
+
 
 		FieldContentValidatorResult result;
 		boolean wasTransformed = false;

@@ -33,7 +33,7 @@
 	<bean id="driverTypeRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:driver"/>
-		<property name="quantifier" value="1..1" />
+		<property name="quantifier" value="ONE_ONLY" />
 		<property name="controlledValuesFileName" value="${validator.path}/dctype.driver.txt"/>
 	</bean>
 
@@ -41,7 +41,7 @@
 	<bean id="statusTypeRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="type:status"/>
-		<property name="quantifier" value="1..1" />
+		<property name="quantifier" value="ONE_ONLY" />
 		<property name="controlledValuesFileName" value="${validator.path}/dctype.status.txt"/>
 	</bean>
 	
@@ -49,7 +49,7 @@
 	<bean id="langRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="language:iso639-3"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="controlledValuesFileName" value="${validator.path}/dclanguage.iso639-3.txt"/>
 	</bean>
 	
@@ -57,7 +57,7 @@
 	<bean id="dateRule"
 		class="org.lareferencia.backend.validator.RegexContentValidationRule">
 		<property name="name" value="date:regex"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="regexString" value="(^\d{4}$)|(^\d{4}-\d{2}$)|(^\d{4}-\d{2}-\d{2}$)|(^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$)"/>
 	</bean>
 	
@@ -65,14 +65,14 @@
 	<bean id="titleRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
 		<property name="name" value="title:not_empty"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="minLength" value="1"/>
 	</bean>
 	
 	<bean id="identifierRule"
 		class="org.lareferencia.backend.validator.RegexContentValidationRule">
 		<property name="name" value="identifier:match_url_regexp"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="regexString" value="^(http|https)\://((?!hdl\.handle\.net/123456789.*$)[a-zA-Z0-9/\-\s\.\_\?\=&amp;\;\:\@])+"/>
 	</bean>
 	
@@ -80,7 +80,7 @@
 	<bean id="creatorRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
 		<property name="name" value="creator:not_empty"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="minLength" value="1"/>
 	</bean>	
 	
@@ -88,7 +88,7 @@
 	<bean id="formatRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="format:mime"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="controlledValuesFileName" value="${validator.path}/dcformat.mime.txt"/>
 	</bean>
 	
@@ -96,7 +96,7 @@
 	<bean id="relationRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
 		<property name="name" value="relation:not_empty"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="minLength" value="1"/>
 	</bean>
 	
@@ -104,7 +104,7 @@
 	<bean id="descriptionRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
 		<property name="name" value="description:not_empty"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="minLength" value="1"/>
 	</bean>
 	
@@ -112,7 +112,7 @@
 	<bean id="subjectRule"
 		class="org.lareferencia.backend.validator.LengthContentValidationRule">
 		<property name="name" value="subject:not_empty"/>
-		<property name="quantifier" value="1..*" />
+		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="minLength" value="1"/>
 	</bean>
 	
@@ -120,7 +120,7 @@
 	<bean id="rightsRule"
 		class="org.lareferencia.backend.validator.ControlledValueContentValidationRule">
 		<property name="name" value="rights:driver"/>
-		<property name="quantifier" value="1..1" />
+		<property name="quantifier" value="ONE_ONLY" />
 		<property name="controlledValuesFileName" value="${validator.path}/dcrights.driver.txt"/>
 	</bean>
 		

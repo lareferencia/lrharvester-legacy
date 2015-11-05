@@ -20,6 +20,7 @@ import javax.persistence.MappedSuperclass;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import org.springframework.hateoas.Identifiable;
@@ -37,5 +38,6 @@ public class AbstractEntity implements Identifiable<Long> {
 
 	protected AbstractEntity() {
 		this.id = null;
+	
 	}
 }

@@ -23,8 +23,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,28 +34,26 @@ import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.util.RepositoryNameHelper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * 
  */
+@Getter
 @Entity
-@Getter 
-@JsonIgnoreProperties({"publishedXML","snapshot","datestamp"})
+@JsonIgnoreProperties({"publishedXML","snapshot","datestamp","metadata"})
 public class OAIRecord extends AbstractEntity {
 	
+	 
+	@Transient
+	private OAIRecordMetadata metadata;
 	
 	@Column(nullable = false)
 	private String identifier;
-	
-	@Column(nullable = false)
-	private String fingerprint;
-	
-	@Setter
-	@Column(nullable = true)
-	private String repositoryDomain;
-	
+		
 	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -65,12 +65,11 @@ public class OAIRecord extends AbstractEntity {
 	@Setter
 	@Column(nullable = false)
 	private RecordStatus status;
-	
+	 
 	@Setter
 	@Column(nullable = false)
 	private boolean wasTransformed;
 	
-	@Setter
 	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
 	@JoinColumn(name="snapshot_id")
 	private NetworkSnapshot snapshot;
@@ -83,36 +82,39 @@ public class OAIRecord extends AbstractEntity {
 		this.datestamp = new DateTime().toDate();
 	}
 	
-	/*
-	public OAIRecord(String identifier) {
+	public OAIRecord(NetworkSnapshot snapshot, OAIRecordMetadata metadata) {
 		super();
+		this.snapshot = snapshot;
 		this.status = RecordStatus.UNTESTED;
 		this.datestamp = new DateTime().toDate();
-		//this.belongsToCollection = false;
-		//this.belongsToCollectionDetails = "";
-		this.setIdentifier(identifier);
-		
-	}*/
+		this.metadata = metadata;
+		updateIdentifier();		
+	}
+	
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;		
-		
+	private void updateIdentifier() {
+		this.identifier = metadata.getIdentifier();		
+	}
+	
+	public void setSnapshot(NetworkSnapshot snapshot) {
+		this.snapshot = snapshot;
+		updateIdentifier();
+	}
+	
+	public String getFingerprint() {
+
 		if ( this.snapshot != null )
-			this.fingerprint = this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( identifier );
+			return this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( identifier );
 		else
-			this.fingerprint = "00" + "_" +  DigestUtils.md5Hex( identifier );
+			return "00" + "_" +  DigestUtils.md5Hex( identifier );
 	}
 	
 
-	public void setPublishedXML(String publishedXML) {
-		this.publishedXML = publishedXML;
+	@PrePersist
+	private void updatePublishedXML() {
 		
-		/**if ( this.snapshot != null )
-			this.fingerprint = this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( publishedXML );
-		else
-			this.fingerprint = "NULL";**/
+		/* El XML publicado será la versión de la metadata si no es null */	
+		if (metadata != null) 
+			publishedXML = metadata.toString();
 	}
-	
-	
-	
 }

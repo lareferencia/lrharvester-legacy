@@ -213,7 +213,7 @@ $.rest = {
 		
 		// esta función se ejecuta luego de la creación del item, establece la relación del item con la collección
 		creation_success_handler = function(response) { 
-			  var createdResourceLocation = response.getResponseHeader('Location');
+			  var createdResourceLocation = response._links.self.href;
 			  $.rest.relation(entity_collection_url, existingItemsLocations + createdResourceLocation, handler, handler);  		  
 		};
 		   

@@ -426,7 +426,7 @@ public class BackEndController {
 	}
 
 	/**************************** FrontEnd  ************************************/
-
+/*
 	@ResponseBody
 	@RequestMapping(value="/public/validateOriginalRecordByID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<ValidatorResult> validateOriginalRecordByID(@PathVariable Long id) throws Exception {
@@ -578,7 +578,7 @@ public class BackEndController {
 			
 	}
 	
-	
+	*/
 	@ResponseBody
 	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
@@ -763,6 +763,8 @@ public class BackEndController {
 		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
 		
 	}
+	
+	/*
 
 	@RequestMapping(value="/public/listRepositoriesBySnapshotID/{id}", method=RequestMethod.GET)
 	@ResponseBody
@@ -775,7 +777,7 @@ public class BackEndController {
 		
 		return recordRepository.listRepositoriesBySnapshotId(id);
 		
-	}
+	}*/
 	
 	/*
 	@RequestMapping(value="/public/getMetadataStatsBySnapshotID/{id}", method=RequestMethod.GET)
@@ -804,7 +806,7 @@ public class BackEndController {
 			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
 				
 		return statRepository.findBySnapshot(snapshot);	
-	}*/
+	}
 	
 	
 	@RequestMapping(value="/public/listInvalidRecordsInfoBySnapshotID/{id}", method=RequestMethod.GET)
@@ -926,7 +928,7 @@ public class BackEndController {
 		return new PageResource<OAIRecord>(pageResult,"page","size");
 	}
 	
-	/*
+	
 	@ResponseBody
 	@RequestMapping(value="/public/metadataOccurrenceCountBySnapshotId/{id}", method=RequestMethod.GET)
 	public List<NetworkSnapshotStat> metadataOccurrenceCountBySnapshotId(@PathVariable Long id) throws Exception {

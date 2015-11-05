@@ -13,13 +13,10 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.transformer;
 
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.IValidatorRule;
+import org.lareferencia.backend.domain.OAIRecord;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -41,5 +38,5 @@ public abstract class AbstractTransformerRule implements ITransformerRule {
 	 * @param metadata
 	 * @return Retorna true si fue necesario aplicar una transformación
 	 */
-	public abstract boolean transform(OAIRecordMetadata metadata);
+	public abstract boolean transform(OAIRecord record);
 }

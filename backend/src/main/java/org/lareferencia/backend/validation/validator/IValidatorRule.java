@@ -13,12 +13,12 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.validator;
 
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.domain.OAIRecord;
 
 
 public interface IValidatorRule {
 
-	public ValidatorRuleResult validate(OAIRecordMetadata metadata);
+	public ValidatorRuleResult validate(OAIRecord record);
 	
 	public Long    getID();
 	public void    setID(Long id);

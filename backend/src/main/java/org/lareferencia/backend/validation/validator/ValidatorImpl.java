@@ -19,6 +19,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
 @Getter
@@ -32,13 +33,13 @@ public class ValidatorImpl implements IValidator {
 		rules = new ArrayList<IValidatorRule>();
 	}
 	
-	public ValidatorResult validate(OAIRecordMetadata metadata) {
+	public ValidatorResult validate(OAIRecord record) {
 	
 		ValidatorResult result = new ValidatorResult();
 		boolean isRecordValid = true;
 		
 		for (IValidatorRule rule:rules) {				
-			ValidatorRuleResult ruleResult = rule.validate(metadata);			
+			ValidatorRuleResult ruleResult = rule.validate(record);			
 			result.getRulesResults().add( ruleResult );		
 			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
 		}

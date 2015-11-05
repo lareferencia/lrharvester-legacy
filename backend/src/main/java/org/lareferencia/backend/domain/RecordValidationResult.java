@@ -1,6 +1,7 @@
 package org.lareferencia.backend.domain;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.solr.client.solrj.beans.Field;
+import org.hibernate.mapping.Array;
+import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.util.OAIMetadataXSLTransformer;
+import org.lareferencia.backend.util.RepositoryNameHelper;
+import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
+import org.lareferencia.backend.validation.validator.ValidatorResult;
+import org.lareferencia.backend.validation.validator.ValidatorRuleResult;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.Dynamic;
 
@@ -26,9 +34,15 @@ public class RecordValidationResult {
     @Field("snapshot_id")
     private Long snapshotID;
     
+    @Field("origin") 
+    private String origin;
+    
+    @Field("set_spec") 
+    private String setSpec;
+    
     @Field("network_acronym") 
     private String networkAcronym;
-    
+ 
     @Field("repository_name") 
     private String repositoryName;
     
@@ -38,6 +52,9 @@ public class RecordValidationResult {
     @Field("record_is_valid") 
     private Boolean isValid;
     
+    @Field("record_is_transformed") 
+    private Boolean isTransformed;
+    
     @Dynamic
     @Field("*_rule_valid_occrs")
     private Map<String, List<String>> validOccurrencesByRuleID;
@@ -46,14 +63,63 @@ public class RecordValidationResult {
     @Field("*_rule_invalid_occrs")
     private Map<String, List<String>> invalidOccurrencesByRuleID;
     
-    @Dynamic
-    @Field("*_rule_is_valid")
-    private Map<String, Boolean> isRuleValidByRuleID;
+    @Field("valid_rules")
+    private List<String> validRulesID;
     
-    public RecordValidationResult() {
+    @Field("invalid_rules")
+    private List<String> invalidRulesID;
+    
+    
+    /**
+     * Se construye un resultado de validación persistible en solr a partir del objeto resultado devuelto por el validador para un registro
+     * @param result
+     */
+    public RecordValidationResult(OAIRecord record, ValidatorResult validationResult) {
+    	   	
     	validOccurrencesByRuleID = new HashMap<String, List<String>>();
     	invalidOccurrencesByRuleID = new HashMap<String, List<String>>();
-    	isRuleValidByRuleID = new HashMap<String,Boolean>();
-    }
+    	validRulesID = new ArrayList<String>();
+    	invalidRulesID = new ArrayList<String>();
 
+    	
+    	id = record.getId().toString();
+    	identifier = record.getIdentifier();
+    	origin = record.getMetadata().getOrigin();
+    	setSpec = record.getMetadata().getSetSpec();
+    	isTransformed = record.isWasTransformed();
+    	
+    	repositoryName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "reponame");
+    	institutionName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "instname");
+
+    	snapshotID = record.getSnapshot().getId();
+    	networkAcronym = record.getSnapshot().getNetwork().getAcronym();
+    	
+    	isValid = validationResult.isValid();
+    	
+    	for (  ValidatorRuleResult ruleResult : validationResult.getRulesResults() ) {
+    		
+    		String ruleID = ruleResult.getRule().getID().toString();
+    		
+    		List<String> invalidOccr = new ArrayList<String>();
+    		List<String> validOccr = new ArrayList<String>();
+
+    		
+    		for (FieldContentValidatorResult contentResult: ruleResult.getResults() ) {
+    			
+    			if (contentResult.isValid() )
+    				validOccr.add( contentResult.getReceivedValue() );
+    			else
+    				invalidOccr.add( contentResult.getReceivedValue() );
+			
+    		}
+    		
+    		if ( ruleResult.getValid() )
+    			validRulesID.add(ruleID);
+    		else
+    			invalidRulesID.add(ruleID);
+    		
+    		validOccurrencesByRuleID.put(ruleID, validOccr);
+    		invalidOccurrencesByRuleID.put(ruleID, invalidOccr);
+    	}
+    }
 }

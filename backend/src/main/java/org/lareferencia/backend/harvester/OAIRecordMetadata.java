@@ -32,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.xpath.XPathAPI;
 import org.lareferencia.backend.util.MedatadaDOMHelper;
@@ -97,6 +98,14 @@ public class OAIRecordMetadata {
 	
 	@Getter
 	private String identifier;
+	
+	@Getter
+	@Setter
+	private String origin;
+	
+	@Getter
+	@Setter
+	private String setSpec;
 	
 
 	public Document getDOMDocument() {
