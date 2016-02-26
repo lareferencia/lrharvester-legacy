@@ -41,19 +41,27 @@
 	<solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="solrTemplate" multicore-support="true"/>
 	
 	<!-- Configures HTTP Solr server -->
-    <solr:solr-server id="solrServer" url="http://localhost:8983/solr/"/>
+    <solr:solr-server id="solrServer" url="${vstats.solr.server}"/>
 
     <!-- Configures Solr template -->
     <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
         <constructor-arg index="0" ref="solrServer"/>
         <constructor-arg index="1">
-        <value>vstats</value>
+        <value>${vstats.solr.core}</value>
         </constructor-arg>
     </bean>
 	
 	<import resource="file:${validator.path}/validator-2.0-context.xml"/>
 	
-	
+	 <bean id="ruleSerializer" class="org.lareferencia.backend.validation.RuleSerializer">
+        <property name="validatorPrototypes">
+        	<list>
+        		<bean class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule"></bean>
+        		<bean class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule"></bean>
+        		<bean class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule"></bean>
+        	</list>
+        </property>
+    </bean>
 	
 	
 

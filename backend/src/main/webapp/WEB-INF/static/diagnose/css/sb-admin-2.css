@@ -369,3 +369,13 @@ table.dataTable thead .sorting:after {
 {
   width: 800px;/* your width */
 }
+
+#modalViewRuleValues .modal-dialog
+{
+  width: 800px;/* your width */
+}
+
+.selected {
+	font-weight: bold;
+	
+}

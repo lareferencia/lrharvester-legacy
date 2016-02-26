@@ -147,25 +147,31 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         
-                     
+                      	<li>
+                            <a href="#"><i class="fa fa-university fa-fw"></i> Instituciones <span class="fa arrow"></span></a>
+                            <ul id="institution_name_facet" class="nav nav-second-level">  </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
                        
                         <li>
                             <a href="#"><i class="fa fa-sitemap fa-fw"></i> Subredes <span class="fa arrow"></span></a>
                             <ul id="repository_name_facet" class="nav nav-second-level"></ul>   
                             <!-- /.nav-second-level -->
                         </li>
+                        
                         <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Instituciones <span class="fa arrow"></span></a>
-                            <ul id="institution_name_facet" class="nav nav-second-level">  </ul>  
+                            <a href="#"><i class="fa fa-check-square-o fa-fw"></i> Validez de registros <span class="fa arrow"></span></a>
+                            <ul id="record_is_valid_facet" class="nav nav-second-level">  </ul>  
                             <!-- /.nav-second-level -->
                         </li>
+                       
                         <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-check fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
                             <ul id="valid_rules_facet" class="nav nav-second-level">  </ul>  
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Reglas Inválidas <span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-times fa-fw"></i> Reglas Inválidas <span class="fa arrow"></span></a>
                             <ul id="invalid_rules_facet" class="nav nav-second-level">  </ul>  
                             <!-- /.nav-second-level -->
                         </li>
@@ -262,7 +268,7 @@
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Actions
+                                        Descargar
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu pull-right" role="menu">
@@ -285,7 +291,7 @@
                                                     <th>Mandatoria</th>
                                                     <th>Válidos</th>
                                                     <th>%</th>
-                                                    <th>V. Frecuentes</th>
+                                                    <th></th>
                                                     
 
                                                 </tr>
@@ -310,7 +316,7 @@
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Actions
+                                        Descargar
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu pull-right" role="menu">
@@ -332,7 +338,7 @@
                                                     <th>Identifier</th>
                                                     <th>VLD</th>
                                                     <th>TRF</th>
-                                                    <th>Acceder en origen</th>
+                                                    <th></th>
 
                                                 </tr>
                                             </thead>
@@ -404,9 +410,41 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title" id="titleLabel">Metadata</h4>
+	        <h4 class="modal-title" id="titleLabel">Valores más frecuentes</h4>
 	      </div>
 	      <div  class="modal-body" id="modalViewRuleValuesBody">
+	        
+	      	<div class="row">
+	      	  
+	      	   <div class="col-lg-6">
+				    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="table-valid-values">
+                            <thead>
+                                <tr>
+                                    <th>Válidos</th>
+                                    <th>Freq</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>	   
+	      	   </div>
+	      	   <div class="col-lg-6">
+	      	   		<div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="table-invalid-values">
+                            <thead>
+                                <tr>
+                                    <th>Inválidos</th>
+                                    <th>Freq</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>	   
+	      	   </div>
+	      	</div>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -452,9 +490,16 @@
 
 		var fqHash = {};
 		
+		function str2id(input) {
+			return input.replace(/\W/g, ''); 
+		}
+		
+		
 		function onFacetClick(facetName, facetValue) {
 			
 			var key = facetName + ':"' + facetValue + '"';
+			
+			$( "#" + str2id(facetValue) + "_facet_value" ).toggleClass("selected");
 			
 			if (fqHash[key] == null )
 				fqHash[key] = true;
@@ -465,13 +510,48 @@
         }
 	
 		
+		/////////////////////////////////////////////////////////////////////////
+		   
+        var tableValidValues =  $('#table-valid-values').DataTable({
+                responsive: true,
+                paging: true,
+                info: false,
+                searching: false,
+                columns:[ 
+                         
+                         { data: 'value' },
+                         { data: 'freq' },
+               ]
+        });
+		
+        var tableInvalidValues =  $('#table-invalid-values').DataTable({
+            responsive: true,
+            paging: true,
+            info: false,
+            searching: false,
+            columns:[ 
+                     
+                     { data: 'value' },
+                     { data: 'freq' },
+           ]
+    	});
+		
+		
+		
 		///////////////////////////////////////////////////////////////////////////	
 		var tableRecordsButtons =
-			'<button id="btnTRF" class="btn btn-default">Transformado</button>' +
-			'<button id="btnRPS" class="btn btn-default">Repositorio</button>' +
-			'<button id="btnVLD" class="btn btn-default">Validación</button>';
+			'<button id="btnTRF" class="btn btn-default">R. Transformado</button>' +
+			'<button id="btnRPS" class="btn btn-default">Ver en el Repositorio</button>' +
+			'<button id="btnVLD" class="btn btn-default">Verificar Validación</button>';
 
         
+		function boolean2string ( data, type, full, meta ) {
+     			if (data)
+     				return 'Sí';
+     			else
+     				return 'No';
+     		}	
+			
         var tableRecords =  $('#table-records').DataTable({
                 responsive: true,
                 paging: false,
@@ -479,12 +559,30 @@
                 searching: false,
                 columns:[ 
                 	
-                	 { data: 'id' },
-                     { data: 'oai_identifier' },
-                     { data: 'record_is_valid' },
-                     { data: 'record_is_transformed' },
-                     { data: null, "defaultContent":  tableRecordsButtons }
-                ]             
+                	 { data: 'id', "width": "10%" },
+                     { data: 'oai_identifier', "width": "40%", 'sort': false },
+                     { data: 'record_is_valid', "width": "5%"},                   
+                     { data: 'record_is_transformed', "width": "5%" },
+                     { data: null, "defaultContent":  tableRecordsButtons },
+                ],
+                "columnDefs": [
+                    {
+                    "targets": 2,
+                    "data": "record_is_valid",
+                    "render":boolean2string
+                    },
+                    {
+                    "targets": 3,
+                    "data": "record_is_transformed",
+                    "render":boolean2string
+                    }
+                 ],
+		        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+		            if ( aData['record_is_valid']  )
+	                    $(nRow).css('background-color', '#dff0d8');
+		            else
+		                $(nRow).css('background-color', '#f2dede');
+		        }
         });
         
         $('#table-records tbody').on( 'click', 'button', 
@@ -524,19 +622,25 @@
                   
                      { data: 'name' },
                      { data: 'description' },
-                     { data: 'mandatory' },
-                     { data: 'valid' },
-                     { data: 'score' },
-                     { data: null, "defaultContent":  '<button id="btnVLR" class="btn btn-default">Valores</button>' }
-                  
-                    ]      
+                     { data: 'mandatory', "width": "5%", "title":"M." },
+                     { data: 'valid', "width": "10%" },
+                     { data: 'score', "width": "10%" },
+                     { data: null, "defaultContent":  '<button id="btnVLR" class="btn btn-default">Valores</button>', "width": "10%" }
+                    ],
+                    "columnDefs": [
+                                   {
+                                   "targets": 2,
+                                   "data": "record_is_valid",
+                                   "render":boolean2string
+                                   }
+                     			  ]      
 
     	});
 		
         $('#table-rules tbody').on( 'click', 'button', 
         		function () {
 					var data = tableRules.row( $(this).parents('tr') ).data();
-					showRuleOccurrences(data.id);
+					showRuleOccurrences(data.id);					
         		}
         );
         
@@ -587,12 +691,21 @@
 	            	 facetDisplayValue = translateDict[facetValue];
 	             
 	             var facetFunction = "javascript:onFacetClick('" + facetName + "','" + facetValue + "');";   
-	         	 $('#' + facetName + '_facet').append('<li><a href="'+ facetFunction + '"> +' + facetDisplayValue +  ' (' + facetData[i+1] +')</a></li>');
+	         	
+	             $('#' + facetName + '_facet').append('<li id="' + str2id(facetValue) + "_facet_value" +  '"><a href="'+ facetFunction + '"> +' + facetDisplayValue +  ' (' + facetData[i+1] +')</a></li>');
+	         	
+	             var key = facetName + ':"' + facetValue + '"';
+	             
+	             if ( fqHash[key] != null && fqHash[key]  )
+	     			$( "#" + str2id(facetValue) + "_facet_value" ).toggleClass("selected");
+
+	            	 
+	         	 
 	        }
         }
         
         
-        function facet2object(facetArray) {
+       function facet2object(facetArray) {
         	 facetObj = {};	
         
              for (var i=0;i<facetArray.length-1;i=i+2) {
@@ -601,6 +714,17 @@
              
              return facetObj;
         }
+        
+       function facet2freqtable(facetArray) {
+       	 	var resultArray = [];
+    	   
+            for (var i=0;i<facetArray.length-1;i=i+2) {
+              facetObj = resultArray.push( { 'value':facetArray[i], 'freq': facetArray[i+1]} );  
+        
+            }	
+            
+            return resultArray;
+       }
         
         function getFacetValueCount(data, facetName, facetValue) {
         	
@@ -708,7 +832,7 @@
         function showRuleOccurrences(ruleID) {
         	
         	 var params =  [
-	                            {q: 'snapshot_id:24'},
+	                            {q: 'snapshot_id:26'},
 	                            {rows: '0'},
 	                            {facet: true},
 	                            {'facet.mincount': '1'},
@@ -724,10 +848,19 @@
         	 
         	
         	 runSolrQuery(params, function(data) {
-        		 
-        		 
-        		 var d = data;
-        		 
+        		
+            	 var invalidFreqData = facet2freqtable(data.facet_counts.facet_fields[ruleID + '_rule_invalid_occrs']);
+            	 var validFreqData = facet2freqtable(data.facet_counts.facet_fields[ruleID + '_rule_valid_occrs']);
+            	
+            	 tableInvalidValues.rows().remove();
+            	 tableInvalidValues.rows.add(invalidFreqData).draw();
+            	 
+            	 tableValidValues.rows().remove();
+            	 tableValidValues.rows.add(validFreqData).draw();
+
+
+		       	 $('#modalViewRuleValues').modal('show');
+
         	 } );
   	
         }
@@ -738,7 +871,7 @@
         	 rulesCount = {};
 
         	 var params =  [
-                            {q: 'snapshot_id:24'},
+                            {q: 'snapshot_id:26'},
                             
                             {facet: true},
                             {'facet.mincount': '1'},
@@ -794,6 +927,8 @@
                            renderFacet(data,"institution_name", null);
                            renderFacet(data,"valid_rules", rulesNames);
                            renderFacet(data,"invalid_rules", rulesNames); 
+                           renderFacet(data,"record_is_valid", { "true":"Válidos", "false":"Inválidos"}); 
+
                      });
         	}); 
         }

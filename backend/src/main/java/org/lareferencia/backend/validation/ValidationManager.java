@@ -44,6 +44,7 @@ public class ValidationManager {
 		for (ValidatorRule vrule: vmodel.getRules()) {
 			
 			IValidatorRule rule = serializer.deserializeValidatorFromJsonString( vrule.getJSONSerialization() );
+			rule.setID(vrule.getId());
 			validator.getRules().add(rule);
 			
 		}
@@ -69,6 +70,32 @@ public class ValidationManager {
 		}
 		
 		return transformer;
+	}
+	
+	
+	public Validator createModelFromValidator(IValidator validator, String name, String description) {
+		
+		Validator validatorModel = new Validator();
+		
+		for (IValidatorRule vrule:   validator.getRules() ) {
+			
+			ValidatorRule ruleModel = new ValidatorRule();
+			
+			System.out.println(vrule.getName() );
+			
+			ruleModel.setName( vrule.getName() );
+			ruleModel.setDescription( vrule.getDescription() );
+			ruleModel.setMandatory( vrule.getMandatory() );
+			ruleModel.setJSONSerialization( serializer.serializeValidatorToJsonString(vrule) );
+			
+			validatorModel.getRules().add(ruleModel);
+			
+		}
+		
+		validatorModel.setName(name);
+		validatorModel.setDescription(description);
+	
+		return validatorModel;
 	}
 	
 

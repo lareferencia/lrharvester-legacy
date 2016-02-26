@@ -29,16 +29,19 @@ import org.lareferencia.backend.domain.OAISet;
 import org.lareferencia.backend.domain.RecordStatus;
 import org.lareferencia.backend.domain.RecordValidationResult;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.domain.Validator;
 import org.lareferencia.backend.harvester.HarvestingEvent;
 import org.lareferencia.backend.harvester.IHarvester;
 import org.lareferencia.backend.harvester.IHarvestingEventListener;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
+import org.lareferencia.backend.indexer.IndexerManager;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.RecordValidationResultRepository;
+import org.lareferencia.backend.repositories.ValidatorRepository;
 import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.util.datatable.DataTable;
 import org.lareferencia.backend.util.datatable.JsonRenderer;
@@ -72,6 +75,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		
 	@Autowired
 	private NetworkRepository networkRepository;
+	
+	@Autowired
+	private ValidatorRepository validatorRepository;
 		
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
@@ -99,17 +105,14 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	RecordValidationResultRepository validationResultRepository;
 	
-	@Autowired
+	//@Autowired
 	IValidator validator;
 	
-	
 	@Autowired
-	@Qualifier("indexer")
-	IIndexer indexer;
-	
+	ValidationManager validatorManager;
+
 	@Autowired
-	@Qualifier("indexerXOAI")
-	IIndexer indexerXOAI;
+	private IndexerManager indexerManager;
 	
 	@Setter
 	private Long networkID;
@@ -162,21 +165,31 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		
 		if ( network.isRunValidation() ) {
 			
-//			// Se cargan el validador y el transformador de acuerdo a la configuración de la red
-//			try {
-//				logMessage("Cargando validador y transformador  ..."); 
-//	
-//				validator = validationManager.createValidatorFromModel( network.getValidator() );
-//				transformer = validationManager.createTransformerFromModel( network.getTransformer() );
-//				
-//			} catch (Exception e) {		
-//				logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
-//				setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
-//				return;
-//			}
+			// Se cargan el validador y el transformador de acuerdo a la configuración de la red
+			try {
+				logMessage("Cargando validador y transformador  ..."); 
+	
+				validator = validationManager.createValidatorFromModel( network.getValidator() );
+				//transformer = validationManager.createTransformerFromModel( network.getTransformer() );
+				
+			} catch (Exception e) {		
+				logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
+				setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
+				return;
+			}
 			
 		}
 		
+		/**
+		Validator validatorModel = validatorManager.createModelFromValidator(validator, "test", "test");
+		
+		validatorRepository.save(validatorModel);
+		validatorRepository.flush();
+				
+		network.setValidator(validatorModel);
+		networkRepository.save(network);
+		networkRepository.flush();
+		*/
 		
 		// Se registra el incicio de tareas en el manager
 		manager.registerWorkerBeginSnapshot(snapshot.getId(), this);
@@ -213,47 +226,16 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 					
 					if ( network.isRunIndexing() ) {
 					
-					    logMessage("Comenzando indexación ...");
-					    setSnapshotStatus(SnapshotStatus.INDEXING);
-	
-	                    // Indexa
-						boolean isSuccesfullyIndexed = indexer.index(snapshot.getNetwork(), snapshot, false);
-						
-						// Si el indexado es exitoso marca el snap válido
-						if ( isSuccesfullyIndexed ) {
-							// Graba el status
-							setSnapshotStatus(SnapshotStatus.VALID);
-		
-							logMessage("Indexación terminada con éxito.") ;
-						}
-						else {
-							// Graba el status
-							setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
-							logMessage("Error en proceso de indexación.");
-						}
+					    logMessage("Comenzando indexación Vufind ...");
+					    logMessage( indexerManager.indexSnapshotInVufind(snapshot) );
 					} 
 						
 					
 					if ( network.isRunXOAI()) {
 						
-					    logMessage("Comenzando indexación XOAI ...");
-					    setSnapshotStatus(SnapshotStatus.INDEXING);
-	
-	                    // Indexa
-						boolean isSuccesfullyXOAIIndexed = indexerXOAI.index(snapshot.getNetwork(), snapshot, false);
+						logMessage("Comenzando indexación XOAI ...");
+					    logMessage( indexerManager.indexSnapshotInXOAI(snapshot) );
 						
-						// Si el indexado es exitoso marca el snap válido
-						if ( isSuccesfullyXOAIIndexed ) {
-							// Graba el status
-							setSnapshotStatus(SnapshotStatus.VALID);
-		
-							logMessage("Indexación XOAI terminada con éxito.") ;
-						}
-						else {
-							// Graba el status
-							setSnapshotStatus(SnapshotStatus.INDEXING_FINISHED_ERROR);
-							logMessage("Error en proceso de indexación XOAI.");
-						}
 					}
 					
 					

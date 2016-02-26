@@ -59,6 +59,14 @@
 	<jpa:repositories base-package="org.lareferencia.backend.repositories" />
 
 
-	
+    <bean id="ruleSerializer" class="org.lareferencia.backend.validation.RuleSerializer">
+        <property name="validatorPrototypes">
+        	<list>
+        		<bean class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule"></bean>
+        		<bean class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule"></bean>
+        		<bean class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule"></bean>
+        	</list>
+        </property>
+    </bean>
 
 </beans>

@@ -13,8 +13,10 @@
  ******************************************************************************/
 package org.lareferencia.backend.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,10 +48,10 @@ public class Transformer extends AbstractEntity {
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="transformer_id")
 	@LazyCollection(LazyCollectionOption.FALSE) 
-	private Collection<TransformerRule> rules = new LinkedHashSet<TransformerRule>();
+	private List<TransformerRule> rules = new ArrayList<TransformerRule>();
 
 	public Transformer() {
 		super();
-		rules = new LinkedHashSet<TransformerRule>();
+		rules = new ArrayList<TransformerRule>();
 	}
 }

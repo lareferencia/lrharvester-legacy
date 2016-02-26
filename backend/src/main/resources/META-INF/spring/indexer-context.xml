@@ -28,9 +28,9 @@
 	
 	<!--  	public IndexerImpl(String xslFileName, String solrURL, String solrNetworkIDField)   -->
 	
-	<bean id="indexer" class="org.lareferencia.backend.indexer.IndexerImpl">	
-	    <constructor-arg><value>${indexer.path}</value></constructor-arg>
-	    <constructor-arg><value>${solr.url}</value></constructor-arg>
+	<bean id="indexerVufind" class="org.lareferencia.backend.indexer.IndexerImpl">	
+	    <constructor-arg><value>${vufind.indexer.path}</value></constructor-arg>
+	    <constructor-arg><value>${vufind.solr.url}</value></constructor-arg>
 	    <constructor-arg><value>network_acronym</value></constructor-arg>
 	    
 	    

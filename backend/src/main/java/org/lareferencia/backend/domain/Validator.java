@@ -13,8 +13,10 @@
  ******************************************************************************/
 package org.lareferencia.backend.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,10 +48,10 @@ public class Validator extends AbstractEntity {
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="validator_id")
 	@LazyCollection(LazyCollectionOption.FALSE) 
-	private Collection<ValidatorRule> rules = new LinkedHashSet<ValidatorRule>();
+	private List<ValidatorRule> rules = new ArrayList<ValidatorRule>();
 
 	public Validator() {
 		super();
-		rules = new LinkedHashSet<ValidatorRule>();
+		rules = new ArrayList<ValidatorRule>();
 	}
 }

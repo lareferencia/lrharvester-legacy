@@ -296,7 +296,11 @@
 			<p><strong>Limpiar:</strong> eliminar información de snapshots antiguos </p>
 			<p><strong>Editar:</strong> editar detalles y programar cosechas </p>
 			<p><strong>Borrar :</strong> eliminar la red del sistema (!!) </p>
-		    <p><strong>Borrar IDX:</strong> eliminar la red del índice Solr / Vufind (!!) </p>				
+		    <p><strong>Borrar IDX:</strong> eliminar la red del índice Solr / Vufind (!!) </p>		
+			
+			
+			
+			
 		</div>
 	
 	</div>

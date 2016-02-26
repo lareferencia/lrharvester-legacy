@@ -88,8 +88,8 @@ public class RecordValidationResult {
     	setSpec = record.getMetadata().getSetSpec();
     	isTransformed = record.isWasTransformed();
     	
-    	repositoryName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "reponame");
-    	institutionName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "instname");
+    	repositoryName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "reponame:");
+    	institutionName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "instname:");
 
     	snapshotID = record.getSnapshot().getId();
     	networkAcronym = record.getSnapshot().getNetwork().getAcronym();
