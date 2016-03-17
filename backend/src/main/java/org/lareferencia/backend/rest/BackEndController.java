@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +46,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIOriginRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAISetRepository;
+import org.lareferencia.backend.rest.BackEndController.NetworkInfo;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
 import org.lareferencia.backend.validation.ValidationManager;
@@ -54,6 +58,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -120,9 +128,9 @@ public class BackEndController {
 		return "home";
 	}
 	
-	@RequestMapping(value = "/home2", method = RequestMethod.GET)
+	@RequestMapping(value = "/home3", method = RequestMethod.GET)
 	public String home2(Locale locale, Model model) {	
-		return "home2";
+		return "home3";
 	}
 	
 	
@@ -475,7 +483,7 @@ public class BackEndController {
 		);
 		
 		return response;
-	}
+	} 
 	
 	@ResponseBody
 	@RequestMapping(value="/public/listSnapshotsByNetworkAcronym/{acronym}", method=RequestMethod.GET)
@@ -490,21 +498,23 @@ public class BackEndController {
 		return response;
 	}
 	
-	@ResponseBody
-	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
-	public ResponseEntity<List<NetworkInfo>> listNetworks() {
-		
+	
+	
+	////////////////////////// Listar Redes y sus datos //////////////////////////
+	
+	private List<NetworkInfo> networkList2netinfoList(List<Network> networks) {
 				
-		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
-		List<NetworkInfo> NInfoList = new ArrayList<NetworkInfo>();
 
-		for (Network network:allNetworks) {
+		List<NetworkInfo> ninfoList = new ArrayList<NetworkInfo>();
+
+		for (Network network:networks) {
 			
 			NetworkInfo ninfo = new NetworkInfo();
 			ninfo.networkID = network.getId();
 			ninfo.acronym = network.getAcronym();
 			ninfo.name = network.getName();
 			ninfo.institution = network.getInstitutionName();
+
 			
 			
 			NetworkSnapshot lstSnapshot = networkSnapshotRepository.findLastByNetworkID(network.getId());
@@ -535,17 +545,104 @@ public class BackEndController {
 				ninfo.lgkValidSize = lgkSnapshot.getValidSize();
 				ninfo.lgkTransformedSize = lgkSnapshot.getTransformedSize();
 				
-			}		
-			
-			
-			
-			NInfoList.add( ninfo );		
+			}			
+			ninfoList.add(ninfo);		
 		}
-	
-		ResponseEntity<List<NetworkInfo>> response = new ResponseEntity<List<NetworkInfo>>(NInfoList, HttpStatus.OK);
-		
-		return response;
+		return ninfoList;
 	}
+	
+	
+	// listado de redes publicadas 
+	@ResponseBody
+	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
+	public ResponseEntity<List<NetworkInfo>> listNetworks() {
+		
+		List<NetworkInfo> ninfoList =  networkList2netinfoList( networkRepository.findByPublishedOrderByNameAsc(true) );
+		return new ResponseEntity<List<NetworkInfo>>(ninfoList, HttpStatus.OK);
+	}
+	
+	// listado de todas las redes
+	@ResponseBody
+	@RequestMapping(value="/public/networks", method=RequestMethod.GET)
+	public ResponseEntity<NetworksListResponse> listNetworks( @RequestParam Map<String, String> params) {
+		
+		Page<Network> resultPage = findByParams(params);
+			
+		NetworksListResponse response = new NetworksListResponse( networkList2netinfoList(resultPage.getContent()) );
+		return new ResponseEntity<NetworksListResponse>(response, HttpStatus.OK);
+	}
+	
+	
+	
+	
+	private Page<Network> findByParams(Map<String,String> params) {
+		
+		int page = Integer.parseInt( params.get("page") );
+		// Correción para que la paginación empiece en 1
+		page--;
+		
+		int count = Integer.parseInt( params.get("count") );
+		
+		Pageable pageRequest = new PageRequest(page, count);
+		
+		String filterColumn = null; 			
+		String filterExpression = null;
+		
+		Pattern sortingPattern = Pattern.compile("sorting\\[(.*)\\]");
+		Pattern filterPattern = Pattern.compile("filter\\[(.*)\\]");
+
+		//Matcher matcher = pattern.matcher(ISBN);
+		
+		for( String key: params.keySet() ) {
+			
+			if ( key.startsWith("sorting") ) {
+				
+				Direction sortDirection = Direction.ASC;
+				Matcher matcher = sortingPattern.matcher(key);
+				
+				if ( matcher.find() ) {
+					String columnName = matcher.group(1) ; 			
+					if ( params.get(key).equals("desc") )
+						sortDirection = Direction.DESC;					
+					pageRequest = new PageRequest(page, count, sortDirection, columnName );
+				}				
+			}
+			
+			if ( key.startsWith("filter") ) {
+				
+				Matcher matcher = filterPattern.matcher(key);
+				
+				if ( matcher.find() ) {
+					filterColumn = matcher.group(1) ; 			
+					filterExpression = params.get(key);
+				}				
+			}
+		}
+		
+		if ( filterColumn != null  ) {
+						
+			switch (filterColumn) {
+			
+			case "name":
+				return networkRepository.findByNameIgnoreCaseContaining(filterExpression, pageRequest);
+			
+			case "institution":
+				return networkRepository.findByInstitutionNameIgnoreCaseContaining(filterExpression, pageRequest);
+				
+			case "acronym":
+				return networkRepository.findByAcronymIgnoreCaseContaining(filterExpression, pageRequest);
+				
+			default:
+				return networkRepository.findAll(pageRequest);
+				
+			}		
+		}
+		else
+			return networkRepository.findAll(pageRequest);
+		
+	}
+	
+	
 	
 	@ResponseBody
 	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
@@ -644,6 +741,20 @@ public class BackEndController {
 		public String acronym;
 		private Long   networkID;
 		private List<NetworkSnapshot> validSnapshots;
+	}
+	
+	@Getter
+	@Setter
+	class NetworksListResponse {	
+		
+	
+		public NetworksListResponse(List<NetworkInfo> networks) {
+			super();
+			this.networks = networks;
+		}
+		
+		
+		private List<NetworkInfo> networks;
 	}
 	
 	

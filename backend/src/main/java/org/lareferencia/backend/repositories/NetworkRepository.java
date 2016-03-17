@@ -16,7 +16,13 @@ package org.lareferencia.backend.repositories;
 import java.util.List;
 
 import org.lareferencia.backend.domain.Network;
+import org.lareferencia.backend.domain.OAIRecord;
+import org.lareferencia.backend.domain.RecordStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "network", collectionResourceRel="network")
@@ -24,4 +30,11 @@ public interface NetworkRepository extends JpaRepository<Network, Long> {
 	
 	  List<Network> findByPublishedOrderByNameAsc(boolean published);	  
 	  Network findByAcronym(String acronym);
+	    
+	  Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);  
+	  Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution, Pageable pageable);
+	  Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression, Pageable pageRequest);  
+
+	  
+	
 }

@@ -146,8 +146,23 @@
             
               <!-- .row -->
             <div class="row">
-                <div class="col-lg-12">
-                
+            	
+            	<div class="col-lg-8"></div>
+            	
+                <div class="col-lg-4">
+            		<!-- Large button group -->
+					<div class="btn-group">
+					  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Large button <span class="caret"></span>
+					  </button>
+					  <ul class="dropdown-menu">
+							<li><a href="javascript:sendActionToCheckedNetworks('START_HARVESTING');">Cosechar</a></li>
+						    <li><a href="javascript:setAllCheckboxesTo(false);">Deschequear</a></li>
+						    <li><a href="javascript:setAllCheckboxesTo(true);">Chequear</a></li>
+						    <li role="separator" class="divider"></li>
+						    <li><a href="#">Separated link</a></li>
+					  </ul>
+					</div>    
                  </div>
                 <!-- /.col-lg-12 -->
                 
@@ -252,7 +267,7 @@
      		}
 		
 		function renderCheckBox ( data, type, full, meta ) {
- 			return '<input type="checkbox" name=chk_"'+ data.networkID +'" value="false"/> ';		
+ 			return '<input type="checkbox" name="chk_'+ data.networkID +'" id="chk_'+ data.networkID +'" value="false"/> ';		
  		}	
 		
 		function renderLGKSnapshot ( data, type, full, meta ) {
@@ -322,9 +337,29 @@
         );
         
       /////////////////////////////////////////////////////////////////////////////////////////  
+      
+      
+      function setAllCheckboxesTo(value) {
+    	      $('input[id^="chk_"]').each(function( index ) {
+        		  $( this ).prop("checked",value); 
+        	  });
+      }
+      
+      function sendActionToCheckedNetworks(action) {	  
+    	  var ids = "";
+    	  $('input[id^="chk_"]').each(function( index ) {
+    		  if ( $( this ).prop("checked") ) { // solo para los checkbox activados
+    		    id = $( this ).prop("name").split('_')[1]; // se obtiene el id 
+    		  	ids += id + ','; // se concatena a las lista con un , al final
+    		  }
+    	  });
+    	  ids = ids.substring(0,ids.length-1); // limpieza de la ultima ,
+    	  
+    	  sendAction(action, ids);	  
+      }
         
-	  function sendAction(action, networkID) {
-		  $.rest.retrieve('/private/networkAction/' + action + '/' + networkID, 
+	  function sendAction(action, networkIDs) {
+		  $.rest.retrieve('/private/networkAction/' + action + '/' + networkIDs, 
 				  function(result) { 
 			  			alert('Acción: ' + action + ' lanzada');
 			  	   } ); 
@@ -333,7 +368,7 @@
   
         $(document).ready(function() {
         	
-        	$.rest.retrieve('/public/listNetworks', function(data) {
+        	$.rest.retrieve('/public/listAllNetworks', function(data) {
         		
         		 tableNetworks.rows().remove();
 	             tableNetworks.rows.add(data).draw();
