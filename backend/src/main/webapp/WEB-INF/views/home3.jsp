@@ -17,7 +17,7 @@
 
     <!-- Bootstrap Core CSS -->
     <link type="text/css" rel="stylesheet" href="<spring:url value="/static/css/bootstrap.min.css"/>" >
-           
+             
     <!-- HighLight CSS -->
     <link type="text/css" rel="stylesheet" href="<spring:url value="/static/css/jquery.highlight.css"/>" >
 
@@ -25,13 +25,13 @@
     <link type="text/css" rel="stylesheet" href="<spring:url value="/static/css/font-awesome.min.css"/>" >
     
     <!-- Ng Table CSS -->
-    <link rel="stylesheet" href="<spring:url value="/static/css/ng-table.min.css"/>" >
-        
-    <!-- Custom CSS -->
-    <link href="/static/diagnose/css/sb-admin-2.css" rel="stylesheet">
+    <link rel="stylesheet" href="<spring:url value="/static/css/ng-table.min.css"/>" >   
     
-    <!-- Bootstrap -->
-    <!--  script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script-->
+    <!-- JQuery JS -->
+    <script type="text/javascript" src="<spring:url value="/static/js/jquery-1.12.2.min.js"/>"></script>
+        
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="<spring:url value="/static/js/bootstrap.min.js"/>"></script>
     
     <!-- Angular js -->
 	<script type="text/javascript" src="<spring:url value="/static/js/angular.min.js"/>"></script>
@@ -76,53 +76,71 @@
 
 </head>
 
-<body ng-app="myApp">
+<body ng-app="myApp" ng-controller="mainController as main">
 
-<div>
-  <div ng-controller="mainController as main">
-  
-    <h2 class="page-header">Loading data - External array</h2>
-    <div class="bs-callout bs-callout-info">
-      <h4>Overview</h4>
-      <p>Hand <code>NgTableParams</code> a custom <code>getData</code> function that it will call to load data into the table. Typically you will use this option to load server-side data</p>
-    </div>
-    
-    
-    
-    <table ng-table="networksTable" class="table table-bordered table-striped table-condensed">
-      <tr ng-repeat="network in $data track by network.acronym">
+<div class="row" >
+	<div class="col-xs-12">
+		<h2 class="page-header">Pagination - basic example</h2>
       
-      	<td width="30" style="text-align: left" header="'ng-table/headers/checkbox.html'">
-        	<input type="checkbox" ng-model="networks.selected[network.acronym]" />
-        </td>
-      	<td data-title="'Acrónimo'"    filter="{acronym: 'text'}" sortable="'name'">{{network.acronym}}</td>
-        <td data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
-        <td data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
-        <td data-title="''">
-        	<ul>
-        		<li>{{network.lstSnapshotStatus}}</li>
-        		<li>{{network.lstSize}}</li>
-        		<li>{{network.lstTransformedSize}}</li>
-        		<li>{{network.lstValidSize}}</li>
-        		<li>{{network.lstSnapshotDate}}</li>
-        	</ul>
-        </td>
-        
-        <td ng-controller="NetworkActionsController">
-         	  <button class="btn btn-primary btn-sm" ng-click="addItem('test')">   <span class="glyphicon glyphicon-ok"></span>		</button>
-              <button class="btn btn-primary btn-sm" ng-click="main.cancel(network, networkForm)"> <span class="glyphicon glyphicon-remove"></span> </button>
-              <button class="btn btn-primary btn-sm" ng-click="openEditNetwork(network.networkID,networksTableRefreshCallback)"> 	   <span class="glyphicon glyphicon-pencil"></span>	</button>
-              <button class="btn btn-danger  btn-sm" ng-click="main.del(network)">			   <span class="glyphicon glyphicon-trash"></span>	</button> 
-        </td>
-      </tr>
-    </table>
-    <h2>{{networks.selected}}</h2>
-    
-    <script type="text/ng-template" id="ng-table/headers/checkbox.html">
-        <input type="checkbox" ng-model="networks.areAllSelected" id="select_all" name="filter-checkbox" value="" />
-    </script>
-    
-  </div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="bs-callout bs-callout-info">
+				<h4>Overview</h4>
+				<p><code>ngTable</code> supplies a pager to browse one "chunk" of data at a time. </p>
+				<p>Supply an initial paging configuration to the <code>NgTableParams</code> constructor call. As required, you can then change this configuration "on the fly".</p>
+				</div>
+			</div>
+	        <div ng-controller="NetworkActionsController" class="col-md-6">
+	          	<button type="button" class="btn btn-default btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">Crear una nueva red</button>
+		    
+			    <div class="btn-group" uib-dropdown>
+			      <button id="split-button" type="button" class="btn btn-danger">Action</button>
+			      <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+			        <span class="caret"></span>
+			        <span class="sr-only">Split button!</span>
+			      </button>
+			      <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+			        <li role="menuitem"><a href="#">Action</a></li>
+			        <li role="menuitem"><a href="#">Another action</a></li>
+			        <li role="menuitem"><a href="#">Something else here</a></li>
+			        <li class="divider"></li>
+			        <li role="menuitem"><a href="#">Separated link</a></li>
+			      </ul>
+			    </div>
+	        </div>
+		</div> <!-- End Row cabecera -->
+      
+		<div class="row">
+	      	<div class="col-xs-12">
+				<table ng-table="networksTable" class="table table-bordered table-striped table-condensed">
+					<tr ng-repeat="network in $data track by network.acronym">
+						<td width="30" style="text-align: left" header="'ng-table/headers/checkbox.html'">
+					    	<input type="checkbox" ng-model="networks.selected[network.acronym]" />
+					    </td>
+					  	<td data-title="'Acrónimo'"    filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
+					    <td data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
+					    <td data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
+					    <td data-title="''">
+					    	<ul>
+					    		<li>{{network.lstSnapshotStatus}}</li>
+					    		<li>{{network.lstSize}}</li>
+					    		<li>{{network.lstTransformedSize}}</li>
+					    		<li>{{network.lstValidSize}}</li>
+					    		<li>{{network.lstSnapshotDate}}</li>
+					    	</ul>
+					    </td>
+					    
+					    <td ng-controller="NetworkActionsController">
+					     	  <button class="btn btn-primary btn-sm" ng-click="addItem('test')">   <span class="glyphicon glyphicon-ok"></span>		</button>
+					          <button class="btn btn-primary btn-sm" ng-click="main.cancel(network, networkForm)"> <span class="glyphicon glyphicon-remove"></span> </button>
+					          <button class="btn btn-primary btn-sm" ng-click="openEditNetwork(false,network.networkID,networksTableRefreshCallback)"> 	   <span class="glyphicon glyphicon-pencil"></span>	</button>
+					          <button class="btn btn-danger  btn-sm" ng-click="main.del(network)">			   <span class="glyphicon glyphicon-trash"></span>	</button> 
+					    </td>
+				  </tr>
+				</table>
+	      	</div>    
+  		</div>
+	</div>
 </div>
 
 <!----------------- TEMPLATES ------------------------------ -->
@@ -145,8 +163,11 @@
 <div class="modal-footer">
 	<button class="btn btn-success" type="button" ng-click="ok()">Cerrar</button>
 	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar sin guardar</button>
-
 </div>
+</script>
+
+<script type="text/ng-template" id="ng-table/headers/checkbox.html">
+<input type="checkbox" ng-model="networks.areAllSelected" id="select_all" name="filter-checkbox" value="" />
 </script>
 
 <!----------------- FIN TEMPLATES -------------------------------->

@@ -8,7 +8,11 @@ var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services"
 
   function mainController($scope, TableSrv) {
 
-    $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', function(data) {return data.networks.lenght;});
+    $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', 
+    		function(data) {
+    			return data.totalElements;
+    		}
+    );
     $scope.networksTableRefreshCallback = function() { $scope.networksTable.reload(); };
     
     // Estado de las redes
@@ -22,6 +26,8 @@ var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services"
             }
         });
     });
+    
+   
     
   } /* fin controller */
   

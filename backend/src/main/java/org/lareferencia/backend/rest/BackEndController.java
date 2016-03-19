@@ -566,9 +566,8 @@ public class BackEndController {
 	@RequestMapping(value="/public/networks", method=RequestMethod.GET)
 	public ResponseEntity<NetworksListResponse> listNetworks( @RequestParam Map<String, String> params) {
 		
-		Page<Network> resultPage = findByParams(params);
 			
-		NetworksListResponse response = new NetworksListResponse( networkList2netinfoList(resultPage.getContent()) );
+		NetworksListResponse response = new NetworksListResponse( findByParams(params) );
 		return new ResponseEntity<NetworksListResponse>(response, HttpStatus.OK);
 	}
 	
@@ -747,14 +746,20 @@ public class BackEndController {
 	@Setter
 	class NetworksListResponse {	
 		
-	
-		public NetworksListResponse(List<NetworkInfo> networks) {
-			super();
-			this.networks = networks;
-		}
-		
-		
+		private long totalElements;
+		private int totalPages;
+		private int pageNumber;
+		private int pageSize;
 		private List<NetworkInfo> networks;
+
+		public NetworksListResponse(Page<Network> page) {
+			super();
+			this.networks = networkList2netinfoList(page.getContent());
+			this.totalElements = page.getTotalElements();
+			this.totalPages = page.getTotalPages();
+			this.pageNumber = page.getNumber();
+			this.pageSize = page.getSize();
+		}
 	}
 	
 	

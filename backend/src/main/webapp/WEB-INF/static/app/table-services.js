@@ -11,14 +11,17 @@ angular.module('table.services', ["ngTable", "ngResource"]).service('TableSrv', 
 		  
 		 var Api = $resource(url);
 		    
-		 return new NgTableParams({}, {
+		 return new NgTableParams({count:5}, {
 		      getData: function(params) {
 		    	  return Api.get(params.url()).$promise.then( 
 		    		  function(data) {
 		    			  params.total(count_function(data)); 
 		    			  return data.networks;
 		    		  });
-		      } /* fin getData */
+		      }, /* fin getData */
+		      //paginationMaxBlocks: 13,
+		      //paginationMinBlocks: 2,
+		 	
 		  }); 
 		    
 	  };  	
