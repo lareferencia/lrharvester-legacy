@@ -13,29 +13,47 @@
  ******************************************************************************/
 package org.lareferencia.backend.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
-import lombok.EqualsAndHashCode;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import org.springframework.hateoas.Identifiable;
-
-@MappedSuperclass
-@Getter
-@ToString
-@EqualsAndHashCode
-public class AbstractEntity implements Identifiable<Long> {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)	
-	private final Long id;
-
-	protected AbstractEntity() {
-		this.id = null;
-	}
+/**
+ * NetworkProperty Entity
+ */
+@Entity
+public class NetworkProperty extends AbstractEntity {
+	
+	@Getter
+    @Setter
+	@ManyToOne
+    private Property property;
+   
+    @Getter
+    @Setter
+    @ManyToOne
+    private Network network;
+    
+    @Getter
+    @Setter
+	@Column(nullable = false)
+    private Boolean value;
+	
+    @Transient 
+    public String getName() {	
+    	if (property != null)
+    		return property.getName();
+    	else return "";
+    };
+    
+    @Transient 
+    public String getDescription() {
+    	if (property != null)
+    	    	return property.getDescription();
+    	else return "";
+    };
 }

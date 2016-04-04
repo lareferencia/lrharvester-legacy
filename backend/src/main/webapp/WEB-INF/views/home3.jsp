@@ -151,18 +151,26 @@
 </div>
 
 <div class="modal-body">
-	<form name="networkEditForm" sf-schema="schema" sf-form="form" sf-model="model" ng-submit="onSubmit(networkEditForm)" >
-	</form>
 
-	<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
-	<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
-	<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+	<!-- TABSET -->
+ 	<uib-tabset active="activeJustified" justified="true">
+    	<uib-tab index="0" heading="Principal">
+			<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)" ></form>
+			<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
+			<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
+			<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+		</uib-tab>
+    	<uib-tab index="1" heading="Propiedades">
+			<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)" ></form>
+		</uib-tab>
+    	<uib-tab index="2" heading="Orígenes">Long Labeled Justified content</uib-tab>
+	</uib-tabset>
 
 </div>
 
 <div class="modal-footer">
-	<button class="btn btn-success" type="button" ng-click="ok()">Cerrar</button>
-	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar sin guardar</button>
+	<button class="btn btn-success" type="button" ng-click="onSubmit(networkEditForm)">Grabar</button>
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
 </div>
 </script>
 

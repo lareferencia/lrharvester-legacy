@@ -11,31 +11,22 @@
  * 
  * Este software fue desarrollado en el marco de la consultoría "Desarrollo e implementación de las soluciones - Prueba piloto del Componente III -Desarrollador para las herramientas de back-end" del proyecto “Estrategia Regional y Marco de Interoperabilidad y Gestión para una Red Federada Latinoamericana de Repositorios Institucionales de Documentación Científica” financiado por Banco Interamericano de Desarrollo (BID) y ejecutado por la Cooperación Latino Americana de Redes Avanzadas, CLARA.
  ******************************************************************************/
-package org.lareferencia.backend.domain;
+package org.lareferencia.backend.repositories;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import org.lareferencia.backend.domain.NetworkProperty;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+@RepositoryRestResource(path = "network_property", collectionResourceRel="property")
+public interface NetworkPropertyRepository extends JpaRepository<NetworkProperty, Long> { 
+	/*
+	  List<Network> findByPublishedOrderByNameAsc(boolean published);	  
+	  Network findByAcronym(String acronym);
+	    
+	  Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);  
+	  Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution, Pageable pageable);
+	  Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression, Pageable pageRequest);  
 
-import org.springframework.hateoas.Identifiable;
-
-@MappedSuperclass
-@Getter
-@ToString
-@EqualsAndHashCode
-public class AbstractEntity implements Identifiable<Long> {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)	
-	private final Long id;
-
-	protected AbstractEntity() {
-		this.id = null;
-	}
+	  */
+	
 }

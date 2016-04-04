@@ -105,7 +105,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	RecordValidationResultRepository validationResultRepository;
 	
-	//@Autowired
+	@Autowired
 	IValidator validator;
 	
 	@Autowired
@@ -163,13 +163,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		}
 		
 		
-		if ( network.isRunValidation() ) {
+		if ( network.mustRunValidation() ) {
 			
 			// Se cargan el validador y el transformador de acuerdo a la configuración de la red
 			try {
 				logMessage("Cargando validador y transformador  ..."); 
+				
+				System.out.println( validator.getRules() );
 	
-				validator = validationManager.createValidatorFromModel( network.getValidator() );
+				//validator = validationManager.createValidatorFromModel( network.getValidator() );
 				//transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 				
 			} catch (Exception e) {		
@@ -224,14 +226,14 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				// Si está publicada la red y es una red que se indexa
 				if ( network.isPublished() ) {
 					
-					if ( network.isRunIndexing() ) {
+					if ( network.mustRunVufindIndexing() ) {
 					
 					    logMessage("Comenzando indexación Vufind ...");
 					    logMessage( indexerManager.indexSnapshotInVufind(snapshot) );
 					} 
 						
 					
-					if ( network.isRunXOAI()) {
+					if ( network.mustRunXOAIIndexing()) {
 						
 						logMessage("Comenzando indexación XOAI ...");
 					    logMessage( indexerManager.indexSnapshotInXOAI(snapshot) );
@@ -318,14 +320,14 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						OAIRecord record = new OAIRecord(snapshot,metadata);
 						snapshot.incrementSize();
 						
-						if ( network.isRunValidation() ) {
+						if ( network.mustRunValidation() ) {
 						
 							// prevalidación
 							ValidatorResult validationResult = validator.validate(record);
 							
 							
 							// si corresponde lo transforma
-							if ( network.isRunTransformation() ) {
+							if ( network.mustRunTransformation() ) {
 								
 								// transforma
 								Boolean wasTransformed = transformer.transform(record, validationResult);

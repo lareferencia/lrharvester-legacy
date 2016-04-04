@@ -23,6 +23,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostPersist;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -59,7 +61,7 @@ public class Network extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private boolean published = false;
-	
+	/*
 	@Column(nullable = false)
 	private boolean runIndexing = true;
 	
@@ -74,8 +76,14 @@ public class Network extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private boolean runXOAI = false;
+	*/
 	
 	private String scheduleCronExpression;	
+	
+	@OneToMany(cascade=CascadeType.ALL)
+	@JoinColumn(name="network_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private Collection<NetworkProperty> properties = new LinkedHashSet<NetworkProperty>();;
 	
 	@Getter
 	@Setter
@@ -88,7 +96,46 @@ public class Network extends AbstractEntity {
 	@ManyToOne()
 	@JoinColumn(name="transformer_id", nullable=true)
 	private Transformer transformer;
+		
+	/***
+	 * Método de ayuda para lectura de propiedade booleanas
+	 * si la propieda existe devuelve su valor o
+	 * false en otro caso
+	 * @param propertyName nombre de la propiedad
+	 * @return
+	 ***/
+	@Transient
+	public Boolean getBooleanPropertyValue(String propertyName) {
+		
+		Boolean retValue = false;
+		
+		for (NetworkProperty property:  this.getProperties() )
+			if ( property.getName().equals(propertyName)  )
+				return property.getValue();
+		
+		return retValue;
+	}
+
 	
+	// Métodos abreviado para obtener el valor de propiedades manteniendo las interfaces anteriors
+	@Transient
+	public boolean mustRunValidation() {
+		return getBooleanPropertyValue(Property.RUN_VALIDATION);
+	}
 
+	@Transient
+	public boolean mustRunVufindIndexing() {
+		return getBooleanPropertyValue(Property.RUN_VUFIND_INDEXING);
+	}
 
+	@Transient
+	public boolean mustRunXOAIIndexing() {
+		return getBooleanPropertyValue(Property.RUN_XOAI_INDEXING);
+	}
+
+	@Transient
+	public boolean mustRunTransformation() {
+		return getBooleanPropertyValue(Property.RUN_TRANSFORMATION);
+	}
+	
 }

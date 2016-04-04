@@ -13,29 +13,36 @@
  ******************************************************************************/
 package org.lareferencia.backend.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import org.springframework.hateoas.Identifiable;
-
-@MappedSuperclass
+/**
+ * Property Entity
+ */
+@Entity
 @Getter
-@ToString
-@EqualsAndHashCode
-public class AbstractEntity implements Identifiable<Long> {
-
+@Setter
+public class Property {
+	
+	public static final String RUN_VUFIND_INDEXING = "RUN_VUFIND_INDEXING";
+	public static final String RUN_XOAI_INDEXING   = "RUN_XOAI_INDEXING";
+	public static final String RUN_VALIDATION      = "RUN_VALIDATION";
+	public static final String RUN_TRANSFORMATION  = "RUN_TRANSFORMATION";
+		
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)	
-	private final Long id;
+	@Column(nullable = false, unique = true)
+	private String id;
 
-	protected AbstractEntity() {
-		this.id = null;
-	}
+    @Transient 
+    public String getName() {
+    	return id;
+    };
+	
+	@Column
+	private String description;
 }
