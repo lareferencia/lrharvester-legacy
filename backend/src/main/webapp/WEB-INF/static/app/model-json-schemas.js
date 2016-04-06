@@ -43,5 +43,78 @@ angular.module('model.json.schemas', []).service('JSONFormSchemas',  function() 
 		
 	
 	this.network_properties_form = [ "*", { type: "submit", title: "Guardar cambios" } ];
+	
+    /** Datos de formulario de origenes **/
+	
+	this.origins_schema =
+	{
+			  "type": "object",
+			  "title": "Orígenes",
+			  "required": [
+			    "origins"
+			  ],
+			  "properties": {
+			    "origins": {
+			      "type": "array",
+			      "items": {
+			        "type": "object",
+			        "properties": {
+			          "name": {
+			            "title": "Nombre",
+			            "type": "string",
+			            "default": "Main"	
+			          },
+			          "uri": {
+			            "title": "URI",
+			            "type": "string",
+			            /*"pattern": "^\\S+@\\S+$",*/
+			            "description": "La URL del origen a cosechar"
+			          },
+			          "metadataPrefix": {
+			            "title": "MetadataPrefix",
+			            "type": "string",
+			            "enum": ["oai_dc"],
+			            "default": "oai_dc"
+			          },
+			         
+			        },
+			        "required": [
+			          "name",
+			          "uri",
+			          "metadataPrefix"
+			        ]
+			      }
+			    }
+			  }
+			};
+	
+	this.origins_form = [
+	  {
+	    "type": "help",
+	    "helpvalue": "<h4>Array Example</h4><p>Try adding a couple of forms, reorder by drag'n'drop.</p>"
+	  },
+	  {
+	    "key": "origins",
+	    "add": "Agregar",
+	    "style": {
+	      "add": "btn-success"
+	    },
+	    "items": [
+	      "origins[].name",
+	      "origins[].uri",
+	      "origins[].metadataPrefix"
+	    ]
+	  },
+	  {
+	    "type": "submit",
+	    "style": "btn-info",
+	    "title": "Guardar cambios"
+	  }
+	];
+	
+	
+	
+
+	
 
 });

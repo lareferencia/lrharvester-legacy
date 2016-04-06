@@ -77,15 +77,26 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
   
 	// schema del formulario de redes
 	$scope.network_schema = JSONFormSchemas.network_schema;
-  
+	
+	// schema del formulario de origenes
+	$scope.origins_schema = JSONFormSchemas.origins_schema;
+
 	// estructura del formulario de redes
 	$scope.network_form = JSONFormSchemas.network_form;
 	
-	
-	// estructura del formulario de redes
+	// estructura del formulario de propiedades de redes
 	$scope.np_form = JSONFormSchemas.network_properties_form;
 	
+	// estructura del formulario de origenes
+	$scope.origins_form = JSONFormSchemas.origins_form;
+
+	// datos formulario de propiedades de red
 	$scope.np_model = {};
+	
+	// datos formulario de origenes de datos
+	$scope.origins_model = {};
+
+	
 	
 	if ( !isNew ) { // si no es una red nueva 
 

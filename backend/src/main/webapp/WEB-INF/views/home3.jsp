@@ -153,7 +153,7 @@
 <div class="modal-body">
 
 	<!-- TABSET -->
- 	<uib-tabset active="activeJustified" justified="true">
+ 	<uib-tabset active="activeJustified" justified="true">0
     	<uib-tab index="0" heading="Principal">
 			<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)" ></form>
 			<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
@@ -163,7 +163,10 @@
     	<uib-tab index="1" heading="Propiedades">
 			<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)" ></form>
 		</uib-tab>
-    	<uib-tab index="2" heading="Orígenes">Long Labeled Justified content</uib-tab>
+    	<uib-tab index="2" heading="Orígenes">
+			<form name="originsEditForm" sf-schema="origins_schema" sf-form="origins_form" sf-model="origins_model" ng-submit="onSubmit(networkEditForm)" ></form>
+			<p>{{origins_model}}</p>
+		</uib-tab>
 	</uib-tabset>
 
 </div>
