@@ -1,4 +1,4 @@
-var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services", "table.services"]);
+var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services",, "table.services"]);
 
 (function() {
 
@@ -26,6 +26,7 @@ var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services"
             }
         });
     });
+    
     
    
     

@@ -1,31 +1,67 @@
-var BackendDataServiceModule = angular.module('data.services', ['spring-data-rest']);
+var BackendDataServiceModule = angular.module('data.services', ['spring-data-rest', 'rest.url.helper']);
 
-BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
+BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", "RestURLHelper", 
      
-    function($http, SpringDataRestAdapter) {
+    function($http, SpringDataRestAdapter, RestURLHelper) {
 	
-	 var linksToProcess = ['properties','property','networkProperty']; 
+	 var linksToProcess = ['properties','property','networkProperty','origins','origin']; 
 	
 
 	 var add_methods = function(processedResponse) {
-		
-		  
-		  /*  una funcion para asociar objetos al item */
-		 processedResponse.associate = function(member_name, uri_list, success_callback, fail_callback) { 
+		 
+		 
+		 /* Reload */
+		  processedResponse.reload = function(success_callback) {
+			  
+			  var httpPromise = $http.get( RestURLHelper.urlFromEntity(processedResponse) );  
+			  
+			  SpringDataRestAdapter.process(httpPromise, linksToProcess, true).then( function (item) {
+				   
+				  processedResponse = add_methods(item);
+				  
+			      /* devuelve el item creado al callback */
+				  success_callback(processedResponse);
+			             
+			  });
+			
+		  };
+		 
+		 
+		 /*  una funcion para asociar objetos al item */
+		  processedResponse.associate = function(member_name, uri_list, success_callback, fail_callback) { 
+			  
+			  	// al asociar un objeto debe recargarse el objeto desde el ww
+			  	var intercept_success_callback = function(data) {
+			  		processedResponse.reload(success_callback);
+			  	};
+			  	
 				var resource = processedResponse._resources(member_name,{}, {associate: { method: 'PUT', headers : {'Content-Type' : 'text/uri-list'}}} );
-				resource.associate(uri_list, success_callback, fail_callback); 
+				resource.associate(uri_list, intercept_success_callback, fail_callback); 
+		  };
+		
+		  	  
+		  /*  una funcion para agregar objetos a una colección miembro */
+		  processedResponse.addToCollection = function(collection_name, uri_list, success_callback, fail_callback) { 
+			    // al agregar a una colección debe recargarse el objeto desde el ww
+			  	var intercept_success_callback = function(data) {
+			  		processedResponse.reload(success_callback);
+			  	};
+			  
+				var resource = processedResponse._resources(collection_name,{}, {addToCollection: { method: 'POST', headers : {'Content-Type' : 'text/uri-list'}}} );
+				resource.addToCollection(uri_list, intercept_success_callback, fail_callback); 
 		  };
 		  
-		  /* una funcion para obtener objetos asociados a un miembro */
-		  /*processedResponse.get_member = function(member_name, success_callback, fail_callback) { 
-				var resource = processedResponse._resources(member_name);
-				resource.get(success_callback,fail_callback); 
-		  };*/
 		  
 		  /* una funcion para hacer un update del item  */
 		  processedResponse.update = function(update_callback, fail_callback) {  
 			  var resource = processedResponse._resources('self',{}, {update: { method: 'PUT'}} );
 			  resource.update(processedResponse, update_callback, fail_callback); 
+		  };
+		  
+		  /* una funcion para hacer un delete item  */
+		  processedResponse.remove = function(delete_callback, fail_callback) {  	  
+			  var resource = processedResponse._resources('self',{}, {remove: { method: 'DELETE'}} );
+			  resource.remove(delete_callback, delete_callback); 
 		  };
 		  
 		  
@@ -37,7 +73,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter",
 				  return processedResponse._embeddedItems;
 			  else
 				  return [];
-		  }
+		  };
 		  
 		  /**
 		   * Obtención de los items de un link, esta función depende del procesamiento realizado recursivamente sobre processedResponse con add_methods
@@ -52,7 +88,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter",
 			  }
 			  else
 				  return null;
-		  }
+		  };
 		  
 		  
 		  // para cada link para procesar

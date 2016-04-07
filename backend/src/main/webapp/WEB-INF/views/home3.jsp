@@ -63,6 +63,7 @@
 	<script type="text/javascript" src="<spring:url value="/static/app/table-services.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/rest-url-helper.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/data-services.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/oai-services.js"/>"></script>	
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-forms-modals.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/main-controller.js"/>" ></script>
 	
@@ -94,17 +95,20 @@
 	          	<button type="button" class="btn btn-default btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">Crear una nueva red</button>
 		    
 			    <div class="btn-group" uib-dropdown>
-			      <button id="split-button" type="button" class="btn btn-danger">Action</button>
+			      <button id="split-button" type="button" class="btn btn-danger">Acciones</button>
 			      <button type="button" class="btn btn-danger" uib-dropdown-toggle>
 			        <span class="caret"></span>
 			        <span class="sr-only">Split button!</span>
 			      </button>
 			      <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
-			        <li role="menuitem"><a href="#">Action</a></li>
-			        <li role="menuitem"><a href="#">Another action</a></li>
-			        <li role="menuitem"><a href="#">Something else here</a></li>
+			        <li role="menuitem"><a href="#">Cosechar</a></li>
+			        <li role="menuitem"><a href="#">Indexar Vufind</a></li>
+			        <li role="menuitem"><a href="#">Indexar XOAI</a></li>
 			        <li class="divider"></li>
-			        <li role="menuitem"><a href="#">Separated link</a></li>
+			        <li role="menuitem"><a href="#">Retirar de Vufind</a></li>
+			        <li role="menuitem"><a href="#">Retirar de XOAI</a></li>
+			        <li class="divider"></li>
+			        <li role="menuitem"><a href="#">Borrar</a></li>  	        
 			      </ul>
 			    </div>
 	        </div>
@@ -153,7 +157,7 @@
 <div class="modal-body">
 
 	<!-- TABSET -->
- 	<uib-tabset active="activeJustified" justified="true">0
+ 	<uib-tabset active="activeJustified" justified="true">
     	<uib-tab index="0" heading="Principal">
 			<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)" ></form>
 			<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
@@ -164,8 +168,34 @@
 			<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)" ></form>
 		</uib-tab>
     	<uib-tab index="2" heading="Orígenes">
-			<form name="originsEditForm" sf-schema="origins_schema" sf-form="origins_form" sf-model="origins_model" ng-submit="onSubmit(networkEditForm)" ></form>
-			<p>{{origins_model}}</p>
+				<div ng-controller="OriginActionsController">
+				<div class="row" >
+					<div class="col-xs-12">
+	          			<button type="button" class="btn btn-default btn-sm" ng-click="openEditOrigin(true, network_model, originsTableRefreshCallback)">Nuevo Origen</button>
+   					</div>    
+  				</div>
+				<div class="row" >
+					<div class="col-xs-12">
+						<table ng-table="originsTable" class="table table-bordered table-striped table-condensed">
+							<tr ng-repeat="origin in $data track by origin.name">
+					
+					  			<td data-title="'Nombre'">{{origin.name}}</td>
+					    		<td data-title="'URI'">{{origin.uri}}</td>
+					    		<td data-title="'MetadataPrefix'">{{origin.metadataPrefix}}</td>
+					   	    
+					    		<td>
+					          		<button class="btn btn-primary btn-sm" ng-click="openEditOrigin(false,origin,originsTableRefreshCallback)"> 	   
+										<span class="glyphicon glyphicon-pencil"></span>	
+									</button>
+					          		<button class="btn btn-danger  btn-sm" ng-click="deleteOrigin(network_model,origin,originsTableRefreshCallback)">
+										<span class="glyphicon glyphicon-trash"></span>	
+									</button> 
+					    		</td>
+				  			</tr>
+						</table>
+					</div>    
+  				</div>
+				</div>
 		</uib-tab>
 	</uib-tabset>
 
@@ -177,9 +207,32 @@
 </div>
 </script>
 
+<script type="text/ng-template" id="origin-edit-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Editando: {{origin_model.name}}</h3>
+</div>
+
+<div class="modal-body">
+
+	<form name="originEditForm" sf-schema="origin_schema" sf-form="origin_form" sf-model="origin_model" ng-submit="onSubmit(originEditForm)"></form>
+	<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
+	<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
+	<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+
+</div>
+
+<div class="modal-footer">
+	<button class="btn btn-success" type="button" ng-click="onSubmit(originEditForm)">Grabar</button>
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
+
+
 <script type="text/ng-template" id="ng-table/headers/checkbox.html">
 <input type="checkbox" ng-model="networks.areAllSelected" id="select_all" name="filter-checkbox" value="" />
 </script>
+
+
 
 <!----------------- FIN TEMPLATES -------------------------------->
 

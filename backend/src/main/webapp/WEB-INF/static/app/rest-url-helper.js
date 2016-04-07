@@ -22,15 +22,11 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/network';	
 	  }; 
 	  
+	  this.originURL = function () {
+		  return '/rest/origin';	
+	  }; 
+	  
 	  this.urlFromEntity = function (entity) {
 		  return entity._links.self.href;
 	  }; 
-	  
-	  
-	  
-	 
-	  
-	  
-    
-	
 }]);
