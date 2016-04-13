@@ -23,8 +23,6 @@ import lombok.ToString;
 @Setter
 public class ContentLengthFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 	
-	public static String RULE_ID="ContentLengthValidationRule";
-	public static String RULE_NAME="ContentLengthValidationRule";
 	
 	@JsonProperty("minLength")
 	private Integer minLength = 0;

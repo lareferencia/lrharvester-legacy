@@ -105,7 +105,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 	@Autowired
 	RecordValidationResultRepository validationResultRepository;
 	
-	@Autowired
+	//@Autowired
 	IValidator validator;
 	
 	@Autowired
@@ -169,9 +169,19 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 			try {
 				logMessage("Cargando validador y transformador  ..."); 
 				
-				System.out.println( validator.getRules() );
+				/*System.out.println( validator.getRules() );
+				
+				Validator validatorModel = validatorManager.createModelFromValidator(validator, "test", "test");
+				
+				validatorRepository.save(validatorModel);
+				validatorRepository.flush();
+						
+				network.setValidator(validatorModel);
+				networkRepository.save(network);
+				networkRepository.flush();*/
+						
 	
-				//validator = validationManager.createValidatorFromModel( network.getValidator() );
+				validator = validationManager.createValidatorFromModel( network.getValidator() );
 				//transformer = validationManager.createTransformerFromModel( network.getTransformer() );
 				
 			} catch (Exception e) {		
@@ -183,14 +193,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 		}
 		
 		/**
-		Validator validatorModel = validatorManager.createModelFromValidator(validator, "test", "test");
-		
-		validatorRepository.save(validatorModel);
-		validatorRepository.flush();
-				
-		network.setValidator(validatorModel);
-		networkRepository.save(network);
-		networkRepository.flush();
+	
 		*/
 		
 		// Se registra el incicio de tareas en el manager

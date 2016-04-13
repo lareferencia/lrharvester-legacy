@@ -27,10 +27,6 @@ public class RegexFieldContentValidatorRule extends AbstractValidatorFieldConten
 	
 	private static final int MAX_EXPECTED_LENGTH = 255;
 
-	public static String RULE_ID = "ContentRegexValidationRule";
-	public static String RULE_NAME = "ContentRegexValidationRule";
-
-
 	@Getter
 	@JsonProperty("name")
 	private String regexString;

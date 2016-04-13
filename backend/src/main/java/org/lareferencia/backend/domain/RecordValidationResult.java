@@ -81,7 +81,6 @@ public class RecordValidationResult {
     	validRulesID = new ArrayList<String>();
     	invalidRulesID = new ArrayList<String>();
 
-    	
     	id = record.getId().toString();
     	identifier = record.getIdentifier();
     	origin = record.getMetadata().getOrigin();

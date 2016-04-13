@@ -42,7 +42,6 @@ public abstract class AbstractValidatorRule implements IValidatorRule {
 	@JsonProperty("quantifier")
 	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
 	
-
 	public AbstractValidatorRule() {
 		this.name = "EMPTY";
 		this.mandatory = false;

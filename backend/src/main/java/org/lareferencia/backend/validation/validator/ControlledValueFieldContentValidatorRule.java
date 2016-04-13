@@ -34,9 +34,6 @@ public class ControlledValueFieldContentValidatorRule extends AbstractValidatorF
 	
 	private static final int MAX_PRINTED_LINES = 25;
 	private static final int MAX_EXPECTED_LENGTH = 255;
-	
-	public static String RULE_ID="ControlledValueValidationRule";
-	public static String RULE_NAME="ControlledValueValidationRule";	
 
 	@JsonProperty("controlledValues")
 	private List<String> controlledValues;
