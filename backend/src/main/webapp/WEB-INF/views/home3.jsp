@@ -27,6 +27,9 @@
     <!-- Ng Table CSS -->
     <link rel="stylesheet" href="<spring:url value="/static/css/ng-table.min.css"/>" >   
     
+    <!-- App CSS -->
+    <link type="text/css" rel="stylesheet" href="<spring:url value="/static/app/css/styles.css"/>" >
+       
     <!-- JQuery JS -->
     <script type="text/javascript" src="<spring:url value="/static/js/jquery-1.12.2.min.js"/>"></script>
         
@@ -60,11 +63,17 @@
    
 	<!-- Controladores Angular de la aplicación -->
 	<script type="text/javascript" src="<spring:url value="/static/app/model-json-schemas.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/validation-json-schemas.js"/>"></script>
+	
 	<script type="text/javascript" src="<spring:url value="/static/app/table-services.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/rest-url-helper.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/data-services.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/oai-services.js"/>"></script>	
+	
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-forms-modals.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/ui-validation-modals.js"/>"></script>
+	
+	
 	<script type="text/javascript" src="<spring:url value="/static/app/main-controller.js"/>" ></script>
 	
 
@@ -79,24 +88,25 @@
 
 <body ng-app="myApp" ng-controller="mainController as main">
 
+<div id="wrapper">
 <div class="row" >
 	<div class="col-xs-12">
-		<h2 class="page-header">Pagination - basic example</h2>
+		<h2 class="page-header">Administración de cosecha, transformación e indexación</h2>
       
 		<div class="row">
-			<div class="col-md-6">
-				<div class="bs-callout bs-callout-info">
-				<h4>Overview</h4>
-				<p><code>ngTable</code> supplies a pager to browse one "chunk" of data at a time. </p>
-				<p>Supply an initial paging configuration to the <code>NgTableParams</code> constructor call. As required, you can then change this configuration "on the fly".</p>
-				</div>
-			</div>
-	        <div ng-controller="NetworkActionsController" class="col-md-6">
-	          	<button type="button" class="btn btn-default btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">Crear una nueva red</button>
+		
+			<div ng-controller="NetworkActionsController" class="col-md-6">
+				<h5>Acciones colectivas</h5>
+				<p>Puede ejecutar estas acciones sobre un grupo de repositorios seleccionados utilizando los checkbox de la tabla.</p>
+		
+	          	<button type="button" class="btn btn-primary btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Crear una nueva red
+	          	</button>
 		    
 			    <div class="btn-group" uib-dropdown>
-			      <button id="split-button" type="button" class="btn btn-danger">Acciones</button>
-			      <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+			      <button id="split-button" type="button" class="btn btn-sm btn-success">Acciones</button>
+			      <button type="button" class="btn btn-sm btn-success" uib-dropdown-toggle>
 			        <span class="caret"></span>
 			        <span class="sr-only">Split button!</span>
 			      </button>
@@ -112,8 +122,25 @@
 			      </ul>
 			    </div>
 	        </div>
-		</div> <!-- End Row cabecera -->
-      
+			<div ng-controller="ValidationController" class="col-md-6">
+			
+				<h5>Edición de Validadores y Tranformadores</h5>
+				<p></p>
+		
+	          	<button type="button" class="btn btn-primary btn-sm" ng-click="openValidatorsList()">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Validadores
+	          	</button>
+	          	<button type="button" class="btn btn-primary btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Transformadores
+	          	</button>
+				
+			</div>
+
+		</div> 
+		<!-- End Row cabecera -->
+        <div class="row"><p></p></div>
 		<div class="row">
 	      	<div class="col-xs-12">
 				<table ng-table="networksTable" class="table table-bordered table-striped table-condensed">
@@ -124,21 +151,46 @@
 					  	<td data-title="'Acrónimo'"    filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
 					    <td data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
 					    <td data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
-					    <td data-title="''">
-					    	<ul>
-					    		<li>{{network.lstSnapshotStatus}}</li>
-					    		<li>{{network.lstSize}}</li>
-					    		<li>{{network.lstTransformedSize}}</li>
-					    		<li>{{network.lstValidSize}}</li>
-					    		<li>{{network.lstSnapshotDate}}</li>
-					    	</ul>
+					    <td data-title="'Última cosecha'">
+	                                <h5>{{network.lstSnapshotStatus}}</h5>
+	                                <div class="small">{{network.lstSize}} | V: {{network.lstValidSize}} | T: {{network.lstTransformedSize}} </div>
+	                                <div class="small"><i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lstSnapshotDate}}</span>  </div>
+					    </td>
+					    <td data-title="'Última cosecha exitosa'">
+	                                <h5>ÚLTIMO VÁLIDO</h5>
+	                                <div class="small">{{network.lgkSize}} | V: {{network.lgkValidSize}} | T: {{network.lgkTransformedSize}} </div>
+	                                <div class="small"><i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>  </div>
 					    </td>
 					    
 					    <td ng-controller="NetworkActionsController">
-					     	  <button class="btn btn-primary btn-sm" ng-click="addItem('test')">   <span class="glyphicon glyphicon-ok"></span>		</button>
-					          <button class="btn btn-primary btn-sm" ng-click="main.cancel(network, networkForm)"> <span class="glyphicon glyphicon-remove"></span> </button>
-					          <button class="btn btn-primary btn-sm" ng-click="openEditNetwork(false,network.networkID,networksTableRefreshCallback)"> 	   <span class="glyphicon glyphicon-pencil"></span>	</button>
-					          <button class="btn btn-danger  btn-sm" ng-click="main.del(network)">			   <span class="glyphicon glyphicon-trash"></span>	</button> 
+					    	<p>
+								<div class="btn-group" uib-dropdown>
+								      <button id="split-button" type="button" class="btn btn-sm btn-success">Acciones</button>
+								      <button type="button" class="btn btn-sm btn-success" uib-dropdown-toggle>
+								        <span class="caret"></span>
+								        <span class="sr-only">Split button!</span>
+								      </button>
+								      <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+								        <li role="menuitem"><a href="#">Cosechar</a></li>
+								        <li role="menuitem"><a href="#">Detener cosecha </a></li>
+								       	<li class="divider"></li>
+								        <li role="menuitem"><a href="#">Indexar Vufind</a></li>
+								        <li role="menuitem"><a href="#">Indexar XOAI</a></li>
+								        <li class="divider"></li>
+								        <li role="menuitem"><a href="#">Retirar de Vufind</a></li>
+								        <li role="menuitem"><a href="#">Retirar de XOAI</a></li>
+								        <li class="divider"></li>
+								      </ul>
+								</div>
+							</p>
+							<p>
+						        <button class="btn btn-primary btn-sm" ng-click="openEditNetwork(false,network.networkID,networksTableRefreshCallback)"> 	   
+						        	<span class="glyphicon glyphicon-pencil"></span>	
+						        </button>
+						        <button class="btn btn-danger  btn-sm" ng-click="main.del(network)">
+						        	<span class="glyphicon glyphicon-trash"></span>	
+						        </button> 
+						   	</p>        
 					    </td>
 				  </tr>
 				</table>
@@ -146,7 +198,7 @@
   		</div>
 	</div>
 </div>
-
+</div>
 <!----------------- TEMPLATES ------------------------------ -->
 
 <script type="text/ng-template" id="network-edit-tpl.html">
@@ -211,7 +263,6 @@
 <div class="modal-header">
 	<h3 class="modal-title">Editando: {{origin_model.name}}</h3>
 </div>
-
 <div class="modal-body">
 
 	<form name="originEditForm" sf-schema="origin_schema" sf-form="origin_form" sf-model="origin_model" ng-submit="onSubmit(originEditForm)"></form>
@@ -220,9 +271,81 @@
 	<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
 
 </div>
-
 <div class="modal-footer">
 	<button class="btn btn-success" type="button" ng-click="onSubmit(originEditForm)">Grabar</button>
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
+
+
+<script type="text/ng-template" id="validators-list-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Listado de validadores</h3>
+</div>
+<div class="modal-body" ng-controller="ValidationController">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<button type="button" class="btn btn-default btn-sm"
+					ng-click="openEditOrigin(true, network_model, originsTableRefreshCallback)">Agregar
+					Validador</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<table ng-table="validatorsTable"
+					class="table table-bordered table-striped table-condensed">
+					<tr ng-repeat="validator in $data track by validator.name">
+
+						<td data-title="'Nombre'">{{validator.name}}</td>
+						<td data-title="'Descripción'">{{validator.description}}</td>
+						<td>
+					        <button class="btn btn-primary btn-sm" ng-click="openEditValidator(false,validator,validatorsTableRefreshCallback)"> 	   
+								<span class="glyphicon glyphicon-pencil"></span>	
+							</button>
+						</td>
+
+					</tr>
+				</table>
+			</div>
+		</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
+
+<script type="text/ng-template" id="validator-edit-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Editando: {{validator_model.name}}</h3>
+</div>
+<div class="modal-body" ng-controller="ValidationController">
+	<table ng-table="validatorRulesTable"
+		class="table table-bordered table-striped table-condensed">
+			<tr ng-repeat="vrule in $data track by vrule.name">
+				<td data-title="'Nombre'">{{vrule.name}}</td>
+				<td data-title="'Descripción'">{{vrule.description}}</td>
+				<td>
+					<button class="btn btn-primary btn-sm" ng-click="openEditValidatorRule(false,vrule,validatorRulesTableRefreshCallback)"> 	   
+						<span class="glyphicon glyphicon-pencil"></span>	
+					</button>
+				</td>
+			</tr>
+	</table>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
+
+<script type="text/ng-template" id="rule-edit-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Editando: {{rule_model.name}}</h3>
+</div>
+<div class="modal-body">
+	<form name="ruleEditForm" sf-schema="rule_schema" sf-form="rule_form" sf-model="rule_model" ng-submit="onSubmit(ruleEditForm)"></form>
+</div>
+<div class="modal-footer">
 	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
 </div>
 </script>

@@ -4,7 +4,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
      
     function($http, SpringDataRestAdapter, RestURLHelper) {
 	
-	 var linksToProcess = ['properties','property','networkProperty','origins','origin']; 
+	 var linksToProcess = ['properties','property','networkProperty','origins','origin','rules']; 
 	
 
 	 var add_methods = function(processedResponse) {

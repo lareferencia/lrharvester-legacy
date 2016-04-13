@@ -1,31 +1,6 @@
 var ufm_module = angular.module('ui.forms.modals', 
 		['ngAnimate', 'ui.bootstrap', 'schemaForm', 'data.services', 'table.services', 'model.json.schemas', 'rest.url.helper']);
 
-
-ufm_module.controller('DropdownCtrl', function ($scope, $log) {
-	  $scope.items = [
-	    'The first choice!',
-	    'And another choice for you.',
-	    'but wait! A third!'
-	  ];
-
-	  $scope.status = {
-	    isopen: false
-	  };
-
-	  $scope.toggled = function(open) {
-	    $log.log('Dropdown is now: ', open);
-	  };
-
-	  $scope.toggleDropdown = function($event) {
-	    $event.preventDefault();
-	    $event.stopPropagation();
-	    $scope.status.isopen = !$scope.status.isopen;
-	  };
-
-	  $scope.appendToEl = angular.element(document.querySelector('#dropdown-long-content'));
-});
-
 ufm_module.controller('NetworkActionsController', 
 function ($scope, $uibModal) {
 

@@ -16,19 +16,26 @@ angular
 							 * logitud de los datos
 							 */
 							this.createNgTableFromWsURL = function(url,
-									count_function) {
+									data_function, count_function, initialPageNumber, countsArray) {
 
+								
+								if (initialPageNumber == null)
+									initialPageNumber = 1;
+								
+								if (countsArray == null)
+									countsArray = [10, 25, 50, 100];
+								
 								var Api = $resource(url);
 
 								return new NgTableParams(
-										{},
+										{page:initialPageNumber},
 										{
+											counts : countsArray,
 											getData : function(params) {
 												return Api.get(params.url()).$promise
 														.then(function(data) {
-															params
-																	.total(count_function(data));
-															return data.networks;
+															params.total(count_function(data));
+															return data_function(data) ;
 														});
 											}, /* fin getData */
 										// paginationMaxBlocks: 13,

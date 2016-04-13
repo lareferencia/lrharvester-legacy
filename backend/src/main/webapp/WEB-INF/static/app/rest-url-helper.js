@@ -22,6 +22,10 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/network';	
 	  }; 
 	  
+	  this.validatorURL = function () {
+		  return '/rest/validator';	
+	  }; 
+	  
 	  this.originURL = function () {
 		  return '/rest/origin';	
 	  }; 
@@ -29,4 +33,8 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 	  this.urlFromEntity = function (entity) {
 		  return entity._links.self.href;
 	  }; 
+	  
+	  this.networkActionURL = function (action, networkID) {
+		  return "/private/networkAction/" + action + "/" + networkID;  
+	  };
 }]);

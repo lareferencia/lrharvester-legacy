@@ -1,4 +1,4 @@
-var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services",, "table.services"]);
+var app = angular.module("myApp", ["ngTable", "ui.forms.modals","ui.validation.modals", "data.services",, "table.services"]);
 
 (function() {
 
@@ -9,10 +9,11 @@ var app = angular.module("myApp", ["ngTable", "ui.forms.modals", "data.services"
   function mainController($scope, TableSrv) {
 
     $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', 
-    		function(data) {
-    			return data.totalElements;
-    		}
+    	function(data) { return data.networks;},
+    	function(data) { return data.totalElements; },
+    	1
     );
+    
     $scope.networksTableRefreshCallback = function() { $scope.networksTable.reload(); };
     
     // Estado de las redes
