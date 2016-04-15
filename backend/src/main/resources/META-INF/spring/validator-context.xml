@@ -59,6 +59,8 @@
         		<bean class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule"></bean>
         		<bean class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule"></bean>
         		<bean class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule"></bean>
+        		<bean class="org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule"></bean>
+        		
         	</list>
         </property>
     </bean>

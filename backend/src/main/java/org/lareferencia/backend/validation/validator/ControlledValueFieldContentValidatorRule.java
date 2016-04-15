@@ -13,30 +13,22 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.validator;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Getter
 @Setter
 public class ControlledValueFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 	
-	private static final int MAX_PRINTED_LINES = 25;
 	private static final int MAX_EXPECTED_LENGTH = 255;
 
-	@JsonProperty("controlledValues")
-	private List<String> controlledValues;
+	protected List<String> controlledValues;
 	
 	public ControlledValueFieldContentValidatorRule() {
 		super();
@@ -60,77 +52,12 @@ public class ControlledValueFieldContentValidatorRule extends AbstractValidatorF
 		return result;	
 	}
 	
-	
-	public void setControlledValuesFromCsvString(String csvString) {
-	    	
-    	System.out.println("\n\nCargando validador: valores controlados desde cadena CSV");
-    	
-		String[] values = csvString.split(";;");
-
-	    for(int i=0; i<values.length; i++) {
-        	
-        	this.controlledValues.add( values[i] );
-        	
-        	if ( i < MAX_PRINTED_LINES )
-        		System.out.println( values[i] );
-        	else
-        		System.out.print(".");
-        }
-        	        
-    	System.out.println("\nFin Carga validador: valores controlados desde cadena CSV"); 
-	}
-
-	public void setControlledValuesFileName(String filename) {
-		
-	    try {
-	    	
-	    	System.out.println("\n\nCargando validador: valores controlados: " + filename);
-	    	
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
-	    	
-	        String line = br.readLine();
-	        
-	        int lineNumber = 0;
-
-	        while (line != null) {
-	        	
-	        	this.controlledValues.add(line);
-	        	
-	        	if ( lineNumber++ < MAX_PRINTED_LINES )
-	        		System.out.println( filename + " : " + line);
-	        	else
-	        		System.out.print(".");
-
-	        	
-	            line = br.readLine();
-	        }
-	        
-	        br.close();
-	        
-	    	System.out.println("\nFin Carga validador: valores controlados: " + filename + "\n\n");
-	  	  
-	    }
-	    catch  ( FileNotFoundException e ) {
-	    	System.err.println("!!!!!! No se encontró el archivo de valores controlados:" + filename);	   
-	    	e.printStackTrace();
-	    } 
-	    catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	@Override
 	public String toString() {
 		return "ControlledValueContentValidationRule [controlledValues="
-				+ controlledValues + ", name=" + name + ", description="
-				+ description + ", mandatory=" + mandatory + ", quantifier="
+				+ controlledValues + ", id=" + ruleId + ", mandatory=" + mandatory + ", quantifier="
 				+ quantifier + "]";
 	}
-
-
-
-
-	
 	
 }

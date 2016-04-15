@@ -20,14 +20,8 @@ public interface IValidatorRule {
 
 	public ValidatorRuleResult validate(OAIRecord record);
 	
-	public Long    getID();
-	public void    setID(Long id);
-	
-	public String  getName();
-	public void    setName(String name);
-	
-	public String  getDescription();
-	public void setDescription(String desc);
+	public Long    getRuleId();
+	public void    setRuleId(Long id);
 	
 	public Boolean getMandatory();
 	public void setMandatory(Boolean mandatory);

@@ -34,7 +34,11 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return entity._links.self.href;
 	  }; 
 	  
-	  this.networkActionURL = function (action, networkID) {
-		  return "/private/networkAction/" + action + "/" + networkID;  
+	  this.networkActionURL = function (action, networkIDs) {
+		  
+		  var idsString = networkIDs;
+		  
+		  
+		  return "/private/networkAction/" + action + "/" + idsString;  
 	  };
 }]);

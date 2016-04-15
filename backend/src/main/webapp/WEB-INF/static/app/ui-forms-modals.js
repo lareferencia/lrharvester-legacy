@@ -2,7 +2,18 @@ var ufm_module = angular.module('ui.forms.modals',
 		['ngAnimate', 'ui.bootstrap', 'schemaForm', 'data.services', 'table.services', 'model.json.schemas', 'rest.url.helper']);
 
 ufm_module.controller('NetworkActionsController', 
-function ($scope, $uibModal) {
+function ($scope, $uibModal, RestURLHelper, DataSrv) {
+	
+	
+  /**
+   * Ejecuta una acción de red sobre una o más ids de red
+   * @param Action
+   * @param networkID or networkList
+   */	
+   $scope.executeNetworkAction = function (action, networkIDs, success_callback) {
+	   DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { alert("Error en la llamada a networkAction");} )	  
+   };
+	
 
   /** 
    * openEditNetwork: Apertura de modal de edición de Network 

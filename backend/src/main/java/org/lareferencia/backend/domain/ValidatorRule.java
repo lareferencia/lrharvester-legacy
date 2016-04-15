@@ -39,9 +39,6 @@ public class ValidatorRule extends AbstractEntity {
 	@Column(nullable = true)
 	private String description;
 	
-	@Column(nullable = true)
-	private boolean mandatory;
-	
 	@Type(type="org.hibernate.type.StringClobType")
 	@JsonIgnore
 	private String JSONSerialization;

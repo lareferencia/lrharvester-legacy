@@ -28,13 +28,7 @@ import lombok.Setter;
 public abstract class AbstractValidatorRule implements IValidatorRule {
 	
 	@JsonIgnore
-	protected Long ID;
-	
-	@JsonProperty("name")
-	protected String  name;
-	
-	@JsonProperty("description")
-	protected String  description;
+	protected Long ruleId;
 	
 	@JsonProperty("mandatory")
 	protected Boolean mandatory = false;
@@ -43,7 +37,6 @@ public abstract class AbstractValidatorRule implements IValidatorRule {
 	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
 	
 	public AbstractValidatorRule() {
-		this.name = "EMPTY";
 		this.mandatory = false;
 		this.quantifier = QuantifierValues.ONE_OR_MORE;
 	};

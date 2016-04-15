@@ -115,6 +115,7 @@
 			        <li role="menuitem"><a href="#">Indexar Vufind</a></li>
 			        <li role="menuitem"><a href="#">Indexar XOAI</a></li>
 			        <li class="divider"></li>
+			        <li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
 			        <li role="menuitem"><a href="#">Retirar de Vufind</a></li>
 			        <li role="menuitem"><a href="#">Retirar de XOAI</a></li>
 			        <li class="divider"></li>
@@ -157,9 +158,16 @@
 	                                <div class="small"><i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lstSnapshotDate}}</span>  </div>
 					    </td>
 					    <td data-title="'Última cosecha exitosa'">
-	                                <h5>ÚLTIMO VÁLIDO</h5>
-	                                <div class="small">{{network.lgkSize}} | V: {{network.lgkValidSize}} | T: {{network.lgkTransformedSize}} </div>
-	                                <div class="small"><i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>  </div>
+					    			<div ng-if="network.lgkSnapshotID != null">
+		                                <h5>ÚLTIMA COSECHA VÁLIDA</h5>
+		                                <div class="small">{{network.lgkSize}} | V: {{network.lgkValidSize}} | T: {{network.lgkTransformedSize}} </div>
+		                                <div class="small"><i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>  </div>
+		                                <div class="small"><i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><a target="_blank" href='<spring:url value="/diagnose/"/>{{network.acronym}}'>Diagnóstico</a></span></div>
+		                                </div>
+	                                <div ng-if="network.lgkSnapshotID == null" class="alert alert-danger" role="alert" style="height:100%;">
+	                                	<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> No existe cosecha válida
+	                                </div>
+	                                
 					    </td>
 					    
 					    <td ng-controller="NetworkActionsController">
@@ -171,9 +179,10 @@
 								        <span class="sr-only">Split button!</span>
 								      </button>
 								      <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
-								        <li role="menuitem"><a href="#">Cosechar</a></li>
-								        <li role="menuitem"><a href="#">Detener cosecha </a></li>
+								        <li role="menuitem"><a href="" ng-click="executeNetworkAction('START_HARVESTING', network.networkID, networksTableRefreshCallback)">Cosechar</a></li>
+								        <li role="menuitem"><a href="" ng-click="executeNetworkAction('STOP_HARVESTING', network.networkID, networksTableRefreshCallback)">Detener cosecha </a></li>
 								       	<li class="divider"></li>
+								       	<li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
 								        <li role="menuitem"><a href="#">Indexar Vufind</a></li>
 								        <li role="menuitem"><a href="#">Indexar XOAI</a></li>
 								        <li class="divider"></li>
@@ -286,10 +295,12 @@
 
 		<div class="row">
 			<div class="col-xs-12">
-				<button type="button" class="btn btn-default btn-sm"
-					ng-click="openEditOrigin(true, network_model, originsTableRefreshCallback)">Agregar
-					Validador</button>
-			</div>
+      			<button type="button" class="btn btn-primary btn-sm" ng-click="openEditValidator(true, null, validatorsTableRefreshCallback)">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Agregar validador
+	          	</button>			
+
+		</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12">
@@ -340,10 +351,13 @@
 
 <script type="text/ng-template" id="rule-edit-tpl.html">
 <div class="modal-header">
-	<h3 class="modal-title">Editando: {{rule_model.name}}</h3>
+	<h3 class="modal-title">Editando: {{rule_data_model.name}}</h3>
 </div>
 <div class="modal-body">
-	<form name="ruleEditForm" sf-schema="rule_schema" sf-form="rule_form" sf-model="rule_model" ng-submit="onSubmit(ruleEditForm)"></form>
+	<form name="ruleDataForm" sf-schema="rule_data_schema" sf-form="rule_data_form" sf-model="rule_data_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
+	<form name="ruleEditForm" sf-schema="rule_schema" sf-form="rule_form" sf-model="rule_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
+	<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
+
 </div>
 <div class="modal-footer">
 	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>

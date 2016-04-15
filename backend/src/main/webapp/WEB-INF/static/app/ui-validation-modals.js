@@ -113,24 +113,56 @@ uvm_module.controller('RuleEditCtrl', function ($scope, $uibModalInstance, DataS
 	$scope.ok = function () { $uibModalInstance.close(null); };
 	$scope.cancel = function () { $uibModalInstance.dismiss('cancel');};
 	
-	$scope.rule_form = [ "*", { type: "submit", title: "Guardar cambios" } ];
-	$scope.rule_schema = {
-		    type: "object",
-		    properties: {
-		      name: { type: "string", title: "Nombre", description: "Nombre" },
-		      description: { type: "string", title: "Descripción", description: "Descripción" },
-		      mandatory :{ type: "boolean", title: "¿Es obligatoria?", description: "La regla es determinante en la validez de registro" },
-		      controlledValues : {
-		          type: "array",
-		          title: "Valores Controlados", 
-		          items: { "type": "string", "title":"valor" }
-		      }
-		    }
-		 };
-	$scope.rule_model = JSON.parse(rule.jsonserialization);
+	$scope.saved = false;
 		
+	$scope.rule_data_model = rule;
+	$scope.rule_data_schema = JSONValidationSchemas.rule_data_schema;
+	$scope.rule_data_form = JSONValidationSchemas.rule_data_form;
 	
+	$scope.rule_model = JSON.parse(rule.jsonserialization);
+	var rule_form = JSONValidationSchemas.getRuleByClass( $scope.rule_model["@class"] );
+	$scope.rule_schema = rule_form.schema;
+	$scope.rule_form = rule_form.form;
 	
+////////////
+	// cuando se presion grabar
+	$scope.onSubmit = function(rule_data_form, rule_form) {
+			  
+	  	
+	    	// Si es una regla nueva y no fue grabada todavía
+	    	if ( isNew && !$scope.saved ) { 
+	    		
+	    		
+	    		
+	    	
+	    	} // fin de nueva red
+	    	else { // si es una regla existente
+	    	
+	    	  // Se convierte a string el json del formulario de la regla y se actualiza en el model de datos de regla	
+	    	  $scope.rule_data_model.jsonserialization = JSON.stringify($scope.rule_model)
+
+	    	  // Se graba el modelo en la bd	
+		      $scope.rule_data_model.update(
+		    	function() { // success callback
+		    		
+		    		$scope.saved = true;
+		    	},
+		    	onSaveError
+		      ); // fin de origin_model.update
+		      
+	    	} /* fin del origen ya grabado */ 
+	     
+	}; /* fin de OnSubmit */
 	
+	/**
+	 * Handler de errores de almacenamiento en la bd
+	 */
+	function onSaveError(error) { // error callback
+	    $scope.save_error = true;
+	    $scope.save_error_message = error.status + ": " + error.statusText;
+	};
+	
+
+
 	
 }); /* fin de ValidatorsListCtrl */

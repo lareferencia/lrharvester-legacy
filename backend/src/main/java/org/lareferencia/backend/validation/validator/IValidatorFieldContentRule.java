@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public interface IValidatorFieldContentRule extends IValidatorRule {
 	
-
 	FieldContentValidatorResult validate(String string);	
 
 }

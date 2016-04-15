@@ -97,7 +97,7 @@ public class RecordValidationResult {
     	
     	for (  ValidatorRuleResult ruleResult : validationResult.getRulesResults() ) {
     		
-    		String ruleID = ruleResult.getRule().getID().toString();
+    		String ruleID = ruleResult.getRule().getRuleId().toString();
     		
     		List<String> invalidOccr = new ArrayList<String>();
     		List<String> validOccr = new ArrayList<String>();

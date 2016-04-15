@@ -54,8 +54,8 @@ public class ContentLengthFieldContentValidatorRule extends AbstractValidatorFie
 	@Override
 	public String toString() {
 		return "ContentLengthValidationRule [minLength=" + minLength
-				+ ", maxLength=" + maxLength + ", name=" + name
-				+ ", description=" + description + ", mandatory=" + mandatory
+				+ ", maxLength=" + maxLength + ", id=" + ruleId
+				+ ", mandatory=" + mandatory
 				+ ", quantifier=" + quantifier + "]";
 	}
 	

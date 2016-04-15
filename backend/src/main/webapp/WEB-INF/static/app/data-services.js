@@ -160,6 +160,13 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 		  }).catch(error_callback); // esto da error en el parse de eclipse pero no es error
 	 
 	  };
+	  
+	  /**
+	   * Llamada a una función remota
+	   */
+	  this.callRestWS = function(url, success_callback, error_callback) {
+		  $http.get(url).then(success_callback, error_callback);
+	  };
 		  
 		  
 	
