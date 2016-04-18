@@ -173,7 +173,7 @@ public class BackEndController {
 		if ( lgkSnapshot == null )
 			throw new Exception("No se encontró LGKSnapshot");
 		
-		model.addAttribute("snapID", lgkSnapshot.getId());
+		model.addAttribute("snapshotID", lgkSnapshot.getId());
 		model.addAttribute("networkAcronym", networkAcronym);
 		
 		return "diagnose";

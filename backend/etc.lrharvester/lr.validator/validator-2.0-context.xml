@@ -52,11 +52,9 @@
 	
 	<bean id="driverTypeRule"
 		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
-		<property name="ID" value="1"/>
-		<property name="name" value="type:driver"/>
-		<property name="description" value="Esta regla evalúa que haya al menos una ocurrencia del vocaburio de tipo driver"/>
+		<property name="ruleId" value="1"/>
 		<property name="quantifier" value="ONE_OR_MORE"/>
-		<property name="fieldname" value="dc:type"/>
+		<property name="fieldname" value="dc:type"/>	
 		<property name="mandatory" value="true"/>
 		<property name="controlledValues">
 			<list>
@@ -71,11 +69,9 @@
 	<!-- Status type validator rule -->	
 	<bean id="statusTypeRule"
 		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
-		<property name="ID" value="2"/>
-		<property name="name" value="type:status"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
-		<property name="quantifier" value="ONE_ONLY" />	
-		<property name="fieldname" value="dc:type"/>
+		<property name="ruleId" value="2"/>
+		<property name="quantifier" value="ONE_ONLY" />
+		<property name="fieldname" value="dc:type"/>	
 		<property name="mandatory" value="true"/>
 		<property name="controlledValues">
 			<list>
@@ -89,10 +85,8 @@
 	
 	<!-- iso639-3 -->
 	<bean id="langRule"
-		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
-		<property name="ID" value="3"/>
-		<property name="name" value="language:iso639-3"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		class="org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule">
+		<property name="ruleId" value="3"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:language"/>
 		<property name="mandatory" value="true"/>
@@ -103,9 +97,7 @@
 	<!-- Regex date validator -->
 	<bean id="dateRule"
 		class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule">
-		<property name="ID" value="4"/>
-		<property name="name" value="date:regex"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="4"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:date"/>
 		<property name="mandatory" value="true"/>
@@ -115,9 +107,7 @@
 	<!-- Length > 1 validator -->
 	<bean id="titleRule"
 		class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule">
-		<property name="ID" value="5"/>
-		<property name="name" value="title:not_empty"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="5"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:title"/>
 		<property name="mandatory" value="true"/>
@@ -126,9 +116,7 @@
 	
 	<bean id="identifierRule"
 		class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule">
-		<property name="ID" value="6"/>
-		<property name="name" value="identifier:match_url_regexp"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="6"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:identifier"/>
 		<property name="mandatory" value="true"/>
@@ -138,9 +126,7 @@
 	<!-- Length > 1 validator -->
 	<bean id="creatorRule"
 		class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule">
-		<property name="ID" value="7"/>
-		<property name="name" value="creator:not_empty"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="7"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:creator"/>
 		<property name="mandatory" value="true"/>
@@ -149,10 +135,8 @@
 	
 	<!-- Controlled Values Formats:mime types -->
 	<bean id="formatRule"
-		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
-		<property name="ID" value="8"/>
-		<property name="name" value="format:mime"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		class="org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule">
+		<property name="ruleId" value="8"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:format"/>
 		<property name="mandatory" value="true"/>
@@ -162,9 +146,7 @@
 	<!-- Length > 1 validator -->
 	<bean id="relationRule"
 		class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule">
-		<property name="ID" value="9"/>
-		<property name="name" value="relation:not_empty"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="9"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:relation"/>
 		<property name="mandatory" value="true"/>
@@ -174,9 +156,7 @@
 	<!-- Length > 1 validator -->
 	<bean id="descriptionRule"
 		class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule">
-		<property name="ID" value="10"/>
-		<property name="name" value="description:not_empty"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="10"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:description"/>
 		<property name="mandatory" value="true"/>
@@ -186,9 +166,7 @@
 	<!-- Length > 1 validator -->
 	<bean id="subjectRule"
 		class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule">
-		<property name="ID" value="11"/>
-		<property name="name" value="subject:not_empty"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="11"/>
 		<property name="quantifier" value="ONE_OR_MORE" />
 		<property name="fieldname" value="dc:subject"/>
 		<property name="mandatory" value="true"/>
@@ -198,9 +176,7 @@
 	<!-- Controlled Values Rights -->
 	<bean id="rightsRule"
 		class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule">
-		<property name="ID" value="12"/>
-		<property name="name" value="rights:driver"/>
-		<property name="description" value="Esta es la descripción del a regla"/>
+		<property name="ruleId" value="12"/>
 		<property name="quantifier" value="ONE_ONLY" />
 		<property name="fieldname" value="dc:rights"/>
 		<property name="mandatory" value="true"/>

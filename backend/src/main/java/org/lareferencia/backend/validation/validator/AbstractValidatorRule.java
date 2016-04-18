@@ -30,11 +30,10 @@ public abstract class AbstractValidatorRule implements IValidatorRule {
 	@JsonIgnore
 	protected Long ruleId;
 	
-	@JsonProperty("mandatory")
+	@JsonIgnore	
 	protected Boolean mandatory = false;
 	
-	@JsonProperty("quantifier")
-	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
+	@JsonIgnore	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
 	
 	public AbstractValidatorRule() {
 		this.mandatory = false;

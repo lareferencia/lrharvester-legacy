@@ -179,8 +179,8 @@ ufm_module.controller('OriginEditCtrl', function ($scope, $uibModalInstance, Dat
 	    		
 	    		
 	    	
-	    	} // fin de nueva red
-	    	else { // si es una red ya grabada entonces se llama a la función update 
+	    	} // fin de nuevo origen
+	    	else { // si es un origen ya grabada entonces se llama a la función update 
 
 	    	  // Se graba el modelo	
 		      $scope.origin_model.update(

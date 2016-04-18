@@ -29,6 +29,10 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 	  this.originURL = function () {
 		  return '/rest/origin';	
 	  }; 
+	  this.validatorRuleURL = function () {
+		  return '/rest/validatorRule';	
+	  };
+	  
 	  
 	  this.urlFromEntity = function (entity) {
 		  return entity._links.self.href;

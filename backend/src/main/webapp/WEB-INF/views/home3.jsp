@@ -299,8 +299,7 @@
 	          		<span class="glyphicon glyphicon-pencil"></span>
 	          		Agregar validador
 	          	</button>			
-
-		</div>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12">
@@ -326,23 +325,50 @@
 </div>
 </script>
 
+
+
+
+
 <script type="text/ng-template" id="validator-edit-tpl.html">
 <div class="modal-header">
 	<h3 class="modal-title">Editando: {{validator_model.name}}</h3>
 </div>
 <div class="modal-body" ng-controller="ValidationController">
-	<table ng-table="validatorRulesTable"
-		class="table table-bordered table-striped table-condensed">
-			<tr ng-repeat="vrule in $data track by vrule.name">
-				<td data-title="'Nombre'">{{vrule.name}}</td>
-				<td data-title="'Descripción'">{{vrule.description}}</td>
-				<td>
-					<button class="btn btn-primary btn-sm" ng-click="openEditValidatorRule(false,vrule,validatorRulesTableRefreshCallback)"> 	   
-						<span class="glyphicon glyphicon-pencil"></span>	
-					</button>
-				</td>
-			</tr>
-	</table>
+	<div class="row" >
+		<div class="col-xs-12">
+ 		<div class="btn-group" uib-dropdown>
+			<button id="split-button" type="button" class="btn btn-sm btn-primary">Agregar nueva regla</button>
+				<button type="button" class="btn btn-sm btn-primary" uib-dropdown-toggle>
+			    	<span class="caret"></span>
+			        <span class="sr-only">Split button!</span>
+			    </button>
+			    <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+			        <li ng-repeat="ruleDefinition in ruleDefinitionByClassName" role="menuitem"><a ng-click="openEditValidatorRule(true, ruleDefinition, validator_model, validatorRulesTableRefreshCallback)" href="">{{ruleDefinition.name}}</a></li>   
+			    </ul>
+		</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<table ng-table="validatorRulesTable"
+				class="table table-bordered table-striped table-condensed">
+				<tr ng-repeat="vrule in $data track by vrule.name">
+					<td data-title="'Nombre'">{{vrule.name}}</td>
+					<td data-title="'Descripción'">{{vrule.description}}</td>
+					<td data-title="'Mandatoria'">{{vrule.mandatory}}</td>
+					<td>
+						<button class="btn btn-primary btn-sm"
+							ng-click="openEditValidatorRule(false,vrule, validator_model, validatorsRuleTableRefreshCallback)">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</button>
+						<button class="btn btn-danger  btn-sm" ng-click="deleteValidatorRule(vrule,validatorsRuleTableRefreshCallback)">
+							<span class="glyphicon glyphicon-trash"></span>	
+						</button> 
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
 </div>
 <div class="modal-footer">
 	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>

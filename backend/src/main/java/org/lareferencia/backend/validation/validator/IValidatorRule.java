@@ -25,5 +25,8 @@ public interface IValidatorRule {
 	
 	public Boolean getMandatory();
 	public void setMandatory(Boolean mandatory);
+	
+	public QuantifierValues getQuantifier();
+	public void setQuantifier(QuantifierValues qv);
 
 }

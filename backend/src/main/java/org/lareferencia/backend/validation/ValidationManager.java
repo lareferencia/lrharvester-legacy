@@ -44,7 +44,14 @@ public class ValidationManager {
 		for (ValidatorRule vrule: vmodel.getRules()) {
 			
 			IValidatorRule rule = serializer.deserializeValidatorFromJsonString( vrule.getJSONSerialization() );
-			rule.setRuleId(vrule.getId());
+			
+			/* Estas propiedades son cargadas desde el modelo en el objeto rule */
+			/* name y description no existen en el modelo de objetos interno porque no resultan útiles al procesamiento */
+			rule.setRuleId( vrule.getId() );
+			rule.setMandatory( vrule.getMandatory() );
+			rule.setQuantifier( vrule.getQuantifier() );
+			
+			
 			validator.getRules().add(rule);
 			
 		}
@@ -89,6 +96,8 @@ public class ValidationManager {
 				
 			ruleModel.setName( vrule.getRuleId().toString() );
 			ruleModel.setDescription("");
+			ruleModel.setMandatory( vrule.getMandatory() );
+			ruleModel.setQuantifier( vrule.getQuantifier() );
 			ruleModel.setJSONSerialization( serializer.serializeValidatorToJsonString(vrule) );
 			
 			validatorModel.getRules().add(ruleModel);

@@ -487,7 +487,8 @@
     <!-- Page-Level Demo Scripts - Tables - Use for reference -->
 	<script type="text/javascript">
 	
-
+		var snaphotID = ${snapshotID};
+		var netwotkAcronym ='${networkAcronym}';
 		var fqHash = {};
 		
 		function str2id(input) {
@@ -832,7 +833,7 @@
         function showRuleOccurrences(ruleID) {
         	
         	 var params =  [
-	                            {q: 'snapshot_id:26'},
+	                            {q: 'snapshot_id:${snapshotID}'}, // de este reemplazo se encarga jsp
 	                            {rows: '0'},
 	                            {facet: true},
 	                            {'facet.mincount': '1'},
@@ -871,7 +872,7 @@
         	 rulesCount = {};
 
         	 var params =  [
-                            {q: 'snapshot_id:26'},
+                            {q: 'snapshot_id:${snapshotID}'},
                             
                             {facet: true},
                             {'facet.mincount': '1'},

@@ -20,9 +20,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.hibernate.annotations.Type;
+import org.lareferencia.backend.validation.validator.QuantifierValues;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * NationalNetwork Entity
@@ -39,7 +41,15 @@ public class ValidatorRule extends AbstractEntity {
 	@Column(nullable = true)
 	private String description;
 	
+	@Column(nullable = false)
+	protected Boolean mandatory = false;
+	
+	@Column(nullable = false)
+	protected QuantifierValues quantifier = QuantifierValues.ONE_OR_MORE;
+	
 	@Type(type="org.hibernate.type.StringClobType")
 	@JsonIgnore
 	private String JSONSerialization;
+	
+	
 }

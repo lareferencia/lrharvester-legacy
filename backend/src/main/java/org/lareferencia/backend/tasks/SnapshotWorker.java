@@ -171,7 +171,7 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				
 //				System.out.println( validator.getRules() );
 //				
-//				Validator validatorModel = validatorManager.createModelFromValidator(validator, "test", "test");
+//				Validator validatorModel = validatorManager.createModelFromValidator(validator, "Validador Base", "Un validador de test");
 //				
 //				validatorRepository.save(validatorModel);
 //				validatorRepository.flush();
