@@ -13,29 +13,14 @@
  ******************************************************************************/
 package org.lareferencia.backend;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.Validator;
-import org.lareferencia.backend.domain.ValidatorRule;
-import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.ValidatorRepository;
 import org.lareferencia.backend.repositories.ValidatorRuleRepository;
-import org.lareferencia.backend.util.parameters.AbstractProperty;
-import org.lareferencia.backend.util.parameters.PropertyA;
-import org.lareferencia.backend.validation.RuleSerializer;
 import org.lareferencia.backend.validation.transformer.FieldContentNormalizeRule;
-import org.lareferencia.backend.validation.transformer.ITransformerRule;
-import org.lareferencia.backend.validation.validator.AbstractValidatorRule;
-import org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule;
 import org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule;
-import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -90,8 +75,7 @@ public class RuleJSONSerializationTest {
 		
 		
 		ControlledValueFieldContentValidatorRule ccrule = new ControlledValueFieldContentValidatorRule();
-		ccrule.setName("Nombre V");
-		ccrule.setDescription("Desc V");
+
 		ccrule.setQuantifier(QuantifierValues.ALL);
 		ccrule.setFieldname("dc:type");
 		ccrule.setMandatory(true);
@@ -103,8 +87,6 @@ public class RuleJSONSerializationTest {
 		ccrule.setControlledValues(cclist);
 		
 		FieldContentNormalizeRule trule = new FieldContentNormalizeRule();
-		trule.setName("Nombre");
-		trule.setDescription("Descripción");
 		trule.setFieldName("dc:type");
 		trule.setRemoveDuplicatedOccurrences(true);
 		trule.setRemoveInvalidOccurrences(true);

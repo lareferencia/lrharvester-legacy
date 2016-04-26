@@ -26,11 +26,20 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/validator';	
 	  }; 
 	  
+	  this.transformerURL = function () {
+		  return '/rest/transformer';	
+	  }; 
+	  
 	  this.originURL = function () {
 		  return '/rest/origin';	
 	  }; 
+	  
 	  this.validatorRuleURL = function () {
 		  return '/rest/validatorRule';	
+	  };
+	  
+	  this.transformerRuleURL = function () {
+		  return '/rest/transformerRule';	
 	  };
 	  
 	  

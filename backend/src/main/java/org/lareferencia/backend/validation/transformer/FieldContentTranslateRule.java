@@ -19,21 +19,34 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
 import org.w3c.dom.Node;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class FieldContentTranslateRule extends AbstractTransformerRule {
 
 	@Getter
+	@JsonIgnore
 	Map<String, String> translationMap;
+	
+	@Getter
+	List<Translation> translationArray;
 
 	@Setter
 	@Getter
@@ -55,6 +68,16 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	public FieldContentTranslateRule() {
 		this.translationMap = new TreeMap<String, String>(
 				CaseInsensitiveComparator.INSTANCE);
+	}
+	
+	public void setTranslationArray(List<Translation> list) {
+		this.translationArray = list;
+		
+		for(Translation t:list) {
+			this.translationMap.put(t.search, t.replace);
+		}
+		
+		System.out.println(list);
 	}
 
 	public void setTranslationMapFileName(String filename) {
@@ -100,9 +123,6 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	public boolean transform(OAIRecord record) {
 		
 		OAIRecordMetadata metadata = record.getMetadata();
-
-
-		FieldContentValidatorResult result;
 		boolean wasTransformed = false;
 
 		

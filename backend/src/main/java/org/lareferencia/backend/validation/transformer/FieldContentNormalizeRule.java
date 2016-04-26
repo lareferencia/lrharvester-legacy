@@ -40,9 +40,7 @@ public class FieldContentNormalizeRule extends AbstractTransformerRule {
 
 	private IValidatorFieldContentRule validationRule;
 	
-	
 	private String fieldName;
-	
 	
 	private Boolean removeInvalidOccurrences = false;
 	private Boolean removeDuplicatedOccurrences = false;

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.transformer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -32,6 +33,12 @@ public class TransformerImpl implements ITransformer {
 	List<ITransformerRule> rules;
 
 
+	public TransformerImpl() {
+		super();
+		rules = new ArrayList<ITransformerRule>();
+	}
+
+
 	@Override
 	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception {
 		
@@ -44,7 +51,7 @@ public class TransformerImpl implements ITransformer {
 					anyTransformationOccurred |= rule.transform(record);
 			}
 			catch (Exception e) {
-				throw new Exception("Ocurrio un problema durante la transformacion de " + record.getIdentifier() + " con la regla: " + rule.getName()   , e);
+				throw new Exception("Ocurrio un problema durante la transformacion de " + record.getIdentifier() + " con la regla: " + rule.getClass().getName()   , e);
 			}
 		}	
 		

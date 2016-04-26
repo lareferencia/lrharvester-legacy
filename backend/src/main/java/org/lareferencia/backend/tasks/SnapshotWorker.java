@@ -180,13 +180,19 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 //				networkRepository.save(network);
 //				networkRepository.flush();
 						
-	
-				validator = validationManager.createValidatorFromModel( network.getValidator() );
-				System.out.println( validator.getRules() );
+				if ( network.getValidator() != null ) {
+					validator = validationManager.createValidatorFromModel( network.getValidator() );
+					//System.out.println( validator.getRules() );
+				} //TODO: Anunciar que no hay validador
 
-				//transformer = validationManager.createTransformerFromModel( network.getTransformer() );
+				if ( network.getTransformer() != null ) {
+					transformer = validationManager.createTransformerFromModel( network.getTransformer() );
+					//System.out.println( transformer.getRules() );
+				}
 				
-			} catch (Exception e) {		
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
 				logMessage("Error en la carga del validador o transformador, vea el log para más detalles."); 
 				setSnapshotStatus(SnapshotStatus.HARVESTING_FINISHED_ERROR);
 				return;

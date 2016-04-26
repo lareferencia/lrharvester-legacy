@@ -64,6 +64,7 @@
 	<!-- Controladores Angular de la aplicación -->
 	<script type="text/javascript" src="<spring:url value="/static/app/model-json-schemas.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/validation-json-schemas.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/transformation-json-schemas.js"/>"></script>
 	
 	<script type="text/javascript" src="<spring:url value="/static/app/table-services.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/rest-url-helper.js"/>"></script>
@@ -72,7 +73,7 @@
 	
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-forms-modals.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-validation-modals.js"/>"></script>
-	
+	<script type="text/javascript" src="<spring:url value="/static/app/ui-transformation-modals.js"/>"></script>
 	
 	<script type="text/javascript" src="<spring:url value="/static/app/main-controller.js"/>" ></script>
 	
@@ -123,16 +124,16 @@
 			      </ul>
 			    </div>
 	        </div>
-			<div ng-controller="ValidationController" class="col-md-6">
+			<div  class="col-md-6">
 			
 				<h5>Edición de Validadores y Tranformadores</h5>
 				<p></p>
 		
-	          	<button type="button" class="btn btn-primary btn-sm" ng-click="openValidatorsList()">
+	          	<button ng-controller="ValidationController" type="button" class="btn btn-primary btn-sm" ng-click="openValidatorsList()">
 	          		<span class="glyphicon glyphicon-pencil"></span>
 	          		Validadores
 	          	</button>
-	          	<button type="button" class="btn btn-primary btn-sm" ng-click="openEditNetwork(true, null, networksTableRefreshCallback)">
+	          	<button ng-controller="TransformationController" type="button" class="btn btn-primary btn-sm" ng-click="openTransformersList()">
 	          		<span class="glyphicon glyphicon-pencil"></span>
 	          		Transformadores
 	          	</button>
@@ -325,10 +326,6 @@
 </div>
 </script>
 
-
-
-
-
 <script type="text/ng-template" id="validator-edit-tpl.html">
 <div class="modal-header">
 	<h3 class="modal-title">Editando: {{validator_model.name}}</h3>
@@ -380,6 +377,7 @@
 	<h3 class="modal-title">Editando: {{rule_data_model.name}}</h3>
 </div>
 <div class="modal-body">
+	<p>{{rule_model}}</p>
 	<form name="ruleDataForm" sf-schema="rule_data_schema" sf-form="rule_data_form" sf-model="rule_data_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
 	<form name="ruleEditForm" sf-schema="rule_schema" sf-form="rule_form" sf-model="rule_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
 	<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
@@ -390,6 +388,91 @@
 </div>
 </script>
 
+
+<script type="text/ng-template" id="transformers-list-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Listado de transformadores</h3>
+</div>
+<div class="modal-body" ng-controller="TransformationController">
+
+		<div class="row">
+			<div class="col-xs-12">
+      			<button type="button" class="btn btn-primary btn-sm" ng-click="openEditTransformer(true, null, transformersTableRefreshCallback)">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Agregar transformador
+	          	</button>			
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<table ng-table="transformersTable"
+					class="table table-bordered table-striped table-condensed">
+					<tr ng-repeat="transformer in $data track by transformer.name">
+
+						<td data-title="'Nombre'">{{transformer.name}}</td>
+						<td data-title="'Descripción'">{{transformer.description}}</td>
+						<td>
+					        <button class="btn btn-primary btn-sm" ng-click="openEditTransformer(false,transformer,transformersTableRefreshCallback)"> 	   
+								<span class="glyphicon glyphicon-pencil"></span>	
+							</button>
+						</td>
+
+					</tr>
+				</table>
+			</div>
+		</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
+
+
+<script type="text/ng-template" id="transformer-edit-tpl.html">
+<div class="modal-header">
+	<h3 class="modal-title">Editando: {{transformer_model.name}}</h3>
+</div>
+<div class="modal-body" ng-controller="TransformationController">
+	<div class="row" >
+		<div class="col-xs-12">
+ 		<div class="btn-group" uib-dropdown>
+			<button id="split-button" type="button" class="btn btn-sm btn-primary">Agregar nueva regla</button>
+				<button type="button" class="btn btn-sm btn-primary" uib-dropdown-toggle>
+			    	<span class="caret"></span>
+			        <span class="sr-only">Split button!</span>
+			    </button>
+			    <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+			        <li ng-repeat="ruleDefinition in ruleDefinitionByClassName" role="menuitem"><a ng-click="openEditTransformerRule(true, ruleDefinition, transformer_model, transformerRulesTableRefreshCallback)" href="">{{ruleDefinition.name}}</a></li>   
+			    </ul>
+		</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<table ng-table="transformerRulesTable"
+				class="table table-bordered table-striped table-condensed">
+				<tr ng-repeat="vrule in $data track by vrule.name">
+					<td data-title="'Nombre'">{{vrule.name}}</td>
+					<td data-title="'Descripción'">{{vrule.description}}</td>
+					<td data-title="'Mandatoria'">{{vrule.mandatory}}</td>
+					<td>
+						<button class="btn btn-primary btn-sm"
+							ng-click="openEditTransformerRule(false,vrule, transformer_model, transformersRuleTableRefreshCallback)">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</button>
+						<button class="btn btn-danger  btn-sm" ng-click="deleteTransformerRule(vrule,transformersRuleTableRefreshCallback)">
+							<span class="glyphicon glyphicon-trash"></span>	
+						</button> 
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
+</script>
 
 <script type="text/ng-template" id="ng-table/headers/checkbox.html">
 <input type="checkbox" ng-model="networks.areAllSelected" id="select_all" name="filter-checkbox" value="" />
