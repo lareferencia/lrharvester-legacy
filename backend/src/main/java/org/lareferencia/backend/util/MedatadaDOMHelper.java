@@ -119,6 +119,10 @@ public abstract class MedatadaDOMHelper  {
 		idTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		idTransformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		idTransformer.transform(new DOMSource(node), output);
-		return sw.toString();
+
+		String result = sw.toString();				
+		result = result.replaceAll("&#5[0-9]{4}", " ");
+								
+		return result;
 	}
 }
