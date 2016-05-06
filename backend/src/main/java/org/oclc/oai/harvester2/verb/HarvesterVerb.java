@@ -18,6 +18,7 @@ package org.oclc.oai.harvester2.verb;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -43,6 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.xpath.XPathAPI;
+import org.lareferencia.backend.util.InvalidXMLCharFilterReader;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -275,7 +277,9 @@ public abstract class HarvesterVerb {
         }
         
         
-        InputSource data = new InputSource(in);
+        InputStreamReader isr = new InputStreamReader(in);
+        InvalidXMLCharFilterReader reader = new  InvalidXMLCharFilterReader(isr);
+        InputSource data = new InputSource(reader);
         
         //System.out.println("OCLC Harvester 2: Leido input stream: " + requestURL);
 
