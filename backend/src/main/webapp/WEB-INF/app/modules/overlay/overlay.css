@@ -1,0 +1,12 @@
+/**
+ * Overlay
+ * @class overlay
+ */
+
+.overlay {
+    padding: 20px;
+}
+
+.overlay img {
+    max-width: 100%;
+}

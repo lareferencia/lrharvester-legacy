@@ -1,0 +1,42 @@
+
+<div class="row">
+	<div class="col-md-12">
+		<h3>Edición validadores</h3>
+		<p>Aqui ....</p>
+
+
+	</div>
+</div>
+
+<div class="row" ng-controller="validators">
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-xs-12">
+      			<button type="button" class="btn btn-primary btn-sm" ng-click="openEditValidator(true, null, validatorsTableRefreshCallback)">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Agregar validador
+	          	</button>			
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<table ng-table="validatorsTable"
+					class="table table-bordered table-striped table-condensed">
+					<tr ng-repeat="validator in $data track by validator.name">
+
+						<td data-title="'Nombre'">{{validator.name}}</td>
+						<td data-title="'Descripción'">{{validator.description}}</td>
+						<td>
+					        <button class="btn btn-primary btn-sm"  ui-sref="validator.edit({validatorID:1})"> 	   
+								<span class="glyphicon glyphicon-pencil"></span>	
+							</button>
+						</td>
+
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</div>
+

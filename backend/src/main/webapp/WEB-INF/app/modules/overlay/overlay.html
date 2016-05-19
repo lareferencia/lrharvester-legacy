@@ -1,0 +1,13 @@
+<div class="row overlay">
+    <div class="col-md-4">
+        <img ng-src="{{ user.image }}" alt="" />
+    </div>
+    <div class="col-md-8">
+        <button type="button" class="close" ng-click="$dismiss()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+        <h3 class="modal-title">{{ user.name || 'None' }}</h3>
+        <p>{{ user.location || 'None' }}</p>
+    </div>
+</div>

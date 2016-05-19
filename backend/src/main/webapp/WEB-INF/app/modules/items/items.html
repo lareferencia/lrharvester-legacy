@@ -1,0 +1,74 @@
+<div class="row items" ng-controller="items">
+    <div class="col-md-4 col-md-push-8">
+        <div ui-view="sidebar">
+            <div class="filters">
+                <h1>Filters</h1>
+                <h4>Category</h4>
+                <p>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':filters.category==''}" ng-click="filter('category', '')">All</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':filters.category=='music'}" ng-click="filter('category', 'music')">Music</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':filters.category=='film'}" ng-click="filter('category', 'film')">Film</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':filters.category=='tv'}" ng-click="filter('category', 'tv')">TV</a>
+                </p>
+                <h4>Date</h4>
+                <p>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':dateType=='year'}" ng-click="filter('date', 'year')">All</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':dateType=='day'}" ng-click="filter('date', 'day')">Today</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':dateType=='week'}" ng-click="filter('date', 'week')">Past week</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-primary':dateType=='month'}" ng-click="filter('date', 'month')">Past month</a>
+                </p>
+                <p><a href="" class="btn btn-default" ng-class="{'btn-primary':dateType=='range'}" ng-click="filter('date', 'range')">Select date range</a></p>
+                <div ng-show="showRange">
+                    <div class="form-group">
+                        <label for="startDate">Start date</label>
+                        <p class="input-group">
+                            <input type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="$parent.dateStart" is-open="$parent.dateStartOpen" ng-required="true" ng-change="selectDate(dateStart)" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="openDate($event, 'dateStartOpen')"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End date</label>
+                        <p class="input-group">
+                            <input type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="$parent.dateEnd" is-open="$parent.dateEndOpen" ng-required="true" ng-change="selectDate(dateEnd)" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="openDate($event, 'dateEndOpen')"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-pull-4">
+        <div class="row title">
+            <div class="col-xs-8">
+                <h1>Items</h1>
+                <a ui-sref="items.new" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> New item</a>
+            </div>
+            <div class="col-xs-4">
+                <input type="text" class="form-control" ng-model="filters.name" placeholder="Search" ng-change="currentPage=1" />
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-1"><a href="" ng-click="predicate='id';reverse=!reverse">#</a></th>
+                    <th class="col-md-6"><a href="" ng-click="predicate='name';reverse=!reverse">Name</a></th>
+                    <th class="col-md-3"><a href="" ng-click="predicate='category';reverse=!reverse">Category</a></th>
+                    <th class="col-md-2"><a href="" ng-click="predicate='date';reverse=!reverse">Date</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in filtered = (data.items | filter:filters | filter:dateFilter) | orderBy:predicate:reverse | startFrom:(currentPage-1)*pageSize | limitTo:pageSize" ng-class="{info:id==item.id}">
+                    <td>{{ item.id || 'None' }}</td>
+                    <td><a ui-sref="items.view({id:item.id})">{{ item.name || 'None' }}</a></td>
+                    <td>{{ item.category || 'None' }}</td>
+                    <td>{{ item.date | date: 'dd/MM/yyyy' || 'None' }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <pagination ng-model="currentPage" total-items="filtered.length" items-per-page="pageSize"></pagination>
+    </div>
+</div>

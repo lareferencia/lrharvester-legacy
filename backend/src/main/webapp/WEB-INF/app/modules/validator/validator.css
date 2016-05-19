@@ -1,0 +1,80 @@
+/**
+ * Item
+ * @class item styling
+ */
+
+.item {
+
+}
+
+.item img {
+    max-width: 100%;
+}
+
+.item .nav-tabs a {
+    cursor: pointer;
+}
+
+.item .section {
+    clear: both;
+}
+
+.item timecode {
+    margin: 0 1% 10px 0;
+    width: 48%;
+    float: left;
+}
+
+.item timecode input,
+.item timecode .divider {
+    display: inline-block;
+    width: 22%;
+    text-align: center;
+    border: none;
+}
+
+.item timecode .divider {
+    width: 3%;
+}
+
+/* player */
+
+.item video {
+    max-width: 100%;
+    display: block;
+}
+
+.item .player .progress {
+    border-radius: 0;
+    margin: 0 0 5px 0;
+    height: 10px;
+}
+
+.item .player .progress-bar {
+    background-color: #9e0b0f;
+}
+
+.item .player .controls {
+    text-align: center;
+    font-size: 2em;
+}
+
+.item .player .controls a {
+    color: #777;
+    cursor: pointer;
+}
+
+.item .player .controls a:hover {
+    color: #555;
+}
+
+.item .player .controls .glyphicon {
+    vertical-align: middle;
+}
+
+.item .player .controls .glyphicon-play,
+.item .player .controls .glyphicon-pause {
+    color: #000;
+    font-size: 2em;
+    margin: 0 10px;
+}

@@ -1,0 +1,70 @@
+button {
+	height: 20;
+	background-color: lightblue;
+}
+
+body {
+	font-family: Verdana, Arial, Sans-serif;
+	font-size: 11px;
+	margin-left: 20px;
+	
+}
+
+table {
+	border-spacing:0;
+    border-collapse:collapse;
+    font-size: 11px;
+    
+};
+
+th {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+td {
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 1px solid #e3e7e7;
+
+}
+
+
+#title {	
+	margin-bottom: 30px;
+	margin-top: 20px;
+}
+
+#title span {
+	font-size: 14px;
+	margin-right: 40px;
+}
+
+#buttons {
+	clear: both;
+	width: 100%;
+	margin-top:30px;
+	margin-bottom:10px;
+}
+
+
+#edit_network_cron_selector {
+	margin:20px;	
+}
+
+#networks {	
+	border-top: 4px solid #e3e7e7;	
+}
+
+#snapshots {
+	border-top: 4px solid #e3e7e7;	
+}
+
+#network_origins {
+	border-top: 4px solid #e3e7e7;	
+}
+
+#origin_sets {
+	border-top: 4px solid #e3e7e7;	
+}
+

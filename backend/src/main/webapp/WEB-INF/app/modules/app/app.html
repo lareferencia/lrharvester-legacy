@@ -1,0 +1,113 @@
+
+<div class="row">
+
+	<div class="col-md-12">
+		<h4>Listado de repositorios disponibles</h4>
+		<p>Puede acciones sobre un grupo de repositorios seleccionados utilizando los checkbox de la tabla.</p>
+
+
+		<a ui-sref="network.new" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Nuevo repositorio</a>
+
+		<div class="btn-group" uib-dropdown>
+			<button type="button" class="btn btn-sm btn-success" uib-dropdown-toggle>
+				Acciones <span class="caret"></span>
+			</button>
+			<ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+				<li role="menuitem"><a href="#">Cosechar</a></li>
+				<li role="menuitem"><a href="#">Indexar Vufind</a></li>
+				<li role="menuitem"><a href="#">Indexar XOAI</a></li>
+				<li class="divider"></li>
+				<li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
+				<li role="menuitem"><a href="#">Retirar de Vufind</a></li>
+				<li role="menuitem"><a href="#">Retirar de XOAI</a></li>
+				<li class="divider"></li>
+				<li role="menuitem"><a href="#">Borrar</a></li>
+			</ul>
+		</div>
+	</div>
+	<!--  div  class="col-md-6">
+			
+				<h5>Edición de Validadores y Tranformadores</h5>
+				<p></p>
+		
+	          	<button ng-controller="ValidationController" type="button" class="btn btn-primary btn-sm" ng-click="openValidatorsList()">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Validadores
+	          	</button>
+	          	<button ng-controller="TransformationController" type="button" class="btn btn-primary btn-sm" ng-click="openTransformersList()">
+	          		<span class="glyphicon glyphicon-pencil"></span>
+	          		Transformadores
+	          	</button>
+				
+			</div-->
+
+</div>
+<!-- End Row cabecera -->
+<div class="row">
+	<p></p>
+</div>
+<div class="row">
+	<div class="col-xs-12">
+		<table ng-table="networksTable" class="table table-bordered table-striped table-condensed">
+			<tr ng-repeat="network in $data track by network.acronym">
+				<td width="30" style="text-align: left" header="'modules/app/checkbox-tpl.html'"><input type="checkbox" ng-model="networks.selected[network.acronym]" /></td>
+				<td style="width: 40px;" data-title="'Acrónimo'" filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
+				<td style="width: 150px;" data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
+				<td style="width: 300px;" data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
+				<td data-title="'Última cosecha'">
+					<h5>{{network.lstSnapshotStatus}}</h5>
+					<div class="small">{{network.lstSize}} | V: {{network.lstValidSize}} | T: {{network.lstTransformedSize}}</div>
+					<div class="small">
+						<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lstSnapshotDate}}</span>
+					</div>
+				</td>
+				<td data-title="'Última cosecha exitosa'">
+					<div ng-if="network.lgkSnapshotID != null">
+						<h5>ÚLTIMA COSECHA VÁLIDA</h5>
+						<div class="small">{{network.lgkSize}} | V: {{network.lgkValidSize}} | T: {{network.lgkTransformedSize}}</div>
+						<div class="small">
+							<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>
+						</div>
+						<div class="small">
+							<i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><a target="_blank" href='<spring:url value="/diagnose/"/>{{network.acronym}}'>Diagnóstico</a></span>
+						</div>
+					</div>
+					<div ng-if="network.lgkSnapshotID == null" class="alert alert-danger" role="alert" style="height: 100%;">
+						<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> No existe cosecha válida
+					</div>
+
+				</td>
+
+				<td>
+					<p>
+					<div class="btn-group" uib-dropdown>
+						<button type="button" class="btn btn-sm btn-success" uib-dropdown-toggle>
+							Acciones <span class="caret"></span>
+						</button>
+						<ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+							<li role="menuitem"><a href="" ng-click="executeNetworkAction('START_HARVESTING', network.networkID, networksTableRefreshCallback)">Cosechar</a></li>
+							<li role="menuitem"><a href="" ng-click="executeNetworkAction('STOP_HARVESTING', network.networkID, networksTableRefreshCallback)">Detener cosecha </a></li>
+							<li class="divider"></li>
+							<li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
+							<li role="menuitem"><a href="#">Indexar Vufind</a></li>
+							<li role="menuitem"><a href="#">Indexar XOAI</a></li>
+							<li class="divider"></li>
+							<li role="menuitem"><a href="#">Retirar de Vufind</a></li>
+							<li role="menuitem"><a href="#">Retirar de XOAI</a></li>
+							<li class="divider"></li>
+						</ul>
+					</div>
+					</p>
+					<p>
+						<button class="btn btn-primary btn-sm" ui-sref="network.edit({ id: network.networkID })">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</button>
+						<button class="btn btn-danger  btn-sm" ng-click="main.del(network)">
+							<span class="glyphicon glyphicon-trash"></span>
+						</button>
+					</p>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

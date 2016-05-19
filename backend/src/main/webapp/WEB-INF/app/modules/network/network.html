@@ -1,0 +1,66 @@
+<div ng-controller="network">
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Edición de repositorio {{network_model.name}}</h3>
+			<p>Puede ejecutar estas acciones sobre un grupo de repositorios seleccionados utilizando los checkbox de la tabla.</p>
+	
+	
+		</div>
+	</div>
+	
+	<div class="row" >
+	
+		<div class="col-md-12">
+	
+			<!-- TABSET -->
+			<uib-tabset active="activeJustified" justified="true"> 
+			
+				<uib-tab index="0" heading="Datos del repositorio">
+						<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)"></form>
+						<form name="networkValidationEditForm" sf-schema="network_validation_schema" sf-form="network_validation_form" sf-model="network_validation_model"></form>
+						<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)"></form>
+						<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
+						<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
+						<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+			 			<button class="btn btn-danger btn-sm" ui-sref="start()">
+							<span> Salir sin guardar </span>
+				   		</button>
+				</uib-tab> 
+			
+				<uib-tab index="1" heading="Orígenes de cosecha" ng-if="!is_new">
+					
+					<div class="row">
+						<div class="col-xs-12">
+							<a ui-sref="origin.new({ networkID: network_model.getObjectID() })" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Nuevo origen</a>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<table ng-table="originsTable" class="table table-bordered table-striped table-condensed">
+								<tr ng-repeat="origin in $data">
+		
+									<td data-title="'Nombre'">{{origin.name}}</td>
+									<td data-title="'URI'">{{origin.uri}}</td>
+									<td data-title="'MetadataPrefix'">{{origin.metadataPrefix}}</td>
+		
+									<td>
+										<button class="btn btn-primary btn-sm" ui-sref="origin.edit({ originID: origin.getObjectID(), networkID: network_model.getObjectID() })">
+											<span class="glyphicon glyphicon-pencil"></span>
+										</button>
+										<button class="btn btn-danger  btn-sm" ng-click="deleteOrigin(network_model,origin,originsTableRefreshCallback)">
+											<span class="glyphicon glyphicon-trash"></span>
+										</button>
+									</td>
+								</tr>
+							</table>
+						</div>
+				   </div>
+				   <button class="btn btn-danger btn-sm" ui-sref="start()">
+						<span> Salir sin guardar </span>
+				   </button>
+				</uib-tab>
+				
+			</uib-tabset>
+		</div>
+	</div>
+</div>
