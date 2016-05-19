@@ -124,14 +124,14 @@ angular.module('network', [
     	}
     	
     	
-    	/**
-    	 * Handler de errores de almacenamiento en la bd
-    	 */
-    	function onSaveError(error) { // error callback
-		 	$scope.saved = false;
-    	    $scope.save_error = true;
-    	    $scope.save_error_message = error.status + ": " + error.statusText;
-    	};
+	/**
+	 * Handler de errores de almacenamiento en la bd
+	 */
+	function onSaveError(error) { // error callback
+	 	$scope.saved = false;
+	    $scope.save_error = true;
+	    $scope.save_error_message = error.status + ": " + error.statusText;
+	};
     	
 	 /** 
 	 * deleteOrigin: Borrado de un origin

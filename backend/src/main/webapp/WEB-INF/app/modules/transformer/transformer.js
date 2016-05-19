@@ -5,7 +5,7 @@
 
 /*globals window, angular, document */
 
-angular.module('validator', [
+angular.module('transformer', [
      'ngResource',
      'ui.bootstrap',
      'ui.router',
@@ -13,7 +13,7 @@ angular.module('validator', [
      'table.services',
      'rest.url.helper',
      'data.services',
-     'validation.json.schemas'
+     'transformation.json.schemas'
 ])
 
 
@@ -21,48 +21,48 @@ angular.module('validator', [
         'use strict';
 
         $stateProvider
-        .state('validator', {
-            url: '/validator',
+        .state('transformer', {
+            url: '/transformer',
             views: {
                 'main@': {
-                    templateUrl: 'modules/validator/validator.html'
+                    templateUrl: 'modules/transformer/transformer.html'
                 }
             }
         })
-        .state('validator.new', {
+        .state('transformer.new', {
             url: '/new'
         })
-        .state('validator.edit', {
-            url: '/:validatorID',
+        .state('transformer.edit', {
+            url: '/:transformerID',
         });     
    
     }])
-    .controller('validator', ['$rootScope',  '$scope', '$state', '$stateParams', 'TableSrv', 'RestURLHelper', 'DataSrv', 'JSONValidationSchemas', function ($rootScope, $scope, $state, $stateParams, TableSrv, RestURLHelper, DataSrv, JSONValidationSchemas) {
+    .controller('transformer', ['$rootScope',  '$scope', '$state', '$stateParams', 'TableSrv', 'RestURLHelper', 'DataSrv', 'JSONTransformationSchemas', function ($rootScope, $scope, $state, $stateParams, TableSrv, RestURLHelper, DataSrv, JSONTransformationSchemas) {
         'use strict';
         
-    	$scope.validator_schema = JSONValidationSchemas.validator_schema;
-    	$scope.validator_form = JSONValidationSchemas.validator_form;
-    	$scope.validator_model = {};
+    	$scope.transformer_schema = JSONTransformationSchemas.transformer_schema;
+    	$scope.transformer_form = JSONTransformationSchemas.transformer_form;
+    	$scope.transformer_model = {};
     	
-    	$scope.is_validator_new = true;
-    	$scope.is_validator_saved = false;
+    	$scope.is_transformer_new = true;
+    	$scope.is_transformer_saved = false;
         
-        $scope.ruleDefinitionByClassName = JSONValidationSchemas.ruleDefinitionByClassName;
-        $scope.is_new =  $state.includes('validator.new');
+        $scope.ruleDefinitionByClassName = JSONTransformationSchemas.ruleDefinitionByClassName;
+        $scope.is_new =  $state.includes('transformer.new');
         
-        if ( $stateParams.validatorID != null) {
+        if ( $stateParams.transformerID != null) {
         	
-                $scope.validator_id = Number($stateParams.validatorID);
-                $scope.is_validator_new = false;
+                $scope.transformer_id = Number($stateParams.transformerID);
+                $scope.is_transformer_new = false;
                 
                 // obtención de datos,  utilizando el id obtiene la url y luego el servico de datos entrega una network, eso va al form model
-            	DataSrv.get( RestURLHelper.validatorURLByID($scope.validator_id), 
-            			function(validator_model) {
+            	DataSrv.get( RestURLHelper.transformerURLByID($scope.transformer_id), 
+            			function(transformer_model) {
             					// el objeto de red obtenido es ahora el modelo del formulario
-            					$scope.validator_model = validator_model;		
+            					$scope.transformer_model = transformer_model;		
             					
             					// Carga las reglas
-            					$scope.validatorRulesTable = TableSrv.createNgTableFromGetData( function(params) { return $scope.validator_model.getLinkItems('rules'); }) ;
+            					$scope.transformerRulesTable = TableSrv.createNgTableFromGetData( function(params) { return $scope.transformer_model.getLinkItems('rules'); }) ;
             					
             			}							
             	);
@@ -73,32 +73,32 @@ angular.module('validator', [
         /***
          *  Callback de refresh de redes  
          **/
-        $scope.validatorRulesTableRefreshCallback = function() { 
+        $scope.transformerRulesTableRefreshCallback = function() { 
         	
-        	if ( $scope.validatorRulesTable == null ) // Si la tabla es null, la crea
-				$scope.validatorRulesTable = TableSrv.createNgTableFromGetData( function(params) { return $scope.validator_model.getLinkItems('rules'); }) ;
+        	if ( $scope.transformerRulesTable == null ) // Si la tabla es null, la crea
+				$scope.transformerRulesTable = TableSrv.createNgTableFromGetData( function(params) { return $scope.transformer_model.getLinkItems('rules'); }) ;
 		
-			$scope.validator_model.reload( function (obj) { $scope.validatorRulesTable.reload(); } );
+			$scope.transformer_model.reload( function (obj) { $scope.transformerRulesTable.reload(); } );
 		};
         
         /**
          * Edit rule
          */
-        $scope.editValidatorRule = function(rule) {
+        $scope.editTransformerRule = function(rule) {
         	
         	$scope.is_rule_visible = true;
         	$scope.is_rule_new = false;
         	$scope.is_rule_saved = false;
         	
         	/** schema y formulario de la parte genérica de una regla **/
-        	$scope.rule_data_schema = JSONValidationSchemas.rule_data_schema;
-        	$scope.rule_data_form = JSONValidationSchemas.rule_data_form;
+        	$scope.rule_data_schema = JSONTransformationSchemas.rule_data_schema;
+        	$scope.rule_data_form = JSONTransformationSchemas.rule_data_form;
         	
 
         	$scope.rule_data_model = rule; // si es una regla a editar tenemos al objeto como parámetro
         	$scope.rule_model = JSON.parse(rule.jsonserialization); // el modelo de la regla conreta se deserializa del objeto rule campo jsonserialization
         		
-        	$scope.rule_definition = JSONValidationSchemas.ruleDefinitionByClassName[ $scope.rule_model["@class"] ]; 
+        	$scope.rule_definition = JSONTransformationSchemas.ruleDefinitionByClassName[ $scope.rule_model["@class"] ]; 
    
         	/** schema y formulario de la parte específica de una regla **/
         	$scope.rule_schema = $scope.rule_definition.schema;
@@ -108,15 +108,15 @@ angular.module('validator', [
         /**
          * Add new rule
          */
-        $scope.addValidatorRule = function(rule) {
+        $scope.addTransformationRule = function(rule) {
         	
         	$scope.is_rule_visible = true;
         	$scope.is_rule_new = true;
         	$scope.is_rule_saved = false;
         	
         	/** schema y formulario de la parte genérica de una regla **/
-        	$scope.rule_data_schema = JSONValidationSchemas.rule_data_schema;
-        	$scope.rule_data_form = JSONValidationSchemas.rule_data_form;
+        	$scope.rule_data_schema = JSONTransformationSchemas.rule_data_schema;
+        	$scope.rule_data_form = JSONTransformationSchemas.rule_data_form;
         		
         	$scope.rule_data_model = {}; // si es una regla nueva no tenemos schema
         	$scope.rule_model = { '@class' : rule.className }; // para una regla nueva no tenemos modelo de regla
@@ -131,10 +131,9 @@ angular.module('validator', [
         
         
         /** 
-    	 * deleteValidatorRule: Borrado de un origin
+    	 * deleteTransformerRule: Borrado de un origin
     	 ***/
-    	  $scope.deleteValidatorRule = function(rule) {
-    		  
+    	  $scope.deleteTransformerRule = function(rule) {
     		  
     		  if ( confirm("¿Esta seguro que desea borrar esta regla?" ) ) { 
     		  
@@ -142,11 +141,11 @@ angular.module('validator', [
 	    		  
 	    		   // llamada al borrado
 	    		  rule.remove( function() {	
-	    			  $scope.validatorRulesTableRefreshCallback(); 
+	    			  $scope.transformerRulesTableRefreshCallback(); 
 	    		  }
 	    		   ///// ATENCION: FALTA LA LLAMADA AL CALLBACK DE ERROR
-	    		  );   	
-    		  }   
+	    		  );   	   
+    		  }
     	  }; 
         
         /***
@@ -161,20 +160,20 @@ angular.module('validator', [
 		       	if ( $scope.is_rule_new ) { 
 		       		
 		       		// Se llama al servicio de add con url de rule y el modelo de regla
-		       		DataSrv.add( RestURLHelper.validatorRuleURL(), $scope.rule_data_model,
+		       		DataSrv.add( RestURLHelper.transformerRuleURL(), $scope.rule_data_model,
 		       				
 		       			function(rule) { // callback de creación exitosa
 		       				// se actualiza el modelo del form con el objeto actualizable
 		       			 	$scope.rule_data_model = rule; 
 		       				
 		       				 // Agregar el origen a la colecction origins de la network
-		       			 	$scope.validator_model.addToCollection('rules',  RestURLHelper.urlFromEntity(rule), 
-		       						// Callback agregado exitosa de rule al validator
+		       			 	$scope.transformer_model.addToCollection('rules',  RestURLHelper.urlFromEntity(rule), 
+		       						// Callback agregado exitosa de rule al transformer
 		       						function() { 
 		       			 				$scope.is_rule_saved = true;
 		       			 				$scope.is_rule_new = false;
 		       			 				
-		       			 				$scope.validatorRulesTableRefreshCallback();
+		       			 				$scope.transformerRulesTableRefreshCallback();
 		       			 			}, 
 		       		    			onRuleSaveError
 		       		    	); /* fin de agregar */
@@ -200,36 +199,36 @@ angular.module('validator', [
      
    	
     /***
-     * Validator forms submit handler
+     * Transformer forms submit handler
      */
-    $scope.on_validator_submit = function(validator_form) {
+    $scope.on_transformer_submit = function(transformer_form) {
     	
      	// Si es una regla nueva 
-       	if ( $scope.is_validator_new ) { 
+       	if ( $scope.is_transformer_new ) { 
        		
-       		// Se llama al servicio de add con url de validator y el modelo de regla
-       		DataSrv.add( RestURLHelper.validatorURL(), $scope.validator_model,
+       		// Se llama al servicio de add con url de transformer y el modelo de regla
+       		DataSrv.add( RestURLHelper.transformerURL(), $scope.transformer_model,
        				
-       			function(validator) { // callback de creación exitosa
+       			function(transformer) { // callback de creación exitosa
        				// se actualiza el modelo del form con el objeto actualizable
-       			 	$scope.validator_model = validator; 	
-       			 	$scope.is_validator_new = false;
-   				}, // fin callback de add validator
+       			 	$scope.transformer_model = transformer; 	
+       			 	$scope.is_transformer_new = false;
+   				}, // fin callback de add transformer
    				onSaveError
-       		); // fin de add validator
+       		); // fin de add transformer
        		
        	} // fin de nueva regla
        	else { // si es una regla existente
        	
        	  // Se graba el modelo en la bd	
-   	      $scope.validator_model.update(
+   	      $scope.transformer_model.update(
    	    	function() { // success callback
-   	    		$scope.is_validator_saved = true;
+   	    		$scope.is_transformer_saved = true;
    	    	},
    	    	onSaveError
-   	      ); // fin de validator_model.update
+   	      ); // fin de transformer_model.update
    	      
-       	} /* fin del validator ya grabado */ 
+       	} /* fin del transformer ya grabado */ 
 	
     };
     
@@ -246,9 +245,9 @@ angular.module('validator', [
 	 * Handler de errores de almacenamiento en la bd
 	 */
 	function onSaveError(error) { // error callback
-	 	$scope.is_validator_saved = false;
-	    $scope.validator_save_error = true;
-	    $scope.validator_save_error_message = error.status + ": " + error.statusText;
+	 	$scope.is_transformer_saved = false;
+	    $scope.transformer_save_error = true;
+	    $scope.transformer_save_error_message = error.status + ": " + error.statusText;
 	};
         
         

@@ -1,6 +1,43 @@
 angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  function() {
 	
 	
+	this.validator_form = [   { "type": "section",
+	                     	    "htmlClass": "row",
+	                    	    "items": [
+	                    	      {
+	                    	        "type": "section",
+	                    	        "htmlClass": "col-xs-6",
+	                    	        "items": [
+	                    	          "name"
+	                    	        ]
+	                    	      },
+	                    	      {
+	                    	        "type": "section",
+	                    	        "htmlClass": "col-xs-6",
+	                    	        "items": [
+	                    	          "description"
+	                    	        ]
+	                    	      },
+	                    	 
+	                    	    ]
+	                    	  },
+	                    	  
+	                    	  { type: "submit", title: "Guardar" }
+	                        
+	                       ];
+	
+
+	
+	
+	this.validator_schema = {
+			type: "object",
+		    properties: {
+		      name : { type: "string", title: "Nombre", description: "" }, 
+		      description : { type: "string", title: "Descripción", description: "" },
+		    }
+	};
+	
+	
 	this.rule_data_form = [ "name",
 	                        "description",
 	                        "mandatory",
@@ -38,7 +75,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 			name : "Validación por valores controlados",
 			className: "org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule",
 			form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias con estos valores resulta válido</p>"}, 
-			        "fieldname", "controlledValues", { type: "submit", title: "Guardar cambios" }],
+			        "fieldname", "controlledValues", { type: "submit", title: "Guardar regla" }],
 			schema: {
 				type: "object",
 				properties: {
@@ -56,7 +93,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 		name: "Validación por valores controlados (large)",
 		className: "org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule",
 		form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias con estos valores resulta válido</p>"}, 
-		        "fieldname", "controlledValuesCSV", { type: "submit", title: "Guardar cambios" }],
+		        "fieldname", "controlledValuesCSV", { type: "submit", title: "Guardar regla" }],
 		schema: {
 			    type: "object",
 			    properties: {
@@ -75,7 +112,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 			name : "Validación por longitud de contenido",
 			className: "org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule",
 			form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias de longitud entre un mínimo y un máximo</p>"}, 
-			        "fieldname", "minLength", "maxLength", { type: "submit", title: "Guardar cambios" }],
+			        "fieldname", "minLength", "maxLength", { type: "submit", title: "Guardar regla" }],
 			schema: {
 				type: "object",
 				    properties: {
@@ -91,7 +128,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 			name : "Validación por expresiones regulares",
 			className: "org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule",
 			form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias de longitud entre un mínimo y un máximo</p>"}, 
-			        "fieldname", "regexString", { type: "submit", title: "Guardar cambios" }],
+			        "fieldname", "regexString", { type: "submit", title: "Guardar regla" }],
 			schema: {
 				type: "object",
 				    properties: {
@@ -109,7 +146,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 
 
 	/** mapeo de las definiciones de reglas a un objeto **/
-	var rules_defs_by_class  =  {}
+	var rules_defs_by_class  =  {};
 	$.map( _RULES, function(rule, i ) { rules_defs_by_class[rule.className] = rule; });
 	
 	/** export del objeto con las definiciones de reglas **/

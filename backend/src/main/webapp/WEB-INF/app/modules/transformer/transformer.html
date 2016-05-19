@@ -1,15 +1,15 @@
-<div ng-controller="validator">
+<div ng-controller="transformer">
 
 	<div class="row">
 		<div class="col-md-12">
-			<h4>Editando validador: {{validator_model.name}}</h4>
+			<h4>Editando transformador: {{transformer_model.name}}</h4>
 			<p>Aqui ....</p>
-			<form name="validatorForm" sf-schema="validator_schema" sf-form="validator_form" sf-model="validator_model" ng-submit="on_validator_submit(validatorForm)"></form>
+			<form name="transformerForm" sf-schema="transformer_schema" sf-form="transformer_form" sf-model="transformer_model" ng-submit="on_transformer_submit(transformerForm)"></form>
 			
 		</div>
 	</div>
 	
-	<div class="row" ng-if="!is_validator_new" >
+	<div class="row" ng-if="!is_transformer_new" >
 		<div class="col-xs-12">
 	 		<div class="btn-group pull-right" uib-dropdown>
 				
@@ -19,29 +19,28 @@
 				       
 				    </button>
 				    <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
-				        <li ng-repeat="ruleDefinition in ruleDefinitionByClassName" role="menuitem"><a ng-click="addValidatorRule(ruleDefinition)" href="">{{ruleDefinition.name}}</a></li>   
+				        <li ng-repeat="ruleDefinition in ruleDefinitionByClassName" role="menuitem"><a ng-click="addTransformationRule(ruleDefinition)" href="">{{ruleDefinition.name}}</a></li>   
 				    </ul>
 			</div>
 		</div>
 	</div>
 	
-	<div ng-if="!is_validator_new" class="row" >
+	<div ng-if="!is_transformer_new" class="row" >
 		<div class="col-md-6">
 	
 			<div class="row">
 				<div class="col-xs-12">
-					<table ng-table="validatorRulesTable"
+					<table ng-table="transformerRulesTable"
 						class="table table-bordered table-striped table-condensed">
 						<tr ng-repeat="vrule in $data">
 							<td data-title="'Nombre'">{{vrule.name}}</td>
 							<td data-title="'Descripción'">{{vrule.description}}</td>
-							<td data-title="'Mandatoria'">{{vrule.mandatory}}</td>
 							<td>
 								<button class="btn btn-primary btn-sm"
-									ng-click="editValidatorRule(vrule)">
+									ng-click="editTransformerRule(vrule)">
 									<span class="glyphicon glyphicon-pencil"></span>
 								</button>
-								<button class="btn btn-danger  btn-sm" ng-click="deleteValidatorRule(vrule)">
+								<button class="btn btn-danger  btn-sm" ng-click="deleteTransformerRule(vrule)">
 									<span class="glyphicon glyphicon-trash"></span>	
 								</button> 
 							</td>

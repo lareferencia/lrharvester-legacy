@@ -13,7 +13,9 @@
 				Acciones <span class="caret"></span>
 			</button>
 			<ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
-				<li role="menuitem"><a href="#">Cosechar</a></li>
+				<li role="menuitem"><a href="" ng-click="executeNetworkAction('START_HARVESTING', currentSelectedNetworkList(), networksTableRefreshCallback)">Cosechar</a></li>
+				<li role="menuitem"><a href="" ng-click="executeNetworkAction('STOP_HARVESTING', currentSelectedNetworkList(), networksTableRefreshCallback)">Detener cosecha </a></li>
+				
 				<li role="menuitem"><a href="#">Indexar Vufind</a></li>
 				<li role="menuitem"><a href="#">Indexar XOAI</a></li>
 				<li class="divider"></li>
@@ -25,21 +27,6 @@
 			</ul>
 		</div>
 	</div>
-	<!--  div  class="col-md-6">
-			
-				<h5>Edición de Validadores y Tranformadores</h5>
-				<p></p>
-		
-	          	<button ng-controller="ValidationController" type="button" class="btn btn-primary btn-sm" ng-click="openValidatorsList()">
-	          		<span class="glyphicon glyphicon-pencil"></span>
-	          		Validadores
-	          	</button>
-	          	<button ng-controller="TransformationController" type="button" class="btn btn-primary btn-sm" ng-click="openTransformersList()">
-	          		<span class="glyphicon glyphicon-pencil"></span>
-	          		Transformadores
-	          	</button>
-				
-			</div-->
 
 </div>
 <!-- End Row cabecera -->
@@ -50,7 +37,7 @@
 	<div class="col-xs-12">
 		<table ng-table="networksTable" class="table table-bordered table-striped table-condensed">
 			<tr ng-repeat="network in $data track by network.acronym">
-				<td width="30" style="text-align: left" header="'modules/app/checkbox-tpl.html'"><input type="checkbox" ng-model="networks.selected[network.acronym]" /></td>
+				<td width="30" style="text-align: left" header="'modules/app/checkbox-tpl.html'"><input type="checkbox" ng-model="networks.selected[network.networkID]" /></td>
 				<td style="width: 40px;" data-title="'Acrónimo'" filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
 				<td style="width: 150px;" data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
 				<td style="width: 300px;" data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
@@ -69,7 +56,7 @@
 							<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>
 						</div>
 						<div class="small">
-							<i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><a target="_blank" href='<spring:url value="/diagnose/"/>{{network.acronym}}'>Diagnóstico</a></span>
+							<i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><a target="_blank" href="/diagnose/{{network.acronym}}">Diagnóstico</a></span>
 						</div>
 					</div>
 					<div ng-if="network.lgkSnapshotID == null" class="alert alert-danger" role="alert" style="height: 100%;">

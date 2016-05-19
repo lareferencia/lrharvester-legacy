@@ -39,16 +39,48 @@ angular.module('validators', [
     	'use strict';
 
 					    	
-   	 	$scope.validatorsTable = TableSrv.createNgTableFromWsURL(
+   	 	/*$scope.validatorsTable = TableSrv.createNgTableFromWsURL(
 							RestURLHelper.validatorURL(), function(data) {
 								return data._embedded.validator;
 							}, function(data) {
 								return data.page.totalElements;
-							}, 0, []);
-
-		$scope.validatorsTableRefreshCallback = function() {
-			$scope.validatorsTable.reload();
-		};
+							}, 0, []);*/
+    	
+    	
+    	DataSrv.list( RestURLHelper.validatorURL(), function(validators) {
+    		
+    		$scope.validators = validators;
+    		$scope.validatorsTable = TableSrv.createNgTableFromGetData( 
+    				function(params) { 
+    					return $scope.validators.getItems(); 
+    				}
+    		);
+    		
+			
+    	});
+    	
+    	/**
+    	 * Refresh de tabla
+    	 */
+    	$scope.validatorsTableRefreshCallback = function() {  
+        	$scope.validators.reload( function (obj) { $scope.validatorsTable.reload();  } );
+    	};
+    	
+    	
+    	 /** 
+    	 * deleteValidator: Borrado de un validador
+    	 ***/
+    	  $scope.deleteValidator = function(validator) {
+    		      		  
+    		   // llamada al borrado
+    		  validator.remove( function() {	
+    			  		$scope.validatorsTableRefreshCallback(); 
+    		  }
+    		   ///// ATENCION: FALTA LA LLAMADA AL CALLBACK DE ERROR
+    		  );   	   
+    	  }; 
+        
+    
 			
     	
     }]);

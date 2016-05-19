@@ -1,0 +1,42 @@
+
+<div class="row">
+	<div class="col-md-12">
+		<h3>Edición transformadores</h3>
+		<p>Aqui ....</p>
+
+
+	</div>
+</div>
+
+<div class="row" ng-controller="transformers">
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-xs-12">
+	          	<a ui-sref="transformer.new" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Agregar Transformador</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<table ng-table="transformersTable"
+					class="table table-bordered table-striped table-condensed">
+					<tr ng-repeat="transformer in $data track by transformer.name">
+
+						<td data-title="'Nombre'">{{transformer.name}}</td>
+						<td data-title="'Descripción'">{{transformer.description}}</td>
+						<td>
+					        <button class="btn btn-primary btn-sm"  ui-sref="transformer.edit({transformerID:transformer.getObjectID()})"> 	   
+								<span class="glyphicon glyphicon-pencil"></span>	
+							</button>
+							<button class="btn btn-danger  btn-sm" ng-click="deleteTransformer(transformer)">
+								<span class="glyphicon glyphicon-trash"></span>	
+							</button> 
+						</td>
+
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</div>
+

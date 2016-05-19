@@ -1,12 +1,13 @@
 angular
-		.module('table.services', [ "ngTable", "ngResource" ])
+		.module('table.services', [ "ngTable", "ngResource", 'data.services' ])
 		.service(
-				'TableSrv',
+				'TableSrv', 
 				[
 						"NgTableParams",
 						"$resource",
+						"DataSrv",
 
-						function(NgTableParams, $resource) {
+						function(NgTableParams, $resource, DataSrv) {
 
 							/**
 							 * Crea una tabla partiendo de la URL de un WS y una
@@ -68,6 +69,8 @@ angular
 								});
 
 							};
+							
+				
 
 						} ]);
 

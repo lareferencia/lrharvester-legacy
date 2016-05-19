@@ -6,6 +6,15 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/network/' + networkID;	
 	  };
 	  
+	  this.validatorURLByID = function (id) {
+		  return '/rest/validator/' + id;	
+	  };
+	  
+	  this.transformerURLByID = function (id) {
+		  return '/rest/transformer/' + id;	
+	  };
+	  
+	  
 	  this.propertyURLByID = function (propertyID) {
 		  return '/rest/property/' + propertyID;	
 	  };

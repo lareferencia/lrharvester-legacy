@@ -1,6 +1,43 @@
 angular.module('transformation.json.schemas', []).service('JSONTransformationSchemas',  function() {
 	
 	
+	this.transformer_form = [   { "type": "section",
+ 	    "htmlClass": "row",
+	    "items": [
+	      {
+	        "type": "section",
+	        "htmlClass": "col-xs-6",
+	        "items": [
+	          "name"
+	        ]
+	      },
+	      {
+	        "type": "section",
+	        "htmlClass": "col-xs-6",
+	        "items": [
+	          "description"
+	        ]
+	      },
+	 
+	    ]
+	  },
+	  
+	  { type: "submit", title: "Guardar" }
+    
+   ];
+
+
+
+
+	this.transformer_schema = {
+		type: "object",
+		properties: {
+			name : { type: "string", title: "Nombre", description: "" }, 
+			description : { type: "string", title: "Descripción", description: "" },
+		}
+	};
+	
+	
 	this.rule_data_form = [ "name", "description"];
 	
 	this.rule_data_schema = {

@@ -10,6 +10,9 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 	 var add_methods = function(processedResponse) {
 		 
 		 
+		
+		 
+		 
 		 /* Reload */
 		  processedResponse.reload = function(success_callback) {
 			  
@@ -99,6 +102,27 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 			  return parsed_self_url[parsed_self_url.length-1];
 		  };
 		  
+		  
+		  
+		  /* Si el objeto posee items */
+		  if ( processedResponse._embeddedItems != null ) {
+			  
+			  /* Agrega a cada item la posibilidad de obtener su id */ 
+			  angular.forEach(processedResponse._embeddedItems, function(item, i) {
+				  
+				  item.getObjectID = function() {
+					  var parsed_self_url = this._links.self.href.split('/');
+					  return parsed_self_url[parsed_self_url.length-1];
+				  };
+				  
+				  item.remove = function(delete_callback, fail_callback) {  	  
+					  var resource = this._resources('self',{}, {remove: { method: 'DELETE'}} );
+					  resource.remove(delete_callback, delete_callback); 
+				  };
+				  
+				  
+			  }); 
+		  }
 		  
 		  
 		  // para cada link para procesar

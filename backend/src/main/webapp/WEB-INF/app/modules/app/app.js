@@ -16,7 +16,9 @@ angular.module('app', [
     'origin',
     'network',
     'validators',
-    'validator'
+    'validator',
+    'transformers',
+    'transformer'
 
 ])
     .config(['$stateProvider', function ($stateProvider) {
@@ -54,8 +56,8 @@ angular.module('app', [
         // watch para el check all de redes
         $scope.$watch('networks.areAllSelected', function(value) {
             angular.forEach($scope.networksTable.data, function(network) {
-                if (angular.isDefined(network.acronym)) {
-                    $scope.networks.selected[network.acronym] = value;
+                if (angular.isDefined(network.networkID)) {
+                    $scope.networks.selected[network.networkID] = value;
                 }
             });
         });
@@ -66,8 +68,29 @@ angular.module('app', [
          * @param networkID or networkList
          */	
          $scope.executeNetworkAction = function (action, networkIDs, success_callback) {
-      	   DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { alert("Error en la llamada a networkAction");} )	  
+        	 
+        	 if (networkIDs != null && networkIDs != "" ) {
+        		 DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { alert("Error en la llamada a networkAction");} );	
+        	 }
          };
+         
+         /**
+          * Retorna una lista de los ids de reds seleccionados separados por comas en formato string
+          */
+         $scope.currentSelectedNetworkList = function() {
+        	 
+        	 var selected = []; 
+        	 
+        	 angular.forEach($scope.networks.selected, function(value, key) {
+        		 if (value) 
+        			 selected.push(key);
+        	 });
+        	 
+        	 return  selected.join(',');
+        	 
+         };
+         
+         
 
 
     }])

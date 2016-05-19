@@ -12,10 +12,7 @@
 	<div class="col-md-12">
 		<div class="row">
 			<div class="col-xs-12">
-      			<button type="button" class="btn btn-primary btn-sm" ng-click="openEditValidator(true, null, validatorsTableRefreshCallback)">
-	          		<span class="glyphicon glyphicon-pencil"></span>
-	          		Agregar validador
-	          	</button>			
+	          	<a ui-sref="validator.new" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Agregar Validador</a>
 			</div>
 		</div>
 		<div class="row">
@@ -27,9 +24,12 @@
 						<td data-title="'Nombre'">{{validator.name}}</td>
 						<td data-title="'Descripción'">{{validator.description}}</td>
 						<td>
-					        <button class="btn btn-primary btn-sm"  ui-sref="validator.edit({validatorID:1})"> 	   
+					        <button class="btn btn-primary btn-sm"  ui-sref="validator.edit({validatorID:validator.getObjectID()})"> 	   
 								<span class="glyphicon glyphicon-pencil"></span>	
 							</button>
+							<button class="btn btn-danger  btn-sm" ng-click="deleteValidator(validator)">
+								<span class="glyphicon glyphicon-trash"></span>	
+							</button> 
 						</td>
 
 					</tr>
