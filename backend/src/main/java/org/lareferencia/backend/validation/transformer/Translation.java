@@ -10,21 +10,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Getter
 @ToString
 class Translation {
-	
+
 	@JsonProperty("search")
 	String search;
-	
+
 	@JsonProperty("replace")
 	String replace;
-	
-	public Translation(@JsonProperty("search") String search, @JsonProperty("replace") String replace) {
+
+	public Translation(@JsonProperty("search") String search,
+			@JsonProperty("replace") String replace) {
 		super();
 		this.search = search;
 		this.replace = replace;
 	}
-	
+
 	public Translation() {
 		super();
 	}
-	
+
 }

@@ -32,7 +32,7 @@ import org.springframework.hateoas.Identifiable;
 public class AbstractEntity implements Identifiable<Long> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private final Long id;
 
 	protected AbstractEntity() {

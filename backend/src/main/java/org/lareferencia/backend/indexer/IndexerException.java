@@ -33,4 +33,3 @@ public class IndexerException extends Exception {
 		super(cause);
 	}
 }
-

@@ -33,4 +33,3 @@ public class HarvestingException extends Exception {
 		super(cause);
 	}
 }
-

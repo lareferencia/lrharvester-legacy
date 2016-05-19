@@ -1,5 +1,5 @@
 
-angular.module('model.json.schemas', []).service('JSONFormSchemas',  function() {
+angular.module('network.json.schemas', []).service('JSONNetworkSchemas',  function() {
 	
     /** Datos de formulario Network **/
 	this.network_schema = {
@@ -13,7 +13,53 @@ angular.module('model.json.schemas', []).service('JSONFormSchemas',  function() 
 	    }
 	 };
 	
-	this.network_form = [ "*", { type: "submit", title: "Guardar cambios" } ];
+	this.network_form = [ "*" ];
+	
+	this.network_validation_schema = {
+		 type: "object",
+		    properties: {
+		      validator: { type: "string", title: "Validador", description: "" },
+		      transformer: { type: "string", title: "Transformador", description: "" },
+		    }	
+	};
+	
+	this.network_validation_form =  function(validatorsArray, transformersArray) {
+
+		validatorTitleMap = {};
+		transformerTitleMap = {};
+		
+		for (var i=0;i<validatorsArray.length;i++) {
+			var validator = validatorsArray[i];
+			validatorTitleMap[ validator._links.self.href ] = validator.name;
+		}
+		
+		for (var i=0;i<transformersArray.length;i++) {
+			var transformer = transformersArray[i];
+			transformerTitleMap[ transformer._links.self.href ] = transformer.name;
+		}
+		
+		
+		return [ { key: "validator", type: "select", "titleMap": validatorTitleMap },
+		         { key: "transformer", type: "select", "titleMap": transformerTitleMap },
+		       ];
+		
+	};
+	
+	this.buildTitleMap =  function(keyName, objArray) {
+
+		objTitleMap = {};
+		
+		for (var i=0;i<objArray.length;i++) {
+			var obj = objArray[i];
+			objTitleMap[ obj._links.self.href ] = obj.name;
+		}
+	
+		return  { "key": keyName, type: "select", "titleMap": objTitleMap };
+		       
+	};
+	      	                       
+	                         	    
+	
 	
     /** Datos de formulario Network Properties **/
 	

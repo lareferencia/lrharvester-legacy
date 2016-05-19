@@ -16,32 +16,34 @@ package org.lareferencia.backend.util.datatable;
 
 /**
  * An enum value to represent the status of a response.
- *
+ * 
  * @author Hillel M.
  */
 public enum StatusType {
 
-  /**
-   * The query completed successfully and the data can be returned.
-   */
-  OK,
+	/**
+	 * The query completed successfully and the data can be returned.
+	 */
+	OK,
 
-  /**
-   * The query failed to complete. In this case, no data table is passed in the response.
-   */
-  ERROR,
+	/**
+	 * The query failed to complete. In this case, no data table is passed in
+	 * the response.
+	 */
+	ERROR,
 
-  /**
-   * The query completed with a warning. In some cases, part of the data is returned.
-   */
-  WARNING;
+	/**
+	 * The query completed with a warning. In some cases, part of the data is
+	 * returned.
+	 */
+	WARNING;
 
-  /**
-   * Returns a lower case string of this enum.
-   *
-   * @return a lower case string of this enum.
-   */
-  public String lowerCaseString() {
-    return this.toString().toLowerCase();
-  }
+	/**
+	 * Returns a lower case string of this enum.
+	 * 
+	 * @return a lower case string of this enum.
+	 */
+	public String lowerCaseString() {
+		return this.toString().toLowerCase();
+	}
 }

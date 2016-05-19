@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.lareferencia.backend.validation.validator;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -26,18 +25,19 @@ import lombok.Setter;
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public abstract class AbstractValidatorRule implements IValidatorRule {
-	
+
 	@JsonIgnore
 	protected Long ruleId;
-	
-	@JsonIgnore	
+
+	@JsonIgnore
 	protected Boolean mandatory = false;
-	
-	@JsonIgnore	protected QuantifierValues  quantifier = QuantifierValues.ONE_OR_MORE;
-	
+
+	@JsonIgnore
+	protected QuantifierValues quantifier = QuantifierValues.ONE_OR_MORE;
+
 	public AbstractValidatorRule() {
 		this.mandatory = false;
 		this.quantifier = QuantifierValues.ONE_OR_MORE;
 	};
-	
+
 }

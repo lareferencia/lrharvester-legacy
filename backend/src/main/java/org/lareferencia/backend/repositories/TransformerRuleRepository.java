@@ -17,7 +17,8 @@ import org.lareferencia.backend.domain.TransformerRule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "transformerRule", collectionResourceRel="transformerRule")
-public interface TransformerRuleRepository extends JpaRepository<TransformerRule, Long> { 
-	
+@RepositoryRestResource(path = "transformerRule", collectionResourceRel = "transformerRule")
+public interface TransformerRuleRepository extends
+		JpaRepository<TransformerRule, Long> {
+
 }

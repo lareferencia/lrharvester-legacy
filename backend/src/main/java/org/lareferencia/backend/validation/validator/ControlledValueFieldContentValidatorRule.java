@@ -24,40 +24,40 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Getter
 @Setter
-public class ControlledValueFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
-	
+public class ControlledValueFieldContentValidatorRule extends
+		AbstractValidatorFieldContentRule {
+
 	private static final int MAX_EXPECTED_LENGTH = 255;
 
 	protected List<String> controlledValues;
-	
+
 	public ControlledValueFieldContentValidatorRule() {
 		super();
 		this.controlledValues = new ArrayList<String>();
 	}
-	
-	
+
 	@Override
 	public FieldContentValidatorResult validate(String content) {
-		
+
 		FieldContentValidatorResult result = new FieldContentValidatorResult();
-				
+
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue( content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
-			result.setValid( this.controlledValues.contains(content) );
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content
+					.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setValid(this.controlledValues.contains(content));
 		}
-			
-		return result;	
+
+		return result;
 	}
-	
 
 	@Override
 	public String toString() {
 		return "ControlledValueContentValidationRule [controlledValues="
-				+ controlledValues + ", id=" + ruleId + ", mandatory=" + mandatory + ", quantifier="
-				+ quantifier + "]";
+				+ controlledValues + ", id=" + ruleId + ", mandatory="
+				+ mandatory + ", quantifier=" + quantifier + "]";
 	}
-	
+
 }

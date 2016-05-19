@@ -35,25 +35,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OAIOrigin extends AbstractEntity {
-	
+
 	public OAIOrigin() {
 		super();
 		this.metadataPrefix = "oai_dc";
 	}
-	
+
 	@Column(nullable = false)
 	private String uri;
-	
+
 	@Column(nullable = false)
 	private String metadataPrefix;
-	
-	private String name;
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="origin_id")
-	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
-	private Collection<OAISet> sets = new LinkedHashSet<OAISet>();
-	
 
+	private String name;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "origin_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	// Si es LAZY genera problemas durante el procesamiento
+	private Collection<OAISet> sets = new LinkedHashSet<OAISet>();
 
 }

@@ -41,38 +41,38 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"snapshot"})
-public class NetworkSnapshotLog extends AbstractEntity  {
-	
-	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
-	@JoinColumn(name="snapshot_id")
+@JsonIgnoreProperties({ "snapshot" })
+public class NetworkSnapshotLog extends AbstractEntity {
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "snapshot_id")
 	private NetworkSnapshot snapshot;
-	
+
 	@Column(nullable = false)
-	@Lob @Basic(fetch=FetchType.LAZY)
-	@Type(type="org.hibernate.type.StringClobType")
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	@Type(type = "org.hibernate.type.StringClobType")
 	private String message;
-	
+
 	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private java.util.Date timestamp;
 
-	
 	public NetworkSnapshotLog() {
 		super();
 	}
-	
-	public NetworkSnapshotLog(String message, NetworkSnapshot snapshot ) {
+
+	public NetworkSnapshotLog(String message, NetworkSnapshot snapshot) {
 		super();
-		
+
 		this.message = message;
 		this.snapshot = snapshot;
 		this.timestamp = new DateTime().toDate();
-		
+
 	}
-	
-	@JsonSerialize(using=JsonDateSerializer.class)
+
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public java.util.Date getTimestamp() {
 		return timestamp;
 	}

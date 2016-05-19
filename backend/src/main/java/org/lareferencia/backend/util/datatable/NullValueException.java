@@ -15,19 +15,20 @@
 package org.lareferencia.backend.util.datatable;
 
 /**
- * Exception that is thrown when there is an attempt to request the value of
- * a cell with a null value.
- *
+ * Exception that is thrown when there is an attempt to request the value of a
+ * cell with a null value.
+ * 
  * @author Itai R.
  */
 public class NullValueException extends RuntimeException {
 
-  /**
-   * Constructor.
-   * 
-   * @param message The detailed message of this exception.
-   */
-  public NullValueException(String message) {
-    super(message);
-  }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            The detailed message of this exception.
+	 */
+	public NullValueException(String message) {
+		super(message);
+	}
 }

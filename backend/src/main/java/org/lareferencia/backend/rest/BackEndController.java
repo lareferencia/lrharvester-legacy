@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.lareferencia.backend.rest;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,671 +80,739 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @Controller
 public class BackEndController {
-	
-	@Autowired 
+
+	@Autowired
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private NetworkRepository networkRepository;
-	
+
 	@Autowired
 	private OAIOriginRepository originRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private OAISetRepository setRepository;
-	
-		
+
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
-	
+
 	@Autowired
 	private NetworkSnapshotLogRepository networkSnapshotLogRepository;
-	
+
 	@Autowired
 	private OAIRecordRepository recordRepository;
-	
-	
+
 	@Autowired
 	private ValidationManager validationManager;
-	
-	
+
 	@Autowired
 	private IndexerManager indexerManager;
-	
+
 	@Autowired
 	TaskScheduler scheduler;
-	
+
 	@Autowired
 	SnapshotManager snapshotManager;
-	
-	
+
 	/******************************************************
 	 * Login Services
 	 ******************************************************/
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {	
+	public String home(Locale locale, Model model) {
 		return "home";
 	}
-	
+
 	@RequestMapping(value = "/home3", method = RequestMethod.GET)
-	public String home2(Locale locale, Model model) {	
+	public String home2(Locale locale, Model model) {
 		return "home3";
 	}
-	
-	
+
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String login(Locale locale, Model model) {	
+	public String login(Locale locale, Model model) {
 		return "login";
 	}
-	
-	@RequestMapping(value="/login", params="errorLogin", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/login", params = "errorLogin", method = RequestMethod.GET)
 	public String loginFailed(Locale locale, Model model) {
 		model.addAttribute("loginFailed", true);
 		return "login";
 	}
-	
-	
+
+	/*****************************************************
+	 * Edición de validadores y transformadores
+	 *****************************************************/
+	@RequestMapping(value = "/validators", method = RequestMethod.GET)
+	public String validators() {
+		return "validators";
+	}
+
 	/******************************************************
 	 * Diagnose Services
 	 ******************************************************/
-	
-	
+
 	@RequestMapping(value = "/diagnose/{networkISO}/{snapID}", method = RequestMethod.GET)
-	public String diagnose(@PathVariable Long snapID, @PathVariable String networkISO, Locale locale, Model model) {	
-		
+	public String diagnose(@PathVariable Long snapID,
+			@PathVariable String networkISO, Locale locale, Model model) {
+
 		model.addAttribute("snapID", snapID);
 		model.addAttribute("networkISO", networkISO);
-		
+
 		return "diagnose";
 	}
-	
+
 	@RequestMapping(value = "/diagnose/{networkAcronym}", method = RequestMethod.GET)
-	public String diagnose(@PathVariable String networkAcronym, Locale locale, Model model) throws Exception {	
-		
-		
+	public String diagnose(@PathVariable String networkAcronym, Locale locale,
+			Model model) throws Exception {
+
 		Network network = networkRepository.findByAcronym(networkAcronym);
-		if ( network == null )
+		if (network == null)
 			throw new Exception("No se encontró RED");
-		
-		
-		NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
-		if ( lgkSnapshot == null )
+
+		NetworkSnapshot lgkSnapshot = networkSnapshotRepository
+				.findLastGoodKnowByNetworkID(network.getId());
+		if (lgkSnapshot == null)
 			throw new Exception("No se encontró LGKSnapshot");
-		
+
 		model.addAttribute("snapshotID", lgkSnapshot.getId());
 		model.addAttribute("networkAcronym", networkAcronym);
-		
+		model.addAttribute("networkID", network.getId());
+
 		return "diagnose";
 	}
-	
-	@RequestMapping(value="/public/listOriginsBySnapshotID/{id}", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/public/listOriginsBySnapshotID/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id) throws Exception {
-		
+	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id)
+			throws Exception {
+
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
-		
+
 		if (snapshot == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró snapshot con id: " + id);
-		
+
 		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
-		
+
 	}
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value="/public/getRecordMetadataByID/{id}", method=RequestMethod.GET)
+	@RequestMapping(value = "/public/getRecordMetadataByID/{id}", method = RequestMethod.GET)
 	public String getRecordMetadataByID(@PathVariable Long id) throws Exception {
-		
-		OAIRecord record = recordRepository.findOne( id );	
-		
-		if ( record != null ) 
+
+		OAIRecord record = recordRepository.findOne(id);
+
+		if (record != null)
 			return record.getPublishedXML();
 		else
 			return "Registro inexistente - Posiblemente el diagnóstico está desactualizado";
-			
+
 	}
-	
-	
-	
+
 	/*****************************************************************
-	 *  Validation Services
+	 * Validation Services
 	 *****************************************************************/
 
 	@ResponseBody
-	@RequestMapping(value="/public/listValidatorRulesByNetworkID/{id}", method=RequestMethod.GET)
-	public List<ValidatorRule> listValidatorRulesByNetworkID(@PathVariable Long id) throws Exception {
-		
-		Network network = networkRepository.findOne(id);
-		if ( network == null )
-			throw new Exception("No se encontró RED");
-		
-		return network.getValidator().getRules();
-		
-	}
-	
+	@RequestMapping(value = "/public/listValidatorRulesByNetworkID/{id}", method = RequestMethod.GET)
+	public List<ValidatorRule> listValidatorRulesByNetworkID(
+			@PathVariable Long id) throws Exception {
 
-	
-	
-	/***************************  Acciones Globales ****************************************/
+		Network network = networkRepository.findOne(id);
+		if (network == null)
+			throw new Exception("No se encontró RED");
+
+		return network.getValidator().getRules();
+
+	}
+
+	/*************************** Acciones Globales ****************************************/
 	@ResponseBody
-	@RequestMapping(value="/private/networkAction/{action}/{ids}", method=RequestMethod.GET)
-	public ResponseEntity<String> networkAction(@PathVariable NetworkAction action, @PathVariable Long... ids) {
-		
-		 List<Long> networkIdsWithErrors = new ArrayList<Long>();
-		 
-		
-		 for ( Long id : ids ) {
-			 
-			 // Se obtiene la red en cuestión
-			 Network network = networkRepository.findOne(id);
-			 
-			 // Si la red no existe se agrega a la list de redes con error
-			 if ( network == null )
+	@RequestMapping(value = "/private/networkAction/{action}/{ids}", method = RequestMethod.GET)
+	public ResponseEntity<String> networkAction(
+			@PathVariable NetworkAction action, @PathVariable Long... ids) {
+
+		List<Long> networkIdsWithErrors = new ArrayList<Long>();
+
+		for (Long id : ids) {
+
+			// Se obtiene la red en cuestión
+			Network network = networkRepository.findOne(id);
+
+			// Si la red no existe se agrega a la list de redes con error
+			if (network == null)
 				networkIdsWithErrors.add(id);
-				
-			 // De acuerdo a la acción se aplica sobre la red
-			 switch (action) {
-			
-			 	case START_HARVESTING:
-			 		snapshotManager.lauchHarvesting(id);
+
+			// De acuerdo a la acción se aplica sobre la red
+			switch (action) {
+
+			case START_HARVESTING:
+				snapshotManager.lauchHarvesting(id);
 				break;
-				
-			 	case START_HARVESTING_BYSET:
-					snapshotManager.lauchSetBySetHarvesting(id);
+
+			case START_HARVESTING_BYSET:
+				snapshotManager.lauchSetBySetHarvesting(id);
 				break;
-				
-				
-			 	case STOP_HARVESTING:
-			 		
-			 		// detiene todos los snapshots que estén en status harvesting
-			 		for (NetworkSnapshot snapshot : 
-			 			networkSnapshotRepository.findByNetworkAndStatus(network, SnapshotStatus.HARVESTING) ) {
-			 			snapshotManager.stopHarvesting(snapshot.getId());			 			
-			 		} 	
-			 	break;
-			 	
-			 	case CLEAN_NETWORK:
-			 		
-			 		// obtiene el lgk para no borrarlo
-			 		Long lgkSnapshotID = networkSnapshotRepository.findLastGoodKnowByNetworkID(id).getId(); 
-			 		
-			 		// recorre los snapshots no borrados
-					for (NetworkSnapshot snapshot : 
-			 			networkSnapshotRepository.findByNetworkAndDeleted(network, false) ) {
-						
-						// si no es el lgk 
-						if ( snapshot.getId() != lgkSnapshotID ) 
-							cleanSnapshot(snapshot);
-					}	
-			 	break;
-			 	
-			 	case ADD_VUFIND_INDEX:
-					try {
-						NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
-						if ( snapshot == null ) 
-							throw new Exception("Indexación Vufind fallida - No existe LGK para la red ID:" + id ); 
-						
-						indexerManager.indexNetworkInVufind(id);
-					} catch (Exception e1) {
-						networkIdsWithErrors.add(id);
-					}
-			 	break;
-			 	
-			 	case ADD_XOAI_INDEX:
-					try {
-						NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
-						if ( snapshot == null ) 
-							throw new Exception("Indexación XOAI fallida - No existe LGK para la red ID:" + id ); 
-						indexerManager.indexNetworkInXOAI(id);
-					} catch (Exception e1) {
-						networkIdsWithErrors.add(id);
-					}
-			 	break;
-			 	
-			 	case DELETE_VUFIND_INDEX:
-			 		try {
-						indexerManager.deleteNetworkFromVufind(id);
-					} catch (Exception e1) {
-						networkIdsWithErrors.add(id);
-					}
-			 	break;	
-			 	
-			 	
-			 	case DELETE_XOAI_INDEX:
-					try {
-						indexerManager.deleteNetworkFromXOAI(id);
-					} catch (Exception e1) {
-						networkIdsWithErrors.add(id);
-					}
-			 	break;
-			 	
-		
-			 	case DELETE_NETWORK:
-					try {
-						deleteNetwork(network);
-					} catch (Exception e) {
-						networkIdsWithErrors.add(id);
-					}
-			 		
-			 	break;
-			 
+
+			case STOP_HARVESTING:
+
+				// detiene todos los snapshots que estén en status harvesting
+				for (NetworkSnapshot snapshot : networkSnapshotRepository
+						.findByNetworkAndStatus(network,
+								SnapshotStatus.HARVESTING)) {
+					snapshotManager.stopHarvesting(snapshot.getId());
+				}
+				break;
+
+			case CLEAN_NETWORK:
+
+				// obtiene el lgk para no borrarlo
+				Long lgkSnapshotID = networkSnapshotRepository
+						.findLastGoodKnowByNetworkID(id).getId();
+
+				// recorre los snapshots no borrados
+				for (NetworkSnapshot snapshot : networkSnapshotRepository
+						.findByNetworkAndDeleted(network, false)) {
+
+					// si no es el lgk
+					if (snapshot.getId() != lgkSnapshotID)
+						cleanSnapshot(snapshot);
+				}
+				break;
+
+			case ADD_VUFIND_INDEX:
+				try {
+					NetworkSnapshot snapshot = networkSnapshotRepository
+							.findLastGoodKnowByNetworkID(id);
+					if (snapshot == null)
+						throw new Exception(
+								"Indexación Vufind fallida - No existe LGK para la red ID:"
+										+ id);
+
+					indexerManager.indexNetworkInVufind(id);
+				} catch (Exception e1) {
+					networkIdsWithErrors.add(id);
+				}
+				break;
+
+			case ADD_XOAI_INDEX:
+				try {
+					NetworkSnapshot snapshot = networkSnapshotRepository
+							.findLastGoodKnowByNetworkID(id);
+					if (snapshot == null)
+						throw new Exception(
+								"Indexación XOAI fallida - No existe LGK para la red ID:"
+										+ id);
+					indexerManager.indexNetworkInXOAI(id);
+				} catch (Exception e1) {
+					networkIdsWithErrors.add(id);
+				}
+				break;
+
+			case DELETE_VUFIND_INDEX:
+				try {
+					indexerManager.deleteNetworkFromVufind(id);
+				} catch (Exception e1) {
+					networkIdsWithErrors.add(id);
+				}
+				break;
+
+			case DELETE_XOAI_INDEX:
+				try {
+					indexerManager.deleteNetworkFromXOAI(id);
+				} catch (Exception e1) {
+					networkIdsWithErrors.add(id);
+				}
+				break;
+
+			case DELETE_NETWORK:
+				try {
+					deleteNetwork(network);
+				} catch (Exception e) {
+					networkIdsWithErrors.add(id);
+				}
+
+				break;
+
 			default:
 				break;
 			}
-			 
-			 
-			 
-			 
-			 System.out.println(action + ".." + id);
-		 }
-			 
+
+			System.out.println(action + ".." + id);
+		}
+
 		return null;
 	}
 
-	
 	/***** Acciones Auxiliares */
-	
+
 	private void cleanSnapshot(NetworkSnapshot snapshot) {
-		
+
 		System.out.println("Limpiando Snapshot: " + snapshot.getId());
 
 		// TODO: Falta borrar el índice de solr de estadísticas
 
 		// borra los resultados de validación
-	    System.out.println("Borrando registros de validaciones");
-		
+		System.out.println("Borrando registros de validaciones");
+
 		// borra las estadisticas
-	    System.out.println("Borrando stadísticas de metadatos");
-		
+		System.out.println("Borrando stadísticas de metadatos");
+
 		// borra el log de cosechas
-	    System.out.println("Borrando registros de log");
+		System.out.println("Borrando registros de log");
 		networkSnapshotLogRepository.deleteBySnapshotID(snapshot.getId());
-		
+
 		// borra los registros
-	    System.out.println("Borrando registros de metadatos");
+		System.out.println("Borrando registros de metadatos");
 		recordRepository.deleteBySnapshotID(snapshot.getId());
-		
+
 		// marcando snapshot borrado
 		snapshot.setDeleted(true);
 		networkSnapshotRepository.save(snapshot);
 	}
-	
-	
+
 	private void deleteSnapshot(NetworkSnapshot snapshot) {
 		cleanSnapshot(snapshot);
 		networkSnapshotRepository.delete(snapshot);
 	}
-	
+
 	private void deleteNetwork(Network network) throws Exception {
-		
-		System.out.println("Comenzando proceso de borrando Red: " + network.getName() );
+
+		System.out.println("Comenzando proceso de borrando Red: "
+				+ network.getName());
 
 		indexerManager.deleteNetworkFromVufind(network.getId());
 		indexerManager.deleteNetworkFromXOAI(network.getId());
 
-		for ( NetworkSnapshot snapshot:network.getSnapshots() ) {
+		for (NetworkSnapshot snapshot : network.getSnapshots()) {
 			deleteSnapshot(snapshot);
 		}
-		
-		System.out.println("Borrando Origenes/Sets" );
-		
-		for ( OAIOrigin origin : network.getOrigins() ) {
-			setRepository.deleteInBatch( origin.getSets() );
+
+		System.out.println("Borrando Origenes/Sets");
+
+		for (OAIOrigin origin : network.getOrigins()) {
+			setRepository.deleteInBatch(origin.getSets());
 		}
-		
-		originRepository.deleteInBatch( network.getOrigins() );
+
+		originRepository.deleteInBatch(network.getOrigins());
 
 		networkRepository.delete(network);
 
 		System.out.println("Finalizando borrado red: " + network.getName());
 	}
-	
-	
-	
-	
-	
-	
-	
-	/*************************** Fin  de acciones globales *******************************************************/
-	
-	
-	
 
-	/**************************** FrontEnd  ************************************/
+	/*************************** Fin de acciones globales *******************************************************/
+
+	/**************************** FrontEnd ************************************/
 
 	@ResponseBody
-	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkID/{id}", method=RequestMethod.GET)
+	@RequestMapping(value = "/public/lastGoodKnowSnapshotByNetworkID/{id}", method = RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
-			
-		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
+
+		NetworkSnapshot snapshot = networkSnapshotRepository
+				.findLastGoodKnowByNetworkID(id);
 		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-			snapshot,
-			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
-		);
+				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
+						: HttpStatus.OK);
 		return response;
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/public/getSnapshotByID/{id}", method=RequestMethod.GET)
+	@RequestMapping(value = "/public/getSnapshotByID/{id}", method = RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getSnapshotByID(@PathVariable Long id) {
-			
+
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
 		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-			snapshot,
-			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
-		);
+				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
+						: HttpStatus.OK);
 		return response;
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/public/getSnapshotInfoByID/{id}", method=RequestMethod.GET)
-	public NetworkInfo getSnapshotInfoByID(@PathVariable Long id) throws Exception {
-			
+	@RequestMapping(value = "/public/getSnapshotInfoByID/{id}", method = RequestMethod.GET)
+	public NetworkInfo getSnapshotInfoByID(@PathVariable Long id)
+			throws Exception {
+
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
-		
+
 		if (snapshot == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró snapshot con id: " + id);
-		
-		
+
 		Network network = snapshot.getNetwork();
-		
+
 		NetworkInfo ninfo = new NetworkInfo();
 		ninfo.networkID = network.getId();
 		ninfo.acronym = network.getAcronym();
 		ninfo.name = network.getName();
-		
+
 		ninfo.snapshotID = snapshot.getId();
 		ninfo.datestamp = snapshot.getEndTime();
 		ninfo.size = snapshot.getSize();
 		ninfo.validSize = snapshot.getValidSize();
 		ninfo.transformedSize = snapshot.getTransformedSize();
-		
+
 		return ninfo;
 	}
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value="/public/lastGoodKnowSnapshotByNetworkAcronym/{acronym}", method=RequestMethod.GET)
-	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String acronym) throws Exception {
-		
+	@RequestMapping(value = "/public/lastGoodKnowSnapshotByNetworkAcronym/{acronym}", method = RequestMethod.GET)
+	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(
+			@PathVariable String acronym) throws Exception {
+
 		Network network = networkRepository.findByAcronym(acronym);
-		if ( network == null ) // TODO: Implementar Exc
+		if (network == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró RED: " + acronym);
-		
-		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
+
+		NetworkSnapshot snapshot = networkSnapshotRepository
+				.findLastGoodKnowByNetworkID(network.getId());
 		if (snapshot == null) // TODO: Implementar Exc
-			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
-		
+			throw new Exception("No se encontró snapshot válido de la RED: "
+					+ acronym);
+
 		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-			snapshot,
-			snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK
-		);
-		
-		return response;
-	} 
-	
-	@ResponseBody
-	@RequestMapping(value="/public/listSnapshotsByNetworkAcronym/{acronym}", method=RequestMethod.GET)
-	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(@PathVariable String acronym) throws Exception {
-		
-		Network network = networkRepository.findByAcronym(acronym);
-		if ( network == null )
-			throw new Exception("No se encontró RED: " + acronym);
-		
-		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(networkSnapshotRepository.findByNetworkOrderByEndTimeAsc(network), HttpStatus.OK);
-		
+				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
+						: HttpStatus.OK);
+
 		return response;
 	}
-	
-	
-	
-	////////////////////////// Listar Redes y sus datos //////////////////////////
-	
+
+	@ResponseBody
+	@RequestMapping(value = "/public/listSnapshotsByNetworkAcronym/{acronym}", method = RequestMethod.GET)
+	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(
+			@PathVariable String acronym) throws Exception {
+
+		Network network = networkRepository.findByAcronym(acronym);
+		if (network == null)
+			throw new Exception("No se encontró RED: " + acronym);
+
+		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(
+				networkSnapshotRepository
+						.findByNetworkOrderByEndTimeAsc(network),
+				HttpStatus.OK);
+
+		return response;
+	}
+
+	// //////////////////////// Listar Redes y sus datos
+	// //////////////////////////
+
 	private List<NetworkInfo> networkList2netinfoList(List<Network> networks) {
-				
 
 		List<NetworkInfo> ninfoList = new ArrayList<NetworkInfo>();
 
-		for (Network network:networks) {
-			
+		for (Network network : networks) {
+
 			NetworkInfo ninfo = new NetworkInfo();
 			ninfo.networkID = network.getId();
 			ninfo.acronym = network.getAcronym();
 			ninfo.name = network.getName();
 			ninfo.institution = network.getInstitutionName();
 
-			
-			
-			NetworkSnapshot lstSnapshot = networkSnapshotRepository.findLastByNetworkID(network.getId());
-			if ( lstSnapshot != null) {
-				
+			NetworkSnapshot lstSnapshot = networkSnapshotRepository
+					.findLastByNetworkID(network.getId());
+			if (lstSnapshot != null) {
+
 				ninfo.lstSnapshotID = lstSnapshot.getId();
 				ninfo.lstSnapshotDate = lstSnapshot.getEndTime();
 				ninfo.lstSize = lstSnapshot.getSize();
 				ninfo.lstValidSize = lstSnapshot.getValidSize();
 				ninfo.lstTransformedSize = lstSnapshot.getTransformedSize();
 				ninfo.lstSnapshotStatus = lstSnapshot.getStatus();
-				
-				
-			}		
-			
-			NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
-			if ( lgkSnapshot != null) {
-				
+
+			}
+
+			NetworkSnapshot lgkSnapshot = networkSnapshotRepository
+					.findLastGoodKnowByNetworkID(network.getId());
+			if (lgkSnapshot != null) {
+
 				ninfo.snapshotID = lgkSnapshot.getId();
 				ninfo.datestamp = lgkSnapshot.getEndTime();
 				ninfo.size = lgkSnapshot.getSize();
 				ninfo.validSize = lgkSnapshot.getValidSize();
 				ninfo.transformedSize = lgkSnapshot.getTransformedSize();
-				
+
 				ninfo.lgkSnapshotID = lgkSnapshot.getId();
 				ninfo.lgkSnapshotDate = lgkSnapshot.getEndTime();
 				ninfo.lgkSize = lgkSnapshot.getSize();
 				ninfo.lgkValidSize = lgkSnapshot.getValidSize();
 				ninfo.lgkTransformedSize = lgkSnapshot.getTransformedSize();
-				
-			}			
-			ninfoList.add(ninfo);		
+
+			}
+			ninfoList.add(ninfo);
 		}
 		return ninfoList;
 	}
-	
-	
-	// listado de redes publicadas 
+
+	// listado de redes publicadas
 	@ResponseBody
-	@RequestMapping(value="/public/listNetworks", method=RequestMethod.GET)
+	@RequestMapping(value = "/public/listNetworks", method = RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
-		
-		List<NetworkInfo> ninfoList =  networkList2netinfoList( networkRepository.findByPublishedOrderByNameAsc(true) );
+
+		List<NetworkInfo> ninfoList = networkList2netinfoList(networkRepository
+				.findByPublishedOrderByNameAsc(true));
 		return new ResponseEntity<List<NetworkInfo>>(ninfoList, HttpStatus.OK);
 	}
-	
+
 	// listado de todas las redes
 	@ResponseBody
-	@RequestMapping(value="/public/networks", method=RequestMethod.GET)
-	public ResponseEntity<NetworksListResponse> listNetworks( @RequestParam Map<String, String> params) {
-		
-			
-		NetworksListResponse response = new NetworksListResponse( findByParams(params) );
+	@RequestMapping(value = "/public/networks", method = RequestMethod.GET)
+	public ResponseEntity<NetworksListResponse> listNetworks(
+			@RequestParam Map<String, String> params) {
+
+		NetworksListResponse response = new NetworksListResponse(
+				findByParams(params));
 		return new ResponseEntity<NetworksListResponse>(response, HttpStatus.OK);
 	}
-	
-	
-	
-	
-	private Page<Network> findByParams(Map<String,String> params) {
-		
-		int page = Integer.parseInt( params.get("page") );
+
+	private Page<Network> findByParams(Map<String, String> params) {
+
+		int page = Integer.parseInt(params.get("page"));
 		// Correción para que la paginación empiece en 1
 		page--;
-		
-		int count = Integer.parseInt( params.get("count") );
-		
+
+		int count = Integer.parseInt(params.get("count"));
+
 		Pageable pageRequest = new PageRequest(page, count);
-		
-		String filterColumn = null; 			
+
+		String filterColumn = null;
 		String filterExpression = null;
-		
+
 		Pattern sortingPattern = Pattern.compile("sorting\\[(.*)\\]");
 		Pattern filterPattern = Pattern.compile("filter\\[(.*)\\]");
 
-		//Matcher matcher = pattern.matcher(ISBN);
-		
-		for( String key: params.keySet() ) {
-			
-			if ( key.startsWith("sorting") ) {
-				
+		// Matcher matcher = pattern.matcher(ISBN);
+
+		for (String key : params.keySet()) {
+
+			if (key.startsWith("sorting")) {
+
 				Direction sortDirection = Direction.ASC;
 				Matcher matcher = sortingPattern.matcher(key);
-				
-				if ( matcher.find() ) {
-					String columnName = matcher.group(1) ; 			
-					if ( params.get(key).equals("desc") )
-						sortDirection = Direction.DESC;					
-					pageRequest = new PageRequest(page, count, sortDirection, columnName );
-				}				
+
+				if (matcher.find()) {
+					String columnName = matcher.group(1);
+					if (params.get(key).equals("desc"))
+						sortDirection = Direction.DESC;
+					pageRequest = new PageRequest(page, count, sortDirection,
+							columnName);
+				}
 			}
-			
-			if ( key.startsWith("filter") ) {
-				
+
+			if (key.startsWith("filter")) {
+
 				Matcher matcher = filterPattern.matcher(key);
-				
-				if ( matcher.find() ) {
-					filterColumn = matcher.group(1) ; 			
+
+				if (matcher.find()) {
+					filterColumn = matcher.group(1);
 					filterExpression = params.get(key);
-				}				
+				}
 			}
 		}
-		
-		if ( filterColumn != null  ) {
-						
+
+		if (filterColumn != null) {
+
 			switch (filterColumn) {
-			
+
 			case "name":
-				return networkRepository.findByNameIgnoreCaseContaining(filterExpression, pageRequest);
-			
+				return networkRepository.findByNameIgnoreCaseContaining(
+						filterExpression, pageRequest);
+
 			case "institution":
-				return networkRepository.findByInstitutionNameIgnoreCaseContaining(filterExpression, pageRequest);
-				
+				return networkRepository
+						.findByInstitutionNameIgnoreCaseContaining(
+								filterExpression, pageRequest);
+
 			case "acronym":
-				return networkRepository.findByAcronymIgnoreCaseContaining(filterExpression, pageRequest);
-				
+				return networkRepository.findByAcronymIgnoreCaseContaining(
+						filterExpression, pageRequest);
+
 			default:
 				return networkRepository.findAll(pageRequest);
-				
-			}		
-		}
-		else
+
+			}
+		} else
 			return networkRepository.findAll(pageRequest);
-		
+
 	}
-	
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value="/public/listNetworksHistory", method=RequestMethod.GET)
+	@RequestMapping(value = "/public/listNetworksHistory", method = RequestMethod.GET)
 	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
-		
-		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
+
+		List<Network> allNetworks = networkRepository
+				.findByPublishedOrderByNameAsc(true);// OrderByName();
 		List<NetworkHistory> NHistoryList = new ArrayList<NetworkHistory>();
 
-		for (Network network:allNetworks) {	
+		for (Network network : allNetworks) {
 			NetworkHistory nhistory = new NetworkHistory();
 			nhistory.name = network.getName();
 			nhistory.networkID = network.getId();
 			nhistory.acronym = network.getAcronym();
-			nhistory.validSnapshots =  networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
-			NHistoryList.add( nhistory );		
+			nhistory.validSnapshots = networkSnapshotRepository
+					.findByNetworkAndStatusOrderByEndTimeAsc(network,
+							SnapshotStatus.VALID);
+			NHistoryList.add(nhistory);
 		}
-	
-		ResponseEntity<List<NetworkHistory>> response = new ResponseEntity<List<NetworkHistory>>(NHistoryList, HttpStatus.OK);
-		
+
+		ResponseEntity<List<NetworkHistory>> response = new ResponseEntity<List<NetworkHistory>>(
+				NHistoryList, HttpStatus.OK);
+
 		return response;
 	}
-	
+
 	/**
-	@ResponseBody
-	@RequestMapping(value="/public/listValidPublicSnapshotsStats", method=RequestMethod.GET)
-	public List<SnapshotStats> listValidPublicSnapshotHistory() {
-		
-		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);//OrderByName();
-		List<SnapshotStats> snapshotStatsList = new ArrayList<SnapshotStats>();
+	 * @ResponseBody
+	 * @RequestMapping(value="/public/listValidPublicSnapshotsStats", 
+	 *                                                                method=RequestMethod
+	 *                                                                .GET)
+	 *                                                                public
+	 *                                                                List<
+	 *                                                                SnapshotStats
+	 *                                                                >
+	 *                                                                listValidPublicSnapshotHistory
+	 *                                                                () {
+	 * 
+	 *                                                                List<
+	 *                                                                Network>
+	 *                                                                allNetworks
+	 *                                                                =
+	 *                                                                networkRepository
+	 *                                                                .
+	 *                                                                findByPublishedOrderByNameAsc
+	 *                                                                (true);//
+	 *                                                                OrderByName
+	 *                                                                ();
+	 *                                                                List<SnapshotStats
+	 *                                                                >
+	 *                                                                snapshotStatsList
+	 *                                                                = new
+	 *                                                                ArrayList<
+	 *                                                                SnapshotStats
+	 *                                                                >();
+	 * 
+	 *                                                                for
+	 *                                                                (Network
+	 *                                                                network:
+	 *                                                                allNetworks
+	 *                                                                ) {
+	 * 
+	 * 
+	 *                                                                for (
+	 *                                                                NetworkSnapshot
+	 *                                                                snapshot:
+	 *                                                                networkSnapshotRepository
+	 *                                                                .
+	 *                                                                findByNetworkAndStatusOrderByEndTimeAsc
+	 *                                                                (network,
+	 *                                                                SnapshotStatus
+	 *                                                                .VALID) )
+	 *                                                                {
+	 * 
+	 *                                                                SnapshotStats
+	 *                                                                snapshotStats
+	 *                                                                = new
+	 *                                                                SnapshotStats
+	 *                                                                ();
+	 *                                                                snapshotStats
+	 *                                                                .
+	 *                                                                setAcronym
+	 *                                                                ( network.
+	 *                                                                getAcronym
+	 *                                                                () );
+	 *                                                                snapshotStats
+	 *                                                                .setName(
+	 *                                                                network
+	 *                                                                .getName()
+	 *                                                                );
+	 * 
+	 *                                                                snapshotStats
+	 *                                                                .
+	 *                                                                setDatestamp
+	 *                                                                ( snapshot
+	 *                                                                .
+	 *                                                                getEndTime
+	 *                                                                () );
+	 *                                                                snapshotStats
+	 *                                                                .setSize(
+	 *                                                                snapshot
+	 *                                                                .getSize()
+	 *                                                                );
+	 *                                                                snapshotStats
+	 *                                                                .
+	 *                                                                setValidSize
+	 *                                                                ( snapshot
+	 *                                                                .
+	 *                                                                getValidSize
+	 *                                                                () );
+	 *                                                                snapshotStats
+	 *                                                                .
+	 *                                                                setTransformedSize
+	 *                                                                ( snapshot
+	 *                                                                .
+	 *                                                                getTransformedSize
+	 *                                                                () );
+	 * 
+	 *                                                                snapshotStatsList
+	 *                                                                .add(
+	 *                                                                snapshotStats
+	 *                                                                );
+	 * 
+	 *                                                                } }
+	 * 
+	 * 
+	 *                                                                return
+	 *                                                                snapshotStatsList
+	 *                                                                ; }
+	 **/
 
-		for (Network network:allNetworks) {	
-			
-			
-			for (NetworkSnapshot snapshot: networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID) ) {
-				
-				SnapshotStats snapshotStats = new SnapshotStats();
-				snapshotStats.setAcronym( network.getAcronym() );
-				snapshotStats.setName( network.getName() );
+	/************** Clases de retorno de resultados *******************/
 
-				snapshotStats.setDatestamp( snapshot.getEndTime() );
-				snapshotStats.setSize( snapshot.getSize() );	
-				snapshotStats.setValidSize( snapshot.getValidSize() );	
-				snapshotStats.setTransformedSize( snapshot.getTransformedSize() );	
-				
-				snapshotStatsList.add( snapshotStats );
-				
-			}
-		}
-	
-		
-		return snapshotStatsList;
-	}
-	**/
-	
-
-	/**************  Clases de retorno de resultados *******************/
-	
 	@Getter
 	@Setter
-	class NetworkInfo {	
-		public  String acronym;
-		private Long   networkID;
+	class NetworkInfo {
+		public String acronym;
+		private Long networkID;
 		private String name;
 		private String institution;
-		
-		//DEPRECATED
+
+		// DEPRECATED
 		/** Esto queda por legacy pero es depreacted **/
 		private Long snapshotID;
-		@JsonSerialize(using=JsonDateSerializer.class)
+		@JsonSerialize(using = JsonDateSerializer.class)
 		private Date datestamp;
 		private int size;
 		private int validSize;
 		private int transformedSize;
 		/** fin deprecated **/
-		
+
 		private Long lgkSnapshotID;
-		@JsonSerialize(using=JsonDateSerializer.class)
+		@JsonSerialize(using = JsonDateSerializer.class)
 		private Date lgkSnapshotDate;
 		private int lgkSize;
 		private int lgkValidSize;
 		private int lgkTransformedSize;
-		
+
 		private Long lstSnapshotID;
-		@JsonSerialize(using=JsonDateSerializer.class)
+		@JsonSerialize(using = JsonDateSerializer.class)
 		private Date lstSnapshotDate;
 		private SnapshotStatus lstSnapshotStatus;
 		private int lstSize;
 		private int lstValidSize;
 		private int lstTransformedSize;
 	}
-	
+
 	@Getter
 	@Setter
-	class NetworkHistory {	
+	class NetworkHistory {
 		public String name;
 		public String acronym;
-		private Long   networkID;
+		private Long networkID;
 		private List<NetworkSnapshot> validSnapshots;
 	}
-	
+
 	@Getter
 	@Setter
-	class NetworksListResponse {	
-		
+	class NetworksListResponse {
+
 		private long totalElements;
 		private int totalPages;
 		private int pageNumber;
@@ -761,12 +828,5 @@ public class BackEndController {
 			this.pageSize = page.getSize();
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

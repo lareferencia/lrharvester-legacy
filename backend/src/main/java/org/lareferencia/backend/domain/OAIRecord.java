@@ -44,77 +44,75 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @Getter
 @Entity
-@JsonIgnoreProperties({"publishedXML","snapshot","datestamp","metadata"})
+@JsonIgnoreProperties({ "publishedXML", "snapshot", "datestamp", "metadata" })
 public class OAIRecord extends AbstractEntity {
-	
-	 
+
 	@Transient
 	private OAIRecordMetadata metadata;
-	
+
 	@Column(nullable = false)
 	private String identifier;
-		
+
 	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
 	private Date datestamp;
-	
-	@Type(type="org.hibernate.type.StringClobType")
+
+	@Type(type = "org.hibernate.type.StringClobType")
 	private String publishedXML;
-	
+
 	@Setter
 	@Column(nullable = false)
 	private RecordStatus status;
-	 
+
 	@Setter
 	@Column(nullable = false)
 	private boolean wasTransformed;
-	
-	@ManyToOne(fetch=FetchType.EAGER,optional=false)	
-	@JoinColumn(name="snapshot_id")
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "snapshot_id")
 	private NetworkSnapshot snapshot;
-	
+
 	public OAIRecord() {
 		super();
 		this.status = RecordStatus.UNTESTED;
-		//this.belongsToCollection = false;
-		//this.belongsToCollectionDetails = "";
+		// this.belongsToCollection = false;
+		// this.belongsToCollectionDetails = "";
 		this.datestamp = new DateTime().toDate();
 	}
-	
+
 	public OAIRecord(NetworkSnapshot snapshot, OAIRecordMetadata metadata) {
 		super();
 		this.snapshot = snapshot;
 		this.status = RecordStatus.UNTESTED;
 		this.datestamp = new DateTime().toDate();
 		this.metadata = metadata;
-		updateIdentifier();		
+		updateIdentifier();
 	}
-	
 
 	private void updateIdentifier() {
-		this.identifier = metadata.getIdentifier();		
+		this.identifier = metadata.getIdentifier();
 	}
-	
+
 	public void setSnapshot(NetworkSnapshot snapshot) {
 		this.snapshot = snapshot;
 		updateIdentifier();
 	}
-	
+
 	public String getFingerprint() {
 
-		if ( this.snapshot != null )
-			return this.snapshot.getNetwork().getAcronym() + "_" +  DigestUtils.md5Hex( identifier );
+		if (this.snapshot != null)
+			return this.snapshot.getNetwork().getAcronym() + "_"
+					+ DigestUtils.md5Hex(identifier);
 		else
-			return "00" + "_" +  DigestUtils.md5Hex( identifier );
+			return "00" + "_" + DigestUtils.md5Hex(identifier);
 	}
-	
 
 	@PrePersist
 	private void updatePublishedXML() {
-		
-		/* El XML publicado será la versión de la metadata si no es null */	
-		if (metadata != null) 
+
+		/* El XML publicado será la versión de la metadata si no es null */
+		if (metadata != null)
 			publishedXML = metadata.toString();
 	}
 }

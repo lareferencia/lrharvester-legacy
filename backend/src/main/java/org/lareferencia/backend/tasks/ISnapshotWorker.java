@@ -15,16 +15,20 @@ package org.lareferencia.backend.tasks;
 
 import org.lareferencia.backend.domain.SnapshotStatus;
 
+public interface ISnapshotWorker extends Runnable {
 
-public interface ISnapshotWorker extends Runnable{
+	public void run();
 
-    public void run();
-    public void stop();
-    public SnapshotStatus getStatus();
-    
-    public void setManager(SnapshotManager manager);
-    public void setNetworkID(Long networkID);
-    public void setSnapshotID(Long snapshotID);
-    public void setHarvestBySet(boolean value);
+	public void stop();
+
+	public SnapshotStatus getStatus();
+
+	public void setManager(SnapshotManager manager);
+
+	public void setNetworkID(Long networkID);
+
+	public void setSnapshotID(Long snapshotID);
+
+	public void setHarvestBySet(boolean value);
 
 }

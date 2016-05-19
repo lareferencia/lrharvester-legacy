@@ -17,7 +17,7 @@ import org.lareferencia.backend.domain.Validator;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "validator", collectionResourceRel="validator")
-public interface ValidatorRepository extends JpaRepository<Validator, Long> { 
-	
+@RepositoryRestResource(path = "validator", collectionResourceRel = "validator")
+public interface ValidatorRepository extends JpaRepository<Validator, Long> {
+
 }

@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.lareferencia.backend.util;
 
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,19 +24,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-
 @Component
-public class JsonDateSerializer extends JsonSerializer<Date>{
+public class JsonDateSerializer extends JsonSerializer<Date> {
 
-   private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"yyyy-MM-dd hh:mm:ss");
 
-   @Override
-   public void serialize(Date date, JsonGenerator gen, SerializerProvider provider)
-           throws IOException, JsonProcessingException {
+	@Override
+	public void serialize(Date date, JsonGenerator gen,
+			SerializerProvider provider) throws IOException,
+			JsonProcessingException {
 
-       String formattedDate = dateFormat.format(date);
+		String formattedDate = dateFormat.format(date);
 
-       gen.writeString(formattedDate);
-   }
+		gen.writeString(formattedDate);
+	}
 
 }

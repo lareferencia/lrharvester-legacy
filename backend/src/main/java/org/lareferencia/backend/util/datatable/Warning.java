@@ -16,47 +16,49 @@ package org.lareferencia.backend.util.datatable;
 
 /**
  * A warning generated while processing a request.
- *
+ * 
  * @author Yonatan B.Y.
  */
 public class Warning {
 
-  /**
-   * The reason for this warning.
-   */
-  private ReasonType reasonType;
+	/**
+	 * The reason for this warning.
+	 */
+	private ReasonType reasonType;
 
-  /**
-   * The warning message to return to the user.
-   */
-  private String messageToUser;
+	/**
+	 * The warning message to return to the user.
+	 */
+	private String messageToUser;
 
-  /**
-   * Constructs a new exception with a reason type and a message for the user.
-   *
-   * @param reasonType The reason type of the exception.
-   * @param messageToUser The message to the user.
-   */
-  public Warning(ReasonType reasonType, String messageToUser) {
-    this.messageToUser = messageToUser;
-    this.reasonType = reasonType;
-  }
+	/**
+	 * Constructs a new exception with a reason type and a message for the user.
+	 * 
+	 * @param reasonType
+	 *            The reason type of the exception.
+	 * @param messageToUser
+	 *            The message to the user.
+	 */
+	public Warning(ReasonType reasonType, String messageToUser) {
+		this.messageToUser = messageToUser;
+		this.reasonType = reasonType;
+	}
 
-  /**
-   * Returns the reason.
-   *
-   * @return The reason.
-   */
-  public ReasonType getReasonType() {
-    return reasonType;
-  }
+	/**
+	 * Returns the reason.
+	 * 
+	 * @return The reason.
+	 */
+	public ReasonType getReasonType() {
+		return reasonType;
+	}
 
-  /**
-   * Returns the message.
-   * 
-   * @return The message.
-   */
-  public String getMessage() {
-    return messageToUser;
-  }
+	/**
+	 * Returns the message.
+	 * 
+	 * @return The message.
+	 */
+	public String getMessage() {
+		return messageToUser;
+	}
 }

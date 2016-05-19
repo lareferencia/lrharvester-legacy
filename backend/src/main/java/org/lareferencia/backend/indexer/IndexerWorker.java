@@ -24,63 +24,62 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope(value="prototype")
+@Scope(value = "prototype")
 public class IndexerWorker implements Runnable {
-	
 
 	@Setter
 	private Long networkID;
-	
-	@Setter 
+
+	@Setter
 	private boolean deleteNetworkWithoutReindexing = false;
-	
+
 	@Autowired
 	private NetworkRepository networkRepository;
-	
+
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
-	
-	
+
 	@Setter
 	IIndexer indexer;
-	
+
 	public IndexerWorker() {
 	};
-	
-	
+
 	@Override
 	public void run() {
-		
+
 		if (indexer == null) {
 			System.out.println("Indexer worker llamado con indexer null");
-		}
-		else {
-		
-			//TODO: Generar excepciones por network null o incorrecto
+		} else {
+
+			// TODO: Generar excepciones por network null o incorrecto
 			Network network = networkRepository.findOne(this.networkID);
-			NetworkSnapshot snapshot = null; 
-			
-			if ( network == null )
+			NetworkSnapshot snapshot = null;
+
+			if (network == null)
 				System.out.println("Indexer Worker - El id de red es inválido");
-						
-			System.out.println("Borrando red del índice - " + network.getName() + "  - IndexerWorker");
-			
-			if (!deleteNetworkWithoutReindexing) { // Si no es un borrado sin reindexación
-			
+
+			System.out.println("Borrando red del índice - " + network.getName()
+					+ "  - IndexerWorker");
+
+			if (!deleteNetworkWithoutReindexing) { // Si no es un borrado sin
+													// reindexación
+
 				// Se recupera el LGK Snapshot
-				snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(networkID);
-				
-				if ( snapshot == null )
-					System.out.println("Indexer Worker - La Red no tiene LGK Snapshot es válido");
-				
-				System.out.println("Indexando LGK Snapshot RED: - " + network.getName()  + "  - IndexerWorker");
+				snapshot = networkSnapshotRepository
+						.findLastGoodKnowByNetworkID(networkID);
+
+				if (snapshot == null)
+					System.out
+							.println("Indexer Worker - La Red no tiene LGK Snapshot es válido");
+
+				System.out.println("Indexando LGK Snapshot RED: - "
+						+ network.getName() + "  - IndexerWorker");
 			}
-			
-			
+
 			indexer.index(network, snapshot, deleteNetworkWithoutReindexing);
 
 		}
 	}
-	
-	
+
 }

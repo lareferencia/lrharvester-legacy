@@ -41,27 +41,27 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 	private static final String METADATA_NODE_NAME = "metadata";
 	private static final Object STATUS_DELETED = "deleted";
-	
 
 	@Value("${harvester.retry.seconds}")
 	private int INITIAL_SECONDS_TO_RETRY;
-	
+
 	@Value("${harvester.retry.factor}")
 	private int RETRY_FACTOR;
-	
+
 	private boolean stopSignalReceived = false;
 
 	@Override
 	public void stop() {
 		stopSignalReceived = true;
 	}
-	
+
 	@Override
 	public void reset() {
 		stopSignalReceived = false;
 	}
 
-	//private static TransformerFactory xformFactory = TransformerFactory.newInstance();
+	// private static TransformerFactory xformFactory =
+	// TransformerFactory.newInstance();
 
 	public OCLCBasedHarvesterImpl() {
 		super();
@@ -82,20 +82,22 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// resumption (caso de fin)
 		// TODO: Hay casos donde dio null y no era el fin, estudiar alternativas
 		// Si levantan la stopSignal entonces corta el ciclo de harvesting
-		while ( !stopSignalReceived && ( batchIndex == 0 || (resumptionToken.trim().length() != 0 )) ) {
+		while (!stopSignalReceived
+				&& (batchIndex == 0 || (resumptionToken.trim().length() != 0))) {
 
 			do {
 				try {
-					
-					System.out.println( "Request:" + resumptionToken);
-					actualListRecords = listRecords(uri, setname, metadataPrefix, batchIndex, resumptionToken);
+
+					System.out.println("Request:" + resumptionToken);
+					actualListRecords = listRecords(uri, setname,
+							metadataPrefix, batchIndex, resumptionToken);
 					resumptionToken = actualListRecords.getResumptionToken();
-					
+
 					// se crea un evento a partir del resultado de listRecords
 					HarvestingEvent event = createResultFromListRecords(actualListRecords);
 					event.setStatus(HarvestingEventStatus.OK);
 					event.setResumptionToken(resumptionToken);
-					
+
 					// se lanza el evento
 					fireHarvestingEvent(event);
 
@@ -104,48 +106,57 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = INITIAL_SECONDS_TO_RETRY;
 					break;
 
-				}
-			    catch (HarvestingException | TransformerException | NoSuchFieldException e) {
-					
-					
-					String message = buildErrorMessage(e, batchIndex, actualRetry);
+				} catch (HarvestingException | TransformerException
+						| NoSuchFieldException e) {
+
+					String message = buildErrorMessage(e, batchIndex,
+							actualRetry);
 					message += "RT Anterior: " + resumptionToken + "\n";
-					message += "\nEsperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
-					
-					fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_RETRY) );
-						
+					message += "\nEsperando " + secondsToNextRetry
+							+ " segundos para el próximo reintento ..";
+
+					fireHarvestingEvent(new HarvestingEvent(message,
+							HarvestingEventStatus.ERROR_RETRY));
+
 					// Una espera de secondsToNextRetry
-					try { Thread.sleep(secondsToNextRetry * 1000); } catch (InterruptedException t) {}
-						
+					try {
+						Thread.sleep(secondsToNextRetry * 1000);
+					} catch (InterruptedException t) {
+					}
+
 					// Se incrementa el retry y se duplica el tiempo de espera
 					actualRetry++;
 					secondsToNextRetry = secondsToNextRetry * RETRY_FACTOR;
 				}
-				
+
 			} while (actualRetry < maxRetries && !stopSignalReceived);
-			
-			if ( actualRetry == maxRetries ) {
+
+			if (actualRetry == maxRetries) {
 				String message = "Número de reintentos máximos alcanzados.  Abortando proceso de cosecha.";
-				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.ERROR_FATAL) );
+				fireHarvestingEvent(new HarvestingEvent(message,
+						HarvestingEventStatus.ERROR_FATAL));
 				break;
 			}
-			
-			if ( stopSignalReceived ) {
+
+			if (stopSignalReceived) {
 				String message = "Cosecha detenida por el administrador.";
-				message += "  Origen: " + uri; 
-				message += "  Set: " + setname; 
-				fireHarvestingEvent( new HarvestingEvent(message, HarvestingEventStatus.STOP_SIGNAL_RECEIVED) );
+				message += "  Origen: " + uri;
+				message += "  Set: " + setname;
+				fireHarvestingEvent(new HarvestingEvent(message,
+						HarvestingEventStatus.STOP_SIGNAL_RECEIVED));
 				break;
 			}
 
 		}
 	}
-	
-	private String buildErrorMessage(Exception e, int batchIndex, int actualRetry) {
-		String message = "Error lote: " + batchIndex + " reintento: " + actualRetry + "\n";
+
+	private String buildErrorMessage(Exception e, int batchIndex,
+			int actualRetry) {
+		String message = "Error lote: " + batchIndex + " reintento: "
+				+ actualRetry + "\n";
 		message += "Detalles:\n";
-		message +=  e.getMessage() + "\n";
-		
+		message += e.getMessage() + "\n";
+
 		return message;
 	}
 
@@ -175,145 +186,155 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				if (resumptionToken != null && resumptionToken.length() == 0)
 					resumptionToken = null;
 			}
-		//TODO: Deben reordenarse el lanzamiento y conversión de exceptions
-		} catch (IOException e) {
-			throw new HarvestingException(e.getMessage());
-		} catch (ParserConfigurationException e) {
-			throw new HarvestingException(e.getMessage());
-		} catch (SAXException e) {
-			throw new HarvestingException(e.getMessage());
-		} catch (TransformerException e) {
-			throw new HarvestingException(e.getMessage());
-		} catch (NoSuchFieldException e) {
-			throw new HarvestingException(e.getMessage());
+			// TODO: Deben reordenarse el lanzamiento y conversión de exceptions
 		} catch (Exception e) {
-			throw new HarvestingException(e.getMessage());
+
+			throw new HarvestingException(e.toString() + e.getMessage());
+
 		}
 
 		return listRecords;
 	}
 
-	private HarvestingEvent createResultFromListRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
-		
-		
+	private HarvestingEvent createResultFromListRecords(ListRecords listRecords)
+			throws TransformerException, NoSuchFieldException {
+
 		HarvestingEvent result = new HarvestingEvent();
 		/**
-		 * TODO: Podrían usarse una lista fija de registros, no persistentes para no crear siempre los
-		 * objetos de registro, habría que evaluarlo cuidadosamente
+		 * TODO: Podrían usarse una lista fija de registros, no persistentes
+		 * para no crear siempre los objetos de registro, habría que evaluarlo
+		 * cuidadosamente
 		 */
-		
-		
-		// La obtención de registros por xpath se realiza de acuerdo al schema correspondiente
+
+		// La obtención de registros por xpath se realiza de acuerdo al schema
+		// correspondiente
 		NodeList nodes = null;
 		String namespace = null;
-		
-		if (listRecords.getSchemaLocation().indexOf(ListRecords.SCHEMA_LOCATION_V2_0) != -1) {
-			nodes = listRecords.getNodeList("/oai20:OAI-PMH/oai20:ListRecords/oai20:record");
+
+		if (listRecords.getSchemaLocation().indexOf(
+				ListRecords.SCHEMA_LOCATION_V2_0) != -1) {
+			nodes = listRecords
+					.getNodeList("/oai20:OAI-PMH/oai20:ListRecords/oai20:record");
 			namespace = "oai20";
-		} else if (listRecords.getSchemaLocation().indexOf(ListRecords.SCHEMA_LOCATION_V1_1_LIST_RECORDS) != -1) {
+		} else if (listRecords.getSchemaLocation().indexOf(
+				ListRecords.SCHEMA_LOCATION_V1_1_LIST_RECORDS) != -1) {
 			namespace = "oai11_ListRecords";
-			nodes = listRecords.getNodeList("/oai11_ListRecords:ListRecords/oai11_ListRecords:record");
+			nodes = listRecords
+					.getNodeList("/oai11_ListRecords:ListRecords/oai11_ListRecords:record");
 		} else {
 			throw new NoSuchFieldException(listRecords.getSchemaLocation());
 		}
-		
-		//System.out.println( listRecords.toString() );
-		
+
+		// System.out.println( listRecords.toString() );
+
 		// Determina la dirección de cosecha
-		String origin = listRecords.getSingleString("/" + namespace + ":OAI-PMH/" + namespace + ":request");
-		System.out.println( origin );
-						
-		for (int i=0; i<nodes.getLength(); i++) {
-			
-			
+		String origin = listRecords.getSingleString("/" + namespace
+				+ ":OAI-PMH/" + namespace + ":request");
+		System.out.println(origin);
+
+		for (int i = 0; i < nodes.getLength(); i++) {
+
 			String identifier = "unknown";
 			String metadataString = "unknown";
 			String status = "unknown";
-				
-				
-			try {
-				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");
-				//System.out.println( identifier);
-				
-				String setSpec = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":setSpec");
-				
-				//identifier = identifier.replace("&", "");
-				
-				status = listRecords.getSingleString(nodes.item(i), namespace + ":header/@status");						
 
-				if ( ! status.equals(STATUS_DELETED) ) {
-				
-					metadataString = getMetadataString(nodes.item(i), listRecords.getDocument());
-					
-					OAIRecordMetadata metadata = new OAIRecordMetadata(identifier,metadataString);
+			try {
+				identifier = listRecords.getSingleString(nodes.item(i),
+						namespace + ":header/" + namespace + ":identifier");
+				// System.out.println( identifier);
+
+				String setSpec = listRecords.getSingleString(nodes.item(i),
+						namespace + ":header/" + namespace + ":setSpec");
+
+				// identifier = identifier.replace("&", "");
+
+				status = listRecords.getSingleString(nodes.item(i), namespace
+						+ ":header/@status");
+
+				if (!status.equals(STATUS_DELETED)) {
+
+					metadataString = getMetadataString(nodes.item(i),
+							listRecords.getDocument());
+
+					OAIRecordMetadata metadata = new OAIRecordMetadata(
+							identifier, metadataString);
 					metadata.setOrigin(origin);
 					metadata.setSetSpec(setSpec);
-	
-					result.getRecords().add( metadata );	
+
+					result.getRecords().add(metadata);
 				}
-				
-			} catch (OAIRecordMetadataParseException e){
-				//TODO: Hay que poder informar estas exceptions individuales para que quede registrada la pérdida del registro
-				System.err.println("Error en el parseo de registro: " + identifier + '\n'+ metadataString );
+
+			} catch (OAIRecordMetadataParseException e) {
+				// TODO: Hay que poder informar estas exceptions individuales
+				// para que quede registrada la pérdida del registro
+				System.err.println("Error en el parseo de registro: "
+						+ identifier + '\n' + metadataString);
 				result.setRecordMissing(true);
 			} catch (Exception e) {
-				System.err.println("Error desconocido procesando el registro: " + identifier + '\n'+ metadataString );
-				System.err.println("Exception:" + e.getMessage() );
-				result.setRecordMissing(true);			
-				//e.printStackTrace();
+				System.err.println("Error desconocido procesando el registro: "
+						+ identifier + '\n' + metadataString);
+				System.err.println("Exception:" + e.getMessage());
+				result.setRecordMissing(true);
+				// e.printStackTrace();
 			}
-		}		
-		
+		}
+
 		return result;
 	}
-	
+
 	/**
 	 * @param node
-	 * @param document 
-	 * @return 
+	 * @param document
+	 * @return
 	 * @throws TransformerException
-	 * @throws NoSuchFieldException 
+	 * @throws NoSuchFieldException
 	 */
-	private String getMetadataString(Node node, Document document) throws TransformerException, NoSuchFieldException {		
-		
+	private String getMetadataString(Node node, Document document)
+			throws TransformerException, NoSuchFieldException {
+
 		/**
-		 *  TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta implementado sobre nodos individaules
-		 *  en la interfaz listRecords, en necesario construir un DomHelper para Harvester, es sencillo dada la clase
-		 *  base BaseMetadataDOMHelper
-		 */ 
-		
+		 * TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta
+		 * implementado sobre nodos individaules en la interfaz listRecords, en
+		 * necesario construir un DomHelper para Harvester, es sencillo dada la
+		 * clase base BaseMetadataDOMHelper
+		 */
+
 		NodeList childs = node.getChildNodes();
 		Node metadataNode = null;
-		for (int i=0; i < childs.getLength(); i++)
-			if ( childs.item(i).getNodeName().contains(METADATA_NODE_NAME) )  
+		for (int i = 0; i < childs.getLength(); i++)
+			if (childs.item(i).getNodeName().contains(METADATA_NODE_NAME))
 				metadataNode = childs.item(i);
 
-		if (metadataNode == null) 
-			throw new NoSuchFieldException( "No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" +  MedatadaDOMHelper.Node2XMLString(node));
-		
-		// este rename unifica los casos distintos de namespace encontrados en repositorios
-		document.renameNode(metadataNode, metadataNode.getNamespaceURI(), METADATA_NODE_NAME);
-		
-		
+		if (metadataNode == null)
+			throw new NoSuchFieldException("No existe el nodo: "
+					+ METADATA_NODE_NAME + " en la respuesta.\n"
+					+ MedatadaDOMHelper.Node2XMLString(node));
+
+		// este rename unifica los casos distintos de namespace encontrados en
+		// repositorios
+		document.renameNode(metadataNode, metadataNode.getNamespaceURI(),
+				METADATA_NODE_NAME);
+
 		// TODO: Ver el tema del char &#56256;
-		return MedatadaDOMHelper.Node2XMLString( metadataNode );
+		return MedatadaDOMHelper.Node2XMLString(metadataNode);
 	}
 
 	@Override
 	public List<String> listSets(String uri) {
-		
-		List<String> setList = new ArrayList<String>();
-		
-		try {
-			ListSets listSets =  new ListSets(uri);			
-			NodeList list = listSets.getDocument().getElementsByTagName("setSpec");
 
-			
-			for (int i=0; i<list.getLength(); i++) {
-				if ( list.item(i).getFirstChild() != null && list.item(i).getFirstChild().getNodeValue() != null )
-					setList.add( list.item(i).getFirstChild().getNodeValue() );
+		List<String> setList = new ArrayList<String>();
+
+		try {
+			ListSets listSets = new ListSets(uri);
+			NodeList list = listSets.getDocument().getElementsByTagName(
+					"setSpec");
+
+			for (int i = 0; i < list.getLength(); i++) {
+				if (list.item(i).getFirstChild() != null
+						&& list.item(i).getFirstChild().getNodeValue() != null)
+					setList.add(list.item(i).getFirstChild().getNodeValue());
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
@@ -323,8 +344,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		} catch (TransformerException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		return setList;
 	}
 }

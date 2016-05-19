@@ -41,15 +41,14 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 			        "fieldname", "controlledValues", { type: "submit", title: "Guardar cambios" }],
 			schema: {
 				type: "object",
-				    properties: {
+				properties: {
 					  fieldname :{ type: "string", title: "Campo", description: "El nombre del campo oai_dc. Ej: dc:type " }, 
-				      controlledValues : {
-				          type: "array",
-				          title: "Valores Controlados", 
+				      controlledValues : { "type": "array", "title": "Valores Controlados", 
 				          items: { "type": "string", "title":"valor" }
 				      }
-				    }
-				} /* fin schema */
+				}
+			} /* fin schema */
+	
 	},
 	
 	

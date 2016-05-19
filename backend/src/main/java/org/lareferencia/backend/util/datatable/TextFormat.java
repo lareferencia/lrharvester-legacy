@@ -20,58 +20,67 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 
 /**
- * A UFormat that performs (dummy) formatting and parsing of text (string) values.
- *
- * This class is required only to be consistent with the UFormat API, its methods do nothing.
- *
+ * A UFormat that performs (dummy) formatting and parsing of text (string)
+ * values.
+ * 
+ * This class is required only to be consistent with the UFormat API, its
+ * methods do nothing.
+ * 
  * @author Hillel M.
  */
 public class TextFormat extends UFormat {
 
-  /**
-   * Formats a TextValue and appends the result to a StringBuffer.
-   *
-   * @param obj The object to format.
-   * @param appendTo The StringBuffer to which the formatted string is appended.
-   * @param pos A FieldPosition parameter not used in this case.
-   *
-   * @return A StringBuffer with the formatted string for this object.
-   */
-  @Override
-  public StringBuffer format(Object obj, StringBuffer appendTo, FieldPosition pos) {
-    if ((null == obj) || !(obj instanceof String)) {
-      throw new IllegalArgumentException();
-    }
-    String text = (String) obj;
-    appendTo.append(text);
-    pos.setBeginIndex(0);
-    if (0 == text.length()) {
-      pos.setEndIndex(0);
-    } else {
-      pos.setEndIndex(text.length() - 1);
-    }
-    return appendTo;
-  }
+	/**
+	 * Formats a TextValue and appends the result to a StringBuffer.
+	 * 
+	 * @param obj
+	 *            The object to format.
+	 * @param appendTo
+	 *            The StringBuffer to which the formatted string is appended.
+	 * @param pos
+	 *            A FieldPosition parameter not used in this case.
+	 * 
+	 * @return A StringBuffer with the formatted string for this object.
+	 */
+	@Override
+	public StringBuffer format(Object obj, StringBuffer appendTo,
+			FieldPosition pos) {
+		if ((null == obj) || !(obj instanceof String)) {
+			throw new IllegalArgumentException();
+		}
+		String text = (String) obj;
+		appendTo.append(text);
+		pos.setBeginIndex(0);
+		if (0 == text.length()) {
+			pos.setEndIndex(0);
+		} else {
+			pos.setEndIndex(text.length() - 1);
+		}
+		return appendTo;
+	}
 
-  /**
-   * Parse a string into a TextValue.
-   *
-   * If this method is used to parse an empty string and it is called via
-   * Format.parseObject(Object) a ParseException is thrown.
-   *
-   * @param source The string to parse from.
-   * @param pos Marks the end of the parsing or 0 if the parsing failed.
-   *
-   * @return A BooleanValue for the parsed string.
-   *
-   * @throws NullPointerException if pos is null or source is null.
-   */
-  @Override
-  public Object parseObject(String source, ParsePosition pos) {
-    if ((null == pos) || (null == source)) {
-      throw new NullPointerException();
-    }
-    pos.setIndex(source.length());
-    return source;
-  }
+	/**
+	 * Parse a string into a TextValue.
+	 * 
+	 * If this method is used to parse an empty string and it is called via
+	 * Format.parseObject(Object) a ParseException is thrown.
+	 * 
+	 * @param source
+	 *            The string to parse from.
+	 * @param pos
+	 *            Marks the end of the parsing or 0 if the parsing failed.
+	 * 
+	 * @return A BooleanValue for the parsed string.
+	 * 
+	 * @throws NullPointerException
+	 *             if pos is null or source is null.
+	 */
+	@Override
+	public Object parseObject(String source, ParsePosition pos) {
+		if ((null == pos) || (null == source)) {
+			throw new NullPointerException();
+		}
+		pos.setIndex(source.length());
+		return source;
+	}
 }

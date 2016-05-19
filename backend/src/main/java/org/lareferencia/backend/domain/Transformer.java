@@ -38,16 +38,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Transformer extends AbstractEntity {
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = true)
 	private String description;
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="transformer_id")
-	@LazyCollection(LazyCollectionOption.FALSE) 
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "transformer_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<TransformerRule> rules = new ArrayList<TransformerRule>();
 
 	public Transformer() {

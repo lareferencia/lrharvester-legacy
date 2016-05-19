@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NetworkPersistenceTests {
 
-
 	@Autowired
 	NetworkRepository repository;
 
@@ -40,23 +39,22 @@ public class NetworkPersistenceTests {
 	public void testSave() throws Exception {
 		Network nn = new Network();
 		nn.setName("A name");
-		
+
 		OAIOrigin o = new OAIOrigin();
 		o.setName("Origin");
 		o.setUri("http://Test.com");
 		nn.getOrigins().add(o);
-		
+
 		OAISet s = new OAISet();
 		s.setSpec("set1");
 		s.setName("la descripción");
-		
+
 		o.getSets().add(s);
-	
-		
+
 		nn.setAcronym("AR");
-		
+
 		repository.save(nn);
-		
+
 		assertNotNull(nn.getId());
 	}
 
@@ -65,34 +63,29 @@ public class NetworkPersistenceTests {
 	public void testSaveAndGet() throws Exception {
 		Network nn = new Network();
 		nn.setName("A name");
-		
+
 		OAIOrigin o = new OAIOrigin();
 		o.setUri("test.uri");
 		nn.getOrigins().add(o);
-		
-		
+
 		OAISet s = new OAISet();
 		s.setSpec("set1");
 		s.setName("la descripción");
-		
-		o.getSets().add(s);
-		
-	
-		
-		repository.saveAndFlush(nn);
-	
-		Network loadedNN =  repository.findOne( nn.getId() );
-	
-		assertEquals(nn,loadedNN);
-		
-		assertEquals(1, loadedNN.getOrigins().size());
-		assertEquals(o, loadedNN.getOrigins().iterator().next());	
-		
-		assertEquals(s, loadedNN.getOrigins().iterator().next().getSets().iterator().next());	
-		
-		
-	}
 
-	
+		o.getSets().add(s);
+
+		repository.saveAndFlush(nn);
+
+		Network loadedNN = repository.findOne(nn.getId());
+
+		assertEquals(nn, loadedNN);
+
+		assertEquals(1, loadedNN.getOrigins().size());
+		assertEquals(o, loadedNN.getOrigins().iterator().next());
+
+		assertEquals(s, loadedNN.getOrigins().iterator().next().getSets()
+				.iterator().next());
+
+	}
 
 }

@@ -32,24 +32,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"JSONSerialization"})
+@JsonIgnoreProperties({ "JSONSerialization" })
 public class ValidatorRule extends AbstractEntity {
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = true)
 	private String description;
-	
+
 	@Column(nullable = false)
 	protected Boolean mandatory = false;
-	
+
 	@Column(nullable = false)
 	protected QuantifierValues quantifier = QuantifierValues.ONE_OR_MORE;
-	
-	@Type(type="org.hibernate.type.StringClobType")
+
+	@Type(type = "org.hibernate.type.StringClobType")
 	@JsonIgnore
 	private String JSONSerialization;
-	
-	
+
 }

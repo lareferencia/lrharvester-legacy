@@ -19,18 +19,20 @@ import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.validation.validator.ValidatorResult;
 
 public interface ITransformer {
-	
+
 	public List<ITransformerRule> getRules();
-	public void setRules( List<ITransformerRule> validators);
-	
+
+	public void setRules(List<ITransformerRule> validators);
+
 	/**
 	 * 
-	 * @param  metadata 
-	 * @param  validationResult
+	 * @param metadata
+	 * @param validationResult
 	 * @return Retorna true si hizo alguna transformación
 	 * @throws Exception
 	 */
-	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception;
-	//TODO: Implementar Exceptions específicas
-	
+	public boolean transform(OAIRecord record, ValidatorResult validationResult)
+			throws Exception;
+	// TODO: Implementar Exceptions específicas
+
 }

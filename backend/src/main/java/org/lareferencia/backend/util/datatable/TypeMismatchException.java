@@ -15,19 +15,22 @@
 package org.lareferencia.backend.util.datatable;
 
 /**
- * This exception is thrown when there is a mismatch between a value type and a column type,
- * for example when trying to assign a boolean value to a column of type number.
- *
+ * This exception is thrown when there is a mismatch between a value type and a
+ * column type, for example when trying to assign a boolean value to a column of
+ * type number.
+ * 
  * @author Yaniv S.
  */
 public class TypeMismatchException extends DataSourceException {
 
-  /**
-   * Constructs a new exception with OTHER reason type and a message for the user.
-   *
-   * @param message The message for the user.
-   */
-  public TypeMismatchException(String message) {
-    super(ReasonType.OTHER, message);
-  }
+	/**
+	 * Constructs a new exception with OTHER reason type and a message for the
+	 * user.
+	 * 
+	 * @param message
+	 *            The message for the user.
+	 */
+	public TypeMismatchException(String message) {
+		super(ReasonType.OTHER, message);
+	}
 }

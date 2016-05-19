@@ -16,10 +16,9 @@ package org.lareferencia.backend.validation.validator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public interface IValidatorFieldContentRule extends IValidatorRule {
-	
-	FieldContentValidatorResult validate(String string);	
+
+	FieldContentValidatorResult validate(String string);
 
 }

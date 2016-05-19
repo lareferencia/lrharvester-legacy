@@ -21,7 +21,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FieldContentValidatorResult {
-	
+
 	private boolean valid;
 	private String receivedValue;
 

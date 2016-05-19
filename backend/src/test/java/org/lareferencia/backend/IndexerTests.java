@@ -38,80 +38,68 @@ import org.xml.sax.SAXException;
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class IndexerTests {
-	
-	static String xmlstring = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
-			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
-			"<dc:title>Instrumentación y control de un secador de fruta tipo túnel</dc:title>" +
-			"<dc:creator>Elorza R., Jorge Rafael</dc:creator>" +
-			"<dc:creator>Sandoval González, José</dc:creator>" +
-			"<dc:creator>Martínez G, Martín T.</dc:creator>" +
-			"<dc:contributor>Lautaro Matas</dc:contributor>" +
-			"<dc:date>2002-01-01</dc:date>" +
-			"<dc:description>En este trabajo se proporciona un ejemplo con cierto detalle de cómo emplear una PC y una tarjeta</dc:description>" +
-			"<dc:source>instname:Universidad Nacional Autónoma de Nuevo León (UANL)</dc:source>" +
-			"<dc:publisher>Universidad Nacional Autónoma de Nuevo León (UANL)</dc:publisher>" +
-			"<dc:source>reponame:Red Mexicana de Repositorios Institucionales</dc:source>" +
-			"<dc:type>Artículo</dc:type>" +
-			"<dc:identifier>http://eprints.uanl.mx/504/</dc:identifier>" +
-			"<dc:rights>Acceso Abierto</dc:rights>" +
-			"<dc:rights>info:eu-repo/semantics/openAccess</dc:rights>" +
-			"<dc:language>spa</dc:language>" +
-			"<dc:subject>TA Engineering (General). Civil engineering (General)</dc:subject>" +
-			"<dc:format>application/pdf</dc:format>" +
-			"<dc:identifier>http://eprints.uanl.mx/504/1/instrumentacion_ctrl.pdf</dc:identifier>" +
-			"<dc:identifier>Elorza R., Jorge Rafael y Sandoval González, José y Martínez G, Martín T. (2002) Instrumentación y control de un secador de fruta tipo túnel. Ciencia UANL, 5 (4). ISSN 1405-9177</dc:identifier>" +
-			"<dc:type>info:eu-repo/semantics/article</dc:type>" +
-			"<dc:type>Artículo</dc:type>" +
-			"<dc:type>info:eu-repo/semantics/acceptedVersion</dc:type>" +
-			"</oai_dc:dc>" +
-			"</metadata>";
 
-	/*@Autowired
-	IValidator validator;
-	
-	@Autowired
-	ITransformer transformer;
-	
-	@Autowired
-	IIndexer indexer;
+	static String xmlstring = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">"
+			+ "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">"
+			+ "<dc:title>Instrumentación y control de un secador de fruta tipo túnel</dc:title>"
+			+ "<dc:creator>Elorza R., Jorge Rafael</dc:creator>"
+			+ "<dc:creator>Sandoval González, José</dc:creator>"
+			+ "<dc:creator>Martínez G, Martín T.</dc:creator>"
+			+ "<dc:contributor>Lautaro Matas</dc:contributor>"
+			+ "<dc:date>2002-01-01</dc:date>"
+			+ "<dc:description>En este trabajo se proporciona un ejemplo con cierto detalle de cómo emplear una PC y una tarjeta</dc:description>"
+			+ "<dc:source>instname:Universidad Nacional Autónoma de Nuevo León (UANL)</dc:source>"
+			+ "<dc:publisher>Universidad Nacional Autónoma de Nuevo León (UANL)</dc:publisher>"
+			+ "<dc:source>reponame:Red Mexicana de Repositorios Institucionales</dc:source>"
+			+ "<dc:type>Artículo</dc:type>"
+			+ "<dc:identifier>http://eprints.uanl.mx/504/</dc:identifier>"
+			+ "<dc:rights>Acceso Abierto</dc:rights>"
+			+ "<dc:rights>info:eu-repo/semantics/openAccess</dc:rights>"
+			+ "<dc:language>spa</dc:language>"
+			+ "<dc:subject>TA Engineering (General). Civil engineering (General)</dc:subject>"
+			+ "<dc:format>application/pdf</dc:format>"
+			+ "<dc:identifier>http://eprints.uanl.mx/504/1/instrumentacion_ctrl.pdf</dc:identifier>"
+			+ "<dc:identifier>Elorza R., Jorge Rafael y Sandoval González, José y Martínez G, Martín T. (2002) Instrumentación y control de un secador de fruta tipo túnel. Ciencia UANL, 5 (4). ISSN 1405-9177</dc:identifier>"
+			+ "<dc:type>info:eu-repo/semantics/article</dc:type>"
+			+ "<dc:type>Artículo</dc:type>"
+			+ "<dc:type>info:eu-repo/semantics/acceptedVersion</dc:type>"
+			+ "</oai_dc:dc>" + "</metadata>";
 
-	@Autowired
-	NetworkSnapshotRepository networkSnapshotRepository;*/
+	/*
+	 * @Autowired IValidator validator;
+	 * 
+	 * @Autowired ITransformer transformer;
+	 * 
+	 * @Autowired IIndexer indexer;
+	 * 
+	 * @Autowired NetworkSnapshotRepository networkSnapshotRepository;
+	 */
 
-	
-	static String xmlUnescpaedString = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">" +
-			"<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" +
-			"<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>" +
-			"</oai_dc:dc>" +
-			"</metadata>";
-	
+	static String xmlUnescpaedString = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">"
+			+ "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">"
+			+ "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>"
+			+ "</oai_dc:dc>" + "</metadata>";
 
-		
 	@Test()
-	public void testXMLEscapingAtTransforming() throws ParserConfigurationException, SAXException, IOException, TransformerException, OAIRecordMetadataParseException {
-		
-		
-		assertEquals(xmlUnescpaedString.contains("&amp;"),true);
+	public void testXMLEscapingAtTransforming()
+			throws ParserConfigurationException, SAXException, IOException,
+			TransformerException, OAIRecordMetadataParseException {
 
-		
-		OAIRecordMetadata metadata = new OAIRecordMetadata("test", xmlUnescpaedString);
-		assertEquals(metadata.toString().contains("&amp;"),true);
-		
-		OAIMetadataXSLTransformer metadataTransformer = new OAIMetadataXSLTransformer("/etc/lrharvester/xoai.indexer.xsl");
-		
+		assertEquals(xmlUnescpaedString.contains("&amp;"), true);
+
+		OAIRecordMetadata metadata = new OAIRecordMetadata("test",
+				xmlUnescpaedString);
+		assertEquals(metadata.toString().contains("&amp;"), true);
+
+		OAIMetadataXSLTransformer metadataTransformer = new OAIMetadataXSLTransformer(
+				"/etc/lrharvester/xoai.indexer.xsl");
+
 		String transformedMD = metadataTransformer.transform(metadata);
-		
-		assertEquals(transformedMD.contains("&amp;"),true);
 
-		
-		
+		assertEquals(transformedMD.contains("&amp;"), true);
+
 		System.out.println(transformedMD);
 
 	}
-	
-		
 
-	
-	
-	
 }

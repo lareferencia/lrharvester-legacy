@@ -62,7 +62,7 @@
     <script type="text/javascript" src="<spring:url value="/static/js/ui-bootstrap-tpls-1.2.4.min.js"/>"></script>
    
 	<!-- Controladores Angular de la aplicación -->
-	<script type="text/javascript" src="<spring:url value="/static/app/model-json-schemas.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/network-json-schemas.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/validation-json-schemas.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/transformation-json-schemas.js"/>"></script>
 	
@@ -71,7 +71,7 @@
 	<script type="text/javascript" src="<spring:url value="/static/app/data-services.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/oai-services.js"/>"></script>	
 	
-	<script type="text/javascript" src="<spring:url value="/static/app/ui-forms-modals.js"/>"></script>
+	<script type="text/javascript" src="<spring:url value="/static/app/network-controller.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-validation-modals.js"/>"></script>
 	<script type="text/javascript" src="<spring:url value="/static/app/ui-transformation-modals.js"/>"></script>
 	
@@ -150,9 +150,9 @@
 						<td width="30" style="text-align: left" header="'ng-table/headers/checkbox.html'">
 					    	<input type="checkbox" ng-model="networks.selected[network.acronym]" />
 					    </td>
-					  	<td data-title="'Acrónimo'"    filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
-					    <td data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
-					    <td data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
+					  	<td style="width:40px;" data-title="'Acrónimo'"    filter="{acronym: 'text'}" sortable="'acronym'">{{network.acronym}}</td>
+					    <td style="width:150px;" data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
+					    <td style="width:300px;" data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
 					    <td data-title="'Última cosecha'">
 	                                <h5>{{network.lstSnapshotStatus}}</h5>
 	                                <div class="small">{{network.lstSize}} | V: {{network.lstValidSize}} | T: {{network.lstTransformedSize}} </div>
@@ -213,24 +213,26 @@
 
 <script type="text/ng-template" id="network-edit-tpl.html">
 <div class="modal-header">
-	<h3 class="modal-title">Editando: {{network.name}}</h3>
+	<h3 class="modal-title">Editando: {{network_model.name}}</h3>
 </div>
 
-<div class="modal-body">
+<div class="modal-body" ng-controller="NetworkActionsController">
 
 	<!-- TABSET -->
  	<uib-tabset active="activeJustified" justified="true">
     	<uib-tab index="0" heading="Principal">
 			<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)" ></form>
+			<form name="networkValidationEditForm" sf-schema="network_validation_schema" sf-form="network_validation_form" sf-model="network_validation_model" ></form>
+			<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)" ></form>
 			<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
 			<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
 			<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+			<div>{{network_validation_model}}</div>
 		</uib-tab>
-    	<uib-tab index="1" heading="Propiedades">
-			<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)" ></form>
-		</uib-tab>
-    	<uib-tab index="2" heading="Orígenes">
-				<div ng-controller="OriginActionsController">
+
+
+    	<uib-tab index="1" heading="Orígenes de cosecha">
+				<div>
 				<div class="row" >
 					<div class="col-xs-12">
 	          			<button type="button" class="btn btn-default btn-sm" ng-click="openEditOrigin(true, network_model, originsTableRefreshCallback)">Nuevo Origen</button>
@@ -264,7 +266,6 @@
 </div>
 
 <div class="modal-footer">
-	<button class="btn btn-success" type="button" ng-click="onSubmit(networkEditForm)">Grabar</button>
 	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
 </div>
 </script>
@@ -377,7 +378,6 @@
 	<h3 class="modal-title">Editando: {{rule_data_model.name}}</h3>
 </div>
 <div class="modal-body">
-	<p>{{rule_model}}</p>
 	<form name="ruleDataForm" sf-schema="rule_data_schema" sf-form="rule_data_form" sf-model="rule_data_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
 	<form name="ruleEditForm" sf-schema="rule_schema" sf-form="rule_form" sf-model="rule_model" ng-submit="onSubmit(ruleDataForm,ruleEditForm)"></form>
 	<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
@@ -454,7 +454,6 @@
 				<tr ng-repeat="vrule in $data track by vrule.name">
 					<td data-title="'Nombre'">{{vrule.name}}</td>
 					<td data-title="'Descripción'">{{vrule.description}}</td>
-					<td data-title="'Mandatoria'">{{vrule.mandatory}}</td>
 					<td>
 						<button class="btn btn-primary btn-sm"
 							ng-click="openEditTransformerRule(false,vrule, transformer_model, transformersRuleTableRefreshCallback)">

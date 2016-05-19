@@ -24,19 +24,19 @@ public class RuleSerializer {
 
 	@Getter
 	private List<IValidatorRule> validatorPrototypes;
-	
+
 	@Getter
 	private List<ITransformerRule> transformerPrototypes;
-	
+
 	// JsonObject Mapper
 	private ObjectMapper mapper;
-	
+
 	public RuleSerializer() {
 		validatorPrototypes = new ArrayList<IValidatorRule>();
 		transformerPrototypes = new ArrayList<ITransformerRule>();
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/***
 	 * Esta metodo carga en el mapper creado los subtipos de la clase AbstractValidatorRule 
@@ -45,48 +45,54 @@ public class RuleSerializer {
 	 */
 	private void updateObjectMapper() {
 		mapper = new ObjectMapper();
-	    
+
 		// Set con las clases de los prototipos declarados
-		Set<Class<? extends AbstractValidatorRule>> aValidationRuleSubTypes = new HashSet<Class<? extends AbstractValidatorRule>>(); 	    
-				
+		Set<Class<? extends AbstractValidatorRule>> aValidationRuleSubTypes = new HashSet<Class<? extends AbstractValidatorRule>>();
+
 		for (IValidatorRule rule : validatorPrototypes) {
-			// TODO: Ojo que esto puede ser problematico si algun de las reglas no es derivada de AbstractValidationRule
-			aValidationRuleSubTypes.add((Class<? extends AbstractValidatorRule>) rule.getClass());
+			// TODO: Ojo que esto puede ser problematico si algun de las reglas
+			// no es derivada de AbstractValidationRule
+			aValidationRuleSubTypes
+					.add((Class<? extends AbstractValidatorRule>) rule
+							.getClass());
 		}
-		mapper.registerSubtypes(aValidationRuleSubTypes.toArray(new Class<?>[aValidationRuleSubTypes.size()]));	      
-	
-		
+		mapper.registerSubtypes(aValidationRuleSubTypes
+				.toArray(new Class<?>[aValidationRuleSubTypes.size()]));
+
 		// Set con las clases de los prototipos declarados
-		Set<Class<? extends AbstractTransformerRule>> aTransformerRuleSubTypes = new HashSet<Class<? extends AbstractTransformerRule>>(); 	    
-				
+		Set<Class<? extends AbstractTransformerRule>> aTransformerRuleSubTypes = new HashSet<Class<? extends AbstractTransformerRule>>();
+
 		for (ITransformerRule rule : transformerPrototypes) {
-			// TODO: Ojo que esto puede ser problematico si algun de las reglas no es derivada de AbstractRule
-			aTransformerRuleSubTypes.add((Class<? extends AbstractTransformerRule>) rule.getClass());
+			// TODO: Ojo que esto puede ser problematico si algun de las reglas
+			// no es derivada de AbstractRule
+			aTransformerRuleSubTypes
+					.add((Class<? extends AbstractTransformerRule>) rule
+							.getClass());
 		}
-		mapper.registerSubtypes(aTransformerRuleSubTypes.toArray(new Class<?>[aTransformerRuleSubTypes.size()]));	   
-		
-		
-		
+		mapper.registerSubtypes(aTransformerRuleSubTypes
+				.toArray(new Class<?>[aTransformerRuleSubTypes.size()]));
+
 	}
 
-	
 	public void setValidatorPrototypes(List<IValidatorRule> prototypes) {
 		this.validatorPrototypes = prototypes;
-		
-		// Cada vez que la lista de prototipos cambia hay que reconstruir el mapper
+
+		// Cada vez que la lista de prototipos cambia hay que reconstruir el
+		// mapper
 		updateObjectMapper();
 	}
-	
+
 	public void setTransformerPrototypes(List<ITransformerRule> prototypes) {
 		this.transformerPrototypes = prototypes;
-		
-		// Cada vez que la lista de prototipos cambia hay que reconstruir el mapper
+
+		// Cada vez que la lista de prototipos cambia hay que reconstruir el
+		// mapper
 		updateObjectMapper();
 	}
-	
+
 	public String serializeTransformerToJsonString(ITransformerRule rule) {
-		
-		 try {
+
+		try {
 			return mapper.writeValueAsString(rule);
 		} catch (JsonProcessingException e) {
 			// TODO Serialize rule exceptions
@@ -94,10 +100,10 @@ public class RuleSerializer {
 		}
 		return null;
 	}
-	
+
 	public String serializeValidatorToJsonString(IValidatorRule rule) {
-		
-		 try {
+
+		try {
 			return mapper.writeValueAsString(rule);
 		} catch (JsonProcessingException e) {
 			// TODO Serialize rule exceptions
@@ -105,46 +111,42 @@ public class RuleSerializer {
 		}
 		return null;
 	}
-	
+
 	public IValidatorRule deserializeValidatorFromJsonString(String jsonString) {
-		
-		
-			try {
-				return mapper.readValue(jsonString, AbstractValidatorRule.class);
-			} catch (JsonParseException e) {
-				
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				
-				e.printStackTrace();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-	
+
+		try {
+			return mapper.readValue(jsonString, AbstractValidatorRule.class);
+		} catch (JsonParseException e) {
+
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+
+			e.printStackTrace();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+
 		return null;
 	}
-	
-	public ITransformerRule deserializeTransformerFromJsonString(String jsonString) {
-		
-		
+
+	public ITransformerRule deserializeTransformerFromJsonString(
+			String jsonString) {
+
 		try {
 			return mapper.readValue(jsonString, AbstractTransformerRule.class);
 		} catch (JsonParseException e) {
-			
+
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			
+
 			e.printStackTrace();
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 
-	return null;
-}
-	
-	
-	
+		return null;
+	}
 
 }

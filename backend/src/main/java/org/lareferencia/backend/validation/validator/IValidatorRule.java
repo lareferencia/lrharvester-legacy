@@ -15,18 +15,20 @@ package org.lareferencia.backend.validation.validator;
 
 import org.lareferencia.backend.domain.OAIRecord;
 
-
 public interface IValidatorRule {
 
 	public ValidatorRuleResult validate(OAIRecord record);
-	
-	public Long    getRuleId();
-	public void    setRuleId(Long id);
-	
+
+	public Long getRuleId();
+
+	public void setRuleId(Long id);
+
 	public Boolean getMandatory();
+
 	public void setMandatory(Boolean mandatory);
-	
+
 	public QuantifierValues getQuantifier();
+
 	public void setQuantifier(QuantifierValues qv);
 
 }

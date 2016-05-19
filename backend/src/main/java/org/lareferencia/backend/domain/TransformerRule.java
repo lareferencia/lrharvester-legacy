@@ -28,13 +28,13 @@ import org.hibernate.annotations.Type;
 @Getter
 @Setter
 public class TransformerRule extends AbstractEntity {
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = true)
 	private String description;
-	
-	@Type(type="org.hibernate.type.StringClobType")
+
+	@Type(type = "org.hibernate.type.StringClobType")
 	private String JSONSerialization;
 }

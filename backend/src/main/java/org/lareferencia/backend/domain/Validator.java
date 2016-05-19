@@ -38,16 +38,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Validator extends AbstractEntity {
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = true)
 	private String description;
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="validator_id")
-	@LazyCollection(LazyCollectionOption.FALSE) 
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "validator_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<ValidatorRule> rules = new ArrayList<ValidatorRule>();
 
 	public Validator() {

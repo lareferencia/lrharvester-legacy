@@ -23,110 +23,120 @@ import java.util.Map;
 
 /**
  * Takes a data table and returns a csv string.
- *
+ * 
  * @author Nimrod T.
  */
 public class CsvRenderer {
 
-  /**
-   * Private constructor.
-   */
-  private CsvRenderer() {}
+	/**
+	 * Private constructor.
+	 */
+	private CsvRenderer() {
+	}
 
-  /**
-   * Generates a csv string representation of a data table.
-   *
-   * @param dataTable The data table.
-   * @param locale The locale. If null, uses the default from
-   *     {@code LocaleUtil#getDefaultLocale}.
-   * @param separator The separator string used to delimit row values. 
-   *     If the separator is {@code null}, comma is used as a separator.
-   *
-   * @return The char sequence with the csv string.
-   */
-  public static CharSequence renderDataTable(DataTable dataTable, ULocale locale,
-      String separator) {
-    if (separator == null) {
-      separator = ",";
-    }
+	/**
+	 * Generates a csv string representation of a data table.
+	 * 
+	 * @param dataTable
+	 *            The data table.
+	 * @param locale
+	 *            The locale. If null, uses the default from
+	 *            {@code LocaleUtil#getDefaultLocale}.
+	 * @param separator
+	 *            The separator string used to delimit row values. If the
+	 *            separator is {@code null}, comma is used as a separator.
+	 * 
+	 * @return The char sequence with the csv string.
+	 */
+	public static CharSequence renderDataTable(DataTable dataTable,
+			ULocale locale, String separator) {
+		if (separator == null) {
+			separator = ",";
+		}
 
-    // Deal with empty data table.
-    if (dataTable.getColumnDescriptions().isEmpty()) {
-      return "";
-    }
+		// Deal with empty data table.
+		if (dataTable.getColumnDescriptions().isEmpty()) {
+			return "";
+		}
 
-    // Deal with non-empty data table.
-    StringBuilder sb = new StringBuilder();
-    List<ColumnDescription> columns = dataTable.getColumnDescriptions();
-    // Append column labels
-    for (ColumnDescription column : columns) {
-      sb.append(escapeString(column.getLabel())).append(separator);
-    }
+		// Deal with non-empty data table.
+		StringBuilder sb = new StringBuilder();
+		List<ColumnDescription> columns = dataTable.getColumnDescriptions();
+		// Append column labels
+		for (ColumnDescription column : columns) {
+			sb.append(escapeString(column.getLabel())).append(separator);
+		}
 
-    Map<ValueType, ValueFormatter> formatters = ValueFormatter.createDefaultFormatters(locale);
+		Map<ValueType, ValueFormatter> formatters = ValueFormatter
+				.createDefaultFormatters(locale);
 
-    // Remove last comma.
-    int length = sb.length();
-    sb.replace(length - 1, length, "\n");
+		// Remove last comma.
+		int length = sb.length();
+		sb.replace(length - 1, length, "\n");
 
-    // Append the data cells.
-    List<TableRow> rows = dataTable.getRows();
-    for (TableRow row : rows) {
-      List<TableCell> cells = row.getCells();
-      for (TableCell cell : cells) {
-        String formattedValue = cell.getFormattedValue();
-        if (formattedValue == null) {
-          formattedValue = formatters.get(cell.getType()).format(cell.getValue());
-        }
-        if (cell.isNull()) {
-          sb.append("null");
-        } else {
-          ValueType type = cell.getType();
-          // Escape the string with quotes if its a text value or if it contains a comma.
-          if (formattedValue.indexOf(',') > -1 || type.equals(ValueType.TEXT)) {
-            sb.append(escapeString(formattedValue));
-          } else {
-            sb.append(formattedValue);
-          }
-        }
-        sb.append(separator);
-      }
+		// Append the data cells.
+		List<TableRow> rows = dataTable.getRows();
+		for (TableRow row : rows) {
+			List<TableCell> cells = row.getCells();
+			for (TableCell cell : cells) {
+				String formattedValue = cell.getFormattedValue();
+				if (formattedValue == null) {
+					formattedValue = formatters.get(cell.getType()).format(
+							cell.getValue());
+				}
+				if (cell.isNull()) {
+					sb.append("null");
+				} else {
+					ValueType type = cell.getType();
+					// Escape the string with quotes if its a text value or if
+					// it contains a comma.
+					if (formattedValue.indexOf(',') > -1
+							|| type.equals(ValueType.TEXT)) {
+						sb.append(escapeString(formattedValue));
+					} else {
+						sb.append(formattedValue);
+					}
+				}
+				sb.append(separator);
+			}
 
-      // Remove last comma.
-      length = sb.length();
-      sb.replace(length - 1, length, "\n");
-    }
-    return sb.toString();
-  }
+			// Remove last comma.
+			length = sb.length();
+			sb.replace(length - 1, length, "\n");
+		}
+		return sb.toString();
+	}
 
-  /**
-   * Escapes a string that is written to a csv file. The escaping is as follows:
-   * 1) surround with ".
-   * 2) double each internal ".
-   *
-   * @param input The input string.
-   *
-   * @return An escaped string.
-   */
-  private static String escapeString(String input) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("\"");
-    sb.append(StringUtils.replace(input, "\"", "\"\""));
-    sb.append("\"");
-    return sb.toString();
-  }
+	/**
+	 * Escapes a string that is written to a csv file. The escaping is as
+	 * follows: 1) surround with ". 2) double each internal ".
+	 * 
+	 * @param input
+	 *            The input string.
+	 * 
+	 * @return An escaped string.
+	 */
+	private static String escapeString(String input) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"");
+		sb.append(StringUtils.replace(input, "\"", "\"\""));
+		sb.append("\"");
+		return sb.toString();
+	}
 
-  /**
-   * Renders an error message.
-   *
-   * @param responseStatus The response status.
-   * 
-   * @return An error message.
-   */
-  public static String renderCsvError(ResponseStatus responseStatus) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Error: ").append(responseStatus.getReasonType().getMessageForReasonType(null));
-    sb.append(". ").append(responseStatus.getDescription());
-    return escapeString(sb.toString());
-  }
+	/**
+	 * Renders an error message.
+	 * 
+	 * @param responseStatus
+	 *            The response status.
+	 * 
+	 * @return An error message.
+	 */
+	public static String renderCsvError(ResponseStatus responseStatus) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Error: ").append(
+				responseStatus.getReasonType().getMessageForReasonType(null));
+		sb.append(". ").append(responseStatus.getDescription());
+		return escapeString(sb.toString());
+	}
 }

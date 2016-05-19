@@ -21,19 +21,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+@ToString(exclude = { "pattern" })
+public class RegexFieldContentValidatorRule extends
+		AbstractValidatorFieldContentRule {
 
-@ToString(exclude={"pattern"})
-public class RegexFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
-	
 	private static final int MAX_EXPECTED_LENGTH = 255;
 
 	@Getter
 	@JsonProperty("regexString")
 	private String regexString;
-	
+
 	private Pattern pattern;
-	
-	
+
 	public void setRegexString(String reString) {
 		this.regexString = reString;
 		this.pattern = Pattern.compile(reString);
@@ -41,19 +40,19 @@ public class RegexFieldContentValidatorRule extends AbstractValidatorFieldConten
 
 	@Override
 	public FieldContentValidatorResult validate(String content) {
-	
+
 		FieldContentValidatorResult result = new FieldContentValidatorResult();
-		
+
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
-			result.setValid( pattern.matcher(content).matches() );
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content
+					.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setValid(pattern.matcher(content).matches());
 		}
-			
+
 		return result;
 	}
 
-	
 }

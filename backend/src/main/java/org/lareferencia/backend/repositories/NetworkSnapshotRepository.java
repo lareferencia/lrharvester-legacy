@@ -28,26 +28,31 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
-@RepositoryRestResource(path = "snapshot", collectionResourceRel="snapshot")
-public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot, Long> { 
-	
-	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id and s.status = 9)")
-	  NetworkSnapshot findLastGoodKnowByNetworkID(@Param("network_id") Long networkID);
-	  
-	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id)")
-	  NetworkSnapshot findLastByNetworkID(@Param("network_id") Long networkID);
-	
-	 
-	  List<NetworkSnapshot> findByNetworkAndDeleted(Network network, Boolean deleted);
-	  List<NetworkSnapshot> findByNetworkAndStatus(Network network, SnapshotStatus status);	  
-	  List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(Network network, SnapshotStatus status);
-	  List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(Network network);
-	  
-	  List<NetworkSnapshot> findByStatusOrderByEndTimeAsc(SnapshotStatus status);
+@RepositoryRestResource(path = "snapshot", collectionResourceRel = "snapshot")
+public interface NetworkSnapshotRepository extends
+		JpaRepository<NetworkSnapshot, Long> {
 
+	@Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.status = 9 and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id and s.status = 9)")
+	NetworkSnapshot findLastGoodKnowByNetworkID(
+			@Param("network_id") Long networkID);
 
-  
-	  
-	  @Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
-	  Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);
+	@Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id and ns.endTime >= (select max(s.endTime) from NetworkSnapshot s where s.network.id = :network_id)")
+	NetworkSnapshot findLastByNetworkID(@Param("network_id") Long networkID);
+
+	List<NetworkSnapshot> findByNetworkAndDeleted(Network network,
+			Boolean deleted);
+
+	List<NetworkSnapshot> findByNetworkAndStatus(Network network,
+			SnapshotStatus status);
+
+	List<NetworkSnapshot> findByNetworkAndStatusOrderByEndTimeAsc(
+			Network network, SnapshotStatus status);
+
+	List<NetworkSnapshot> findByNetworkOrderByEndTimeAsc(Network network);
+
+	List<NetworkSnapshot> findByStatusOrderByEndTimeAsc(SnapshotStatus status);
+
+	@Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
+	Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(
+			@Param("network_id") Long network_id, Pageable page);
 }

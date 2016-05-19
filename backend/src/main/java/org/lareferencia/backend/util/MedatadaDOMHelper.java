@@ -39,36 +39,46 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public abstract class MedatadaDOMHelper  {
+public abstract class MedatadaDOMHelper {
 
 	private static Element namespaceElement = null;
 	private static DocumentBuilderFactory factory;
-	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
+	private static TransformerFactory xformFactory = TransformerFactory
+			.newInstance();
 	private static HashMap<String, DocumentBuilder> builderMap = new HashMap<String, DocumentBuilder>();
 
 	static {
 		try {
 			factory = DocumentBuilderFactory.newInstance();
 			factory.setNamespaceAware(true);
-			
-			DOMImplementation impl = obtainThreadBuider().getDOMImplementation();
-	        Document namespaceHolder = impl.createDocument("http://www.openarchives.org/OAI/2.0/oai_dc","oaidc:namespaceHolder", null);
-	        
-	        /**
-	         * TODO: Este listado comprende los namespaces que es capaza de reconocer, esta lista debe ampliarse pues limita los metadatos
-	         * que pueden manejarse, actualmente están declarados solo los NS de DC
-	         */
-	        namespaceElement = namespaceHolder.getDocumentElement();
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:dc", "http://purl.org/dc/elements/1.1/");
-	     			
+
+			DOMImplementation impl = obtainThreadBuider()
+					.getDOMImplementation();
+			Document namespaceHolder = impl.createDocument(
+					"http://www.openarchives.org/OAI/2.0/oai_dc",
+					"oaidc:namespaceHolder", null);
+
+			/**
+			 * TODO: Este listado comprende los namespaces que es capaza de
+			 * reconocer, esta lista debe ampliarse pues limita los metadatos
+			 * que pueden manejarse, actualmente están declarados solo los NS de
+			 * DC
+			 */
+			namespaceElement = namespaceHolder.getDocumentElement();
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:oai_dc",
+					"http://www.openarchives.org/OAI/2.0/oai_dc/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:dc", "http://purl.org/dc/elements/1.1/");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	public static NodeList getNodeList(Node node, String xpath)
 			throws TransformerException {
@@ -109,7 +119,6 @@ public abstract class MedatadaDOMHelper  {
 		return builder;
 	}
 
-	
 	public static String Node2XMLString(Node node) throws TransformerException {
 
 		StringWriter sw = new StringWriter();
@@ -119,6 +128,11 @@ public abstract class MedatadaDOMHelper  {
 		idTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		idTransformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		idTransformer.transform(new DOMSource(node), output);
-		return sw.toString();
+
+		String result = sw.toString();
+
+		result = result.replaceAll("&#5[0-9]{4}", " ");
+
+		return result;
 	}
 }

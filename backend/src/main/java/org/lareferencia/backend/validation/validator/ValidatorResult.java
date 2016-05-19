@@ -25,45 +25,43 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ValidatorResult {
-	
+
 	private boolean valid;
 	private List<ValidatorRuleResult> rulesResults;
-	
+
 	public ValidatorResult() {
 		rulesResults = new ArrayList<ValidatorRuleResult>();
 	}
-	
+
 	public String getValidationContentDetails() {
-		
+
 		StringBuilder sb = new StringBuilder();
-		
-		for ( ValidatorRuleResult  entry:rulesResults ) {
-			
-			for ( FieldContentValidatorResult result: entry.getResults() ) {
+
+		for (ValidatorRuleResult entry : rulesResults) {
+
+			for (FieldContentValidatorResult result : entry.getResults()) {
 				// Solo detalla los valores inválidos o válidos, según el caso
-				sb.append( entry.getRule().getRuleId() + ":" + result.getReceivedValue() );
-				
+				sb.append(entry.getRule().getRuleId() + ":"
+						+ result.getReceivedValue());
+
 				sb.append(";");
 			}
 		}
-		
-		if ( sb.length() > 0 && sb.charAt( sb.length() - 1) == ';' )
-			sb.deleteCharAt( sb.length() - 1);
-		
+
+		if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ';')
+			sb.deleteCharAt(sb.length() - 1);
+
 		return sb.toString();
 	}
-	
-	
-	
-	
+
 	@Override
 	public String toString() {
-		
+
 		String toStr = "Validation: ";
 		toStr += " record valid=" + valid + "\n\n";
-		
-		for ( ValidatorRuleResult entry:rulesResults ) {
-			
+
+		for (ValidatorRuleResult entry : rulesResults) {
+
 			toStr += entry.getRule().getRuleId() + ":\n";
 			toStr += entry.toString() + "\n\n";
 		}

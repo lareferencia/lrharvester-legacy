@@ -17,7 +17,7 @@ import org.lareferencia.backend.domain.Transformer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "transformer", collectionResourceRel="transformer")
-public interface TransformerRepository extends JpaRepository<Transformer, Long> { 
-	
+@RepositoryRestResource(path = "transformer", collectionResourceRel = "transformer")
+public interface TransformerRepository extends JpaRepository<Transformer, Long> {
+
 }

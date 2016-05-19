@@ -4,7 +4,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
      
     function($http, SpringDataRestAdapter, RestURLHelper) {
 	
-	 var linksToProcess = ['properties','property','networkProperty','origins','origin','rules']; 
+	 var linksToProcess = ['properties','property','networkProperty','validator', 'transformer','origins','origin','rules']; 
 	
 
 	 var add_methods = function(processedResponse) {
@@ -129,6 +129,26 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 		  var httpPromise = $http.get(url);  
 		  
 		  SpringDataRestAdapter.process(httpPromise, linksToProcess, true).then( function (processedResponse) {
+			   
+			  var item = add_methods(processedResponse);
+			  
+		      /* devuelve el item creado al callback */
+			  success_callback(item);
+		             
+		  }).catch(error_callback); // esto da error en el parse de eclipse pero no es error
+	  }; 
+	  
+	  /**
+	   * List
+	   * @param url
+	   * @param success_callback
+	   * @param error_callback
+	   */
+	  this.list = function(url, success_callback, error_callback ) {
+		  
+		  var httpPromise = $http.get(url);  
+		  
+		  SpringDataRestAdapter.process(httpPromise, [], false).then( function (processedResponse) {
 			   
 			  var item = add_methods(processedResponse);
 			  

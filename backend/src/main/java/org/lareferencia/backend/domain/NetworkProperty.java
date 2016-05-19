@@ -18,7 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,33 +26,35 @@ import lombok.Setter;
  */
 @Entity
 public class NetworkProperty extends AbstractEntity {
-	
+
 	@Getter
-    @Setter
+	@Setter
 	@ManyToOne
-    private Property property;
-   
-    @Getter
-    @Setter
-    @ManyToOne
-    private Network network;
-    
-    @Getter
-    @Setter
+	private Property property;
+
+	@Getter
+	@Setter
+	@ManyToOne
+	private Network network;
+
+	@Getter
+	@Setter
 	@Column(nullable = false)
-    private Boolean value;
-	
-    @Transient 
-    public String getName() {	
-    	if (property != null)
-    		return property.getName();
-    	else return "";
-    };
-    
-    @Transient 
-    public String getDescription() {
-    	if (property != null)
-    	    	return property.getDescription();
-    	else return "";
-    };
+	private Boolean value;
+
+	@Transient
+	public String getName() {
+		if (property != null)
+			return property.getName();
+		else
+			return "";
+	};
+
+	@Transient
+	public String getDescription() {
+		if (property != null)
+			return property.getDescription();
+		else
+			return "";
+	};
 }

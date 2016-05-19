@@ -14,20 +14,22 @@
 
 package org.lareferencia.backend.util.datatable;
 
-
 /**
  * An exception concerning the csv data source.
- *
+ * 
  * @author Nimrod T.
  */
 public class CsvDataSourceException extends DataSourceException {
 
-  /**
-   * Constructor.
-   * @param reasonType The reason type.
-   * @param messageToUser A message that will be displayed to the end user.
-   */
-  public CsvDataSourceException(ReasonType reasonType, String messageToUser) {
-    super(reasonType, messageToUser);
-  }
+	/**
+	 * Constructor.
+	 * 
+	 * @param reasonType
+	 *            The reason type.
+	 * @param messageToUser
+	 *            A message that will be displayed to the end user.
+	 */
+	public CsvDataSourceException(ReasonType reasonType, String messageToUser) {
+		super(reasonType, messageToUser);
+	}
 }

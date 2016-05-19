@@ -25,30 +25,28 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 @Getter
 @Setter
 public class ValidatorImpl implements IValidator {
-	
+
 	List<IValidatorRule> rules;
-	
+
 	public ValidatorImpl() {
 		super();
 		rules = new ArrayList<IValidatorRule>();
 	}
-	
+
 	public ValidatorResult validate(OAIRecord record) {
-	
+
 		ValidatorResult result = new ValidatorResult();
 		boolean isRecordValid = true;
-		
-		for (IValidatorRule rule:rules) {				
-			ValidatorRuleResult ruleResult = rule.validate(record);			
-			result.getRulesResults().add( ruleResult );		
-			isRecordValid &= ( ruleResult.getValid() || !rule.getMandatory() );
+
+		for (IValidatorRule rule : rules) {
+			ValidatorRuleResult ruleResult = rule.validate(record);
+			result.getRulesResults().add(ruleResult);
+			isRecordValid &= (ruleResult.getValid() || !rule.getMandatory());
 		}
-		
+
 		result.setValid(isRecordValid);
-		
+
 		return result;
 	}
 
-
-	
 }

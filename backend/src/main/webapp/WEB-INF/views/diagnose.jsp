@@ -489,6 +489,8 @@
 	
 		var snaphotID = ${snapshotID};
 		var netwotkAcronym ='${networkAcronym}';
+		var networkID = ${networkID}; 
+		
 		var fqHash = {};
 		
 		function str2id(input) {
@@ -797,7 +799,7 @@
         
         function obtainRulesFromBackend(callback) {
                 	
-            $.rest.retrieve("/public/listValidatorRulesByNetworkID/1", 
+            $.rest.retrieve("/public/listValidatorRulesByNetworkID/" + networkID, 
                     function(results) { 
          
             				var data = [];

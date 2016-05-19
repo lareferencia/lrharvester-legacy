@@ -15,21 +15,22 @@
 package org.lareferencia.backend.util.datatable;
 
 /**
- * An exception that is thrown when trying to serve an invalid query.
- * A query can fail at parsing time, or at later validations.
- *
+ * An exception that is thrown when trying to serve an invalid query. A query
+ * can fail at parsing time, or at later validations.
+ * 
  * @author Yonatan B.Y.
  * @author Hillel M.
  */
 public class InvalidQueryException extends DataSourceException {
 
-  /**
-   * Construct a data source exception with an InvalidQuery reason type
-   * and a message to the user.
-   *
-   * @param messageToUser The message for the user.
-   */
-  public InvalidQueryException(String messageToUser) {
-    super(ReasonType.INVALID_QUERY, messageToUser);
-  }
+	/**
+	 * Construct a data source exception with an InvalidQuery reason type and a
+	 * message to the user.
+	 * 
+	 * @param messageToUser
+	 *            The message for the user.
+	 */
+	public InvalidQueryException(String messageToUser) {
+		super(ReasonType.INVALID_QUERY, messageToUser);
+	}
 }

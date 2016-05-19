@@ -39,85 +39,82 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Network extends AbstractEntity {
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = false)
 	private String institutionName;
-	
+
 	@Column(nullable = false, length = 20, unique = true)
 	private String acronym;
-				
-	@OneToMany(cascade=CascadeType.ALL/*, orphanRemoval=true*/)
-	@JoinColumn(name="network_id")
-	@LazyCollection(LazyCollectionOption.FALSE)  // Si es LAZY genera problemas durante el procesamiento
+
+	@OneToMany(cascade = CascadeType.ALL/* , orphanRemoval=true */)
+	@JoinColumn(name = "network_id")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	// Si es LAZY genera problemas durante el procesamiento
 	private Collection<OAIOrigin> origins = new LinkedHashSet<OAIOrigin>();
-	
-	@OneToMany(cascade=CascadeType.ALL/*,orphanRemoval=true*/)
-	@JoinColumn(name="network_id")
+
+	@OneToMany(cascade = CascadeType.ALL/* ,orphanRemoval=true */)
+	@JoinColumn(name = "network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
-	
+
 	@Column(nullable = false)
 	private boolean published = false;
 	/*
-	@Column(nullable = false)
-	private boolean runIndexing = true;
-	
-	@Column(nullable = false)
-	private boolean runValidation = true;
-	
-	@Column(nullable = false)
-	private boolean runTransformation = true;
-	
-	@Column(nullable = false)
-	private boolean runStats = false;
-	
-	@Column(nullable = false)
-	private boolean runXOAI = false;
-	*/
-	
-	private String scheduleCronExpression;	
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="network_id")
+	 * @Column(nullable = false) private boolean runIndexing = true;
+	 * 
+	 * @Column(nullable = false) private boolean runValidation = true;
+	 * 
+	 * @Column(nullable = false) private boolean runTransformation = true;
+	 * 
+	 * @Column(nullable = false) private boolean runStats = false;
+	 * 
+	 * @Column(nullable = false) private boolean runXOAI = false;
+	 */
+
+	private String scheduleCronExpression;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkProperty> properties = new LinkedHashSet<NetworkProperty>();;
-	
+
 	@Getter
 	@Setter
 	@ManyToOne()
-	@JoinColumn(name="validator_id", nullable=true)
+	@JoinColumn(name = "validator_id", nullable = true)
 	private Validator validator;
-	
+
 	@Getter
 	@Setter
 	@ManyToOne()
-	@JoinColumn(name="transformer_id", nullable=true)
+	@JoinColumn(name = "transformer_id", nullable = true)
 	private Transformer transformer;
-		
+
 	/***
-	 * Método de ayuda para lectura de propiedade booleanas
-	 * si la propieda existe devuelve su valor o
-	 * false en otro caso
-	 * @param propertyName nombre de la propiedad
+	 * Método de ayuda para lectura de propiedade booleanas si la propieda
+	 * existe devuelve su valor o false en otro caso
+	 * 
+	 * @param propertyName
+	 *            nombre de la propiedad
 	 * @return
 	 ***/
 	@Transient
 	public Boolean getBooleanPropertyValue(String propertyName) {
-		
+
 		Boolean retValue = false;
-		
-		for (NetworkProperty property:  this.getProperties() )
-			if ( property.getName().equals(propertyName)  )
+
+		for (NetworkProperty property : this.getProperties())
+			if (property.getName().equals(propertyName))
 				return property.getValue();
-		
+
 		return retValue;
 	}
 
-	
-	// Métodos abreviado para obtener el valor de propiedades manteniendo las interfaces anteriors
+	// Métodos abreviado para obtener el valor de propiedades manteniendo las
+	// interfaces anteriors
 	@Transient
 	public boolean mustRunValidation() {
 		return getBooleanPropertyValue(Property.RUN_VALIDATION);
@@ -137,5 +134,5 @@ public class Network extends AbstractEntity {
 	public boolean mustRunTransformation() {
 		return getBooleanPropertyValue(Property.RUN_TRANSFORMATION);
 	}
-	
+
 }

@@ -28,21 +28,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Property {
-	
+
 	public static final String RUN_VUFIND_INDEXING = "RUN_VUFIND_INDEXING";
-	public static final String RUN_XOAI_INDEXING   = "RUN_XOAI_INDEXING";
-	public static final String RUN_VALIDATION      = "RUN_VALIDATION";
-	public static final String RUN_TRANSFORMATION  = "RUN_TRANSFORMATION";
-		
+	public static final String RUN_XOAI_INDEXING = "RUN_XOAI_INDEXING";
+	public static final String RUN_VALIDATION = "RUN_VALIDATION";
+	public static final String RUN_TRANSFORMATION = "RUN_TRANSFORMATION";
+
 	@Id
 	@Column(nullable = false, unique = true)
 	private String id;
 
-    @Transient 
-    public String getName() {
-    	return id;
-    };
-	
+	@Transient
+	public String getName() {
+		return id;
+	};
+
 	@Column
 	private String description;
 }

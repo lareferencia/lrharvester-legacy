@@ -28,8 +28,7 @@ import org.w3c.dom.Node;
 @Getter
 @Setter
 public class FieldContentNormalizeRule extends AbstractTransformerRule {
-	
-	
+
 	@Override
 	public String toString() {
 		return "FieldContentNormalizeRule [validationRule=" + validationRule
@@ -39,56 +38,54 @@ public class FieldContentNormalizeRule extends AbstractTransformerRule {
 	}
 
 	private IValidatorFieldContentRule validationRule;
-	
+
 	private String fieldName;
-	
+
 	private Boolean removeInvalidOccurrences = false;
 	private Boolean removeDuplicatedOccurrences = false;
-		
+
 	public FieldContentNormalizeRule() {
 	}
-	
+
 	@Override
 	public boolean transform(OAIRecord record) {
-		
+
 		OAIRecordMetadata metadata = record.getMetadata();
-		
+
 		FieldContentValidatorResult result;
 		boolean wasTransformed = false;
 		Set<String> occurencesHistory = new HashSet<String>();
-		
-		// Ciclo de búsqueda
-		for (Node node: metadata.getFieldNodes(fieldName) ) {
-			
-			String occr = node.getFirstChild().getNodeValue();			
 
-			
-			if ( removeInvalidOccurrences ) {
-			
+		// Ciclo de búsqueda
+		for (Node node : metadata.getFieldNodes(fieldName)) {
+
+			String occr = node.getFirstChild().getNodeValue();
+
+			if (removeInvalidOccurrences) {
+
 				result = validationRule.validate(occr);
-				
+
 				wasTransformed |= !result.isValid();
-				
-				if ( !result.isValid() ) {
-					metadata.removeFieldNode(node);			
+
+				if (!result.isValid()) {
+					metadata.removeFieldNode(node);
 				}
 			}
-			
-			if ( removeDuplicatedOccurrences ) {
-				
-				if ( occurencesHistory.contains(occr) ) {
+
+			if (removeDuplicatedOccurrences) {
+
+				if (occurencesHistory.contains(occr)) {
 					wasTransformed |= true;
 					metadata.removeFieldNode(node);
 				}
-				
+
 				occurencesHistory.add(occr);
-				
+
 			}
-			
+
 		}
-			
+
 		return wasTransformed;
 	}
-	
 
 }

@@ -9,13 +9,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
-
 @Getter
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-/*@JsonSubTypes({ @Type(value = PropertyA.class, name = "A") })*/
+/* @JsonSubTypes({ @Type(value = PropertyA.class, name = "A") }) */
 public abstract class AbstractProperty {
-	
+
 	@JsonProperty("name")
 	String name;
 

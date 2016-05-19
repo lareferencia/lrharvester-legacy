@@ -49,7 +49,7 @@ function ($scope, $uibModal, JSONValidationSchemas) {
 	    var modalInstance = $uibModal.open({
 	      animation: true,
 	      templateUrl: 'rule-edit-tpl.html',
-	      controller: 'RuleEditCtrl',
+	      controller: 'ValidationRuleEditCtrl',
 	      size: 'lg',
 	      resolve: {
 	    	  isNew: function() { return isNew; },
@@ -135,7 +135,7 @@ uvm_module.controller('ValidatorEditCtrl', function ($scope, $uibModalInstance, 
  * @rule es una regla concreta si estamos editanto isNew == false o es una definicion de regla si estamos creando una regla nueva isNew == true
  * @validator es el objeto validador al cual pertenece la regla
  */
-uvm_module.controller('RuleEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONValidationSchemas, isNew, rule, validator) {
+uvm_module.controller('ValidationRuleEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONValidationSchemas, isNew, rule, validator) {
 	
 	// Accciones de los botones del modal
 	$scope.ok = function () { $uibModalInstance.close(null); };
@@ -231,8 +231,6 @@ uvm_module.controller('RuleEditCtrl', function ($scope, $uibModalInstance, DataS
 	    $scope.save_error = true;
 	    $scope.save_error_message = error.status + ": " + error.statusText;
 	};
-	
-
 
 	
 }); /* fin de ValidatorsListCtrl */

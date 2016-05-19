@@ -1,5 +1,5 @@
 var ufm_module = angular.module('ui.forms.modals', 
-		['ngAnimate', 'ui.bootstrap', 'schemaForm', 'data.services', 'table.services', 'model.json.schemas', 'rest.url.helper']);
+		['ngAnimate', 'ui.bootstrap', 'schemaForm', 'data.services', 'table.services', 'network.json.schemas', 'rest.url.helper']);
 
 ufm_module.controller('NetworkActionsController', 
 function ($scope, $uibModal, RestURLHelper, DataSrv) {
@@ -45,12 +45,7 @@ function ($scope, $uibModal, RestURLHelper, DataSrv) {
 	    });
 	   
     }; /* fin openEditNetwork */ 
-}); /* fin de NetworkActionsController*/
 
-    
-
-
-ufm_module.controller('OriginActionsController', function ($scope, $uibModal) {
 	
 	/** 
 	 * openEditOrigin: Apertura de modal de edición de Network 
@@ -105,13 +100,12 @@ ufm_module.controller('OriginActionsController', function ($scope, $uibModal) {
 	  }; /* fin openEditOrigin */ 
   
   
-}); /* fin OriginActionsController */ 
+}); /* fin NetworkActionsController */ 
 
 
 
-//Please note that $uibModalInstance represents a modal window (instance) dependency.
-//It is not the same as the $uibModal service used above.
-ufm_module.controller('OriginEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONFormSchemas, isNew, model) {
+
+ufm_module.controller('OriginEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONNetworkSchemas, isNew, model) {
 	
 	
 	// Indica si el formulario es válido, en principio se da por válido
@@ -123,24 +117,19 @@ ufm_module.controller('OriginEditCtrl', function ($scope, $uibModalInstance, Dat
 	$scope.cancel = function () { $uibModalInstance.dismiss('cancel');};
 	
 	// schema del formulario de origen
-	$scope.origin_schema = JSONFormSchemas.origin_schema;
+	$scope.origin_schema = JSONNetworkSchemas.origin_schema;
 	// estructura del formulario de origen
-	$scope.origin_form = JSONFormSchemas.origin_form;
+	$scope.origin_form = JSONNetworkSchemas.origin_form;
 	// datos formulario de origen de datos
 	$scope.origin_model = {};
 
 
 	
 	if ( !isNew ) { // si no es una red nueva 
-
 		$scope.origin_model = model;
-		 
-			
 	} else { // si es una origen nuevo 
-		
 		$scope.origin_model = {};
 		$scope.network_model = model; // la red a donde hay que agregarlo
-		
 	} 
 	
 	
@@ -210,9 +199,8 @@ ufm_module.controller('OriginEditCtrl', function ($scope, $uibModalInstance, Dat
 }); /*Fin de OriginEditCtrl*/
 
 
-// Please note that $uibModalInstance represents a modal window (instance) dependency.
-// It is not the same as the $uibModal service used above.
-ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONFormSchemas, isNew, networkID) {
+
+ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, DataSrv, TableSrv, RestURLHelper,  JSONNetworkSchemas, isNew, networkID) {
 	
 	
 	// Accciones de los botones del modal
@@ -224,14 +212,36 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
 	$scope.is_form_valid = true;
   
 	// schema del formulario de redes
-	$scope.network_schema = JSONFormSchemas.network_schema;
+	$scope.network_schema = JSONNetworkSchemas.network_schema;
 	
 	// estructura del formulario de redes
-	$scope.network_form = JSONFormSchemas.network_form;
+	$scope.network_form = JSONNetworkSchemas.network_form;
 	
 	// estructura del formulario de propiedades de redes
-	$scope.np_form = JSONFormSchemas.network_properties_form;
+	$scope.np_form = JSONNetworkSchemas.network_properties_form;
 	
+	$scope.network_validation_schema = JSONNetworkSchemas.network_validation_schema;
+		
+	
+	$scope.network_validation_model = {};
+	
+	// llamadas a los servicios para carga de los validadores y transformadores disponibles
+	DataSrv.get( RestURLHelper.validatorURL(), function(validators) { 
+		
+		DataSrv.get( RestURLHelper.transformerURL(), function(transformers) { 
+			
+			$scope.network_validation_form = JSONNetworkSchemas.network_validation_form(validators.getItems(),transformers.getItems());
+
+			if (isNew ) {
+				$scope.network_validation_model['transformer'] = RestURLHelper.urlFromEntity(transformers.getItems()[0]);
+				$scope.network_validation_model['validator'] = RestURLHelper.urlFromEntity( validators.getItems()[0] );
+			}
+						
+		});
+		
+	});
+	
+
 	// datos formulario de propiedades de red
 	$scope.np_model = {};
 	
@@ -244,9 +254,15 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
 						// el objeto de red obtenido es ahora el modelo del formulario
 						$scope.network_model = network;		
 						
-						$scope.np_schema = JSONFormSchemas.generate_network_properties_schema( network.getLinkItems('properties') );
-						$scope.np_model = JSONFormSchemas.generate_network_properties_model( network.getLinkItems('properties') );
+						$scope.np_schema = JSONNetworkSchemas.generate_network_properties_schema( network.getLinkItems('properties') );
+						$scope.np_model = JSONNetworkSchemas.generate_network_properties_model( network.getLinkItems('properties') );
 						
+						
+						// se cargan los valores de transformadores y validadores de la red
+						$scope.network_validation_model = {};
+						$scope.network_validation_model['validator'] = RestURLHelper.urlFromEntity(network.getLinkItems("validator")),
+						$scope.network_validation_model['transformer'] =  RestURLHelper.urlFromEntity(network.getLinkItems("transformer"));
+
 						// Carga los orígenes
 						$scope.originsTable = TableSrv.createNgTableFromGetData( function(params) { return $scope.network_model.getLinkItems('origins'); }) ;
 						$scope.originsTableRefreshCallback = function() {  $scope.originsTable.reload(); };
@@ -259,9 +275,10 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
 		
 		$scope.network_model = {};
 		
+		
 		// schema del formulario de propiedades
 		DataSrv.get( RestURLHelper.propertyURL(), function(properties) {
-			$scope.np_schema = JSONFormSchemas.generate_network_properties_schema( properties.getItems() );
+			$scope.np_schema = JSONNetworkSchemas.generate_network_properties_schema( properties.getItems() );
 		},
 		onSaveError); // ATENCION!!!!!!!! CAMBIAR POR CALLBACK DE ERROR DE LECTURA		
 		
@@ -296,6 +313,11 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
 	    				
 	    			function(network) { // callback de creación exitosa de red
 	    				$scope.network_model = network; // se actualiza el modelo del form con el objeto actualizable
+	    				
+	    		 		///// Asociación del validador y el transformador
+	    				$scope.network_model.associate('validator', $scope.network_validation_model['validator'], function() {
+		    				$scope.network_model.associate('transformer', $scope.network_validation_model['transformer'], function() {}, onSaveError );
+	    				}, onSaveError );
 	    				
 	    				///////// Agregado de propiedades  ////////////
 	    				
@@ -355,8 +377,14 @@ ufm_module.controller('NetworkEditCtrl', function ($scope, $uibModalInstance, Da
 		      $scope.network_model.update(
 		    	function() { // success callback
 		    		
+		    		///// Asociación del validador y el transformador
+    				$scope.network_model.associate('validator', $scope.network_validation_model['validator'], function() {
+    					$scope.network_model.associate('transformer', $scope.network_validation_model['transformer'], function() {}, onSaveError );
+    				}, onSaveError );
+    				
+		    		
 		    		// obtiene todas la propiedades para hacerles update de acuerdo a los datos de np_model
-		    		angular.forEach($scope.network_model._properties._embeddedItems, function(networkProperty, i) {
+		    		angular.forEach($scope.network_model.getLinkItems('properties'), function(networkProperty, i) {
 		    			networkProperty.value = $scope.np_model[networkProperty.name]; // asigna el valor de np el valor del model del formulario
 		    			networkProperty.update( function() {/*success callback*/}, onSaveError);
 		    		});

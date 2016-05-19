@@ -17,9 +17,7 @@ import org.lareferencia.backend.domain.Property;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "property", collectionResourceRel="property")
-public interface PropertyRepository extends JpaRepository<Property, String> { 
-	
+@RepositoryRestResource(path = "property", collectionResourceRel = "property")
+public interface PropertyRepository extends JpaRepository<Property, String> {
 
-	
 }

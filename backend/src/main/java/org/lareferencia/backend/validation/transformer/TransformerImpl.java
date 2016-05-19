@@ -26,40 +26,37 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TransformerImpl implements ITransformer {
-	
-	
+
 	@Getter
 	@Setter
 	List<ITransformerRule> rules;
-
 
 	public TransformerImpl() {
 		super();
 		rules = new ArrayList<ITransformerRule>();
 	}
 
-
 	@Override
-	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception {
-		
-		boolean anyTransformationOccurred = false; 
-		
-		for (ITransformerRule rule: rules) {
-			
+	public boolean transform(OAIRecord record, ValidatorResult validationResult)
+			throws Exception {
+
+		boolean anyTransformationOccurred = false;
+
+		for (ITransformerRule rule : rules) {
+
 			try {
-				// Solo aplica la transformación si ese campo no resultó válido o si se especifica expresamente
-					anyTransformationOccurred |= rule.transform(record);
+				// Solo aplica la transformación si ese campo no resultó válido
+				// o si se especifica expresamente
+				anyTransformationOccurred |= rule.transform(record);
+			} catch (Exception e) {
+				throw new Exception(
+						"Ocurrio un problema durante la transformacion de "
+								+ record.getIdentifier() + " con la regla: "
+								+ rule.getClass().getName(), e);
 			}
-			catch (Exception e) {
-				throw new Exception("Ocurrio un problema durante la transformacion de " + record.getIdentifier() + " con la regla: " + rule.getClass().getName()   , e);
-			}
-		}	
-		
+		}
+
 		return anyTransformationOccurred;
 	}
-		
-		
-		
-}	
 
-
+}

@@ -44,39 +44,38 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	@Getter
 	@JsonIgnore
 	Map<String, String> translationMap;
-	
+
 	@Getter
 	List<Translation> translationArray;
 
 	@Setter
 	@Getter
 	String testFieldName;
-	
+
 	@Setter
 	@Getter
 	String writeFieldName;
-	
+
 	@Setter
 	@Getter
 	Boolean replaceOccurrence = true;
-	
+
 	@Setter
 	@Getter
 	Boolean testValueAsPrefix = false;
-
 
 	public FieldContentTranslateRule() {
 		this.translationMap = new TreeMap<String, String>(
 				CaseInsensitiveComparator.INSTANCE);
 	}
-	
+
 	public void setTranslationArray(List<Translation> list) {
 		this.translationArray = list;
-		
-		for(Translation t:list) {
+
+		for (Translation t : list) {
 			this.translationMap.put(t.search, t.replace);
 		}
-		
+
 		System.out.println(list);
 	}
 
@@ -121,54 +120,68 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 
 	@Override
 	public boolean transform(OAIRecord record) {
-		
+
 		OAIRecordMetadata metadata = record.getMetadata();
 		boolean wasTransformed = false;
 
-		
 		// recorre las ocurrencias del campo de test
-		for (Node node : metadata.getFieldNodes(testFieldName) ) {
+		for (Node node : metadata.getFieldNodes(testFieldName)) {
 
 			String occr = node.getFirstChild().getNodeValue();
-			
+
 			// Busca el valor completo, no el prefijo
-			if ( !testValueAsPrefix ) {
-			
-				// Si encuentra el valor realiza la trasformación y registra que ocurrió
-				if ( translationMap.containsKey(occr) ) {
-					
-					String translatedOccr = translationMap.get(occr); // se obtiene el valor de reemplazo
-					wasTransformed |= !occr.equals(translatedOccr); // registra que será transformado
-					
-					if ( replaceOccurrence ) { // Si esta marcao el reemplazo del valor
+			if (!testValueAsPrefix) {
+
+				// Si encuentra el valor realiza la trasformación y registra que
+				// ocurrió
+				if (translationMap.containsKey(occr)) {
+
+					String translatedOccr = translationMap.get(occr); // se
+																		// obtiene
+																		// el
+																		// valor
+																		// de
+																		// reemplazo
+					wasTransformed |= !occr.equals(translatedOccr); // registra
+																	// que será
+																	// transformado
+
+					if (replaceOccurrence) { // Si esta marcao el reemplazo del
+												// valor
 						// borra la ocurrencia del test node
 						metadata.removeFieldNode(node);
 					}
-					
+
 					metadata.addFieldOcurrence(writeFieldName, translatedOccr);
-				}	
-			
-			}
-			else { // Busca el prefijo 
-			
+				}
+
+			} else { // Busca el prefijo
+
 				Boolean found = false;
 				// recorre los valores del diccionarrio de reemplazo
 				for (String testValue : translationMap.keySet()) {
-					
+
 					// si el valor del diccionario de reemplazo es prefijo de la
-					// ocurrencia	
+					// ocurrencia
 					if (!found && occr.startsWith(testValue)) {
-						
+
 						wasTransformed = true;
-						String translatedOccr = translationMap.get(testValue); // se obtiene el valor de reemplazo
-				
-						if ( replaceOccurrence ) { // Si esta marcao el reemplazo del valor
+						String translatedOccr = translationMap.get(testValue); // se
+																				// obtiene
+																				// el
+																				// valor
+																				// de
+																				// reemplazo
+
+						if (replaceOccurrence) { // Si esta marcao el reemplazo
+													// del valor
 							// borra la ocurrencia del test node
 							metadata.removeFieldNode(node);
 						}
-						
-						metadata.addFieldOcurrence(writeFieldName, translatedOccr);
-	
+
+						metadata.addFieldOcurrence(writeFieldName,
+								translatedOccr);
+
 					}
 				}
 			}

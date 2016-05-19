@@ -18,9 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-@RepositoryRestResource(path = "set",collectionResourceRel="set")
-public interface OAISetRepository extends JpaRepository<OAISet, Long> { 
-	
-	
-	  
+@RepositoryRestResource(path = "set", collectionResourceRel = "set")
+public interface OAISetRepository extends JpaRepository<OAISet, Long> {
+
 }

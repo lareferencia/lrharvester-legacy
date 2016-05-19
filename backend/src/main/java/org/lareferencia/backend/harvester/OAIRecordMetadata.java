@@ -46,37 +46,47 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class OAIRecordMetadata {
-	
+
 	private static Element namespaceElement = null;
 	private static DocumentBuilderFactory factory;
-	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
+	private static TransformerFactory xformFactory = TransformerFactory
+			.newInstance();
 	private static HashMap<String, DocumentBuilder> builderMap = new HashMap<String, DocumentBuilder>();
 
-	
 	/***** Static ******/
 	static {
 		try {
 			factory = DocumentBuilderFactory.newInstance();
 			factory.setNamespaceAware(true);
-			
-			DOMImplementation impl = obtainThreadBuider().getDOMImplementation();
-	        Document namespaceHolder = impl.createDocument("http://www.openarchives.org/OAI/2.0/oai_dc","oaidc:namespaceHolder", null);
-	        
-	        /**
-	         * TODO: Este listado comprende los namespaces que es capaza de reconocer, esta lista debe ampliarse pues limita los metadatos
-	         * que pueden manejarse, actualmente están declarados solo los NS de DC
-	         */
-	        namespaceElement = namespaceHolder.getDocumentElement();
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:dc", "http://purl.org/dc/elements/1.1/");
-	     			
+
+			DOMImplementation impl = obtainThreadBuider()
+					.getDOMImplementation();
+			Document namespaceHolder = impl.createDocument(
+					"http://www.openarchives.org/OAI/2.0/oai_dc",
+					"oaidc:namespaceHolder", null);
+
+			/**
+			 * TODO: Este listado comprende los namespaces que es capaza de
+			 * reconocer, esta lista debe ampliarse pues limita los metadatos
+			 * que pueden manejarse, actualmente están declarados solo los NS de
+			 * DC
+			 */
+			namespaceElement = namespaceHolder.getDocumentElement();
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:oai_dc",
+					"http://www.openarchives.org/OAI/2.0/oai_dc/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
+					"xmlns:dc", "http://purl.org/dc/elements/1.1/");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected static DocumentBuilder obtainThreadBuider() {
 
 		DocumentBuilder builder = builderMap.get(Thread.currentThread()
@@ -92,154 +102,160 @@ public class OAIRecordMetadata {
 		}
 		return builder;
 	}
+
 	/***** Fin Static ******/
-	
+
 	private Document DOMDocument;
-	
+
 	@Getter
 	private String identifier;
-	
+
 	@Getter
 	@Setter
 	private String origin;
-	
+
 	@Getter
 	@Setter
 	private String setSpec;
-	
 
 	public Document getDOMDocument() {
 		return DOMDocument;
 	}
 
-	public OAIRecordMetadata(String identifier, String xmlString) throws OAIRecordMetadataParseException {
-		
+	public OAIRecordMetadata(String identifier, String xmlString)
+			throws OAIRecordMetadataParseException {
+
 		this.identifier = identifier;
-		
+
 		try {
-			
+
 			DOMDocument = parseXML(xmlString);
-			
+
 		} catch (ParserConfigurationException e) {
-			throw new OAIRecordMetadataParseException("Error  en: " + this.getClass().toString(), e);
-			
+			throw new OAIRecordMetadataParseException("Error  en: "
+					+ this.getClass().toString(), e);
+
 		} catch (SAXException e) {
-			throw new OAIRecordMetadataParseException("Error en xml parse en: " + this.getClass().toString(), e );
+			throw new OAIRecordMetadataParseException("Error en xml parse en: "
+					+ this.getClass().toString(), e);
 		} catch (IOException e) {
-			throw new OAIRecordMetadataParseException("Error  en: " + this.getClass().toString(), e);
+			throw new OAIRecordMetadataParseException("Error  en: "
+					+ this.getClass().toString(), e);
 		}
 	}
-	
+
 	public OAIRecordMetadata(Document domDocument) {
-		
+
 		this.DOMDocument = domDocument;
 	}
-	
-	
-	public List<String> getFieldOcurrences(String fieldName) {	
+
+	public List<String> getFieldOcurrences(String fieldName) {
 		try {
-			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument, "//" + fieldName, namespaceElement);
-								
+			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument, "//"
+					+ fieldName, namespaceElement);
+
 			List<String> contents = new ArrayList<String>(nodelist.getLength());
-			for (int i=0; i<nodelist.getLength(); i++) {
+			for (int i = 0; i < nodelist.getLength(); i++) {
 				try {
-					
-					if ( nodelist.item(i).hasChildNodes() )
-						contents.add( nodelist.item(i).getFirstChild().getNodeValue() );
-				}
-				catch (NullPointerException e) {
+
+					if (nodelist.item(i).hasChildNodes())
+						contents.add(nodelist.item(i).getFirstChild()
+								.getNodeValue());
+				} catch (NullPointerException e) {
 					// Esto no debiera ocurrir nunca
-					//TODO: mejorar el tratamiento de esto
-					System.err.println( "Error obteniendo occurrencias: " + MedatadaDOMHelper.Node2XMLString(nodelist.item(i)) );
+					// TODO: mejorar el tratamiento de esto
+					System.err
+							.println("Error obteniendo occurrencias: "
+									+ MedatadaDOMHelper.Node2XMLString(nodelist
+											.item(i)));
 				}
 			}
 			return contents;
-			
+
 		} catch (TransformerException e) {
-			//TODO: mejorar el tratamiento de esto
+			// TODO: mejorar el tratamiento de esto
 			e.printStackTrace();
 			return new ArrayList<String>(0);
 		}
 	}
-	
+
 	public void addFieldOcurrence(String fieldName, String content) {
-		
-			
-		Element elem = DOMDocument.createElementNS("http://purl.org/dc/elements/1.1/", fieldName);
+
+		Element elem = DOMDocument.createElementNS(
+				"http://purl.org/dc/elements/1.1/", fieldName);
 		elem.setTextContent(content);
-		
+
 		try {
-			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument,  "//oai_dc:dc", namespaceElement);					
+			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument,
+					"//oai_dc:dc", namespaceElement);
 			nodelist.item(0).appendChild(elem);
-			//XPathAPI.selectSingleNode(metadataDOMnode, "//oai_dc:dc").appendChild(elem);
+			// XPathAPI.selectSingleNode(metadataDOMnode,
+			// "//oai_dc:dc").appendChild(elem);
 		} catch (DOMException e) {
-			//TODO: mejorar el tratamiento de esto
+			// TODO: mejorar el tratamiento de esto
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			//TODO: mejorar el tratamiento de esto
+			// TODO: mejorar el tratamiento de esto
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void removeFieldNode(Node node) {
 		Node fieldNode = node.getParentNode();
 		fieldNode.removeChild(node);
 	}
-	
-	
+
 	public List<Node> getFieldNodes(String fieldName) {
 
 		try {
-			
-			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument, "//" + fieldName, namespaceElement);
-		
-			List<Node> result = new ArrayList<Node>(nodelist.getLength());
-			for (int i=0; i<nodelist.getLength(); i++) {
-				if ( nodelist.item(i).hasChildNodes() )
-					result.add( nodelist.item(i) );
 
-		}
-		return result;
+			NodeList nodelist = XPathAPI.selectNodeList(DOMDocument, "//"
+					+ fieldName, namespaceElement);
+
+			List<Node> result = new ArrayList<Node>(nodelist.getLength());
+			for (int i = 0; i < nodelist.getLength(); i++) {
+				if (nodelist.item(i).hasChildNodes())
+					result.add(nodelist.item(i));
+
+			}
+			return result;
 
 		} catch (TransformerException e) {
-			//TODO: mejorar el tratamiento de esto
+			// TODO: mejorar el tratamiento de esto
 			e.printStackTrace();
 
 			return new ArrayList<Node>(0);
 		}
 	}
-	
 
-	
-	public static Document parseXML(String xmlstring) throws ParserConfigurationException, SAXException, IOException {
+	public static Document parseXML(String xmlstring)
+			throws ParserConfigurationException, SAXException, IOException {
 		InputSource is = new InputSource();
 		is.setCharacterStream(new StringReader(xmlstring));
 		return obtainThreadBuider().parse(is);
 	}
 
-
 	@Override
 	public String toString() {
-		
+
 		try {
 			StringWriter sw = new StringWriter();
 			Result output = new StreamResult(sw);
 			Transformer idTransformer = xformFactory.newTransformer();
-			idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+					"yes");
 			idTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			idTransformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 			idTransformer.transform(new DOMSource(DOMDocument), output);
 			return sw.toString();
-			
+
 		} catch (TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "Error de transformación de DOM a XML";
 		}
 	}
-	
-	
-	
+
 	public class OAIRecordMetadataParseException extends Exception {
 
 		/**
@@ -266,7 +282,7 @@ public class OAIRecordMetadata {
 			super(cause);
 			// TODO Auto-generated constructor stub
 		}
-		
+
 	}
-	
+
 }

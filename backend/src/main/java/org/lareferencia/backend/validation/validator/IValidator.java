@@ -18,11 +18,11 @@ import java.util.List;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
-
 public interface IValidator {
-	
+
 	public ValidatorResult validate(OAIRecord record);
-	
+
 	public List<IValidatorRule> getRules();
-	public void setRules( List<IValidatorRule> rules );
+
+	public void setRules(List<IValidatorRule> rules);
 }

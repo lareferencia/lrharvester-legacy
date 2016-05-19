@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.lareferencia.backend.repositories;
 
-
 import java.util.List;
 
 import org.lareferencia.backend.domain.NetworkSnapshot;
@@ -30,41 +29,45 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 
+/**
  * 
  * @author lmatas
  * 
- * Se define un repositorio JPA de acuerdo a Spring Data, en el caso de records
- * no es recomendable usarlo para bulk inserts ya que el consumo de memoria resulta
- * prohibitivo. Se implementa OAIRecordDAO para ese fin.
+ *         Se define un repositorio JPA de acuerdo a Spring Data, en el caso de
+ *         records no es recomendable usarlo para bulk inserts ya que el consumo
+ *         de memoria resulta prohibitivo. Se implementa OAIRecordDAO para ese
+ *         fin.
  * 
  */
 
-@RepositoryRestResource(path = "record", collectionResourceRel="record")
-public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> { 
-	
-	 Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot, RecordStatus status, Pageable pageable);
-	 Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot, boolean wasTransformed, Pageable pageable);
-	 Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
-	 
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 order by rc.id asc")
-	 Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
+@RepositoryRestResource(path = "record", collectionResourceRel = "record")
+public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 
-	 
-	 /*  Paginación optimizada  */
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
-	 Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
-     
-	 @Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 and rc.id > ?3 order by rc.id asc")
-	 Page<OAIRecord> findBySnapshotIdAndStatusOptimized(Long snapshotID, RecordStatus status, Long lastRecordID,  Pageable pageable);
-	 /*   */	 
-	 
-	
- 	 
-	 @Modifying
-	 @Transactional
-	 @Query("delete from OAIRecord r where r.snapshot.id = ?1")
-	 void deleteBySnapshotID(Long snapshot_id);
+	Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot,
+			RecordStatus status, Pageable pageable);
 
-	
+	Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot,
+			boolean wasTransformed, Pageable pageable);
+
+	Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
+
+	@Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 order by rc.id asc")
+	Page<OAIRecord> findBySnapshotId(Long snapshotID, Pageable pageable);
+
+	/* Paginación optimizada */
+	@Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
+	Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID,
+			RecordStatus status, Pageable pageable);
+
+	@Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 and rc.id > ?3 order by rc.id asc")
+	Page<OAIRecord> findBySnapshotIdAndStatusOptimized(Long snapshotID,
+			RecordStatus status, Long lastRecordID, Pageable pageable);
+
+	/*   */
+
+	@Modifying
+	@Transactional
+	@Query("delete from OAIRecord r where r.snapshot.id = ?1")
+	void deleteBySnapshotID(Long snapshot_id);
+
 }

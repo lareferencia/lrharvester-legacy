@@ -47,6 +47,10 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return entity._links.self.href;
 	  }; 
 	  
+	 /* this.idFromEntity = function (entity) {
+		  return entity._links.self.href;
+	  }; */
+	  
 	  this.networkActionURL = function (action, networkIDs) {
 		  
 		  var idsString = networkIDs;

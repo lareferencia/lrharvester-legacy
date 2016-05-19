@@ -25,16 +25,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "network", collectionResourceRel="network")
-public interface NetworkRepository extends JpaRepository<Network, Long> { 
-	
-	  List<Network> findByPublishedOrderByNameAsc(boolean published);	  
-	  Network findByAcronym(String acronym);
-	    
-	  Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);  
-	  Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution, Pageable pageable);
-	  Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression, Pageable pageRequest);  
+@RepositoryRestResource(path = "network", collectionResourceRel = "network")
+public interface NetworkRepository extends JpaRepository<Network, Long> {
 
-	  
-	
+	List<Network> findByPublishedOrderByNameAsc(boolean published);
+
+	Network findByAcronym(String acronym);
+
+	Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);
+
+	Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution,
+			Pageable pageable);
+
+	Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression,
+			Pageable pageRequest);
+
 }

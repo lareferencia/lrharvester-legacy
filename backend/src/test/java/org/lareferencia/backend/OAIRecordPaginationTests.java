@@ -29,65 +29,61 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OAIRecordPaginationTests {
-
 
 	private static final int PAGE_SIZE = 5;
 
 	@Autowired
 	OAIRecordRepository oaiRecordRepository;
-	
+
 	@Autowired
 	NetworkSnapshotRepository networkSnapshotRepository;
 
 	@Test
 	@Transactional
 	public void test() throws Exception {
-		
+
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(9L);
-		
-	    Page<OAIRecord> page = oaiRecordRepository.findBySnapshotId(snapshot.getId(), new PageRequest(0, PAGE_SIZE));
-	    int totalPages = page.getTotalPages();
 
-	    List<Long> allIdsNotOptimized = new ArrayList<Long>();
-	    List<Long> allIdsOptimized = new ArrayList<Long>();
+		Page<OAIRecord> page = oaiRecordRepository.findBySnapshotId(
+				snapshot.getId(), new PageRequest(0, PAGE_SIZE));
+		int totalPages = page.getTotalPages();
 
-	    
+		List<Long> allIdsNotOptimized = new ArrayList<Long>();
+		List<Long> allIdsOptimized = new ArrayList<Long>();
+
 		for (int i = 0; i < totalPages; i++) {
-			page = oaiRecordRepository.findBySnapshotId(snapshot.getId(),new PageRequest(i, PAGE_SIZE));
-			
-			for (OAIRecord record:page.getContent())
-				allIdsNotOptimized.add( record.getId() );
+			page = oaiRecordRepository.findBySnapshotId(snapshot.getId(),
+					new PageRequest(i, PAGE_SIZE));
+
+			for (OAIRecord record : page.getContent())
+				allIdsNotOptimized.add(record.getId());
 		}
-		
+
 		/*
-		page = oaiRecordRepository.findBySnapshotId(snapshot.getId(), new PageRequest(0, PAGE_SIZE));
-		totalPages = page.getTotalPages();
-		
-		Long lastId = -1L;
-		
-		for (int i = 0; i < totalPages; i++) {
-			
-			page = oaiRecordRepository.findBySnapshotIdLimited(snapshot.getId(), lastId, new PageRequest(0, PAGE_SIZE));
-			
-			List<OAIRecord> records = page.getContent();
-			for (OAIRecord record:records)
-				allIdsOptimized.add( record.getId() );
-			
-			lastId = records.get( records.size()-1 ).getId();
-		}
-		
-		assertEquals( allIdsNotOptimized.size(), allIdsOptimized.size() );
-		
-		for ( int i=0; i<allIdsNotOptimized.size(); i++) {
-			assertEquals( allIdsNotOptimized.get(i), allIdsOptimized.get(i) );
-		}*/
-		
+		 * page = oaiRecordRepository.findBySnapshotId(snapshot.getId(), new
+		 * PageRequest(0, PAGE_SIZE)); totalPages = page.getTotalPages();
+		 * 
+		 * Long lastId = -1L;
+		 * 
+		 * for (int i = 0; i < totalPages; i++) {
+		 * 
+		 * page = oaiRecordRepository.findBySnapshotIdLimited(snapshot.getId(),
+		 * lastId, new PageRequest(0, PAGE_SIZE));
+		 * 
+		 * List<OAIRecord> records = page.getContent(); for (OAIRecord
+		 * record:records) allIdsOptimized.add( record.getId() );
+		 * 
+		 * lastId = records.get( records.size()-1 ).getId(); }
+		 * 
+		 * assertEquals( allIdsNotOptimized.size(), allIdsOptimized.size() );
+		 * 
+		 * for ( int i=0; i<allIdsNotOptimized.size(); i++) { assertEquals(
+		 * allIdsNotOptimized.get(i), allIdsOptimized.get(i) ); }
+		 */
+
 	}
-	
-	
 
 }

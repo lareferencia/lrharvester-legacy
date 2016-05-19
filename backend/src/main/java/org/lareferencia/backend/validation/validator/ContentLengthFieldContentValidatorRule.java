@@ -21,42 +21,41 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ContentLengthFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
-	
-	
+public class ContentLengthFieldContentValidatorRule extends
+		AbstractValidatorFieldContentRule {
+
 	@JsonProperty("minLength")
 	private Integer minLength = 0;
-	
+
 	@JsonProperty("maxLength")
 	private Integer maxLength = Integer.MAX_VALUE;
 
 	public ContentLengthFieldContentValidatorRule() {
 	}
 
-
 	@Override
 	public FieldContentValidatorResult validate(String content) {
-		
+
 		FieldContentValidatorResult result = new FieldContentValidatorResult();
-		
+
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue( new Integer(content.length()).toString() );
-			result.setValid( content.length() >= minLength && content.length() <= maxLength );
+			result.setReceivedValue(new Integer(content.length()).toString());
+			result.setValid(content.length() >= minLength
+					&& content.length() <= maxLength);
 		}
-			
+
 		return result;
 	}
-
 
 	@Override
 	public String toString() {
 		return "ContentLengthValidationRule [minLength=" + minLength
 				+ ", maxLength=" + maxLength + ", id=" + ruleId
-				+ ", mandatory=" + mandatory
-				+ ", quantifier=" + quantifier + "]";
+				+ ", mandatory=" + mandatory + ", quantifier=" + quantifier
+				+ "]";
 	}
-	
+
 }

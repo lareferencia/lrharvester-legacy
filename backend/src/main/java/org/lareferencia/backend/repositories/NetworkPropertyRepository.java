@@ -17,16 +17,18 @@ import org.lareferencia.backend.domain.NetworkProperty;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "network_property", collectionResourceRel="property")
-public interface NetworkPropertyRepository extends JpaRepository<NetworkProperty, Long> { 
+@RepositoryRestResource(path = "network_property", collectionResourceRel = "property")
+public interface NetworkPropertyRepository extends
+		JpaRepository<NetworkProperty, Long> {
 	/*
-	  List<Network> findByPublishedOrderByNameAsc(boolean published);	  
-	  Network findByAcronym(String acronym);
-	    
-	  Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);  
-	  Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution, Pageable pageable);
-	  Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression, Pageable pageRequest);  
+	 * List<Network> findByPublishedOrderByNameAsc(boolean published); Network
+	 * findByAcronym(String acronym);
+	 * 
+	 * Page<Network> findByNameIgnoreCaseContaining(String name, Pageable
+	 * pageable); Page<Network> findByInstitutionNameIgnoreCaseContaining(String
+	 * institution, Pageable pageable); Page<Network>
+	 * findByAcronymIgnoreCaseContaining(String filterExpression, Pageable
+	 * pageRequest);
+	 */
 
-	  */
-	
 }

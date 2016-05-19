@@ -32,135 +32,139 @@ import org.springframework.scheduling.TaskScheduler;
 
 @ManagedResource(objectName = "backend:name=snapshotManager", description = "Administrador de snapshots")
 public class SnapshotManager {
-	
+
 	@Autowired
 	private NetworkRepository networkRepository;
-	
+
 	@Autowired
 	private NetworkSnapshotRepository snapshotRepository;
-	
+
 	@Autowired
 	private TaskScheduler scheduler;
-	
-	@Autowired 
+
+	@Autowired
 	private ApplicationContext applicationContext;
-	
-	
+
 	private ConcurrentHashMap<Long, ISnapshotWorker> workersBySnapshotID;
-	
+
 	public SnapshotManager() {
 		workersBySnapshotID = new ConcurrentHashMap<Long, ISnapshotWorker>();
 	}
-	
+
 	@ManagedAttribute
 	public List<String> getActiveSnapshots() {
-		
+
 		List<String> result = new ArrayList<String>();
-		
-		for ( Long snapshotID: workersBySnapshotID.keySet() ) {
-		
-			result.add( snapshotID.toString() + " :: " + workersBySnapshotID.get(snapshotID).getStatus() );
+
+		for (Long snapshotID : workersBySnapshotID.keySet()) {
+
+			result.add(snapshotID.toString() + " :: "
+					+ workersBySnapshotID.get(snapshotID).getStatus());
 		}
 		return result;
 	}
-	
+
 	@ManagedAttribute
-	public Integer getActiveSnapshotsCount() {	
+	public Integer getActiveSnapshotsCount() {
 		return workersBySnapshotID.size();
 	}
-	
-	@Autowired 
+
+	@Autowired
 	public void setNationalNetworkRepository(NetworkRepository networkRepository) {
 		this.networkRepository = networkRepository;
-		
+
 		scheduleAllNetworks();
 	}
-	
-	
-	public void registerWorkerBeginSnapshot(Long snapshotID, ISnapshotWorker worker) {
+
+	public void registerWorkerBeginSnapshot(Long snapshotID,
+			ISnapshotWorker worker) {
 		workersBySnapshotID.put(snapshotID, worker);
 	}
-	
+
 	public void registerWorkerEndSnapshot(Long snapshotID) {
 		workersBySnapshotID.remove(snapshotID);
 	}
-	
+
 	/**
-	 * Consulta el repositorio, obtiene las redes, y actualiza el estado de los procesos
-	 */	
+	 * Consulta el repositorio, obtiene las redes, y actualiza el estado de los
+	 * procesos
+	 */
 	private synchronized void scheduleAllNetworks() {
-		
-		/** TODO: Hay que implementar una política de refresh más completa,
-		 *  Son varios los casos a analizar e iran siendo contemplados en futuras
-		 *  iteraciones.
+
+		/**
+		 * TODO: Hay que implementar una política de refresh más completa, Son
+		 * varios los casos a analizar e iran siendo contemplados en futuras
+		 * iteraciones.
 		 */
 		Collection<Network> storedNetworks = networkRepository.findAll();
-		
-		for ( Network storedNetwork:storedNetworks ) {
-			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+
+		for (Network storedNetwork : storedNetworks) {
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext
+					.getBean("snapshotWorker");
 			worker.setNetworkID(storedNetwork.getId());
 			worker.setManager(this);
-			scheduler.schedule(worker, new SnapshotCronTrigger(storedNetwork) );
+			scheduler.schedule(worker, new SnapshotCronTrigger(storedNetwork));
 		}
 	}
-	
-	
+
 	public synchronized void stopHarvesting(Long snapshotID) {
 		try {
 			workersBySnapshotID.get(snapshotID).stop();
 		} catch (NullPointerException e) {
-			
-			// En caso de que no sea un snapshot en actividad pero tenga status harvesting lo pasa a status stopped
+
+			// En caso de que no sea un snapshot en actividad pero tenga status
+			// harvesting lo pasa a status stopped
 			NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
-			
-			if ( snapshot != null 
-					&& (    snapshot.getStatus().equals( SnapshotStatus.HARVESTING ) || 
-							snapshot.getStatus().equals( SnapshotStatus.INDEXING ) ||
-							snapshot.getStatus().equals( SnapshotStatus.RETRYING )  
-						)
-				)
-							{
-				snapshot.setStatus( SnapshotStatus.HARVESTING_STOPPED );
+
+			if (snapshot != null
+					&& (snapshot.getStatus().equals(SnapshotStatus.HARVESTING)
+							|| snapshot.getStatus().equals(
+									SnapshotStatus.INDEXING) || snapshot
+							.getStatus().equals(SnapshotStatus.RETRYING))) {
+				snapshot.setStatus(SnapshotStatus.HARVESTING_STOPPED);
 				snapshotRepository.save(snapshot);
 				snapshotRepository.flush();
 			}
-			
+
 			System.err.print("No existe el snapshot");
 		}
 	}
-	
-	public synchronized void lauchHarvesting(Long networkD) {
-		//TODO: debiera chequear la existencia de la red
 
-		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+	public synchronized void lauchHarvesting(Long networkD) {
+		// TODO: debiera chequear la existencia de la red
+
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext
+				.getBean("snapshotWorker");
 		worker.setHarvestBySet(false);
 		worker.setNetworkID(networkD);
 		worker.setManager(this);
 		scheduler.schedule(worker, new Date());
 	}
-	
-	public synchronized void lauchSetBySetHarvesting(Long networkD) {
-		//TODO: debiera chequear la existencia de la red
 
-		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+	public synchronized void lauchSetBySetHarvesting(Long networkD) {
+		// TODO: debiera chequear la existencia de la red
+
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext
+				.getBean("snapshotWorker");
 		worker.setHarvestBySet(true);
 		worker.setNetworkID(networkD);
 		worker.setManager(this);
 		scheduler.schedule(worker, new Date());
 	}
-	
+
 	public synchronized void relauchHarvesting(Long snapshotID) {
 
 		NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
-		
-		if ( snapshot != null && snapshot.getStatus() == SnapshotStatus.HARVESTING_STOPPED ) {
-			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
+
+		if (snapshot != null
+				&& snapshot.getStatus() == SnapshotStatus.HARVESTING_STOPPED) {
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext
+					.getBean("snapshotWorker");
 			worker.setSnapshotID(snapshotID);
 			worker.setManager(this);
 			scheduler.schedule(worker, new Date());
 		}
-		//TODO: Hbaría que tirar una except acá
+		// TODO: Hbaría que tirar una except acá
 	}
-	
-	
+
 }

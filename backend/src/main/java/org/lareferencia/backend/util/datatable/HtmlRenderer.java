@@ -41,275 +41,304 @@ import javax.xml.transform.stream.StreamResult;
 
 /**
  * Takes a data table and returns an html string.
- *
+ * 
  * @author Nimrod T.
  */
 public class HtmlRenderer {
-  
-  /**
-   * Log.
-   */
-  private static final Log log = LogFactory.getLog("HtmlRenderer");  
 
-  /**
-   * Private constructor.
-   */
-  private HtmlRenderer() {}
+	/**
+	 * Log.
+	 */
+	private static final Log log = LogFactory.getLog("HtmlRenderer");
 
-  /**
-   * Pattern for matching against &lt;a&gt; tags with hrefs.
-   * Used in sanitizeDetailedMessage.
-   */
-  private static final Pattern DETAILED_MESSAGE_A_TAG_REGEXP = Pattern.compile(
-      "([^<]*<a(( )*target=\"_blank\")*(( )*target='_blank')*"
-      + "(( )*href=\"[^\"]*\")*(( )*href='[^']*')*>[^<]*</a>)+[^<]*");
+	/**
+	 * Private constructor.
+	 */
+	private HtmlRenderer() {
+	}
 
-  /**
-   * Pattern for matching against "javascript:".
-   * Used in sanitizeDetailedMessage.
-   */
-  private static final Pattern BAD_JAVASCRIPT_REGEXP = Pattern.compile("javascript(( )*):");
+	/**
+	 * Pattern for matching against &lt;a&gt; tags with hrefs. Used in
+	 * sanitizeDetailedMessage.
+	 */
+	private static final Pattern DETAILED_MESSAGE_A_TAG_REGEXP = Pattern
+			.compile("([^<]*<a(( )*target=\"_blank\")*(( )*target='_blank')*"
+					+ "(( )*href=\"[^\"]*\")*(( )*href='[^']*')*>[^<]*</a>)+[^<]*");
 
-  /**
-   * Generates an HTML string representation of a data table.
-   * 
-   * @param dataTable The data table to render.
-   * @param locale The locale. If null, uses the default from
-   *     {@code LocaleUtil#getDefaultLocale}.
-   *
-   * @return The char sequence with the html string.
-   */
-  public static CharSequence renderDataTable(DataTable dataTable, ULocale locale) {
-    // Create an xml document with head and an empty body.
-    Document document = createDocument();
-    Element bodyElement = appendHeadAndBody(document);
+	/**
+	 * Pattern for matching against "javascript:". Used in
+	 * sanitizeDetailedMessage.
+	 */
+	private static final Pattern BAD_JAVASCRIPT_REGEXP = Pattern
+			.compile("javascript(( )*):");
 
-    // Populate the xml document.
-    Element tableElement = document.createElement("table");
-    bodyElement.appendChild(tableElement);
-    tableElement.setAttribute("border", "1");
-    tableElement.setAttribute("cellpadding", "2");
-    tableElement.setAttribute("cellspacing", "0");
+	/**
+	 * Generates an HTML string representation of a data table.
+	 * 
+	 * @param dataTable
+	 *            The data table to render.
+	 * @param locale
+	 *            The locale. If null, uses the default from
+	 *            {@code LocaleUtil#getDefaultLocale}.
+	 * 
+	 * @return The char sequence with the html string.
+	 */
+	public static CharSequence renderDataTable(DataTable dataTable,
+			ULocale locale) {
+		// Create an xml document with head and an empty body.
+		Document document = createDocument();
+		Element bodyElement = appendHeadAndBody(document);
 
-    // Labels tr element.
-    List<ColumnDescription> columnDescriptions = dataTable.getColumnDescriptions();
-    Element trElement = document.createElement("tr");
-    trElement.setAttribute("style", "font-weight: bold; background-color: #aaa;");
-    for (ColumnDescription columnDescription : columnDescriptions) {
-      Element tdElement = document.createElement("td");
-      tdElement.setTextContent(columnDescription.getLabel());
-      trElement.appendChild(tdElement);
-    }
-    tableElement.appendChild(trElement);
+		// Populate the xml document.
+		Element tableElement = document.createElement("table");
+		bodyElement.appendChild(tableElement);
+		tableElement.setAttribute("border", "1");
+		tableElement.setAttribute("cellpadding", "2");
+		tableElement.setAttribute("cellspacing", "0");
 
-    Map<ValueType, ValueFormatter> formatters = ValueFormatter.createDefaultFormatters(locale);
-    // Table tr elements.
-    int rowCount = 0;
-    for (TableRow row : dataTable.getRows()) {
-      rowCount++;
-      trElement = document.createElement("tr");
-      String backgroundColor = (rowCount % 2 != 0) ? "#f0f0f0" : "#ffffff";
-      trElement.setAttribute("style", "background-color: " + backgroundColor);
+		// Labels tr element.
+		List<ColumnDescription> columnDescriptions = dataTable
+				.getColumnDescriptions();
+		Element trElement = document.createElement("tr");
+		trElement.setAttribute("style",
+				"font-weight: bold; background-color: #aaa;");
+		for (ColumnDescription columnDescription : columnDescriptions) {
+			Element tdElement = document.createElement("td");
+			tdElement.setTextContent(columnDescription.getLabel());
+			trElement.appendChild(tdElement);
+		}
+		tableElement.appendChild(trElement);
 
-      List<TableCell> cells = row.getCells();
-      for (int c = 0; c < cells.size(); c++) {
-        ValueType valueType = columnDescriptions.get(c).getType();
-        TableCell cell = cells.get(c);
-        String cellFormattedText = cell.getFormattedValue();
-        if (cellFormattedText == null) {
-          cellFormattedText = formatters.get(cell.getType()).format(cell.getValue());
-        }
+		Map<ValueType, ValueFormatter> formatters = ValueFormatter
+				.createDefaultFormatters(locale);
+		// Table tr elements.
+		int rowCount = 0;
+		for (TableRow row : dataTable.getRows()) {
+			rowCount++;
+			trElement = document.createElement("tr");
+			String backgroundColor = (rowCount % 2 != 0) ? "#f0f0f0"
+					: "#ffffff";
+			trElement.setAttribute("style", "background-color: "
+					+ backgroundColor);
 
-        Element tdElement = document.createElement("td");
-        if (cell.isNull()) {
-          tdElement.setTextContent("\u00a0");
-        } else {
-          switch (valueType) {
-            case NUMBER:
-              tdElement.setAttribute("align", "right");
-              tdElement.setTextContent(cellFormattedText);
-              break;
-            case BOOLEAN:
-              BooleanValue booleanValue = (BooleanValue) cell.getValue();
-              tdElement.setAttribute("align", "center");
-              if (booleanValue.getValue()) {
-                tdElement.setTextContent("\u2714"); // Check mark.
-              } else {
-                tdElement.setTextContent("\u2717"); // X mark.
-              }
-              break;
-            default:
-              if (StringUtils.isEmpty(cellFormattedText)) {
-                tdElement.setTextContent("\u00a0"); // nbsp.
-              } else {
-                tdElement.setTextContent(cellFormattedText);
-              }
-          }
-        }
-        trElement.appendChild(tdElement);
-      }
-      tableElement.appendChild(trElement);
-    }
-    bodyElement.appendChild(tableElement);
+			List<TableCell> cells = row.getCells();
+			for (int c = 0; c < cells.size(); c++) {
+				ValueType valueType = columnDescriptions.get(c).getType();
+				TableCell cell = cells.get(c);
+				String cellFormattedText = cell.getFormattedValue();
+				if (cellFormattedText == null) {
+					cellFormattedText = formatters.get(cell.getType()).format(
+							cell.getValue());
+				}
 
-    // Warnings:
-    for (Warning warning : dataTable.getWarnings()) {
-      bodyElement.appendChild(document.createElement("br"));
-      bodyElement.appendChild(document.createElement("br"));
-      Element messageElement = document.createElement("div");
-      messageElement.setTextContent(warning.getReasonType().getMessageForReasonType() + ". " +
-          warning.getMessage());
-      bodyElement.appendChild(messageElement);
-    }
+				Element tdElement = document.createElement("td");
+				if (cell.isNull()) {
+					tdElement.setTextContent("\u00a0");
+				} else {
+					switch (valueType) {
+					case NUMBER:
+						tdElement.setAttribute("align", "right");
+						tdElement.setTextContent(cellFormattedText);
+						break;
+					case BOOLEAN:
+						BooleanValue booleanValue = (BooleanValue) cell
+								.getValue();
+						tdElement.setAttribute("align", "center");
+						if (booleanValue.getValue()) {
+							tdElement.setTextContent("\u2714"); // Check mark.
+						} else {
+							tdElement.setTextContent("\u2717"); // X mark.
+						}
+						break;
+					default:
+						if (StringUtils.isEmpty(cellFormattedText)) {
+							tdElement.setTextContent("\u00a0"); // nbsp.
+						} else {
+							tdElement.setTextContent(cellFormattedText);
+						}
+					}
+				}
+				trElement.appendChild(tdElement);
+			}
+			tableElement.appendChild(trElement);
+		}
+		bodyElement.appendChild(tableElement);
 
-    return transformDocumentToHtmlString(document);
-  }
+		// Warnings:
+		for (Warning warning : dataTable.getWarnings()) {
+			bodyElement.appendChild(document.createElement("br"));
+			bodyElement.appendChild(document.createElement("br"));
+			Element messageElement = document.createElement("div");
+			messageElement.setTextContent(warning.getReasonType()
+					.getMessageForReasonType() + ". " + warning.getMessage());
+			bodyElement.appendChild(messageElement);
+		}
 
-  /**
-   * Transforms a document to a valid html string.
-   *
-   * @param document The document to transform
-   *
-   * @return A string representation of a valid html.
-   */
-  private static String transformDocumentToHtmlString(Document document) {
-    // Generate a CharSequence from the xml document.
-    Transformer transformer = null;
-    try {
-      transformer = TransformerFactory.newInstance().newTransformer();
-    } catch (TransformerConfigurationException e) {
-      log.error("Couldn't create a transformer", e);
-      throw new RuntimeException("Couldn't create a transformer. This should never happen.", e);
-    }
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//W3C//DTD HTML 4.01//EN");
-    transformer.setOutputProperty(OutputKeys.METHOD, "html");
-    transformer.setOutputProperty(OutputKeys.VERSION, "4.01");
-    
-    DOMSource source = new DOMSource(document);
-    Writer writer = new StringWriter();
-    StreamResult result = new StreamResult(writer);
-    try {
-      transformer.transform(source, result);
-    } catch (TransformerException e) {
-      log.error("Couldn't transform", e);
-      throw new RuntimeException("Couldn't transform. This should never happen.", e);
-    }
+		return transformDocumentToHtmlString(document);
+	}
 
-    return writer.toString();
-  }
+	/**
+	 * Transforms a document to a valid html string.
+	 * 
+	 * @param document
+	 *            The document to transform
+	 * 
+	 * @return A string representation of a valid html.
+	 */
+	private static String transformDocumentToHtmlString(Document document) {
+		// Generate a CharSequence from the xml document.
+		Transformer transformer = null;
+		try {
+			transformer = TransformerFactory.newInstance().newTransformer();
+		} catch (TransformerConfigurationException e) {
+			log.error("Couldn't create a transformer", e);
+			throw new RuntimeException(
+					"Couldn't create a transformer. This should never happen.",
+					e);
+		}
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+				"-//W3C//DTD HTML 4.01//EN");
+		transformer.setOutputProperty(OutputKeys.METHOD, "html");
+		transformer.setOutputProperty(OutputKeys.VERSION, "4.01");
 
-  /**
-   * Sanitizes the html in the detailedMessage, to allow only href inside &lt;a&gt; tags.
-   *
-   * @param detailedMessage The detailedMessage.
-   *
-   * @return The sanitized detailedMessage.
-   */
-  static String sanitizeDetailedMessage(String detailedMessage) {
-    if (StringUtils.isEmpty(detailedMessage)) {
-      return "";
-    }
+		DOMSource source = new DOMSource(document);
+		Writer writer = new StringWriter();
+		StreamResult result = new StreamResult(writer);
+		try {
+			transformer.transform(source, result);
+		} catch (TransformerException e) {
+			log.error("Couldn't transform", e);
+			throw new RuntimeException(
+					"Couldn't transform. This should never happen.", e);
+		}
 
-    if (DETAILED_MESSAGE_A_TAG_REGEXP.matcher(detailedMessage).matches()
-        && (!BAD_JAVASCRIPT_REGEXP.matcher(detailedMessage).find())) {
-      // No need to escape.
-      return detailedMessage;
-    } else {
-      // Need to html escape.
-      return EscapeUtil.htmlEscape(detailedMessage);
-    }
-  }
+		return writer.toString();
+	}
 
-  /**
-   * Renders a simple html for the given responseStatus.
-   *
-   * @param responseStatus The response message.
-   *
-   * @return A simple html for the given responseStatus.
-   */
-  public static CharSequence renderHtmlError(ResponseStatus responseStatus) {
-    // Get the responseStatus details.
-    StatusType status = responseStatus.getStatusType();
-    ReasonType reason = responseStatus.getReasonType();
-    String detailedMessage = responseStatus.getDescription();
+	/**
+	 * Sanitizes the html in the detailedMessage, to allow only href inside
+	 * &lt;a&gt; tags.
+	 * 
+	 * @param detailedMessage
+	 *            The detailedMessage.
+	 * 
+	 * @return The sanitized detailedMessage.
+	 */
+	static String sanitizeDetailedMessage(String detailedMessage) {
+		if (StringUtils.isEmpty(detailedMessage)) {
+			return "";
+		}
 
-    // Create an xml document with head and an empty body.
-    Document document = createDocument();
-    Element bodyElement = appendHeadAndBody(document);
+		if (DETAILED_MESSAGE_A_TAG_REGEXP.matcher(detailedMessage).matches()
+				&& (!BAD_JAVASCRIPT_REGEXP.matcher(detailedMessage).find())) {
+			// No need to escape.
+			return detailedMessage;
+		} else {
+			// Need to html escape.
+			return EscapeUtil.htmlEscape(detailedMessage);
+		}
+	}
 
-    // Populate the xml document.
-    Element oopsElement = document.createElement("h3");
-    oopsElement.setTextContent("Oops, an error occured.");
-    bodyElement.appendChild(oopsElement);
+	/**
+	 * Renders a simple html for the given responseStatus.
+	 * 
+	 * @param responseStatus
+	 *            The response message.
+	 * 
+	 * @return A simple html for the given responseStatus.
+	 */
+	public static CharSequence renderHtmlError(ResponseStatus responseStatus) {
+		// Get the responseStatus details.
+		StatusType status = responseStatus.getStatusType();
+		ReasonType reason = responseStatus.getReasonType();
+		String detailedMessage = responseStatus.getDescription();
 
-    if (status != null) {
-      String text = "Status: " + status.lowerCaseString();
-      appendSimpleText(document, bodyElement, text);
-    }
+		// Create an xml document with head and an empty body.
+		Document document = createDocument();
+		Element bodyElement = appendHeadAndBody(document);
 
-    if (reason != null) {
-      String text = "Reason: " + reason.getMessageForReasonType(null);
-      appendSimpleText(document, bodyElement, text);
-    }
+		// Populate the xml document.
+		Element oopsElement = document.createElement("h3");
+		oopsElement.setTextContent("Oops, an error occured.");
+		bodyElement.appendChild(oopsElement);
 
-    if (detailedMessage != null) {
-      String text = "Description: " + sanitizeDetailedMessage(detailedMessage);
-      appendSimpleText(document, bodyElement, text);
-    }
+		if (status != null) {
+			String text = "Status: " + status.lowerCaseString();
+			appendSimpleText(document, bodyElement, text);
+		}
 
-    return transformDocumentToHtmlString(document);
-  }
+		if (reason != null) {
+			String text = "Reason: " + reason.getMessageForReasonType(null);
+			appendSimpleText(document, bodyElement, text);
+		}
 
-  /**
-   * Creates a document element.
-   *
-   * @return A document element.
-   */
-  private static Document createDocument() {
-    DocumentBuilder documentBuilder = null;
-    try {
-      documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      log.error("Couldn't create a document builder", e);
-      throw new RuntimeException(
-          "Couldn't create a document builder. This should never happen.", e);
-    }
-    Document document = documentBuilder.newDocument();
-    return document;
-  }
+		if (detailedMessage != null) {
+			String text = "Description: "
+					+ sanitizeDetailedMessage(detailedMessage);
+			appendSimpleText(document, bodyElement, text);
+		}
 
-  /**
-   * Appends &lt;html&gt;, &lt;head&gt;, &lt;title&gt;, and &lt;body&gt; elements to the document.
-   *
-   * @param document The containing document.
-   *
-   * @return The &lt;body&gt; element.
-   */
-  private static Element appendHeadAndBody(Document document) {
-    Element htmlElement = document.createElement("html");
-    document.appendChild(htmlElement);
-    Element headElement = document.createElement("head");
-    htmlElement.appendChild(headElement);
-    Element titleElement = document.createElement("title");
-    titleElement.setTextContent("Google Visualization");
-    headElement.appendChild(titleElement);
-    Element bodyElement = document.createElement("body");
-    htmlElement.appendChild(bodyElement);
-    return bodyElement;
-  }
+		return transformDocumentToHtmlString(document);
+	}
 
-  /**
-   * Appends a simple text line to the body of the document.
-   *
-   * @param document The containing document.
-   * @param bodyElement The body of the document.
-   * @param text The text to append.
-   */
-  private static void appendSimpleText(Document document, Element bodyElement, String text) {
-    Element statusElement = document.createElement("div");
-    statusElement.setTextContent(text);
-    bodyElement.appendChild(statusElement);
-  }
+	/**
+	 * Creates a document element.
+	 * 
+	 * @return A document element.
+	 */
+	private static Document createDocument() {
+		DocumentBuilder documentBuilder = null;
+		try {
+			documentBuilder = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			log.error("Couldn't create a document builder", e);
+			throw new RuntimeException(
+					"Couldn't create a document builder. This should never happen.",
+					e);
+		}
+		Document document = documentBuilder.newDocument();
+		return document;
+	}
+
+	/**
+	 * Appends &lt;html&gt;, &lt;head&gt;, &lt;title&gt;, and &lt;body&gt;
+	 * elements to the document.
+	 * 
+	 * @param document
+	 *            The containing document.
+	 * 
+	 * @return The &lt;body&gt; element.
+	 */
+	private static Element appendHeadAndBody(Document document) {
+		Element htmlElement = document.createElement("html");
+		document.appendChild(htmlElement);
+		Element headElement = document.createElement("head");
+		htmlElement.appendChild(headElement);
+		Element titleElement = document.createElement("title");
+		titleElement.setTextContent("Google Visualization");
+		headElement.appendChild(titleElement);
+		Element bodyElement = document.createElement("body");
+		htmlElement.appendChild(bodyElement);
+		return bodyElement;
+	}
+
+	/**
+	 * Appends a simple text line to the body of the document.
+	 * 
+	 * @param document
+	 *            The containing document.
+	 * @param bodyElement
+	 *            The body of the document.
+	 * @param text
+	 *            The text to append.
+	 */
+	private static void appendSimpleText(Document document,
+			Element bodyElement, String text) {
+		Element statusElement = document.createElement("div");
+		statusElement.setTextContent(text);
+		bodyElement.appendChild(statusElement);
+	}
 }

@@ -34,15 +34,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * 
  */
 @Entity
-@JsonIgnoreProperties({"network"})
+@JsonIgnoreProperties({ "network" })
 @JsonAutoDetect
 public class NetworkSnapshot extends AbstractEntity {
-	
+
 	@Getter
 	@Setter
 	@Column(nullable = false)
 	private SnapshotStatus status;
-	
+
 	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -51,37 +51,37 @@ public class NetworkSnapshot extends AbstractEntity {
 	@Setter
 	@Temporal(TemporalType.TIMESTAMP)
 	private java.util.Date endTime;
-	
+
 	@Getter
 	@Setter
 	@Column(nullable = false)
 	private Integer size;
-	
+
 	@Getter
 	@Setter
 	@Column(nullable = false)
 	private Integer validSize;
-	
+
 	@Getter
 	@Setter
 	@Column(nullable = false)
 	private Integer transformedSize;
-	
+
 	@Getter
 	@Setter
 	@Column
 	private String resumptionToken;
-	
+
 	@Getter
 	@Setter
 	@ManyToOne()
-	@JoinColumn(name="network_id"/*, nullable=false*/)
+	@JoinColumn(name = "network_id"/* , nullable=false */)
 	private Network network;
-	
+
 	@Getter
 	@Setter
 	boolean deleted;
-	
+
 	public NetworkSnapshot() {
 		super();
 		this.status = SnapshotStatus.INITIALIZED;
@@ -91,28 +91,27 @@ public class NetworkSnapshot extends AbstractEntity {
 		this.transformedSize = 0;
 		this.deleted = false;
 	}
-	
+
 	public void incrementSize() {
 		size++;
 	}
-	
+
 	public void incrementValidSize() {
 		validSize++;
 	}
-	
+
 	public void incrementTransformedSize() {
 		transformedSize++;
 	}
-	
-	@JsonSerialize(using=JsonDateSerializer.class)
+
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public java.util.Date getStartTime() {
 		return startTime;
 	}
 
-	@JsonSerialize(using=JsonDateSerializer.class)
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public java.util.Date getEndTime() {
 		return endTime;
 	}
-	
-	
+
 }

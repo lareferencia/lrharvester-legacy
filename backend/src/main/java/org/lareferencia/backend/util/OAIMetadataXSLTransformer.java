@@ -16,58 +16,57 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 
-
 public class OAIMetadataXSLTransformer {
-	
-	/////////////////////////////// STATIC /////////////////////////////////////////
-	//private static TransformerFactory xformFactory = TransformerFactory.newInstance();
-	/// Ahora se usa saxon para ofrecer xslt2.0
+
+	// ///////////////////////////// STATIC
+	// /////////////////////////////////////////
+	// private static TransformerFactory xformFactory =
+	// TransformerFactory.newInstance();
+	// / Ahora se usa saxon para ofrecer xslt2.0
 	private static TransformerFactory xformFactory = new net.sf.saxon.TransformerFactoryImpl();
-	
-	
-	private static Transformer buildXSLTTransformer(String xlstString) throws TransformerConfigurationException {
-		
+
+	private static Transformer buildXSLTTransformer(String xlstString)
+			throws TransformerConfigurationException {
+
 		StringReader reader = new StringReader(xlstString);
-		StreamSource stylesource = new StreamSource(reader); 
-        return xformFactory.newTransformer(stylesource);
+		StreamSource stylesource = new StreamSource(reader);
+		return xformFactory.newTransformer(stylesource);
 	}
-	
-	private static Transformer buildXSLTTransformer(File stylefile) throws TransformerConfigurationException {
-		
-		StreamSource stylesource = new StreamSource(stylefile); 
-        return xformFactory.newTransformer(stylesource);
+
+	private static Transformer buildXSLTTransformer(File stylefile)
+			throws TransformerConfigurationException {
+
+		StreamSource stylesource = new StreamSource(stylefile);
+		return xformFactory.newTransformer(stylesource);
 	}
-	
-	/////////////////////////////////// FIN STATIC ////////////////////////////////////////////////////////
-	
-	
-	
+
+	// ///////////////////////////////// FIN STATIC
+	// ////////////////////////////////////////////////////////
+
 	private Transformer trf = null;
-	
-	public OAIMetadataXSLTransformer(String stylesheetFileName) throws TransformerConfigurationException {
+
+	public OAIMetadataXSLTransformer(String stylesheetFileName)
+			throws TransformerConfigurationException {
 		File stylesheetFile = new File(stylesheetFileName);
-			
+
 		trf = buildXSLTTransformer(stylesheetFile);
 		trf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		trf.setOutputProperty(OutputKeys.INDENT, "no");
 		trf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 	}
-	
+
 	public void setParameter(String name, String value) {
-		trf.setParameter(name,value);
+		trf.setParameter(name, value);
 	}
 
+	public String transform(OAIRecordMetadata metadata)
+			throws TransformerException {
 
-	public String transform(OAIRecordMetadata metadata) throws TransformerException {
-		
 		StringWriter stringWritter = new StringWriter();
 		Result output = new StreamResult(stringWritter);
-		trf.transform( new DOMSource(metadata.getDOMDocument()), output);
+		trf.transform(new DOMSource(metadata.getDOMDocument()), output);
 		return stringWritter.toString();
-	
+
 	}
-	
-	
-	
 
 }
