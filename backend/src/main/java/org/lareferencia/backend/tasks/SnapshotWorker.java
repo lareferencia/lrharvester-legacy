@@ -296,7 +296,13 @@ public class SnapshotWorker implements ISnapshotWorker,
 
 			// si tiene sets declarados solo va a cosechar
 			if (origin.getSets().size() > 0) {
+				
+				logMessage("Hay sets definidos, se cosecharán sólo los sets definidos");
+				
 				for (OAISet set : origin.getSets()) {
+					
+					logMessage("Cosechando set: " + set.getName() + " .. " + set.getSpec() );
+
 					harvester.harvest(origin.getUri(), null, null,
 							set.getSpec(), origin.getMetadataPrefix(), null,
 							MAX_RETRIES);
@@ -304,6 +310,9 @@ public class SnapshotWorker implements ISnapshotWorker,
 			}
 			// si no hay set declarado cosecha todo
 			else {
+				
+				logMessage("NO hay sets definidos, se cosechará toda la colección");
+				
 				harvester.harvest(origin.getUri(), null, null, null,
 						origin.getMetadataPrefix(), null, MAX_RETRIES);
 			}
@@ -471,8 +480,7 @@ public class SnapshotWorker implements ISnapshotWorker,
 
 	private void logMessage(String message) {
 		System.out.println(message);
-		snapshotLogRepository.save(new NetworkSnapshotLog(message,
-				this.snapshot));
+		snapshotLogRepository.save(new NetworkSnapshotLog(message, this.snapshot));
 		snapshotLogRepository.flush();
 	}
 

@@ -14,14 +14,17 @@
 	
 	<div class="col-md-12">
 	
+		<button class="btn btn-danger btn-sm pull-right" ui-sref="network.edit({ id: network_id })">
+			<span> Salir sin guardar </span>
+		</button>
 		<form name="originEditForm" sf-schema="origin_schema" sf-form="origin_form" sf-model="origin_model" ng-submit="onSubmit(originEditForm)"></form>
 		<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
 		<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
 		<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
 		
-		<button class="btn btn-danger btn-sm" ui-sref="network.edit({ id: network_id })">
-			<span> Salir sin guardar </span>
-		</button>
+	
 	</div>
+	
+
 </div>
 

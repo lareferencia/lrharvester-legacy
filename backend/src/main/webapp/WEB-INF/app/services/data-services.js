@@ -4,7 +4,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
      
     function($http, SpringDataRestAdapter, RestURLHelper) {
 	
-	 var linksToProcess = ['properties','property','networkProperty','validator', 'transformer','origins','origin','rules']; 
+	 var linksToProcess = ['properties','property','networkProperty','validator', 'transformer','origins','origin','rules', 'sets']; 
 	
 
 	 var add_methods = function(processedResponse) {
@@ -52,6 +52,19 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 			  
 				var resource = processedResponse._resources(collection_name,{}, {addToCollection: { method: 'POST', headers : {'Content-Type' : 'text/uri-list'}}} );
 				resource.addToCollection(uri_list, intercept_success_callback, fail_callback); 
+		  };
+		  
+		
+		  
+		  /*  una funcion para desvincular todos los elementos de una coleccion */
+		  processedResponse.unbindCollection = function(collection_name, success_callback, fail_callback) { 
+			    // al agregar a una colección debe recargarse el objeto desde el ww
+			  	var intercept_success_callback = function(data) {
+			  		processedResponse.reload(success_callback);
+			  	};
+			  
+				var resource = processedResponse._resources(collection_name,{}, {unbindCollection: { method: 'PUT', headers : {'Content-Type' : 'text/uri-list'}}} );
+				resource.unbindCollection('', intercept_success_callback, fail_callback); 
 		  };
 		  
 		  

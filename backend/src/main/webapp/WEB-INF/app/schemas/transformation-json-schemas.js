@@ -1,7 +1,8 @@
 angular.module('transformation.json.schemas', []).service('JSONTransformationSchemas',  function() {
 	
 	
-	this.transformer_form = [   { "type": "section",
+	this.transformer_form = [   
+	  { "type": "section",
  	    "htmlClass": "row",
 	    "items": [
 	      {

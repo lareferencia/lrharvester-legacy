@@ -31,6 +31,10 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/property';	
 	  }; 
 	  
+	  this.setURL = function () {
+		  return '/rest/set';	
+	  }; 
+	  
 	  this.networkURL = function () {
 		  return '/rest/network';	
 	  }; 

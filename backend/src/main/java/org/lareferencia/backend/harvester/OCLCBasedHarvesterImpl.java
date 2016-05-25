@@ -88,7 +88,9 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			do {
 				try {
 
-					System.out.println("Request:" + resumptionToken);
+					System.out.println("Request:" + resumptionToken + " Set:" + setname );
+					
+					
 					actualListRecords = listRecords(uri, setname,
 							metadataPrefix, batchIndex, resumptionToken);
 					resumptionToken = actualListRecords.getResumptionToken();

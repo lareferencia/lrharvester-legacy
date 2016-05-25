@@ -73,7 +73,10 @@ angular.module('origin', [
     	} else { // si es una origen existente
     		
     		DataSrv.get( RestURLHelper.originURLByID($scope.origin_id), function(origin) { 
-        		$scope.origin_model = origin;
+        		$scope.origin_model = origin;	
+        		
+        		$scope.origin_model.form_sets = angular.copy( $scope.origin_model.getLinkItems("sets") );
+
         	});
     		
     	} 
@@ -91,6 +94,8 @@ angular.module('origin', [
     	    	
     	    	// Si es un origin nueva y no fue grabada todavía
     	    	if ( $scope.is_new ) { 
+    	    
+    	    		var sets = $scope.origin_model.form_sets;
     	    		
     	    		// Se llama al servicio de add con url de orign y el modelo json del form
     	    		DataSrv.add( RestURLHelper.originURL(), $scope.origin_model,
@@ -101,12 +106,29 @@ angular.module('origin', [
     	    		 		$scope.is_new = false; // ya no es una red nueva
     	    			
     	    				$scope.origin_model = origin; // se actualiza el modelo del form con el objeto actualizable
+    	    				$scope.origin_model.form_sets = sets;
+    	    				
+    	    				// Para cada set en el formulario 
+		  		    		angular.forEach(sets, function(set, i) {
+		  		    			
+		  		    			// Se crea un objeto set en la bd
+		  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
+		  		    				
+		  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
+		  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
+		  		    						// Callback agregado exitosa del set al origin
+		      	    						function() { /* success callback */ }, 
+		      	    		    			onSaveError
+		      	    		    	); /* fin de addToCollection*/
+		  		    				
+		  		    			}, onSaveError);
+		  		    		}); 
+					
     	    				
     	    				 // Agregar el origen a la colecction origins de la network
     	    				$scope.network_model.addToCollection('origins',  RestURLHelper.urlFromEntity($scope.origin_model) , 
-    	    						
     	    						// Callback agregado exitosa de origin a origins de network
-    	    						function() { /* success callback */ }, 
+    	    						function() {}, 
     	    		    			onSaveError
     	    		    	); /* fin de associate*/
     	 	    				
@@ -115,16 +137,48 @@ angular.module('origin', [
     	    		); // fin de add origin  	
     	    	} // fin de nuevo origen
     	    	else { // si es un origen ya grabada entonces se llama a la función update 
-
-    	    	  // Se graba el modelo	
-    		      $scope.origin_model.update(
-    		    	function() {     	    		 		
-    		    		$scope.saved = true; 
-    		    	},
-    		    	onSaveError
-    		      ); // fin de origin_model.update
-    		      
-    	    	} /* fin del origen ya grabado */ 
+    	    	
+    	    		
+    	    		$scope.origin_model.reload( function() {
+    	    		// se obtienen los sets originales antes de actualizar
+    	    		
+	    	    		$scope.origin_model.original_sets =  angular.copy( $scope.origin_model.getLinkItems("sets") );	
+	            	  
+	            	    // se desvinculan todos los sets 
+	            	  	$scope.origin_model.unbindCollection('sets', function( model ) {
+	  		    		
+					    		// Borra los sets antiguos
+					    		angular.forEach($scope.origin_model.original_sets, function(set, i) {
+					    			set.remove( function() {}, onSaveError);
+					    		}); 
+			  		    		
+			  		    	
+			  		    		// Para cada set en el formulario 
+			  		    		angular.forEach($scope.origin_model.form_sets, function(set, i) {
+			  		    			
+			  		    			// Se crea un objeto set en la bd
+			  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
+			  		    				
+			  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
+			  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
+			  		    						// Callback agregado exitosa del set al origin
+			      	    						function() { /* success callback */ }, 
+			      	    		    			onSaveError
+			      	    		    	); /* fin de addToCollection*/
+			  		    				
+			  		    			}, onSaveError);
+			  		    		}); 
+			  		    		
+			  		    	  // Se graba el modelo	
+			    		      $scope.origin_model.update(
+			    		    	function() { $scope.saved = true; },
+			    		    	onSaveError
+			    		      ); // fin de origin_model.update
+		    		
+	            	  	}, onSaveError);
+		
+    	    		}); // fin de callback reload
+    	    	} /* fin del origen ya grabado */
     	      
     	    } else { // si no es valido se avisa a la interfaz
     	    	$scope.is_form_valid = false;

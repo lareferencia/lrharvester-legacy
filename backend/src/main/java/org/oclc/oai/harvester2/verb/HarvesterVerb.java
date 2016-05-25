@@ -208,6 +208,8 @@ public abstract class HarvesterVerb {
 		HttpURLConnection con = null;
 		int responseCode = 0;
 
+		
+		
 		int i = 0;
 		do {
 

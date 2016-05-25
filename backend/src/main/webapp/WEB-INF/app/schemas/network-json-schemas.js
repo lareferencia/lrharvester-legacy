@@ -115,6 +115,19 @@ angular.module('network.json.schemas', []).service('JSONNetworkSchemas',  functi
 				"enum": ["oai_dc"],
 				"default": "oai_dc"
 			  },
+			  "form_sets": { 
+				  type: "array", 
+				  title: "Listado de sets", 
+				  description: "Puede agregar aquí los sets específicos a cosechar", 
+			    	items: {
+			            "type": "object",
+			            "title": "Set",
+			            "properties": {
+			              "name": { "type": "string", "title": "Nombre" },
+			              "spec": { "type": "string", "title": "SetSpec" },	
+			            }
+			    	}
+			    },
 				 
 		 },
 		"required": [
@@ -125,11 +138,30 @@ angular.module('network.json.schemas', []).service('JSONNetworkSchemas',  functi
 	};
 			  
 	
-	this.origin_form = [ "*", { type: "submit", title: "Guardar cambios" } ];
+	this.origin_form = [   { "type": "section",
+   	    "htmlClass": "row",
+  	    "items": [
+  	      {
+  	        "type": "section",
+  	        "htmlClass": "col-xs-6",
+  	        "items": [
+  	          "name", "uri", "metadataPrefix", { type: "submit", title: "Guardar" }
+  	        ]
+  	      },
+  	      {
+  	        "type": "section",
+  	        "htmlClass": "col-xs-6",
+  	        "items": [
+  	          "form_sets"
+  	        ]
+  	      },
+  	 
+  	    ]
+  	  },
+  	  
+  	  
+  	 ];
 	
-	
-	
-
 	
 
 });
