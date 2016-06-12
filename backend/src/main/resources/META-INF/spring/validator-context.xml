@@ -41,17 +41,16 @@
 	<solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="solrTemplate" multicore-support="true"/>
 	
 	<!-- Configures HTTP Solr server -->
-    <solr:solr-server id="solrServer" url="${vstats.solr.server}"/>
-
+    <!-- solr:solr-server id="solrServer" url="${vstats.solr.server}"/-->
+    <solr:solr-client id="solrClient"  url="${vstats.solr.server}"/>
+   
     <!-- Configures Solr template -->
     <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
-        <constructor-arg index="0" ref="solrServer"/>
-        <constructor-arg index="1">
-        <value>${vstats.solr.core}</value>
-        </constructor-arg>
+        <constructor-arg index="0" ref="solrClient"/>
+        <constructor-arg index="1"><value>${vstats.solr.core}</value></constructor-arg>
     </bean>
 	
-	<import resource="file:${validator.path}/validator-2.0-context.xml"/>
+	<!--  import resource="file:${validator.path}/validator-2.0-context.xml"/ -->
 	
 	 <bean id="ruleSerializer" class="org.lareferencia.backend.validation.RuleSerializer">
         <property name="validatorPrototypes">
@@ -59,8 +58,7 @@
         		<bean class="org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule"></bean>
         		<bean class="org.lareferencia.backend.validation.validator.ContentLengthFieldContentValidatorRule"></bean>
         		<bean class="org.lareferencia.backend.validation.validator.ControlledValueFieldContentValidatorRule"></bean>
-        		<bean class="org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule"></bean>
-        		
+        		<bean class="org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule"></bean>  		
         	</list>
         </property>
     </bean>

@@ -68,6 +68,9 @@ public class RecordValidationResult {
 	@Field("invalid_rules")
 	private List<String> invalidRulesID;
 
+	
+	
+	
 	/**
 	 * Se construye un resultado de validación persistible en solr a partir del
 	 * objeto resultado devuelto por el validador para un registro
@@ -106,8 +109,7 @@ public class RecordValidationResult {
 			List<String> invalidOccr = new ArrayList<String>();
 			List<String> validOccr = new ArrayList<String>();
 
-			for (FieldContentValidatorResult contentResult : ruleResult
-					.getResults()) {
+			for (FieldContentValidatorResult contentResult : ruleResult.getResults()) {
 
 				if (contentResult.isValid())
 					validOccr.add(contentResult.getReceivedValue());
@@ -124,5 +126,13 @@ public class RecordValidationResult {
 			validOccurrencesByRuleID.put(ruleID, validOccr);
 			invalidOccurrencesByRuleID.put(ruleID, invalidOccr);
 		}
+	}
+
+
+
+
+	public RecordValidationResult() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 }

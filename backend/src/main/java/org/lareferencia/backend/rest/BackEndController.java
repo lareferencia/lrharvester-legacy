@@ -15,6 +15,7 @@ package org.lareferencia.backend.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,7 +34,9 @@ import org.lareferencia.backend.domain.NetworkSnapshot;
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.domain.RecordStatus;
+import org.lareferencia.backend.domain.RecordValidationResult;
 import org.lareferencia.backend.domain.SnapshotStatus;
+import org.lareferencia.backend.domain.Validator;
 import org.lareferencia.backend.domain.ValidatorRule;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
@@ -45,6 +48,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIOriginRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.OAISetRepository;
+import org.lareferencia.backend.repositories.RecordValidationResultRepository;
 import org.lareferencia.backend.rest.BackEndController.NetworkInfo;
 import org.lareferencia.backend.tasks.SnapshotManager;
 import org.lareferencia.backend.util.JsonDateSerializer;
@@ -61,6 +65,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.FacetOptions;
+import org.springframework.data.solr.core.query.FacetOptions.FacetSort;
+import org.springframework.data.solr.core.query.FacetQuery;
+import org.springframework.data.solr.core.query.Field;
+import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.solr.core.query.SimpleFacetQuery;
+import org.springframework.data.solr.core.query.SimpleQuery;
+import org.springframework.data.solr.core.query.SimpleStringCriteria;
+import org.springframework.data.solr.core.query.result.FacetFieldEntry;
+import org.springframework.data.solr.core.query.result.FacetPage;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
@@ -101,6 +120,13 @@ public class BackEndController {
 
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	private RecordValidationResultRepository validationResultRepository;
+	
+	@Autowired
+	private SolrTemplate solrTemplate;
+	
 
 	@Autowired
 	private ValidationManager validationManager;
@@ -151,36 +177,6 @@ public class BackEndController {
 	 * Diagnose Services
 	 ******************************************************/
 
-	@RequestMapping(value = "/diagnose/{networkISO}/{snapID}", method = RequestMethod.GET)
-	public String diagnose(@PathVariable Long snapID,
-			@PathVariable String networkISO, Locale locale, Model model) {
-
-		model.addAttribute("snapID", snapID);
-		model.addAttribute("networkISO", networkISO);
-
-		return "diagnose";
-	}
-
-	@RequestMapping(value = "/diagnose/{networkAcronym}", method = RequestMethod.GET)
-	public String diagnose(@PathVariable String networkAcronym, Locale locale,
-			Model model) throws Exception {
-
-		Network network = networkRepository.findByAcronym(networkAcronym);
-		if (network == null)
-			throw new Exception("No se encontró RED");
-
-		NetworkSnapshot lgkSnapshot = networkSnapshotRepository
-				.findLastGoodKnowByNetworkID(network.getId());
-		if (lgkSnapshot == null)
-			throw new Exception("No se encontró LGKSnapshot");
-
-		model.addAttribute("snapshotID", lgkSnapshot.getId());
-		model.addAttribute("networkAcronym", networkAcronym);
-		model.addAttribute("networkID", network.getId());
-
-		return "diagnose";
-	}
-
 	@RequestMapping(value = "/public/listOriginsBySnapshotID/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id)
@@ -207,6 +203,197 @@ public class BackEndController {
 			return "Registro inexistente - Posiblemente el diagnóstico está desactualizado";
 
 	}
+	
+	
+	static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name"};
+	
+	@RequestMapping(value = "/public/diagnose/{snapshotID}", method = RequestMethod.GET)
+	@ResponseBody
+	public DiagnoseResult diagnoseListRules(@PathVariable Long snapshotID) throws Exception {
+		
+	
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
+	
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + snapshotID);
+		
+		Network network = snapshot.getNetwork();
+		Validator validator = network.getValidator();
+		
+		DiagnoseResult result = new DiagnoseResult();
+				
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria("snapshot_id:" + snapshotID));
+		facetQuery.setRows(0);
+		
+		FacetOptions facetOptions = new FacetOptions();
+		facetOptions.setFacetMinCount(1);
+		facetOptions.setFacetLimit(1000);
+		
+		for (String facetName: FACET_FIELDS)  
+			facetOptions.addFacetOnField(facetName);
+		
+		facetQuery.setFacetOptions(facetOptions);
+		
+		// Consulta SOLR
+		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
+
+		
+		Map<String,Integer> validRuleMap = obtainFacetMap( facetResult.getFacetResultPage("valid_rules").getContent() );
+		Map<String,Integer> invalidRuleMap = obtainFacetMap( facetResult.getFacetResultPage("invalid_rules").getContent() );
+		Map<String,Integer> validRecordMap = obtainFacetMap( facetResult.getFacetResultPage("record_is_valid").getContent() );
+		Map<String,Integer> transformedRecordMap = obtainFacetMap( facetResult.getFacetResultPage("record_is_transformed").getContent() );
+		
+		result.size = (int) facetResult.getTotalElements();
+		result.validSize = 0;
+		result.transformedSize = 0;
+		
+		if ( validRecordMap.get("true") != null )
+			result.validSize = validRecordMap.get("true");
+		
+		if ( transformedRecordMap.get("true") != null )
+			result.transformedSize = transformedRecordMap.get("true");
+
+		for (String facetName: FACET_FIELDS)  
+			result.facets.put(facetName,  facetResult.getFacetResultPage(facetName).getContent() );
+		
+		
+		for (ValidatorRule rule : validator.getRules() ) {
+			
+			String ruleID = rule.getId().toString();
+		
+			DiagnoseRuleResult ruleResult = new DiagnoseRuleResult();
+			ruleResult.ruleID = rule.getId();
+			ruleResult.validCount = validRuleMap.get(ruleID);
+			ruleResult.invalidCount = invalidRuleMap.get(ruleID);
+			ruleResult.name = rule.getName();
+			ruleResult.description = rule.getDescription();
+			ruleResult.mandatory = rule.getMandatory(); 
+			
+			result.rules.add(ruleResult);
+			
+		}		
+		
+		return result;
+	}
+	
+	
+	private Map<String,Integer> obtainFacetMap( List<FacetFieldEntry> facetList ) {
+		
+		Map<String,Integer> facetMap = new HashMap<String, Integer>();
+		
+		for ( FacetFieldEntry entry : facetList ) 
+			facetMap.put( entry.getValue(), (int) entry.getValueCount() );
+		
+		return facetMap;
+	}
+	
+	@Getter
+	@Setter
+	class DiagnoseResult {	
+		
+		public DiagnoseResult() {
+			rules = new ArrayList<DiagnoseRuleResult>();
+			facets = new HashMap<String, List<FacetFieldEntry>>();
+		}
+		
+		Integer size;
+		Integer transformedSize;
+		Integer validSize;;
+		List<DiagnoseRuleResult> rules;
+		Map<String, List<FacetFieldEntry>> facets;
+	}
+	
+	@Getter
+	@Setter
+	class DiagnoseRuleResult {
+		Long ruleID;
+		String name;
+		String description;
+		Boolean mandatory;
+		Integer validCount;
+		Integer invalidCount;
+	}
+	
+	
+	@RequestMapping(value = "/public/diagnoseValidationOcurrences/{snapshotID}/{ruleID}", method = RequestMethod.GET)
+	@ResponseBody
+	public ValidationOccurrencesResult diagnoseValidationOcurrences(@PathVariable Long snapshotID, @PathVariable Long ruleID)
+			throws Exception {
+
+		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
+	
+		if (snapshot == null) // TODO: Implementar Exc
+			throw new Exception("No se encontró snapshot con id: " + snapshotID);
+	
+		ValidationOccurrencesResult result = new ValidationOccurrencesResult();
+	
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria("snapshot_id:" + snapshotID));
+		facetQuery.setRows(0);
+		
+		FacetOptions facetOptions = new FacetOptions();
+		facetOptions.setFacetMinCount(1);
+		facetOptions.setFacetLimit(1000);
+		
+		facetOptions.addFacetOnField(ruleID.toString() + "_rule_invalid_occrs");
+		facetOptions.addFacetOnField(ruleID.toString() + "_rule_valid_occrs");
+		
+		facetOptions.setFacetSort( FacetSort.COUNT );
+	
+		facetQuery.setFacetOptions(facetOptions);
+		
+		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
+		
+		List<OccurrenceCount> validRuleOccurrence = new ArrayList<OccurrenceCount>();
+		List<OccurrenceCount> invalidRuleOccurrence = new ArrayList<OccurrenceCount>();
+
+		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + "_rule_valid_occrs").getContent() ) 
+			validRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
+		
+		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + "_rule_invalid_occrs").getContent() ) 
+			invalidRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
+		
+		
+		result.setValidRuleOccrs( validRuleOccurrence );
+		result.setInvalidRuleOccrs( invalidRuleOccurrence );
+	
+		return result;
+	}
+	
+	@Getter
+	@Setter
+	class OccurrenceCount {
+		public OccurrenceCount(String value, int count) {
+			super();
+			this.value = value;
+			this.count = count;
+		}
+		String value;
+		Integer count;
+	}
+	
+	@Getter
+	@Setter
+	class ValidationOccurrencesResult {
+		List<OccurrenceCount> invalidRuleOccrs;
+		List<OccurrenceCount> validRuleOccrs;	
+	}
+	
+	
+	@RequestMapping(value = "/public/diagnoseListRecordValidationResults/{snapshotID}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<Page<RecordValidationResult>> diagnoseListRecordValidationResults(@PathVariable Long snapshotID, Pageable pageable) {
+
+	    //Page<RecordValidationResult> results =  validationResultRepository.findBySnapshot(snapshotID, pageable); //repository.findAll(pageable);
+	    		
+		Query query = new SimpleQuery("snapshot_id:" + snapshotID.toString() );
+		query.setPageRequest(pageable);
+		
+		Page<RecordValidationResult> results = solrTemplate.queryForPage(query, RecordValidationResult.class);
+		
+		
+		return new ResponseEntity<Page<RecordValidationResult>>(results, HttpStatus.OK);
+	  }
+	
 
 	/*****************************************************************
 	 * Validation Services
@@ -659,110 +846,6 @@ public class BackEndController {
 		return response;
 	}
 
-	/**
-	 * @ResponseBody
-	 * @RequestMapping(value="/public/listValidPublicSnapshotsStats", 
-	 *                                                                method=RequestMethod
-	 *                                                                .GET)
-	 *                                                                public
-	 *                                                                List<
-	 *                                                                SnapshotStats
-	 *                                                                >
-	 *                                                                listValidPublicSnapshotHistory
-	 *                                                                () {
-	 * 
-	 *                                                                List<
-	 *                                                                Network>
-	 *                                                                allNetworks
-	 *                                                                =
-	 *                                                                networkRepository
-	 *                                                                .
-	 *                                                                findByPublishedOrderByNameAsc
-	 *                                                                (true);//
-	 *                                                                OrderByName
-	 *                                                                ();
-	 *                                                                List<SnapshotStats
-	 *                                                                >
-	 *                                                                snapshotStatsList
-	 *                                                                = new
-	 *                                                                ArrayList<
-	 *                                                                SnapshotStats
-	 *                                                                >();
-	 * 
-	 *                                                                for
-	 *                                                                (Network
-	 *                                                                network:
-	 *                                                                allNetworks
-	 *                                                                ) {
-	 * 
-	 * 
-	 *                                                                for (
-	 *                                                                NetworkSnapshot
-	 *                                                                snapshot:
-	 *                                                                networkSnapshotRepository
-	 *                                                                .
-	 *                                                                findByNetworkAndStatusOrderByEndTimeAsc
-	 *                                                                (network,
-	 *                                                                SnapshotStatus
-	 *                                                                .VALID) )
-	 *                                                                {
-	 * 
-	 *                                                                SnapshotStats
-	 *                                                                snapshotStats
-	 *                                                                = new
-	 *                                                                SnapshotStats
-	 *                                                                ();
-	 *                                                                snapshotStats
-	 *                                                                .
-	 *                                                                setAcronym
-	 *                                                                ( network.
-	 *                                                                getAcronym
-	 *                                                                () );
-	 *                                                                snapshotStats
-	 *                                                                .setName(
-	 *                                                                network
-	 *                                                                .getName()
-	 *                                                                );
-	 * 
-	 *                                                                snapshotStats
-	 *                                                                .
-	 *                                                                setDatestamp
-	 *                                                                ( snapshot
-	 *                                                                .
-	 *                                                                getEndTime
-	 *                                                                () );
-	 *                                                                snapshotStats
-	 *                                                                .setSize(
-	 *                                                                snapshot
-	 *                                                                .getSize()
-	 *                                                                );
-	 *                                                                snapshotStats
-	 *                                                                .
-	 *                                                                setValidSize
-	 *                                                                ( snapshot
-	 *                                                                .
-	 *                                                                getValidSize
-	 *                                                                () );
-	 *                                                                snapshotStats
-	 *                                                                .
-	 *                                                                setTransformedSize
-	 *                                                                ( snapshot
-	 *                                                                .
-	 *                                                                getTransformedSize
-	 *                                                                () );
-	 * 
-	 *                                                                snapshotStatsList
-	 *                                                                .add(
-	 *                                                                snapshotStats
-	 *                                                                );
-	 * 
-	 *                                                                } }
-	 * 
-	 * 
-	 *                                                                return
-	 *                                                                snapshotStatsList
-	 *                                                                ; }
-	 **/
 
 	/************** Clases de retorno de resultados *******************/
 

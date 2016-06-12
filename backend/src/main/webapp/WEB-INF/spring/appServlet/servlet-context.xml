@@ -23,7 +23,18 @@
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
-	<annotation-driven />
+	
+	
+	
+	<annotation-driven>
+	    <argument-resolvers>
+	         <beans:bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver">
+            	<beans:property name="maxPageSize" value="20"></beans:property>
+            	<beans:property name="pageParameterName" value="page"></beans:property>
+            	<beans:property name="sizeParameterName" value="size"></beans:property>
+        	</beans:bean>
+	    </argument-resolvers>
+	</annotation-driven>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/static/**" location="/WEB-INF/static/" />

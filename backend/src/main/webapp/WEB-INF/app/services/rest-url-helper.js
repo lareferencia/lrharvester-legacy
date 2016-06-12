@@ -75,4 +75,8 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  
 		  return "/private/networkAction/" + action + "/" + idsString;  
 	  };
+	  
+	  this.diagnoseURLByID = function (snapshotID) {
+		  return '/public/diagnose/' + snapshotID;	
+	  };
 }]);

@@ -8,10 +8,7 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 	
 
 	 var add_methods = function(processedResponse) {
-		 
-		 
-		
-		 
+		 	 
 		 
 		 /* Reload */
 		  processedResponse.reload = function(success_callback) {

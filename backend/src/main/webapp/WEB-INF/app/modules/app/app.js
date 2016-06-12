@@ -18,7 +18,8 @@ angular.module('app', [
     'validators',
     'validator',
     'transformers',
-    'transformer'
+    'transformer',
+    'diagnose'
 
 ])
     .config(['$stateProvider', function ($stateProvider) {
