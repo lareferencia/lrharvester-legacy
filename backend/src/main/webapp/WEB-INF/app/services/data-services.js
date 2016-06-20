@@ -251,8 +251,24 @@ BackendDataServiceModule.service('DataSrv',  ["$http", "SpringDataRestAdapter", 
 	  this.callRestWS = function(url, success_callback, error_callback) {
 		  $http.get(url).then(success_callback, error_callback);
 	  };
+	  
+	  /**
+	   * Llamada a una función remota XML
+	   */
+	  this.callRestXMLWS = function(url, success_callback, error_callback) {
 		  
+		  var req = {
+				  method: 'GET',
+				  url: url,
+				  headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Accept' : 'application/xml'}
+		  };
+
 		  
+		  $http(req).then(success_callback, error_callback);
+	  };
+		  
+	
+	
 	
 	  
 }]);

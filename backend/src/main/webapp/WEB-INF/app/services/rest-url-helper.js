@@ -76,7 +76,30 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return "/private/networkAction/" + action + "/" + idsString;  
 	  };
 	  
-	  this.diagnoseURLByID = function (snapshotID) {
-		  return '/public/diagnose/' + snapshotID;	
+	  this.diagnoseURLByID = function (snapshotID, fqList) {
+		  
+		  var fqEncodedList = [];
+		  
+		  for(var i=0;i<fqList.length;i++) {
+			  fqEncodedList.push( encodeURI(fqList[i]) );
+		  }
+		  
+		  return '/public/diagnose/' + snapshotID + '/[' + fqEncodedList.join(',') + ']';	
+	  };
+	  
+	  this.diagnoseRecordListURLByID = function (snapshotID, fqList) {
+		  
+		  var fqEncodedList = [];
+		  
+		  for(var i=0;i<fqList.length;i++) {
+			  fqEncodedList.push( encodeURI(fqList[i]) );
+		  }
+		  
+		  return '/public/diagnoseListRecordValidationResults/' + snapshotID + '/[' + fqEncodedList.join(',') + ']';	
+	  };
+	  
+	  
+	  this.recordMetadataURLByID = function (recordID) {		  
+		  return '/public/getRecordMetadataByID/' + recordID;	
 	  };
 }]);

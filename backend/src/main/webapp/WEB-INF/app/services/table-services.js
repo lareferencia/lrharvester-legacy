@@ -16,12 +16,13 @@ angular
 							 * como parámetro la data y devuelve un int con la
 							 * logitud de los datos
 							 */
-							this.createNgTableFromWsURL = function(url,
-									data_function, count_function, initialPageNumber, countsArray) {
+							this.createNgTableFromWsURL = function(url, parameters_function, initialPageNumber, initialCount, countsArray ) {
 
-								
 								if (initialPageNumber == null)
 									initialPageNumber = 1;
+								
+								if (initialCount == null)
+									initialCount = 20;
 								
 								if (countsArray == null)
 									countsArray = [10, 25, 50, 100];
@@ -29,14 +30,19 @@ angular
 								var Api = $resource(url);
 
 								return new NgTableParams(
-										{page:initialPageNumber},
+										{page:initialPageNumber, count:initialCount},
 										{
 											counts : countsArray,
 											getData : function(params) {
 												return Api.get(params.url()).$promise
 														.then(function(data) {
-															params.total(count_function(data));
-															return data_function(data) ;
+															
+															var p = parameters_function(data);
+															
+															if (p.total != null) params.total(p.total);
+															//if (p.count != null) params.count(p.count);
+															
+															return p.data ;
 														});
 											}, /* fin getData */
 										// paginationMaxBlocks: 13,

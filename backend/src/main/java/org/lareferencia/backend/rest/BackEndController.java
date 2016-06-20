@@ -72,6 +72,7 @@ import org.springframework.data.solr.core.query.FacetQuery;
 import org.springframework.data.solr.core.query.Field;
 import org.springframework.data.solr.core.query.Query;
 import org.springframework.data.solr.core.query.SimpleFacetQuery;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.data.solr.core.query.result.FacetFieldEntry;
@@ -205,11 +206,10 @@ public class BackEndController {
 	}
 	
 	
-	static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name"};
 	
-	@RequestMapping(value = "/public/diagnose/{snapshotID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/public/diagnose/{snapshotID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
-	public DiagnoseResult diagnoseListRules(@PathVariable Long snapshotID) throws Exception {
+	public DiagnoseResult diagnoseListRules(@PathVariable Long snapshotID, @PathVariable List<String> fq) throws Exception {
 		
 	
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
@@ -222,14 +222,21 @@ public class BackEndController {
 		
 		DiagnoseResult result = new DiagnoseResult();
 				
-		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria("snapshot_id:" + snapshotID));
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
+	
+		
+		for (String fqTerm : fq) {
+			fqTerm = fqTerm.replace("@@", ":");
+			facetQuery.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+		}
+		
 		facetQuery.setRows(0);
 		
 		FacetOptions facetOptions = new FacetOptions();
 		facetOptions.setFacetMinCount(1);
 		facetOptions.setFacetLimit(1000);
 		
-		for (String facetName: FACET_FIELDS)  
+		for (String facetName: RecordValidationResult.FACET_FIELDS)  
 			facetOptions.addFacetOnField(facetName);
 		
 		facetQuery.setFacetOptions(facetOptions);
@@ -253,15 +260,18 @@ public class BackEndController {
 		if ( transformedRecordMap.get("true") != null )
 			result.transformedSize = transformedRecordMap.get("true");
 
-		for (String facetName: FACET_FIELDS)  
+		for (String facetName: RecordValidationResult.FACET_FIELDS)  
 			result.facets.put(facetName,  facetResult.getFacetResultPage(facetName).getContent() );
 		
 		
 		for (ValidatorRule rule : validator.getRules() ) {
 			
 			String ruleID = rule.getId().toString();
-		
+			
 			DiagnoseRuleResult ruleResult = new DiagnoseRuleResult();
+			
+			result.ruleNameByID.put(ruleID, rule.getName() );
+			
 			ruleResult.ruleID = rule.getId();
 			ruleResult.validCount = validRuleMap.get(ruleID);
 			ruleResult.invalidCount = invalidRuleMap.get(ruleID);
@@ -276,7 +286,9 @@ public class BackEndController {
 		return result;
 	}
 	
-	
+	/**
+	 * Retorna un Map entre los ids y los nombres de las reglas
+	 */
 	private Map<String,Integer> obtainFacetMap( List<FacetFieldEntry> facetList ) {
 		
 		Map<String,Integer> facetMap = new HashMap<String, Integer>();
@@ -294,12 +306,14 @@ public class BackEndController {
 		public DiagnoseResult() {
 			rules = new ArrayList<DiagnoseRuleResult>();
 			facets = new HashMap<String, List<FacetFieldEntry>>();
+			ruleNameByID = new HashMap<String, String>(); 
 		}
 		
 		Integer size;
 		Integer transformedSize;
 		Integer validSize;;
 		List<DiagnoseRuleResult> rules;
+		Map<String, String> ruleNameByID;
 		Map<String, List<FacetFieldEntry>> facets;
 	}
 	
@@ -327,15 +341,15 @@ public class BackEndController {
 	
 		ValidationOccurrencesResult result = new ValidationOccurrencesResult();
 	
-		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria("snapshot_id:" + snapshotID));
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
 		facetQuery.setRows(0);
 		
 		FacetOptions facetOptions = new FacetOptions();
 		facetOptions.setFacetMinCount(1);
 		facetOptions.setFacetLimit(1000);
 		
-		facetOptions.addFacetOnField(ruleID.toString() + "_rule_invalid_occrs");
-		facetOptions.addFacetOnField(ruleID.toString() + "_rule_valid_occrs");
+		facetOptions.addFacetOnField(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX );
+		facetOptions.addFacetOnField(ruleID.toString() + RecordValidationResult.VALID_RULE_SUFFIX);
 		
 		facetOptions.setFacetSort( FacetSort.COUNT );
 	
@@ -346,10 +360,10 @@ public class BackEndController {
 		List<OccurrenceCount> validRuleOccurrence = new ArrayList<OccurrenceCount>();
 		List<OccurrenceCount> invalidRuleOccurrence = new ArrayList<OccurrenceCount>();
 
-		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + "_rule_valid_occrs").getContent() ) 
+		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.VALID_RULE_SUFFIX).getContent() ) 
 			validRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
 		
-		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + "_rule_invalid_occrs").getContent() ) 
+		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX ).getContent() ) 
 			invalidRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
 		
 		
@@ -379,15 +393,22 @@ public class BackEndController {
 	}
 	
 	
-	@RequestMapping(value = "/public/diagnoseListRecordValidationResults/{snapshotID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/public/diagnoseListRecordValidationResults/{snapshotID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Page<RecordValidationResult>> diagnoseListRecordValidationResults(@PathVariable Long snapshotID, Pageable pageable) {
-
-	    //Page<RecordValidationResult> results =  validationResultRepository.findBySnapshot(snapshotID, pageable); //repository.findAll(pageable);
-	    		
-		Query query = new SimpleQuery("snapshot_id:" + snapshotID.toString() );
+	public ResponseEntity<Page<RecordValidationResult>> diagnoseListRecordValidationResults(@PathVariable Long snapshotID, @PathVariable List<String> fq, Pageable pageable) {
+		
+		Query query = new SimpleQuery( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString() );
+		
+		// Esta correccion permite pagiona
+		pageable = pageable.previousOrFirst();
+		
 		query.setPageRequest(pageable);
 		
+		for (String fqTerm : fq) {
+			fqTerm = fqTerm.replace("@@", ":");
+			query.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+		}
+	
 		Page<RecordValidationResult> results = solrTemplate.queryForPage(query, RecordValidationResult.class);
 		
 		

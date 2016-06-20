@@ -44,9 +44,13 @@ angular.module('app', [
         
         
         $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', 
-            	function(data) { return data.networks;},
-            	function(data) { return data.totalElements; },
-            	1
+        		function(data) { 
+					return { 
+							 data:   data.networks,
+							 total: data.totalElements    							 
+					};
+				}, 1, 25
+       
         );
             
         $scope.networksTableRefreshCallback = function() { $scope.networksTable.reload(); };

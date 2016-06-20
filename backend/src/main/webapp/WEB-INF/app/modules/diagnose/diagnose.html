@@ -12,7 +12,7 @@
                       	<li>
                             <a><i class="fa fa-university fa-fw"></i> Instituciones <span class="fa arrow"></span></a>
                             <ul id="institution_name_facet" class="nav nav-second-level" ng-repeat="facet in facets.institution_name"> 
-                            		<li><a href="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
                              </ul>  
                             <!-- /.nav-second-level -->
                         </li>
@@ -20,7 +20,7 @@
                         <li>
                             <a><i class="fa fa-sitemap fa-fw"></i> Subredes <span class="fa arrow"></span></a>
                             <ul id="repository_name_facet" class="nav nav-second-level" ng-repeat="facet in facets.repository_name">
-                            		<li><a href="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
                       		</ul>   
                             <!-- /.nav-second-level -->
                         </li>
@@ -28,7 +28,7 @@
                         <li>
                             <a><i class="fa fa-check-square-o fa-fw"></i> Validez de registros <span class="fa arrow"></span></a>
                             <ul id="record_is_valid_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_valid">
-                            		<li><a href="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Válidos' : 'Inválidos'}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
                             </ul>  
                             <!-- /.nav-second-level -->
                         </li>
@@ -36,14 +36,14 @@
                         <li>
                             <a><i class="fa fa-check fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
                             <ul id="valid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.valid_rules">
-                            		<li><a href="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
                             </ul>  
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
                             <a><i class="fa fa-times fa-fw"></i> Reglas Inválidas <span class="fa arrow"></span></a>
                             <ul id="invalid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.invalid_rules">  
-                            		<li><a href="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
                             </ul>  
                             <!-- /.nav-second-level -->
                         </li>
@@ -158,7 +158,7 @@
 										<tr ng-repeat="rule in $data">
 											<td  data-title="'Nombre'" sortable="'name'">{{rule.name}}</td>
 											<td  data-title="'Descripción'">{{rule.description}}</td>
-											<td  data-title="'Mandatoria'" sortable="'mandatory'">{{rule.mandatory}}</td>
+											<td  data-title="'Mandatoria'" sortable="'mandatory'">{{rule.mandatory | siNo }}</td>
 											<td style="width: 40px;" data-title="'% Cumplimiento'" sortable="'validCount'">{{(rule.validCount / recordsSize)*100 | number:2 }}%</td>
 											<td style="width: 40px;" data-title="'#R. Válidos'" sortable="'validCount'">{{rule.validCount}}</td>
 											<td>
@@ -199,26 +199,28 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
-                                        <table class="table table-striped table-bordered table-hover" id="table-records">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Identifier</th>
-                                                    <th>VLD</th>
-                                                    <th>TRF</th>
-                                                    <th></th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
+                                    
+                                   	<table ng-table="recordsTable" class="table table-bordered table-striped table-condensed">
+										<tr ng-repeat="record in $data">
+											<td  data-title="'ID'" >{{record.id}}</td>											
+											<td  data-title="'Identifier'">
+												<a target="_blank" href="{{record.origin}}?verb=GetRecord&metadataPrefix=oai_dc&identifier={{record.identifier}}">{{record.identifier}}</a>
+											</td>
+											<td  data-title="'Estado'" >{{record.isValid | isValid}}{{record.isTrasformed | isTransformed}}</td>
+											<td>
+												<button class="btn btn-primary btn-sm" ng-click="openRecordDiagnose(record)">
+													<span class="glyphicon glyphicon-pencil"></span>
+												</button>			
+											</td>
+											
+											
+										</tr>
+									</table>
+                                       
                                     </div>
                                     <!-- /.table-responsive -->
                                 </div>
-                                <!-- /.col-lg-4 (nested) -->
-                                <div class="col-lg-8">
-                                    <div id="morris-bar-chart"></div>
-                                </div>
+                              
                                 <!-- /.col-lg-8 (nested) -->
                             </div>
                             <!-- /.row -->

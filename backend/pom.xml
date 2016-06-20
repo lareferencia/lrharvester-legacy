@@ -35,7 +35,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 		<spring.data.rest>2.4.0.RELEASE</spring.data.rest>
 		<spring.data.hateoas>0.19.0.RELEASE</spring.data.hateoas>
 		<spring.data.jpa>1.9.0.RELEASE</spring.data.jpa>
-		<spring.data.solr>1.5.0.RELEASE</spring.data.solr>
+		<spring.data.solr>2.0.1.RELEASE</spring.data.solr>
 		<logback.version>1.0.6</logback.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>			
 	</properties>
@@ -240,13 +240,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         </dependency>
         
         <!-- SolrJ -->
-		<dependency>
-               <artifactId>solr-solrj</artifactId>
-               <groupId>org.apache.solr</groupId>
-               <version>4.4.0</version>
-               <type>jar</type>
-               <scope>compile</scope>
-        </dependency>
+        <dependency>
+    	<groupId>org.apache.solr</groupId>
+    		<artifactId>solr-solrj</artifactId>
+    		<version>5.2.1</version>
+		</dependency>
         <dependency>
 		<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
@@ -255,7 +253,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
-		    <version>4.2.1</version>
+		    <version>4.5.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>

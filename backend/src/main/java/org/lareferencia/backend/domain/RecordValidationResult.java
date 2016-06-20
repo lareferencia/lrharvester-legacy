@@ -22,6 +22,13 @@ import org.springframework.data.solr.core.mapping.Dynamic;
 @Getter
 @Setter
 public class RecordValidationResult {
+	
+	
+	public static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name"};
+	public static final String SNAPSHOT_ID_FIELD = "snapshot_id";
+	public static final String INVALID_RULE_SUFFIX = "_rule_invalid_occrs";
+	public static final String VALID_RULE_SUFFIX = "_rule_valid_occrs";
+
 
 	@Id
 	@Field
@@ -30,7 +37,7 @@ public class RecordValidationResult {
 	@Field("oai_identifier")
 	private String identifier;
 
-	@Field("snapshot_id")
+	@Field( SNAPSHOT_ID_FIELD )
 	private Long snapshotID;
 
 	@Field("origin")
@@ -55,11 +62,11 @@ public class RecordValidationResult {
 	private Boolean isTransformed;
 
 	@Dynamic
-	@Field("*_rule_valid_occrs")
+	@Field("*" + VALID_RULE_SUFFIX)
 	private Map<String, List<String>> validOccurrencesByRuleID;
 
 	@Dynamic
-	@Field("*_rule_invalid_occrs")
+	@Field("*" + INVALID_RULE_SUFFIX)
 	private Map<String, List<String>> invalidOccurrencesByRuleID;
 
 	@Field("valid_rules")
