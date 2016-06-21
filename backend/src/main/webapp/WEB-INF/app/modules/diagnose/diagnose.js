@@ -8,13 +8,12 @@
 var mod_diagnose = angular.module('diagnose', [
     'ngResource',
     'ngTable',
+    'ngTableToCsv',
     'ui.router',
     'ui.bootstrap',
     'table.services',
     'rest.url.helper',
     'data.services',
-
-
 ]);
 
 
@@ -25,7 +24,7 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
             .state('diagnose', {
                 url: '/diagnose/:snapshotID',
                 views: {
-                    'main': {
+                    'main@': {
                         templateUrl: 'modules/diagnose/diagnose.html'
                     }
                 }
@@ -104,7 +103,7 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
         	
         	if (facet == null) return;
         	
-        	var key = facet.key.name + '@@' + facet.value;
+        	var key = facet.key.name + '@@"' + facet.value + '"';
         	
         	if ( $scope.select_facets[key] )
         		$scope.select_facets[key] = false;
@@ -118,7 +117,7 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
          * Indica si una faceta está seleccionada
          */
         $scope.is_facet_selected = function (facet) {
-        	var key = facet.key.name + '@@' + facet.value;
+        	var key = facet.key.name + '@@"' + facet.value + '"';
         	
         	if ($scope.select_facets[key] == null)
         		return false;
@@ -165,6 +164,31 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
     	    modalInstance.result.then( function () {}, function () {});
     	   
     	}; /* fin openRecordDiagnose */ 
+    	
+    	
+    	  
+        /** 
+    	 * openRuleOccrStats: Apertura de modal de detalle de occr 
+    	 *     
+    	 **/	
+    	 $scope.openRuleOccrStats = function (snapshotID, rule) {
+    	
+    		    var modalInstance = $uibModal.open({
+    		      animation: true,
+    		      templateUrl: 'modules/diagnose/rule-occrs-tpl.html',
+    		      controller: 'RuleOccrStatsCtrl',
+    		      size: 'lg',
+    		      resolve: {
+    		  	      snapshotID: function() { return snapshotID; }, 
+    		  	      rule: function() { return rule; }, 
+    		      }
+  
+    	    });
+    	
+    	    modalInstance.result.then( function () {}, function () {});
+    	   
+    	}; /* fin openRecordDiagnose */ 
+        
         
   
         //////// MAIN /////////
@@ -201,4 +225,23 @@ mod_diagnose.controller('RecordDiagnoseCtrl', ['$scope', '$uibModalInstance', 'R
 	});
 
 }]); /* RecordDiagnoseCtrl */
+
+mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv', 'snapshotID', 'rule', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID, rule) {
+	
+	// Accciones de los botones del modal
+	$scope.ok = function () { $uibModalInstance.close(null); };
+	$scope.cancel = function () { $uibModalInstance.dismiss('cancel');};
+
+	$scope.snapshotID = snapshotID;
+	$scope.ruleID = rule.ruleID;
+	$scope.rule = rule;
+	
+	DataSrv.callRestWS( RestURLHelper.diagnoseRuleOccrURLByID($scope.snapshotID, $scope.ruleID), function(response) {	
+		
+			$scope.validOccrTable = TableSrv.createNgTableFromArray(response.data.validRuleOccrs);
+			$scope.invalidOccrTable = TableSrv.createNgTableFromArray(response.data.invalidRuleOccrs);
+
+	});
+
+}]); /* RuleOccrStatsCtrl */
     

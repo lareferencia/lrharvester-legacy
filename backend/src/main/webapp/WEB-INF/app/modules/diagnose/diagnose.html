@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="col-xs-9 text-right">
                                     <div class="medium" id="totalRegs">{{recordsSize}}</div>
-                                    <div>Reg. Totales</div>
+                                    <div>R. Totales</div>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="col-xs-9 text-right">
                                        <div class="medium" id="validRegs">{{validSize}}</div>
-                                    <div>Reg. Válidos</div>
+                                    <div>R. Válidos</div>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-xs-9 text-right">
                                     <div class="medium" id="transformedRegs">{{transformedSize}}</div>
-                                    <div>Reg. Transformados</div>
+                                    <div>R. Transf.</div>
                                 </div>
                             </div>
                         </div>
@@ -138,23 +138,18 @@
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Nivel de cumplimiento de reglas
                             <div class="pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Descargar
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#">Action</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+								<div class="btn-group">
+									<a class="btn btn-xs" title="Exportar reglas" ng-click='csvRules.generate()' ng-href="{{csvRules.link()}}" download="reglas.csv"> 
+										<i class="glyphicon glyphicon-new-window"></i> &#160;Exportar CSV
+									</a>
+								</div>
+							</div>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-lg-12">
-                                   <table ng-table="rulesTable" class="table table-bordered table-striped table-condensed">
+                                   <table ng-table="rulesTable" class="table table-bordered table-striped table-condensed" export-csv="csvRules" separator=";">
 										<tr ng-repeat="rule in $data">
 											<td  data-title="'Nombre'" sortable="'name'">{{rule.name}}</td>
 											<td  data-title="'Descripción'">{{rule.description}}</td>
@@ -162,8 +157,8 @@
 											<td style="width: 40px;" data-title="'% Cumplimiento'" sortable="'validCount'">{{(rule.validCount / recordsSize)*100 | number:2 }}%</td>
 											<td style="width: 40px;" data-title="'#R. Válidos'" sortable="'validCount'">{{rule.validCount}}</td>
 											<td>
-												<button class="btn btn-primary btn-sm" ui-sref="showValitation(rule.ruleID)">
-													<span class="glyphicon glyphicon-pencil"></span>
+												<button class="btn btn-primary btn-xs" ng-click="openRuleOccrStats(snapshotID, rule)">
+													Detalles
 												</button>			
 											</td>
 										</tr>
@@ -182,16 +177,11 @@
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Detalle de registros 
                             <div class="pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Descargar
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#">Action</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                               	<div class="btn-group">
+									<a class="btn btn-xs" title="Exportar registros" ng-click='csvRegisters.generate()' ng-href="{{csvRegisters.link()}}" download="registros.csv"> 
+										<i class="glyphicon glyphicon-new-window"></i> &#160;Exportar CSV
+									</a>
+								</div>
                             </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -200,16 +190,20 @@
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                     
-                                   	<table ng-table="recordsTable" class="table table-bordered table-striped table-condensed">
+                                   	<table ng-table="recordsTable" class="table table-bordered table-striped table-condensed" export-csv="csvRegisters" separator=";">
 										<tr ng-repeat="record in $data">
 											<td  data-title="'ID'" >{{record.id}}</td>											
 											<td  data-title="'Identifier'">
 												<a target="_blank" href="{{record.origin}}?verb=GetRecord&metadataPrefix=oai_dc&identifier={{record.identifier}}">{{record.identifier}}</a>
 											</td>
-											<td  data-title="'Estado'" >{{record.isValid | isValid}}{{record.isTrasformed | isTransformed}}</td>
+											<td  data-title="'Estado'">
+												<button type="button" class="btn btn-xs btn-{{record.isValid | successOrDanger}}">{{record.isValid | isValid}}</button>
+												<button ng-if="isTransformed" type="button" class="btn btn-xs btn-warning">{{record.isTrasformed | isTransformed}}</button>
+												
+											</td>
 											<td>
-												<button class="btn btn-primary btn-sm" ng-click="openRecordDiagnose(record)">
-													<span class="glyphicon glyphicon-pencil"></span>
+												<button type="button" class="btn btn-xs btn-primary" ng-click="openRecordDiagnose(record)">
+													Detalles
 												</button>			
 											</td>
 											

@@ -1,0 +1,46 @@
+<div class="modal-header">
+	<h3 class="modal-title">Ocurrencias de regla: {{rule.name}}</h3>
+</div>
+<div class="modal-body">
+	
+	
+	<div class="row">
+		<div class="col-xs-6">
+			 <h4>Ocurrencias válidas</h4>
+			 
+			<div class="btn-group">
+				<a class="btn btn-xs" title="Exportar validas" ng-click='csvValid.generate()' ng-href="{{csvValid.link()}}" download="valid.csv"> 
+					<i class="glyphicon glyphicon-new-window"></i> &#160;Exportar CSV
+				</a>
+			</div>
+			
+			 <table ng-table="validOccrTable" class="table table-bordered table-striped table-condensed" export-csv="csvValid" separator=";">
+				<tr ng-repeat="occr in $data">
+					<td  data-title="'Ocurrencia'" sortable="'value'">{{occr.value}}</td>
+					<td  data-title="'Cantidad'" sortable="'count'">{{occr.count}}</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="col-xs-6">
+			 <h4>Ocurrencias inválidas</h4>
+			 
+			 <div class="btn-group">
+				<a class="btn btn-xs" title="Exportar invalidas" ng-click='csvInvalid.generate()' ng-href="{{csvInvalid.link()}}" download="invalid.csv"> 
+					<i class="glyphicon glyphicon-new-window"></i> &#160;Exportar CSV
+				</a>
+			</div>
+		
+			 <table ng-table="invalidOccrTable" class="table table-bordered table-striped table-condensed" export-csv="csvInvalid" separator=";">
+				<tr ng-repeat="occr in $data">
+					<td  data-title="'Ocurrencia'" sortable="'value'">{{occr.value}}</td>
+					<td  data-title="'Cantidad'" sortable="'count'">{{occr.count}}</td>
+				</tr>
+			</table>
+		</div>
+		
+	</div>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>

@@ -47,6 +47,9 @@
 					<div class="small">
 						<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lstSnapshotDate}}</span>
 					</div>
+					<div class="small">
+							<i class="fa fa-history" aria-hidden="true"></i> <span class="c-white"><button class="btn btn-xs btn-info" ui-sref="diagnose({ snapshotID: network.lgkSnapshotID })">Historial</button></span>
+					</div>
 				</td>
 				<td data-title="'Última cosecha exitosa'">
 					<div ng-if="network.lgkSnapshotID != null">
@@ -56,7 +59,7 @@
 							<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lgkSnapshotDate}}</span>
 						</div>
 						<div class="small">
-							<i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><a target="_blank" href="/diagnose/{{network.acronym}}">Diagnóstico</a></span>
+							<i class="fa fa-ambulance" aria-hidden="true"></i> <span class="c-white"><button class="btn btn-xs btn-info" ui-sref="diagnose({ snapshotID: network.lgkSnapshotID })">Diagnóstico</button></span>
 						</div>
 					</div>
 					<div ng-if="network.lgkSnapshotID == null" class="alert alert-danger" role="alert" style="height: 100%;">

@@ -33,7 +33,7 @@ public class RepositoryNameHelper {
 		}
 	}
 
-	public static String UNKNOWN = "No_Detectados";
+	public static String UNKNOWN = "No clasificados";
 
 	public static final String DOMAIN_NAME_PATTERN_STR = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})";
 	private static final String NAME_PATTERN_STR = "[A-Za-z0-9-]{4,}";

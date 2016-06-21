@@ -13,25 +13,10 @@
  ******************************************************************************/
 package org.lareferencia.backend;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.map.HashedMap;
-import org.hibernate.mapping.Array;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lareferencia.backend.domain.Network;
-import org.lareferencia.backend.domain.NetworkSnapshot;
-import org.lareferencia.backend.domain.RecordValidationResult;
-import org.lareferencia.backend.domain.Validator;
-import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.repositories.RecordValidationResultRepository;
 import org.lareferencia.backend.validation.validator.IValidator;
-import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

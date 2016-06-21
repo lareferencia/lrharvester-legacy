@@ -1,3 +1,12 @@
+<style>
+p { margin: 0px;}
+
+</style>
+
+
+
+
+
 <div class="modal-header">
 	<h3 class="modal-title">Detalles de validación: {{record.identifier}}</h3>
 </div>
@@ -19,12 +28,12 @@
 				<div class="alert alert-success">
 					<b>{{rules[ruleID]}}</b>
 					
-					<div ng-repeat="occr in record.validOccurrencesByRuleID[ruleID] track by $index">
+					<ng-repeat ng-repeat="occr in record.validOccurrencesByRuleID[ruleID] track by $index">
 						<p><span style="margin-right:5px;" class="glyphicon glyphicon-ok"></span>{{occr}}</p>
-					</div>
-					<div ng-repeat="occr in record.invalidOccurrencesByRuleID[ruleID] track by $index">
+					</ng-repeat>
+					<ng-repeat ng-repeat="occr in record.invalidOccurrencesByRuleID[ruleID] track by $index">
 						<p><span style="margin-right:5px;" class="glyphicon glyphicon-remove"></span>{{occr}}</p>
-					</div>
+					</ng-repeat>
 					
 				</div>
 			</div>
@@ -32,12 +41,12 @@
 				<div class="alert alert-danger">
 					<b>{{rules[ruleID]}}</b>
 					
-					<div ng-repeat="occr in record.validOccurrencesByRuleID[ruleID] track by $index">
+					<ng-repeat ng-repeat="occr in record.validOccurrencesByRuleID[ruleID] track by $index">
 						<p><span style="margin-right:5px;" class="glyphicon glyphicon-ok"></span>{{occr}}</p>
-					</div>
-					<div ng-repeat="occr in record.invalidOccurrencesByRuleID[ruleID] track by $index">
+					</ng-repeat>
+					<ng-repeat ng-repeat="occr in record.invalidOccurrencesByRuleID[ruleID] track by $index">
 						<p><span style="margin-right:5px;" class="glyphicon glyphicon-remove"></span>{{occr}}</p>
-					</div>
+					</ng-repeat>
 					
 				</div>
 			</div>
