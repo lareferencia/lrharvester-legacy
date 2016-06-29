@@ -146,12 +146,12 @@ public class BackEndController {
 	 ******************************************************/
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
+	public String root(Locale locale, Model model) {
 		return "home";
 	}
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public String home2(Locale locale, Model model) {
+	public String home(Locale locale, Model model) {
 		return "home";
 	}
 

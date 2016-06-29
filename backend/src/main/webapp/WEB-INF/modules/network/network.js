@@ -76,8 +76,12 @@ angular.module('network', [
     			$scope.network_validation_form = JSONNetworkSchemas.network_validation_form(validators.getItems(),transformers.getItems());
 
     			if ($scope.is_new) {
-    				$scope.network_validation_model['transformer'] = RestURLHelper.urlFromEntity(transformers.getItems()[0]);
-    				$scope.network_validation_model['validator'] = RestURLHelper.urlFromEntity( validators.getItems()[0] );
+    				
+    				if ( transformers.getItems()[0] != null )
+    					$scope.network_validation_model['transformer'] = RestURLHelper.urlFromEntity(transformers.getItems()[0]);
+    				
+    				if ( validators.getItems()[0] != null )
+    					$scope.network_validation_model['validator'] = RestURLHelper.urlFromEntity( validators.getItems()[0] );
     			}
     						
     		});
