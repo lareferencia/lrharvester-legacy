@@ -2,466 +2,143 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <%@ page session="false" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<html>
+
+<!doctype html>
+<html lang="en" ng-app="app">
 <head>
-<title>LAReferencia Admin</title>
-	<link rel="stylesheet" href="<spring:url value="/static/css/smoothness/jquery-ui.css"/>"></link>
-	<link rel="stylesheet" href="<spring:url value="/static/css/jquery-select.css"/>"></link>
-	<link rel="stylesheet" href="<spring:url value="/static/css/jquery-cron.css"/>"></link>
-	<link rel="stylesheet" href="<spring:url value="/static/css/backend.css"/>"></link>
-	<link rel="stylesheet" href="<spring:url value="/static/css/cubism.css"/>"></link>
-	
-	
-	<script type="text/javascript" src="<spring:url value="/d3.v3.min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery-ui.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery-select.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jquery-cron.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/rest.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/backend.js"/>"></script>
-	
-	<!--  Monitoreo de recursos usando Jolokia -->
-	<script type="text/javascript" src="<spring:url value="/jolokia-min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jolokia-simple-min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/cubism.v1.min.js"/>"></script>
-	<script type="text/javascript" src="<spring:url value="/jolokia-cubism-min.js"/>"></script>	
-	<script type="text/javascript" src="<spring:url value="/jolokia-backend.js"/>"></script>
-	<!--  Necesita jolokia corriendo en /jolokia en tomcat -->
-	
-	
+    <meta charset="utf-8" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    <title>LAReferencia - Administración</title>
+    
+    <link rel="stylesheet" href="static/css/bootstrap.css" />
+    <link rel="stylesheet" href="modules/app/app.css" /> 
+    
+    <!-- Bootstrap Core CSS -->
+    <link type="text/css" rel="stylesheet" href="static/css/bootstrap.min.css" />
+    
+    <!-- MetisMenu CSS -->
+    <link type="text/css" rel="stylesheet" href="static/css/metisMenu.min.css" >
+             
+    <!-- HighLight CSS -->
+    <link type="text/css" rel="stylesheet" href="static/css/jquery.highlight.css"/>
+
+    <!-- Custom Fonts -->
+    <link type="text/css" rel="stylesheet" href="static/css/font-awesome.min.css"/>
+    
+    <!-- Ng Table CSS -->
+    <link rel="stylesheet" href="static/css/ng-table.min.css"/>   
+    
+    <!-- App CSS -->
+    <!-- >link type="text/css" rel="stylesheet" href="static/css/styles.css"/-->
+       
+
 </head>
+<body class="app" ng-controller="app">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" ng-click="navbarCollapsed = !navbarCollapsed">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="home">Administración de repositorios</a>
+            </div>
+            <div class="collapse navbar-collapse" collapse="navbarCollapsed">
+                <ul class="nav navbar-nav" ng-show="loggedIn">
+                    <li ui-sref-active="active"><a ui-sref="validators">Editar Validadores</a></li>
+                    <li ui-sref-active="active"><a ui-sref="transformers">Editar Transformadores</a></li>
+                    
+                    <li ng-show="!navbarCollapsed"><a href ng-click="logout()">Logout</a></li>
+                </ul>
+                <ul class="nav navbar-nav" ng-show="!loggedIn">
+                    <li ng-show="!navbarCollapsed"><a href="#">Login</a></li>
+                </ul>
+                <!-- >span class="dropdown user pull-right" on-toggle="toggled(open)" ng-show="navbarCollapsed">
+                    <a href class="link dropdown-toggle"><img src="" ng-src="{{ user.image }}" class="img-circle" width="35" height="35" />{{ user.name  || 'Logged out'}}</a>
+                    <ul ng-show="loggedIn" class="dropdown-menu">
+                        <li><a ui-sref="overlay">My profile</a></li>
+                        <li><a href ng-click="logout()">Logout</a></li>
+                    </ul>
+                    <ul ng-show="!loggedIn" class="dropdown-menu">
+                        <li><a href="#">Login</a></li>
+                    </ul>
+                </span-->
+            </div>
+        </div>
+    </div>
+    <div class="container" ui-view="main">
+    </div>
+    
+    
+    <!-- JQuery JS -->
+    <script type="text/javascript" src="static/libs/jquery-1.12.2.min.js"/></script>
+        
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="static/libs/bootstrap.min.js"/></script>
+    
+    <!-- metisMenu JS -->
+    <script src="static/libs/metisMenu.min.js"></script>
+    
+    
+    <!-- Angular js -->
+	<script type="text/javascript" src="static/libs/angular.min.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-sanitize.min.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-resource.min.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-route.min.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-animate.min.js"/></script>
+ 
+    <!-- script src="static/libs/angular-ui-bootstrap.min.js"></script-->
+    <script src="static/libs/angular-ui-router.min.js"></script>
+    
+      <!-- Angular UI Bootstrap --> 
+    <script type="text/javascript" src="static/libs/ui-bootstrap-tpls-1.3.3.min.js"/></script>
+   
+    
+    <!-- Libs de Angular NG Tables -->
+    <script type="text/javascript" src="static/libs/ng-table.min.js"/></script>
+    <script type="text/javascript" src="static/libs/ng-table-to-csv.min.js"/></script>
+    
+	<!-- Libs de Angular Spring Data Rest -->
+	<script type="text/javascript" src="static/libs/angular-spring-data-rest.js"/></script>
+	    
+    <!-- Libs Angular de forms -->
+    <script type="text/javascript" src="static/libs/tv4.min.js"/></script>
+	<script type="text/javascript" src="static/libs/ObjectPath.js"/></script>
+	<script type="text/javascript" src="static/libs/schema-form.min.js"/></script>
+    <script type="text/javascript" src="static/libs/bootstrap-decorator.min.js"/></script>
+    
+    <script type="text/javascript" src="static/libs/jquery.highlight.js"></script>
+	<script type="text/javascript" src="static/libs/vkbeautify.js"></script>
+    
+    
+    <!-- LoDash -->
+    <script type="text/javascript" src="static/libs/lodash.core.js"/></script>
+     
+    <!-- Servicios -->
+    <script src="static/services/table-services.js"></script>
+    <script src="static/services/data-services.js"></script>
+    <script src="static/services/rest-url-helper.js"/></script>
+    
+    <!-- Schemas  -->
+    <script type="text/javascript" src="static/schemas/network-json-schemas.js"/></script>
+    <script type="text/javascript" src="static/schemas/transformation-json-schemas.js"/></script>
+    <script type="text/javascript" src="static/schemas/validation-json-schemas.js"/></script>
+   
+    <!-- Modulos -->
+    <script src="modules/app/app.js"></script>
+    <script src="modules/diagnose/diagnose.js"></script>
+    <script src="modules/network/network.js"></script>
+    <script src="modules/origin/origin.js"></script>
+    <script src="modules/validators/validators.js"></script>
+    <script src="modules/validator/validator.js"></script>
+    <script src="modules/transformers/transformers.js"></script>
+    <script src="modules/transformer/transformer.js"></script>
+    
+    
 
-<body>	
-	<script type="text/javascript">
-	
-	 // cron editor copy to 
-	 function copyCronToEditNetwork() {
-		var value = $('#input_edit_network_cron_helper').attr('value');  
- 	    $('#input_edit_network_cron').attr('value', value);   	 
- 	 }
-	 
-	 $(function() { 
-		 
-		
-		  	 // cron editor create network 
-		  	 $('#create_network_cron_selector').cron( { initial: "0 0 1 1 *",
-													    onChange: function() {
-		  			$('[name=scheduleCronExpression]', '#form_create_network').attr('value', '* ' + $(this).cron('value'));},
-		  												customValues: {
-											                "Domingos 9AM" : "0 9 * * 0",
-											            }			
-		  	 
-		  	 });
-		  
-		  	 // cron editor edit network 
-		  	 $('#edit_network_cron_selector').cron( { onChange: function() {
-		  			$('#input_edit_network_cron_helper').attr('value', '* ' + $(this).cron('value'));}
-		  	 });
-		  
-				
-		  	 // dialogo de borrar red, setup inicial
-			 $("#dialog_delete_network").dialog( { autoOpen:false, 
-				                                   resizable: false,
-				      							   height:200,
-				      							   modal: true
-				      							});
-		  	 
-			 // dialogo de borrar red, setup inicial
-			 $("#dialog_delete_network_from_index").dialog( { autoOpen:false, 
-				                                   resizable: false,
-				      							   height:200,
-				      							   modal: true
-				      							});
-			 
-			 
-			 // dialogo de borrar red, setup inicial
-			 $("#dialog_delete_network_from_xoai_index").dialog( { autoOpen:false, 
-				                                   resizable: false,
-				      							   height:200,
-				      							   modal: true
-				      							});
-		          
-			 $("#dialog_network_snapshots").dialog( { autoOpen:false, 
-                   resizable: false,
-				   height:400,
-				   width:800,
-				   modal: true,
-				   
-				   buttons: {
-				       
-					   "Recargar": function() {
-							 loadSnapshotList(actual_network_link);
-					    },
-					   
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-		     
-			 $("#dialog_snapshot_log").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:400,
-				   width:800,
-				   modal: true,
-				   
-				   buttons: {
-				       
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 
-			 $("#dialog_create_network").dialog( { autoOpen:false, 
-                   resizable: false,
-				   height:500,
-				   width:500,
-				   modal: true,
-				   
-				   buttons: {
-				        "Crear nueva red": function() {
-				          createNetwork(refreshNetworks);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-			 });
-			 
-			 $("#dialog_edit_network").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:500,
-				   width:500,
-				   modal: true,
-				   
-				   buttons: {
-				        "Actualizar información": function() {
-				          updateNetwork(actual_network_link, refreshNetworks);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cancelar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 
-			 $("#dialog_edit_origins").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:300,
-				   width:680,
-				   modal: true,
-				   
-				   buttons: {
-					   "Agregar un nuevo orígen": function() {
-					      openCreateOrigin();
-					    },
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 $("#dialog_edit_origin").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:250,
-				   width:700,
-				   modal: true,
-				   
-				   buttons: {
-				        "Actualizar información": function() {
-				          updateOrigin(actual_origin_link, refreshOrigins);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cancelar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 $("#dialog_create_origin").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:250,
-				   width:700,
-				   modal: true,
-				   
-				   buttons: {
-				        "Agregar origen a la red": function() {
-				          createOrigin(actual_network_link, refreshOrigins);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-		     
-			 
-			 $("#dialog_edit_sets").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:300,
-				   width:680,
-				   modal: true,
-				   
-				   buttons: {
-					   "Agregar un nuevo set": function() {
-					      openCreateSet();
-					    },
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 $("#dialog_create_set").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:200,
-				   width:400,
-				   modal: true,
-				   
-				   buttons: {
-				        "Agregar set al origen": function() {
-				          createSet(actual_origin_link, refreshSets);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cerrar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-			 
-			 $("#dialog_edit_set").dialog( { autoOpen:false, 
-                 resizable: false,
-				   height:200,
-				   width:400,
-				   modal: true,
-				   
-				   buttons: {
-				        "Actualizar información": function() {
-				          updateSet(actual_set_link, refreshSets);
-				          $( this ).dialog( "close" );
-				        },
-				        "Cancelar": function() {
-				          $( this ).dialog( "close" );
-				        }
-				      }
-				});
-		     
-			 
-			 // Oculta el panel Jolokia
-			 $('#jolokia').toggle();
-			 
-		     // carga de redes disponibles
-			 loadNetworkList('./rest/network?size=1000&sort=id');
-	  });
-	</script>
-
-	<div id="title">
-		<span>Administración backend</span>
-		<a  href="./logout">logout</a>
-	</div> 
-	
-	<span onclick="$('#jolokia').toggle();toogleJolokia();"><b>Mostrar/Ocultar Status</b><br/></span>
-	<div id="jolokia" class="slidingDiv"> 
-			<div id="memory" style="width:600;"></div>
-			<div id="harvesters" style="width:600;"></div>
-	</div>
-	
-	
-	<div id="buttons">
-		<button id="button_create_network" onclick="openCreateNetwork();">Crear una red</button>
-	</div>
-	
-	<div>
-		<table>
-		    <tr>
-		      <th>ID</th>
-		      <th>Nombre</th>
-		      <th>ACRON</th>
-		      <th>Publicada</th>
-		    </tr>
-  		<tbody id="networks"></tbody>
-		</table>
-		<br/>
-		<div id="help">
-			<p><strong>LKGS:</strong> ver último snapshot válido (LGK) </p>
-			<p><strong>Snapshots:</strong> ver todos los snapshots </p>
-			<p><strong>Orígenes:</strong> editar los orígenes OAI de la red </p>
-			<p><strong>Cosechar:</strong> lanzar un proceso de cosecha </p>
-			<p><strong>Index LKG:</strong> indexar el último snapshot válido (LGK) </p>
-			<p><strong>Limpiar:</strong> eliminar información de snapshots antiguos </p>
-			<p><strong>Editar:</strong> editar detalles y programar cosechas </p>
-			<p><strong>Borrar :</strong> eliminar la red del sistema (!!) </p>
-		    <p><strong>Borrar IDX:</strong> eliminar la red del índice Solr / Vufind (!!) </p>				
-		</div>
-	
-	</div>
-	<br/>
-	
-	
-	<div id="dialog_network_snapshots" title="Listado de cosechas de la red nacional">
-		
-		<table>
-		    <tr>
-		      <th>ID</th>
-		      <th>Estado</th>
-		      <th>Borrado</th>
-		      <th>#Registros</th>
-		      <th>#Válidos</th>
-		      <th>#Transformados</th>
-		      <th>Iniciado</th>
-		      <th>Terminado</th>
-		      
-		
-		      
-		    </tr>
-  			<tbody id="snapshots"></tbody>
-		</table>
-	</div>
-	
-	<div id="dialog_snapshot_log" title="Bitácora de cosecha">
-		
-		<table>
-		    <tr>
-		      <th width="150">FechaHora</th>
-		      <th width="600">Mensaje</th>
-		    </tr>
-  			<tbody id="snapshot_log"></tbody>
-		</table>
-	</div>
-	
-	<div id="dialog_delete_network" title="¿Desea borrar la red nacional?">
-  		<p>
-  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y sus snapshots. 
-  			Todos los datos de la red nacional, incluidas sus cosechas serás borradas. ¿Está seguro?
-  		</p>
-  	</div>
-  	
-  	<div id="dialog_delete_network_from_index" title="¿Desea borrar la red nacional del índice vufind?">
-  		<p>
-  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 
-  			Todos los datos de la red nacional serán removidos del índice ¿Está seguro?
-  		</p>
-  	</div>
-  	
-  	<div id="dialog_delete_network_from_xoai_index" title="¿Desea borrar la red nacional del índice XOAI?">
-  		<p>
-  			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-  			Este proceso puede tomar varios minutos de acuerdo al tamaño de la red y el estado de solr. 
-  			Todos los datos de la red nacional serán removidos del índice ¿Está seguro?
-  		</p>
-  	</div>
-  	
-  	<div id="dialog_edit_network" title="Editar datos de la red nacional">	
-			<form id="form_edit_network">
-				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-				Institución:<input type="text" name="institutionName" maxlength="255" size="20"/><br/>
-				
-				Acrónimo (ID de 4 dígitos):<input type="text" name="acronym" maxlength="4" size="4"/><br/> 
-				Publicada: <input type="checkbox" name="published" value="1"/><br/>
-				
-				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
-				Transformador:<input type="text" name="transformerName" maxlength="50" size="30"/><br/> 
-				
-				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
-				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
-				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
-				Exportar XOAI: <input type="checkbox" name="runXOAI" value="1"/><br/>
-				Ejecutar estadísticas: <input type="checkbox" name="runStats" value="1"/><br/>
-				
-				<br/>
-				Cosecha programada: <input id="input_edit_network_cron" type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
-			</form>
-			
-			<hr></hr>
-			<p><b>Asistente de expresiones cron</b></p>
-			<!--  p>Cree un expresión nueva y haga click en copiar para sobreescribir la expresión actual</p-->
-			<p>Cree un expresión nueva y haga use copiar/pegar para  sobreescribir la expresión actual</p>
-			
-			<input id="input_edit_network_cron_helper"></input>
-			<!--  button onclick="copyCronToEditNetwork()">copiar</button-->
-			<br/>
-			<div id='edit_network_cron_selector'></div>
-			
-	 </div>
-	 
-	 <div id="dialog_create_network" title="Crear una nueva red nacional">	
-			<form id="form_create_network">
-				Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-				Institución:<input type="text" name="institutionName" maxlength="255" size="20"/><br/>
-				Acrónimo (ID de 4 dígitos):<input type="text" name="acronym" maxlength="4" size="4"/><br/> 
-				Publicada: <input type="checkbox" name="published" value="1"/><br/>
-				
-				Validador:<input type="text" name="validatorName" maxlength="50" size="30"/><br/> 
-				Transformador:<input type="text" name="transformerName" maxlength="50" size="30"/><br/> 
-				
-				Ejecutar validación: <input type="checkbox" name="runValidation" value="1"/><br/>
-				Ejecutar transformación: <input type="checkbox" name="runTransformation" value="1"/><br/>
-				Ejecutar indexación: <input type="checkbox" name="runIndexing" value="1"/><br/>
-				Exportar XOAI: <input type="checkbox" name="runXOAI" value="1"/><br/>
-				Ejecutar estadísticas: <input type="checkbox" name="runStats" value="1"/><br/>
-				
-				<br/>
-				Cosecha programada: <input type="text" name="scheduleCronExpression" maxlength="255" size="20"/><br/>
-			</form>
-			<div id='create_network_cron_selector'></div>
-	 </div>		
-	 
-	<div id="dialog_edit_origins" title="Editar orígenes OAI de cosecha de la red">
-			<table>
-		    <tr>
-		      <th width="150">Nombre</th>
-		      <th width="600">URL</th>
-		    </tr>
-  			<tbody id="network_origins"></tbody>
-		</table>
-	</div> 
-	
-	<div id="dialog_edit_origin" title="Editar un orígen OAI">
-		<form id="form_edit_origin">
-			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-			Metadata prefix:<input type="text" name="metadataPrefix" maxlength="255" size="30"/><br/> 
-			URI:<input type="text" name="uri" maxlength="150" size="100"/><br/> 
-		</form>
-	</div>
-	
-	<div id="dialog_create_origin" title="Agregar un orígen OAI">
-		<form id="form_create_origin">
-			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-			Metadata prefix:<input type="text" name="metadataPrefix" maxlength="255" size="30"/><br/> 
-			URI:<input type="text" name="uri" maxlength="150" size="100"/><br/> 
-		</form>
-	</div>		
-	
-	<div id="dialog_edit_sets" title="Editar sets OAI de cosecha de la red">
-			<table>
-		    <tr>
-		      <th width="150">Nombre</th>
-		      <th width="600">Spec</th>
-		    </tr>
-  			<tbody id="origin_sets"></tbody>
-		</table>
-	</div> 
-	
-	<div id="dialog_create_set" title="Agregar un set OAI">
-		<form id="form_create_set">
-			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-			Spec:<input type="text" name="spec" maxlength="255" size="30"/><br/> 
-		</form>
-	</div>	
-	
-	<div id="dialog_edit_set" title="Agregar un set OAI">
-		<form id="form_edit_set">
-			Nombre:<input type="text" name="name" maxlength="255" size="20"/><br/>
-			Spec:<input type="text" name="spec" maxlength="255" size="30"/><br/> 
-		</form>
-	</div>	
-	
 </body>
 </html>

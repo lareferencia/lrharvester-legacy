@@ -18,13 +18,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lareferencia.backend</groupId>
 	<artifactId>backend</artifactId>
-	<version>2.0</version>
+	<version>3.0</version>
 	<packaging>jar</packaging>
-	<name>LAReferencia Backend</name>
+	<name>LAReferencia Harvester</name>
 	<url></url>
-	<description>
-		<![CDATA[LaReferencia backend]]>
-	</description>
+	<description>LaReferencia Harvester</description>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<spring.framework.version>4.2.6.RELEASE</spring.framework.version>

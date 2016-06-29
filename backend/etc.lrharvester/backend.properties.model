@@ -6,7 +6,7 @@ db.user=backend
 db.passwd=backend
 db.port=5432
 
-# indexer config
+# vufind indexer config
 vufind.indexer.path=/etc/lrharvester/lr.indexer.xsl
 vufind.solr.url=http://localhost:8080/solr/biblio
 
@@ -18,8 +18,6 @@ xoai.solr.url=http://localhost:8080/solr/oai
 vstats.solr.server=http://localhost:8983/solr/
 vstats.solr.core=vstats
 
-# validator config
-validator.path=/etc/lrharvester/lr.validator/
 
 # admin config
 admin.user=admin
@@ -32,19 +30,10 @@ harvester.retry.seconds = 3
 harvester.retry.factor = 2
 
 #repository name append config (Experimental)
-#si el nombre del repositorio no se encuentra en la metadata intenta detectarlo usando una expresi�n regular
+#si el nombre del repositorio no se encuentra en la metadata intenta detectarlo usando una expresiï¿½n regular
 #se recomienda en false para redes nacionales
 reponame.detection=false 
 reponame.pattern=[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})
 
-#par�metros agregar reponame e instname a la metadata desde la definici�n de cada repositorio (solo para redes nacionales en true)
-reponame.append=true
-reponame.replaceExisting=false
-reponame.field=dc:source
-reponame.prefix=reponame:
 
-instname.append=true
-instname.replaceExisting=false
-instname.field=dc:source
-instname.prefix=instname:
 

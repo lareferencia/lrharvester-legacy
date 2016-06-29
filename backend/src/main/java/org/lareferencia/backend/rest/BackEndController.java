@@ -149,10 +149,10 @@ public class BackEndController {
 	public String home(Locale locale, Model model) {
 		return "home";
 	}
-
-	@RequestMapping(value = "/home3", method = RequestMethod.GET)
+	
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home2(Locale locale, Model model) {
-		return "home3";
+		return "home";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -166,31 +166,11 @@ public class BackEndController {
 		return "login";
 	}
 
-	/*****************************************************
-	 * Edición de validadores y transformadores
-	 *****************************************************/
-	@RequestMapping(value = "/validators", method = RequestMethod.GET)
-	public String validators() {
-		return "validators";
-	}
 
 	/******************************************************
 	 * Diagnose Services
 	 ******************************************************/
 
-	@RequestMapping(value = "/public/listOriginsBySnapshotID/{id}", method = RequestMethod.GET)
-	@ResponseBody
-	public List<OAIOrigin> listOriginsBySnapshotID(@PathVariable Long id)
-			throws Exception {
-
-		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
-
-		if (snapshot == null) // TODO: Implementar Exc
-			throw new Exception("No se encontró snapshot con id: " + id);
-
-		return (List<OAIOrigin>) snapshot.getNetwork().getOrigins();
-
-	}
 
 	@ResponseBody
 	@RequestMapping(value = "/public/getRecordMetadataByID/{id}", method = RequestMethod.GET)

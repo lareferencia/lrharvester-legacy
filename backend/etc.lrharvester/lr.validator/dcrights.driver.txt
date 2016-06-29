@@ -1,4 +1,0 @@
-info:eu-repo/semantics/openAccess
-info:eu-repo/semantics/embargoedAccess
-info:eu-repo/semantics/closedAccess
-info:eu-repo/semantics/restrictedAccess
