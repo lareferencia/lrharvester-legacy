@@ -171,7 +171,7 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
     	 * openRuleOccrStats: Apertura de modal de detalle de occr 
     	 *     
     	 **/	
-    	 $scope.openRuleOccrStats = function (snapshotID, rule) {
+    	 $scope.openRuleOccrStats = function (snapshotID, rule, fq) {
     	
     		    var modalInstance = $uibModal.open({
     		      animation: true,
@@ -181,6 +181,7 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
     		      resolve: {
     		  	      snapshotID: function() { return snapshotID; }, 
     		  	      rule: function() { return rule; }, 
+    		  	      fq: function() { return fq; } 
     		      }
   
     	    });
@@ -226,7 +227,7 @@ mod_diagnose.controller('RecordDiagnoseCtrl', ['$scope', '$uibModalInstance', 'R
 
 }]); /* RecordDiagnoseCtrl */
 
-mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv', 'snapshotID', 'rule', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID, rule) {
+mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv', 'snapshotID', 'rule', 'fq', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID, rule, fq) {
 	
 	// Accciones de los botones del modal
 	$scope.ok = function () { $uibModalInstance.close(null); };
@@ -236,7 +237,7 @@ mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'Re
 	$scope.ruleID = rule.ruleID;
 	$scope.rule = rule;
 	
-	DataSrv.callRestWS( RestURLHelper.diagnoseRuleOccrURLByID($scope.snapshotID, $scope.ruleID), function(response) {	
+	DataSrv.callRestWS( RestURLHelper.diagnoseRuleOccrURLByID($scope.snapshotID, $scope.ruleID, fq), function(response) {	
 		
 			$scope.validOccrTable = TableSrv.createNgTableFromArray(response.data.validRuleOccrs);
 			$scope.invalidOccrTable = TableSrv.createNgTableFromArray(response.data.invalidRuleOccrs);

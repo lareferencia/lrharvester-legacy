@@ -89,8 +89,16 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 	  
 	 
 	  
-	  this.diagnoseRuleOccrURLByID = function (snapshotID, ruleID) {  
-		  return ' /public/diagnoseValidationOcurrences/' + snapshotID + '/' + ruleID;	
+	  this.diagnoseRuleOccrURLByID = function (snapshotID, ruleID, fqList) {  
+		  
+		  var fqEncodedList = [];
+		  
+		  for(var i=0;i<fqList.length;i++) {
+			  fqEncodedList.push( encodeURI(fqList[i]) );
+		  }
+		  
+		  
+		  return ' /public/diagnoseValidationOcurrences/' + snapshotID + '/' + ruleID + '/[' + fqEncodedList.join(',') + ']';	
 	  };
 	  
 	  

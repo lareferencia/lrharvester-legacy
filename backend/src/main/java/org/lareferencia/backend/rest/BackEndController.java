@@ -329,9 +329,9 @@ public class BackEndController {
 	}
 	
 	
-	@RequestMapping(value = "/public/diagnoseValidationOcurrences/{snapshotID}/{ruleID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/public/diagnoseValidationOcurrences/{snapshotID}/{ruleID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
-	public ValidationOccurrencesResult diagnoseValidationOcurrences(@PathVariable Long snapshotID, @PathVariable Long ruleID)
+	public ValidationOccurrencesResult diagnoseValidationOcurrences(@PathVariable Long snapshotID, @PathVariable Long ruleID, @PathVariable List<String> fq)
 			throws Exception {
 
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
@@ -343,6 +343,11 @@ public class BackEndController {
 	
 		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
 		facetQuery.setRows(0);
+		
+		for (String fqTerm : fq) {
+			fqTerm = fqTerm.replace("@@", ":");
+			facetQuery.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+		}
 		
 		FacetOptions facetOptions = new FacetOptions();
 		facetOptions.setFacetMinCount(1);

@@ -65,6 +65,7 @@ angular.module('origin', [
     	
     	if ( $scope.is_new) { // si es un origin nuevo 
     		$scope.origin_model = {};
+    		$scope.origin_model.form_sets = [];
     		
         	DataSrv.get( RestURLHelper.networkURLByID($scope.network_id), function(network) { 
         		$scope.network_model = network;
@@ -111,17 +112,20 @@ angular.module('origin', [
     	    				// Para cada set en el formulario 
 		  		    		angular.forEach(sets, function(set, i) {
 		  		    			
-		  		    			// Se crea un objeto set en la bd
-		  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
-		  		    				
-		  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
-		  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
-		  		    						// Callback agregado exitosa del set al origin
-		      	    						function() { /* success callback */ }, 
-		      	    		    			onSaveError
-		      	    		    	); /* fin de addToCollection*/
-		  		    				
-		  		    			}, onSaveError);
+		  		    			if (set.name != null && set.spec != null) {
+		  		    			
+			  		    			// Se crea un objeto set en la bd
+			  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
+			  		    				
+			  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
+			  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
+			  		    						// Callback agregado exitosa del set al origin
+			      	    						function() { /* success callback */ }, 
+			      	    		    			onSaveError
+			      	    		    	); /* fin de addToCollection*/
+			  		    				
+			  		    			}, onSaveError);
+		  		    			}
 		  		    		}); 
 					
     	    				

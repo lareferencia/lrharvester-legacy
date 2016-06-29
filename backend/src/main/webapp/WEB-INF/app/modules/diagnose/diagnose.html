@@ -157,7 +157,7 @@
 											<td style="width: 40px;" data-title="'% Cumplimiento'" sortable="'validCount'">{{(rule.validCount / recordsSize)*100 | number:2 }}%</td>
 											<td style="width: 40px;" data-title="'#R. Válidos'" sortable="'validCount'">{{rule.validCount}}</td>
 											<td>
-												<button class="btn btn-primary btn-xs" ng-click="openRuleOccrStats(snapshotID, rule)">
+												<button class="btn btn-primary btn-xs" ng-click="openRuleOccrStats(snapshotID, rule, currentFilterQueryList())">
 													Detalles
 												</button>			
 											</td>
