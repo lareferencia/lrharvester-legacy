@@ -11,20 +11,22 @@
 	<div class="row" >
 	
 		<div class="col-md-12">
+		
+			<button class="btn btn-danger btn-sm" ui-sref="start()">
+				<span> Retornar al listado de redes </span>
+			</button>
 	
 			<!-- TABSET -->
 			<uib-tabset active="activeJustified" justified="true"> 
 			
 				<uib-tab index="0" heading="Datos del repositorio">
-						<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model" ng-submit="onSubmit(networkEditForm)"></form>
+						<form name="networkEditForm" sf-schema="network_schema" sf-form="network_form" sf-model="network_model"></form>
 						<form name="networkValidationEditForm" sf-schema="network_validation_schema" sf-form="network_validation_form" sf-model="network_validation_model"></form>
-						<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm)"></form>
+						<form name="networkPropertiesEditForm" sf-schema="np_schema" sf-form="np_form" sf-model="np_model" ng-submit="onSubmit(networkEditForm, networkValidationEditForm, networkPropertiesEditForm)"></form>
 						<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
 						<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
 						<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
-			 			<button class="btn btn-danger btn-sm" ui-sref="start()">
-							<span> Salir sin guardar </span>
-				   		</button>
+			 			
 				</uib-tab> 
 			
 				<uib-tab index="1" heading="Orígenes de cosecha" ng-if="!is_new">
@@ -55,12 +57,12 @@
 							</table>
 						</div>
 				   </div>
-				   <button class="btn btn-danger btn-sm" ui-sref="start()">
-						<span> Salir sin guardar </span>
-				   </button>
 				</uib-tab>
 				
 			</uib-tabset>
+			<button class="btn btn-danger btn-sm" ui-sref="start()">
+				<span> Retornar al listado de redes </span>
+			</button>
 		</div>
 	</div>
 </div>

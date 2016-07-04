@@ -84,8 +84,7 @@ angular.module('network', [
     					$scope.network_validation_model['validator'] = RestURLHelper.urlFromEntity( validators.getItems()[0] );
     			}
     						
-    		});
-    		
+    		});		
     	});
     	
 
@@ -136,6 +135,14 @@ angular.module('network', [
 	    $scope.save_error = true;
 	    $scope.save_error_message = error.status + ": " + error.statusText;
 	};
+	
+	/**
+	 * No hubo problemas de almacenamiento en la bd
+	 */
+	function onSaveSuccess() { 
+	 	$scope.saved = true;
+	    $scope.save_error = false;
+	};
     	
 	 /** 
 	 * deleteOrigin: Borrado de un origin
@@ -163,17 +170,19 @@ angular.module('network', [
     	 * Handler del submit del formulario
     	 ***/
     	// cuando se presion grabar
-    	$scope.onSubmit = function(form) {
+    	$scope.onSubmit = function(networkEditForm, networkValidationEditForm, networkPropertiesEditForm) {
     	  
     	  	// Se valida el formulario
     	    $scope.$broadcast('schemaFormValidate');
+    	    
+    	    $scope.saved = false;
+    	    $scope.save_error = false;
+    	    $scope.is_form_valid = true;
 
     	    // Si resulta válido
-    	    if (form.$valid) {
+    	    if (networkEditForm.$valid && networkValidationEditForm.$valid &&  networkPropertiesEditForm.$valid ) {
     	    	
-    		 	$scope.saved = false;
-        	    $scope.save_error = false;
-    	    	
+    		 	
     	    	// Si es una red nueva y no fue grabada todavía
     	    	if ( $scope.is_new ) { 
     	    		
@@ -182,8 +191,9 @@ angular.module('network', [
     	    				
     	    			function(network) { // callback de creación exitosa de red
     	    			
-    	    			 	$scope.saved = true;
+    	    				onSaveSuccess();
     	    				$scope.is_new = false; // ya no es una red nueva
+	    			
     	    				$scope.network_model = network; // se actualiza el modelo del form con el objeto actualizable
     	    				
     	    		 		///// Asociación del validador y el transformador
@@ -240,7 +250,7 @@ angular.module('network', [
     		      $scope.network_model.update(
     		    	function() { // success callback
     		    		
-    				 	$scope.saved = true;
+    				 	onSaveSuccess();
     		    		
     		    		///// Asociación del validador y el transformador
         				$scope.network_model.associate('validator', $scope.network_validation_model['validator'], function() {
