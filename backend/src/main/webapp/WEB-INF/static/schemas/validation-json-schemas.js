@@ -62,7 +62,8 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 		          title: "Cuantificador",
 		          type: "string",
 		          enum: [ "ZERO_ONLY", "ONE_ONLY", "ZERO_OR_MORE", "ONE_OR_MORE", "ALL"],
-		          description: "¿Cuántas ocurrencias deben cumplir la regla?"
+		          description: "¿Cuántas ocurrencias deben cumplir la regla?",
+		          "default" : "ONE_OR_MORE"
 		      }
 		    }
 	};
@@ -93,7 +94,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 		name: "Validación por valores controlados (large)",
 		className: "org.lareferencia.backend.validation.validator.LargeControlledValueFieldContentValidatorRule",
 		form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias con estos valores resulta válido</p>"}, 
-		        "fieldname", "controlledValuesCSV", { type: "submit", title: "Guardar regla" }],
+		        "fieldname", { "key": "controlledValuesCSV", "type": "textarea" }, { type: "submit", title: "Guardar regla" }],
 		schema: {
 			    type: "object",
 			    properties: {
@@ -128,7 +129,7 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 			name : "Validación por expresiones regulares",
 			className: "org.lareferencia.backend.validation.validator.RegexFieldContentValidatorRule",
 			form: [ { "type": "help", "helpvalue": "Esta regla es válida si el campo contiene occurrencias de longitud entre un mínimo y un máximo</p>"}, 
-			        "fieldname", "regexString", { type: "submit", title: "Guardar regla" }],
+			        "fieldname",  { "key": "regexString", "type": "textarea" }, { type: "submit", title: "Guardar regla" }],
 			schema: {
 				type: "object",
 				    properties: {
@@ -140,7 +141,24 @@ angular.module('validation.json.schemas', []).service('JSONValidationSchemas',  
 					      }
 				    }
 				} /* fin schema */
-	}
+	},
+	
+	{ 
+		name : "Validación por expresiones de contenido",
+		className: "org.lareferencia.backend.validation.validator.FieldExpressionValidatorRule",
+		form: [ { "type": "help", "helpvalue": "Esta regla es válida si el contenido de los campos enunciados cumple la expresión booleana"}, 
+		        { "key": "expression", "type": "textarea" }, { type: "submit", title: "Guardar regla" }],
+		schema: {
+			type: "object",
+			    properties: {
+			    	expression : {
+				          type: "string",
+				          title: "Expresión", 
+				          description: "Es importante dejar espacios entre los paréntesis. \n Ej: ( dc:type=='info:eu-repo/semantics/article' AND dc:rights=%'info.+' ) OR ( dc:type=='info:eu-repo/semantics/bachelorThesis' )" 
+				      }
+			    }
+			} /* fin schema */
+}
 ]; //***** fin de _RULES ******/// 
 	
 

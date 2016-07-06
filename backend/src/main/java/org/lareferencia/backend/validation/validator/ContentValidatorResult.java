@@ -20,15 +20,15 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class FieldContentValidatorResult {
+public class ContentValidatorResult {
 
 	private boolean valid;
 	private String receivedValue;
 
-	public FieldContentValidatorResult() {
+	public ContentValidatorResult() {
 	}
 
-	public FieldContentValidatorResult(boolean valid, String receivedValue) {
+	public ContentValidatorResult(boolean valid, String receivedValue) {
 		super();
 		this.valid = valid;
 		this.receivedValue = receivedValue;

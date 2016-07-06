@@ -30,7 +30,7 @@ import lombok.ToString;
 
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
+import org.lareferencia.backend.validation.validator.ContentValidatorResult;
 import org.w3c.dom.Node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

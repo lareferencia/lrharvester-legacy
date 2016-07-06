@@ -37,9 +37,9 @@ public class ControlledValueFieldContentValidatorRule extends
 	}
 
 	@Override
-	public FieldContentValidatorResult validate(String content) {
+	public ContentValidatorResult validate(String content) {
 
-		FieldContentValidatorResult result = new FieldContentValidatorResult();
+		ContentValidatorResult result = new ContentValidatorResult();
 
 		if (content == null) {
 			result.setReceivedValue("NULL");

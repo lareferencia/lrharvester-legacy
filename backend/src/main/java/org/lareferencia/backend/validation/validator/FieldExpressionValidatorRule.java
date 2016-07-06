@@ -37,88 +37,35 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @Getter
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-public abstract class AbstractValidatorFieldContentRule extends
-		AbstractValidatorRule implements IValidatorFieldContentRule {
+public class FieldExpressionValidatorRule extends
+		AbstractValidatorRule {
 
-	@JsonProperty("fieldname")
-	private String fieldname;
+	@JsonProperty("expression")
+	private String expression;
+	
+	FieldExpressionEvaluator evaluator;
 
-	public AbstractValidatorFieldContentRule() {
+	public FieldExpressionValidatorRule() {
+		evaluator = new FieldExpressionEvaluator(this.quantifier);
 	}
 
 	/**
-	 * Esta función abstracta será implementada en las derivadas y determina la
-	 * valides de un string
 	 * 
-	 * @param metadata
-	 * @return
 	 */
 	public ValidatorRuleResult validate(OAIRecord record) {
 
 		OAIRecordMetadata metadata = record.getMetadata();
 
 		ValidatorRuleResult result = new ValidatorRuleResult();
-
-		List<ContentValidatorResult> results = new ArrayList<ContentValidatorResult>();
-		int validOccurrencesCount = 0;
-
-		List<String> occurrences = metadata.getFieldOcurrences(fieldname);
-
-		for (int i = 0; i < occurrences.size(); i++) {
-
-			// Se valida cada ocurrencia y se obtiene el resultado
-			ContentValidatorResult occurrenceResult = this
-					.validate(occurrences.get(i));
-
-			// Se agrega a la lista de ocurrencias
-			results.add(occurrenceResult);
-
-			// Se suman las ocurrencias válidas
-			validOccurrencesCount += occurrenceResult.isValid() ? 1 : 0;
-		}
-
-		boolean isRuleValid;
-
-		switch (quantifier) {
-
-		case ONE_ONLY:
-			isRuleValid = validOccurrencesCount == 1;
-			break;
-
-		case ONE_OR_MORE:
-			isRuleValid = validOccurrencesCount >= 1;
-			break;
-
-		case ZERO_OR_MORE:
-			isRuleValid = validOccurrencesCount >= 0;
-			break;
-
-		case ZERO_ONLY:
-			isRuleValid = validOccurrencesCount == 0;
-			break;
-
-		case ALL:
-			isRuleValid = validOccurrencesCount == occurrences.size();
-			break;
-
-		default:
-			isRuleValid = false;
-			break;
-		}
+		
+		boolean isRuleValid = evaluator.evaluate(expression, metadata);
 
 		result.setRule(this);
-		result.setResults(results);
+		result.setResults( evaluator.getEvaluationResults() );
 		result.setValid(isRuleValid);
 		return result;
 
 	}
 
-	/**
-	 * Esta función abstracta será implementada en las derivadas y determina la
-	 * valides de un string
-	 * 
-	 * @param String
-	 * @return
-	 */
-	public abstract ContentValidatorResult validate(String string);
+	
 }

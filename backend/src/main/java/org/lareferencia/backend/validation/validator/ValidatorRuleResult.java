@@ -26,14 +26,14 @@ public class ValidatorRuleResult {
 	private Boolean valid;
 	private IValidatorRule rule;
 
-	private List<FieldContentValidatorResult> results;
+	private List<ContentValidatorResult> results;
 
 	public ValidatorRuleResult() {
-		results = new ArrayList<FieldContentValidatorResult>();
+		results = new ArrayList<ContentValidatorResult>();
 	}
 
 	public ValidatorRuleResult(IValidatorRule rule, Boolean isValid,
-			List<FieldContentValidatorResult> contentResults) {
+			List<ContentValidatorResult> contentResults) {
 		this.valid = isValid;
 		this.results = contentResults;
 		this.rule = rule;
@@ -44,7 +44,7 @@ public class ValidatorRuleResult {
 
 		String toStr = "\t" + this.rule + "\n";
 
-		for (FieldContentValidatorResult cr : results) {
+		for (ContentValidatorResult cr : results) {
 			toStr += "\t" + cr.toString() + ":\n";
 		}
 

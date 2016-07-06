@@ -39,7 +39,7 @@ public class ValidatorResult {
 
 		for (ValidatorRuleResult entry : rulesResults) {
 
-			for (FieldContentValidatorResult result : entry.getResults()) {
+			for (ContentValidatorResult result : entry.getResults()) {
 				// Solo detalla los valores inválidos o válidos, según el caso
 				sb.append(entry.getRule().getRuleId() + ":"
 						+ result.getReceivedValue());

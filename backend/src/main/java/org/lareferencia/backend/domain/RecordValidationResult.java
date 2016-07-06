@@ -13,7 +13,7 @@ import org.hibernate.mapping.Array;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.util.OAIMetadataXSLTransformer;
 import org.lareferencia.backend.util.RepositoryNameHelper;
-import org.lareferencia.backend.validation.validator.FieldContentValidatorResult;
+import org.lareferencia.backend.validation.validator.ContentValidatorResult;
 import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.lareferencia.backend.validation.validator.ValidatorRuleResult;
 import org.springframework.data.annotation.Id;
@@ -116,7 +116,7 @@ public class RecordValidationResult {
 			List<String> invalidOccr = new ArrayList<String>();
 			List<String> validOccr = new ArrayList<String>();
 
-			for (FieldContentValidatorResult contentResult : ruleResult.getResults()) {
+			for (ContentValidatorResult contentResult : ruleResult.getResults()) {
 
 				if (contentResult.isValid())
 					validOccr.add(contentResult.getReceivedValue());

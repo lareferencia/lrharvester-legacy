@@ -34,15 +34,15 @@ public class ContentLengthFieldContentValidatorRule extends
 	}
 
 	@Override
-	public FieldContentValidatorResult validate(String content) {
+	public ContentValidatorResult validate(String content) {
 
-		FieldContentValidatorResult result = new FieldContentValidatorResult();
+		ContentValidatorResult result = new ContentValidatorResult();
 
 		if (content == null) {
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(new Integer(content.length()).toString());
+			result.setReceivedValue("size: " + new Integer(content.length()).toString());
 			result.setValid(content.length() >= minLength
 					&& content.length() <= maxLength);
 		}
