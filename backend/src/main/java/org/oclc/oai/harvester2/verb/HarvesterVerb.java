@@ -281,7 +281,7 @@ public abstract class HarvesterVerb {
 			in = con.getInputStream();
 		}
 
-		InputStreamReader isr = new InputStreamReader(in);
+		InputStreamReader isr = new InputStreamReader(in, "UTF8");
 		InvalidXMLCharFilterReader reader = new InvalidXMLCharFilterReader(isr);
 		InputSource data = new InputSource(reader);
 
