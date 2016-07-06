@@ -9,7 +9,7 @@ angular.module('network.json.schemas', []).service('JSONNetworkSchemas',  functi
 	      institutionName: { type: "string", minLength: 2, title: "Institución", description: "Nombre Institución", required: true},
 	      acronym : { type: "string", minLength: 2, maxLength: 10, title: "Acrónimo", description: "Acrónimo identificatorio del repositorio (debe ser único)", required: true },
 	      published :{ type: "boolean", title: "¿Es pública?", description: "La red es visible al público" },
-	      scheduleCronExpression : { type: "string", title: "Cron de cosecha", description: "La red es visible al público", "default": "* 0 0 30 2 *" }
+	      scheduleCronExpression : { type: "string", title: "Cron de cosecha", description: "La red es visible al público", "default": "* 0 0 29 2 *" }
 	    }
 	 };
 	
