@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.lareferencia.backend.tasks;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -339,6 +340,8 @@ public class SnapshotWorker implements ISnapshotWorker,
 		switch (event.getStatus()) {
 
 		case OK:
+			
+			List<RecordValidationResult> validationResults = new ArrayList<RecordValidationResult>();
 
 			// Agrega los records al snapshot actual
 			for (OAIRecordMetadata metadata : event.getRecords()) {
@@ -384,12 +387,10 @@ public class SnapshotWorker implements ISnapshotWorker,
 
 						// // SE ALMACENA EL REGISTRO
 						recordRepository.save(record);
-						recordRepository.flush();
+						//recordRepository.flush(); // TODO: Optimizar esto. es realmente necesario?
 
 						// Se almacenan las estadísticas de cosecha
-						RecordValidationResult rvresult = new RecordValidationResult(
-								record, validationResult);
-						validationResultRepository.save(rvresult);
+						validationResults.add( new RecordValidationResult( record, validationResult ) );						
 
 					}
 
@@ -404,6 +405,8 @@ public class SnapshotWorker implements ISnapshotWorker,
 				}
 			}
 
+			validationResultRepository.save(validationResults);
+		
 			recordRepository.flush();
 			snapshot.setEndTime(new Date());
 
