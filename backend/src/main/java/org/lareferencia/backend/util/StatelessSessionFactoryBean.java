@@ -47,15 +47,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * {@link EntityManagerFactoryUtils}, {@link ResourceHolderSynchronization} and
  * {@link LocalEntityManagerFactoryBean}.
  */
-public class StatelessSessionFactoryBean implements
-		FactoryBean<StatelessSession> {
+public class StatelessSessionFactoryBean implements FactoryBean<StatelessSession> {
 
 	private final HibernateEntityManagerFactory entityManagerFactory;
 	private SessionFactory sessionFactory;
 
 	@Autowired
-	public StatelessSessionFactoryBean(
-			HibernateEntityManagerFactory entityManagerFactory) {
+	public StatelessSessionFactoryBean(HibernateEntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;
 		this.sessionFactory = entityManagerFactory.getSessionFactory();
 	}
@@ -71,10 +69,8 @@ public class StatelessSessionFactoryBean implements
 
 	@Override
 	public StatelessSession getObject() throws Exception {
-		StatelessSessionInterceptor statelessSessionInterceptor = new StatelessSessionInterceptor(
-				entityManagerFactory, sessionFactory);
-		return ProxyFactory.getProxy(StatelessSession.class,
-				statelessSessionInterceptor);
+		StatelessSessionInterceptor statelessSessionInterceptor = new StatelessSessionInterceptor(entityManagerFactory, sessionFactory);
+		return ProxyFactory.getProxy(StatelessSession.class, statelessSessionInterceptor);
 	}
 
 	@Override
@@ -87,15 +83,12 @@ public class StatelessSessionFactoryBean implements
 		return true;
 	}
 
-	private static class StatelessSessionInterceptor implements
-			MethodInterceptor {
+	private static class StatelessSessionInterceptor implements MethodInterceptor {
 
 		private final EntityManagerFactory entityManagerFactory;
 		private final SessionFactory sessionFactory;
 
-		public StatelessSessionInterceptor(
-				EntityManagerFactory entityManagerFactory,
-				SessionFactory sessionFactory) {
+		public StatelessSessionInterceptor(EntityManagerFactory entityManagerFactory, SessionFactory sessionFactory) {
 			this.entityManagerFactory = entityManagerFactory;
 			this.sessionFactory = sessionFactory;
 		}
@@ -103,17 +96,14 @@ public class StatelessSessionFactoryBean implements
 		@Override
 		public Object invoke(MethodInvocation invocation) throws Throwable {
 			StatelessSession statelessSession = getCurrentSession();
-			return invokeMethod(invocation.getMethod(), statelessSession,
-					invocation.getArguments());
+			return invokeMethod(invocation.getMethod(), statelessSession, invocation.getArguments());
 		}
 
 		private StatelessSession getCurrentSession() {
 			if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-				throw new IllegalStateException(
-						"There should be an active transaction for the current thread.");
+				throw new IllegalStateException("There should be an active transaction for the current thread.");
 			}
-			StatelessSession statelessSession = (StatelessSession) TransactionSynchronizationManager
-					.getResource(sessionFactory);
+			StatelessSession statelessSession = (StatelessSession) TransactionSynchronizationManager.getResource(sessionFactory);
 			if (statelessSession == null) {
 				statelessSession = openNewStatelessSession();
 				bindWithTransaction(statelessSession);
@@ -132,32 +122,23 @@ public class StatelessSessionFactoryBean implements
 		 * connection.
 		 */
 		private Connection obtainPhysicalConnection() {
-			EntityManager entityManager = EntityManagerFactoryUtils
-					.getTransactionalEntityManager(entityManagerFactory);
-			SessionImplementor sessionImplementor = (SessionImplementor) entityManager
-					.getDelegate();
-			return sessionImplementor.getTransactionCoordinator()
-					.getJdbcCoordinator().getLogicalConnection()
-					.getConnection();
+			EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory);
+			SessionImplementor sessionImplementor = (SessionImplementor) entityManager.getDelegate();
+			return sessionImplementor.getTransactionCoordinator().getJdbcCoordinator().getLogicalConnection().getConnection();
 		}
 
 		private void bindWithTransaction(StatelessSession statelessSession) {
-			TransactionSynchronizationManager
-					.registerSynchronization(new StatelessSessionSynchronization(
-							sessionFactory, statelessSession));
-			TransactionSynchronizationManager.bindResource(sessionFactory,
-					statelessSession);
+			TransactionSynchronizationManager.registerSynchronization(new StatelessSessionSynchronization(sessionFactory, statelessSession));
+			TransactionSynchronizationManager.bindResource(sessionFactory, statelessSession);
 		}
 	}
 
-	private static class StatelessSessionSynchronization extends
-			TransactionSynchronizationAdapter {
+	private static class StatelessSessionSynchronization extends TransactionSynchronizationAdapter {
 
 		private final SessionFactory sessionFactory;
 		private final StatelessSession statelessSession;
 
-		public StatelessSessionSynchronization(SessionFactory sessionFactory,
-				StatelessSession statelessSession) {
+		public StatelessSessionSynchronization(SessionFactory sessionFactory, StatelessSession statelessSession) {
 			this.sessionFactory = sessionFactory;
 			this.statelessSession = statelessSession;
 		}

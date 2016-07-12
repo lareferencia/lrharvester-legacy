@@ -23,8 +23,7 @@ public class PropertyA extends AbstractProperty {
 
 	@Override
 	public String toString() {
-		return "PropertyA [expresion=" + expresion + ", valores=" + valores
-				+ ", name=" + name + "]";
+		return "PropertyA [expresion=" + expresion + ", valores=" + valores + ", name=" + name + "]";
 	}
 
 }

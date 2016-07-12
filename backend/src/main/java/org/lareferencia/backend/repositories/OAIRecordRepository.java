@@ -43,11 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RepositoryRestResource(path = "record", collectionResourceRel = "record")
 public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 
-	Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot,
-			RecordStatus status, Pageable pageable);
+	Page<OAIRecord> findBySnapshotAndStatus(NetworkSnapshot snapshot, RecordStatus status, Pageable pageable);
 
-	Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot,
-			boolean wasTransformed, Pageable pageable);
+	Page<OAIRecord> findBySnapshotAndWasTransformed(NetworkSnapshot snapshot, boolean wasTransformed, Pageable pageable);
 
 	Page<OAIRecord> findBySnapshot(NetworkSnapshot snapshot, Pageable pageable);
 
@@ -56,12 +54,10 @@ public interface OAIRecordRepository extends JpaRepository<OAIRecord, Long> {
 
 	/* Paginación optimizada */
 	@Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 order by rc.id asc")
-	Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID,
-			RecordStatus status, Pageable pageable);
+	Page<OAIRecord> findBySnapshotIdAndStatus(Long snapshotID, RecordStatus status, Pageable pageable);
 
 	@Query("select rc from OAIRecord rc where rc.snapshot.id = ?1 and rc.status=?2 and rc.id > ?3 order by rc.id asc")
-	Page<OAIRecord> findBySnapshotIdAndStatusOptimized(Long snapshotID,
-			RecordStatus status, Long lastRecordID, Pageable pageable);
+	Page<OAIRecord> findBySnapshotIdAndStatusOptimized(Long snapshotID, RecordStatus status, Long lastRecordID, Pageable pageable);
 
 	/*   */
 

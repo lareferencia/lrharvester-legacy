@@ -52,12 +52,9 @@ public class RuleSerializer {
 		for (IValidatorRule rule : validatorPrototypes) {
 			// TODO: Ojo que esto puede ser problematico si algun de las reglas
 			// no es derivada de AbstractValidationRule
-			aValidationRuleSubTypes
-					.add((Class<? extends AbstractValidatorRule>) rule
-							.getClass());
+			aValidationRuleSubTypes.add((Class<? extends AbstractValidatorRule>) rule.getClass());
 		}
-		mapper.registerSubtypes(aValidationRuleSubTypes
-				.toArray(new Class<?>[aValidationRuleSubTypes.size()]));
+		mapper.registerSubtypes(aValidationRuleSubTypes.toArray(new Class<?>[aValidationRuleSubTypes.size()]));
 
 		// Set con las clases de los prototipos declarados
 		Set<Class<? extends AbstractTransformerRule>> aTransformerRuleSubTypes = new HashSet<Class<? extends AbstractTransformerRule>>();
@@ -65,12 +62,9 @@ public class RuleSerializer {
 		for (ITransformerRule rule : transformerPrototypes) {
 			// TODO: Ojo que esto puede ser problematico si algun de las reglas
 			// no es derivada de AbstractRule
-			aTransformerRuleSubTypes
-					.add((Class<? extends AbstractTransformerRule>) rule
-							.getClass());
+			aTransformerRuleSubTypes.add((Class<? extends AbstractTransformerRule>) rule.getClass());
 		}
-		mapper.registerSubtypes(aTransformerRuleSubTypes
-				.toArray(new Class<?>[aTransformerRuleSubTypes.size()]));
+		mapper.registerSubtypes(aTransformerRuleSubTypes.toArray(new Class<?>[aTransformerRuleSubTypes.size()]));
 
 	}
 
@@ -130,8 +124,7 @@ public class RuleSerializer {
 		return null;
 	}
 
-	public ITransformerRule deserializeTransformerFromJsonString(
-			String jsonString) {
+	public ITransformerRule deserializeTransformerFromJsonString(String jsonString) {
 
 		try {
 			return mapper.readValue(jsonString, AbstractTransformerRule.class);

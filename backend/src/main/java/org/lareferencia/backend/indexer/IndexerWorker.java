@@ -59,22 +59,18 @@ public class IndexerWorker implements Runnable {
 			if (network == null)
 				System.out.println("Indexer Worker - El id de red es inválido");
 
-			System.out.println("Borrando red del índice - " + network.getName()
-					+ "  - IndexerWorker");
+			System.out.println("Borrando red del índice - " + network.getName() + "  - IndexerWorker");
 
 			if (!deleteNetworkWithoutReindexing) { // Si no es un borrado sin
 													// reindexación
 
 				// Se recupera el LGK Snapshot
-				snapshot = networkSnapshotRepository
-						.findLastGoodKnowByNetworkID(networkID);
+				snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(networkID);
 
 				if (snapshot == null)
-					System.out
-							.println("Indexer Worker - La Red no tiene LGK Snapshot es válido");
+					System.out.println("Indexer Worker - La Red no tiene LGK Snapshot es válido");
 
-				System.out.println("Indexando LGK Snapshot RED: - "
-						+ network.getName() + "  - IndexerWorker");
+				System.out.println("Indexando LGK Snapshot RED: - " + network.getName() + "  - IndexerWorker");
 			}
 
 			indexer.index(network, snapshot, deleteNetworkWithoutReindexing);

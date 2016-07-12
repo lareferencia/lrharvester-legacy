@@ -60,10 +60,8 @@ public class IndexerTests {
 			+ "<dc:format>application/pdf</dc:format>"
 			+ "<dc:identifier>http://eprints.uanl.mx/504/1/instrumentacion_ctrl.pdf</dc:identifier>"
 			+ "<dc:identifier>Elorza R., Jorge Rafael y Sandoval González, José y Martínez G, Martín T. (2002) Instrumentación y control de un secador de fruta tipo túnel. Ciencia UANL, 5 (4). ISSN 1405-9177</dc:identifier>"
-			+ "<dc:type>info:eu-repo/semantics/article</dc:type>"
-			+ "<dc:type>Artículo</dc:type>"
-			+ "<dc:type>info:eu-repo/semantics/acceptedVersion</dc:type>"
-			+ "</oai_dc:dc>" + "</metadata>";
+			+ "<dc:type>info:eu-repo/semantics/article</dc:type>" + "<dc:type>Artículo</dc:type>" + "<dc:type>info:eu-repo/semantics/acceptedVersion</dc:type>" + "</oai_dc:dc>"
+			+ "</metadata>";
 
 	/*
 	 * @Autowired IValidator validator;
@@ -77,22 +75,18 @@ public class IndexerTests {
 
 	static String xmlUnescpaedString = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">"
 			+ "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">"
-			+ "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>"
-			+ "</oai_dc:dc>" + "</metadata>";
+			+ "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Discovering M&amp;D Services</dc:title>" + "</oai_dc:dc>"
+			+ "</metadata>";
 
 	@Test()
-	public void testXMLEscapingAtTransforming()
-			throws ParserConfigurationException, SAXException, IOException,
-			TransformerException, OAIRecordMetadataParseException {
+	public void testXMLEscapingAtTransforming() throws ParserConfigurationException, SAXException, IOException, TransformerException, OAIRecordMetadataParseException {
 
 		assertEquals(xmlUnescpaedString.contains("&amp;"), true);
 
-		OAIRecordMetadata metadata = new OAIRecordMetadata("test",
-				xmlUnescpaedString);
+		OAIRecordMetadata metadata = new OAIRecordMetadata("test", xmlUnescpaedString);
 		assertEquals(metadata.toString().contains("&amp;"), true);
 
-		OAIMetadataXSLTransformer metadataTransformer = new OAIMetadataXSLTransformer(
-				"/etc/lrharvester/xoai.indexer.xsl");
+		OAIMetadataXSLTransformer metadataTransformer = new OAIMetadataXSLTransformer("/etc/lrharvester/xoai.indexer.xsl");
 
 		String transformedMD = metadataTransformer.transform(metadata);
 

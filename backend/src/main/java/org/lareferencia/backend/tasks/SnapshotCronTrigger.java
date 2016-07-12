@@ -37,15 +37,12 @@ public class SnapshotCronTrigger implements Trigger {
 
 		this.network = network;
 
-		if (network.getScheduleCronExpression() != null
-				&& !network.getScheduleCronExpression().trim().equals("")) {
+		if (network.getScheduleCronExpression() != null && !network.getScheduleCronExpression().trim().equals("")) {
 			try {
-				cronTrigger = new CronTrigger(
-						network.getScheduleCronExpression());
+				cronTrigger = new CronTrigger(network.getScheduleCronExpression());
 			} catch (java.lang.IllegalArgumentException e) {
 				// TODO: handle exception
-				System.out.println("Problemas con el trigger de:"
-						+ network.getName());
+				System.out.println("Problemas con el trigger de:" + network.getName());
 			}
 		}
 
@@ -57,8 +54,7 @@ public class SnapshotCronTrigger implements Trigger {
 		Date execTime = null;
 
 		if (cronTrigger != null) {
-			System.out.println(network.getName() + " next exec: "
-					+ cronTrigger.nextExecutionTime(ctx));
+			System.out.println(network.getName() + " next exec: " + cronTrigger.nextExecutionTime(ctx));
 			execTime = cronTrigger.nextExecutionTime(ctx);
 		}
 		// Si retorna null entonce

@@ -44,8 +44,7 @@ public class ListSets extends HarvesterVerb {
 	 * @exception IOException
 	 *                an I/O error occurred
 	 */
-	public ListSets(String baseURL) throws IOException,
-			ParserConfigurationException, SAXException, TransformerException {
+	public ListSets(String baseURL) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		super(getRequestURL(baseURL));
 	}
 
@@ -56,8 +55,7 @@ public class ListSets extends HarvesterVerb {
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException
 	 */
-	public String getResumptionToken() throws TransformerException,
-			NoSuchFieldException {
+	public String getResumptionToken() throws TransformerException, NoSuchFieldException {
 		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
 			return getSingleString("/oai20:OAI-PMH/oai20:ListSets/oai20:resumptionToken");
 		} else if (SCHEMA_LOCATION_V1_1_LIST_SETS.equals(getSchemaLocation())) {

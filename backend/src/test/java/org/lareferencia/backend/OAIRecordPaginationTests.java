@@ -47,16 +47,14 @@ public class OAIRecordPaginationTests {
 
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(9L);
 
-		Page<OAIRecord> page = oaiRecordRepository.findBySnapshotId(
-				snapshot.getId(), new PageRequest(0, PAGE_SIZE));
+		Page<OAIRecord> page = oaiRecordRepository.findBySnapshotId(snapshot.getId(), new PageRequest(0, PAGE_SIZE));
 		int totalPages = page.getTotalPages();
 
 		List<Long> allIdsNotOptimized = new ArrayList<Long>();
 		List<Long> allIdsOptimized = new ArrayList<Long>();
 
 		for (int i = 0; i < totalPages; i++) {
-			page = oaiRecordRepository.findBySnapshotId(snapshot.getId(),
-					new PageRequest(i, PAGE_SIZE));
+			page = oaiRecordRepository.findBySnapshotId(snapshot.getId(), new PageRequest(i, PAGE_SIZE));
 
 			for (OAIRecord record : page.getContent())
 				allIdsNotOptimized.add(record.getId());

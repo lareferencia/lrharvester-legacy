@@ -32,8 +32,7 @@ public class ValidatorRuleResult {
 		results = new ArrayList<ContentValidatorResult>();
 	}
 
-	public ValidatorRuleResult(IValidatorRule rule, Boolean isValid,
-			List<ContentValidatorResult> contentResults) {
+	public ValidatorRuleResult(IValidatorRule rule, Boolean isValid, List<ContentValidatorResult> contentResults) {
 		this.valid = isValid;
 		this.results = contentResults;
 		this.rule = rule;

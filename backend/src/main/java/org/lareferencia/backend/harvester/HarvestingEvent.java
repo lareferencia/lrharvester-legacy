@@ -36,8 +36,7 @@ public class HarvestingEvent {
 
 	}
 
-	public HarvestingEvent(List<OAIRecordMetadata> records,
-			HarvestingEventStatus status, String resumptionToken) {
+	public HarvestingEvent(List<OAIRecordMetadata> records, HarvestingEventStatus status, String resumptionToken) {
 		this.records = records;
 		this.status = status;
 		this.resumptionToken = resumptionToken;

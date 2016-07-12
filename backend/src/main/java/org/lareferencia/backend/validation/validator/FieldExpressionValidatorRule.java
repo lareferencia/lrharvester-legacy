@@ -37,12 +37,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @Getter
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-public class FieldExpressionValidatorRule extends
-		AbstractValidatorRule {
+public class FieldExpressionValidatorRule extends AbstractValidatorRule {
 
 	@JsonProperty("expression")
 	private String expression;
-	
+
 	FieldExpressionEvaluator evaluator;
 
 	public FieldExpressionValidatorRule() {
@@ -57,15 +56,14 @@ public class FieldExpressionValidatorRule extends
 		OAIRecordMetadata metadata = record.getMetadata();
 
 		ValidatorRuleResult result = new ValidatorRuleResult();
-		
+
 		boolean isRuleValid = evaluator.evaluate(expression, metadata);
 
 		result.setRule(this);
-		result.setResults( evaluator.getEvaluationResults() );
+		result.setResults(evaluator.getEvaluationResults());
 		result.setValid(isRuleValid);
 		return result;
 
 	}
 
-	
 }

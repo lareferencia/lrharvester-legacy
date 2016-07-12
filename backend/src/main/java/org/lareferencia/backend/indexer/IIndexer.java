@@ -18,8 +18,7 @@ import org.lareferencia.backend.domain.NetworkSnapshot;
 
 public interface IIndexer {
 
-	public boolean index(Network network, NetworkSnapshot snapshot,
-			boolean deleteOnly);
+	public boolean index(Network network, NetworkSnapshot snapshot, boolean deleteOnly);
 
 	/**
 	 * Esta interfaz era la original del proyecto, al cambiar los requerimientos

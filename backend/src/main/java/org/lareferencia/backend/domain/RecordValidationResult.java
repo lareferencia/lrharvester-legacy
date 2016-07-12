@@ -22,13 +22,11 @@ import org.springframework.data.solr.core.mapping.Dynamic;
 @Getter
 @Setter
 public class RecordValidationResult {
-	
-	
-	public static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name"};
+
+	public static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name" };
 	public static final String SNAPSHOT_ID_FIELD = "snapshot_id";
 	public static final String INVALID_RULE_SUFFIX = "_rule_invalid_occrs";
 	public static final String VALID_RULE_SUFFIX = "_rule_valid_occrs";
-
 
 	@Id
 	@Field
@@ -37,7 +35,7 @@ public class RecordValidationResult {
 	@Field("oai_identifier")
 	private String identifier;
 
-	@Field( SNAPSHOT_ID_FIELD )
+	@Field(SNAPSHOT_ID_FIELD)
 	private Long snapshotID;
 
 	@Field("origin")
@@ -75,17 +73,13 @@ public class RecordValidationResult {
 	@Field("invalid_rules")
 	private List<String> invalidRulesID;
 
-	
-	
-	
 	/**
 	 * Se construye un resultado de validación persistible en solr a partir del
 	 * objeto resultado devuelto por el validador para un registro
 	 * 
 	 * @param result
 	 */
-	public RecordValidationResult(OAIRecord record,
-			ValidatorResult validationResult) {
+	public RecordValidationResult(OAIRecord record, ValidatorResult validationResult) {
 
 		validOccurrencesByRuleID = new HashMap<String, List<String>>();
 		invalidOccurrencesByRuleID = new HashMap<String, List<String>>();
@@ -98,18 +92,15 @@ public class RecordValidationResult {
 		setSpec = record.getMetadata().getSetSpec();
 		isTransformed = record.isWasTransformed();
 
-		repositoryName = RepositoryNameHelper.extractNameFromMetadata(
-				record.getMetadata(), "dc:source", "reponame:");
-		institutionName = RepositoryNameHelper.extractNameFromMetadata(
-				record.getMetadata(), "dc:source", "instname:");
+		repositoryName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "reponame:");
+		institutionName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "instname:");
 
 		snapshotID = record.getSnapshot().getId();
 		networkAcronym = record.getSnapshot().getNetwork().getAcronym();
 
 		isValid = validationResult.isValid();
 
-		for (ValidatorRuleResult ruleResult : validationResult
-				.getRulesResults()) {
+		for (ValidatorRuleResult ruleResult : validationResult.getRulesResults()) {
 
 			String ruleID = ruleResult.getRule().getRuleId().toString();
 
@@ -134,9 +125,6 @@ public class RecordValidationResult {
 			invalidOccurrencesByRuleID.put(ruleID, invalidOccr);
 		}
 	}
-
-
-
 
 	public RecordValidationResult() {
 		super();

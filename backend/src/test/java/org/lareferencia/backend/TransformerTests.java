@@ -80,8 +80,7 @@ public class TransformerTests {
 			+ "<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">Articulo</dc:type>"
 			+ "<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>"
 			+ "<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/openAccess</dc:rights>"
-			+ "<dc:format xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">p. 115-134</dc:format>"
-			+ "</oai_dc:dc>" + "</metadata>";
+			+ "<dc:format xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">p. 115-134</dc:format>" + "</oai_dc:dc>" + "</metadata>";
 
 	static String invalidRecord = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">"
 			+ "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">"
@@ -115,8 +114,7 @@ public class TransformerTests {
 			// +
 			"<dc:date xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">2005</dc:date>"
 			+ "<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/openAccess</dc:rights>"
-			+ "<dc:format xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">text/plain</dc:format>"
-			+ "</oai_dc:dc>" + "</metadata>";
+			+ "<dc:format xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">text/plain</dc:format>" + "</oai_dc:dc>" + "</metadata>";
 
 	static String brRecord = "<metadata xmlns=\"http://www.openarchives.org/OAI/2.0/\">"
 			+ "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">"
@@ -129,11 +127,9 @@ public class TransformerTests {
 			+ "<dc:description xmlns:dc=\"http://purl.org/dc/elements/1.1/\">LAIA, Marconi Martins de. Pol??ticas de governo eletr??nico em Estados</dc:description>"
 			+ "<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\">doctoralThesis</dc:type>"
 			+ "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Pol??ticas de governo eletr??nico em estados da federa????o brasileira: uma contribui????o para a an??lise segundo a perspectiva neoinstitucional</dc:title>"
-			+ "<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\">por</dc:language>"
-			+ "<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\">openAccess</dc:rights>"
+			+ "<dc:language xmlns:dc=\"http://purl.org/dc/elements/1.1/\">por</dc:language>" + "<dc:rights xmlns:dc=\"http://purl.org/dc/elements/1.1/\">openAccess</dc:rights>"
 			+ "<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\">Governo eletr??nico</dc:subject>"
-			+ "<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\">e-Government</dc:subject>"
-			+ "</oai_dc:dc>" + "</metadata>";
+			+ "<dc:subject xmlns:dc=\"http://purl.org/dc/elements/1.1/\">e-Government</dc:subject>" + "</oai_dc:dc>" + "</metadata>";
 
 	/**
 	 * @Autowired IValidator validator;

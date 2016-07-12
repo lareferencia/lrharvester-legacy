@@ -25,16 +25,14 @@ public class OAIMetadataXSLTransformer {
 	// / Ahora se usa saxon para ofrecer xslt2.0
 	private static TransformerFactory xformFactory = new net.sf.saxon.TransformerFactoryImpl();
 
-	private static Transformer buildXSLTTransformer(String xlstString)
-			throws TransformerConfigurationException {
+	private static Transformer buildXSLTTransformer(String xlstString) throws TransformerConfigurationException {
 
 		StringReader reader = new StringReader(xlstString);
 		StreamSource stylesource = new StreamSource(reader);
 		return xformFactory.newTransformer(stylesource);
 	}
 
-	private static Transformer buildXSLTTransformer(File stylefile)
-			throws TransformerConfigurationException {
+	private static Transformer buildXSLTTransformer(File stylefile) throws TransformerConfigurationException {
 
 		StreamSource stylesource = new StreamSource(stylefile);
 		return xformFactory.newTransformer(stylesource);
@@ -45,8 +43,7 @@ public class OAIMetadataXSLTransformer {
 
 	private Transformer trf = null;
 
-	public OAIMetadataXSLTransformer(String stylesheetFileName)
-			throws TransformerConfigurationException {
+	public OAIMetadataXSLTransformer(String stylesheetFileName) throws TransformerConfigurationException {
 		File stylesheetFile = new File(stylesheetFileName);
 
 		trf = buildXSLTTransformer(stylesheetFile);
@@ -59,8 +56,7 @@ public class OAIMetadataXSLTransformer {
 		trf.setParameter(name, value);
 	}
 
-	public String transform(OAIRecordMetadata metadata)
-			throws TransformerException {
+	public String transform(OAIRecordMetadata metadata) throws TransformerException {
 
 		StringWriter stringWritter = new StringWriter();
 		Result output = new StreamResult(stringWritter);

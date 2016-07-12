@@ -102,8 +102,7 @@ public class OAIRecord extends AbstractEntity {
 	public String getFingerprint() {
 
 		if (this.snapshot != null)
-			return this.snapshot.getNetwork().getAcronym() + "_"
-					+ DigestUtils.md5Hex(identifier);
+			return this.snapshot.getNetwork().getAcronym() + "_" + DigestUtils.md5Hex(identifier);
 		else
 			return "00" + "_" + DigestUtils.md5Hex(identifier);
 	}

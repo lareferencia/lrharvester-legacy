@@ -31,8 +31,7 @@ public interface ITransformer {
 	 * @return Retorna true si hizo alguna transformación
 	 * @throws Exception
 	 */
-	public boolean transform(OAIRecord record, ValidatorResult validationResult)
-			throws Exception;
+	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception;
 	// TODO: Implementar Exceptions específicas
 
 }

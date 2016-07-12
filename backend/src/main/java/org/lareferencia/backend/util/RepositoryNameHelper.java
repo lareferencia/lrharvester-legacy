@@ -15,8 +15,7 @@ public class RepositoryNameHelper {
 		try {
 			pattern = Pattern.compile(DOMAIN_NAME_PATTERN_STR);
 		} catch (PatternSyntaxException e) {
-			System.err.println("RepositoryNameHelper::Error en el patron: "
-					+ DOMAIN_NAME_PATTERN_STR);
+			System.err.println("RepositoryNameHelper::Error en el patron: " + DOMAIN_NAME_PATTERN_STR);
 
 		}
 
@@ -27,8 +26,7 @@ public class RepositoryNameHelper {
 		try {
 			pattern = Pattern.compile(patternString);
 		} catch (PatternSyntaxException e) {
-			System.err.println("RepositoryNameHelper::Error en el patron: "
-					+ patternString);
+			System.err.println("RepositoryNameHelper::Error en el patron: " + patternString);
 
 		}
 	}
@@ -50,8 +48,7 @@ public class RepositoryNameHelper {
 		return result;
 	}
 
-	static public String extractNameFromMetadata(OAIRecordMetadata metadata,
-			String fieldname, String prefix) {
+	static public String extractNameFromMetadata(OAIRecordMetadata metadata, String fieldname, String prefix) {
 
 		String name = UNKNOWN;
 
@@ -66,9 +63,7 @@ public class RepositoryNameHelper {
 		return name;
 	}
 
-	public void appendNameToMetadata(OAIRecordMetadata metadata,
-			String fieldname, String prefix, String value,
-			Boolean replaceExisting) {
+	public void appendNameToMetadata(OAIRecordMetadata metadata, String fieldname, String prefix, String value, Boolean replaceExisting) {
 
 		Node existingNode = null;
 

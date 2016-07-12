@@ -121,13 +121,12 @@ public class BackEndController {
 
 	@Autowired
 	private OAIRecordRepository recordRepository;
-	
+
 	@Autowired
 	private RecordValidationResultRepository validationResultRepository;
-	
+
 	@Autowired
 	private SolrTemplate solrTemplate;
-	
 
 	@Autowired
 	private ValidationManager validationManager;
@@ -149,7 +148,7 @@ public class BackEndController {
 	public String root(Locale locale, Model model) {
 		return "home";
 	}
-	
+
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
 		return "home";
@@ -166,11 +165,9 @@ public class BackEndController {
 		return "login";
 	}
 
-
 	/******************************************************
 	 * Diagnose Services
 	 ******************************************************/
-
 
 	@ResponseBody
 	@RequestMapping(value = "/public/getRecordMetadataByID/{id}", method = RequestMethod.GET)
@@ -184,111 +181,105 @@ public class BackEndController {
 			return "Registro inexistente - Posiblemente el diagnóstico está desactualizado";
 
 	}
-	
-	
-	
+
 	@RequestMapping(value = "/public/diagnose/{snapshotID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
 	public DiagnoseResult diagnoseListRules(@PathVariable Long snapshotID, @PathVariable List<String> fq) throws Exception {
-		
-	
+
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
-	
+
 		if (snapshot == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró snapshot con id: " + snapshotID);
-		
+
 		Network network = snapshot.getNetwork();
 		Validator validator = network.getValidator();
-		
+
 		DiagnoseResult result = new DiagnoseResult();
-				
-		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
-	
-		
+
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
+
 		for (String fqTerm : fq) {
 			fqTerm = fqTerm.replace("@@", ":");
-			facetQuery.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+			facetQuery.addFilterQuery(new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)));
 		}
-		
+
 		facetQuery.setRows(0);
-		
+
 		FacetOptions facetOptions = new FacetOptions();
 		facetOptions.setFacetMinCount(1);
 		facetOptions.setFacetLimit(1000);
-		
-		for (String facetName: RecordValidationResult.FACET_FIELDS)  
+
+		for (String facetName : RecordValidationResult.FACET_FIELDS)
 			facetOptions.addFacetOnField(facetName);
-		
+
 		facetQuery.setFacetOptions(facetOptions);
-		
+
 		// Consulta SOLR
 		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
 
-		
-		Map<String,Integer> validRuleMap = obtainFacetMap( facetResult.getFacetResultPage("valid_rules").getContent() );
-		Map<String,Integer> invalidRuleMap = obtainFacetMap( facetResult.getFacetResultPage("invalid_rules").getContent() );
-		Map<String,Integer> validRecordMap = obtainFacetMap( facetResult.getFacetResultPage("record_is_valid").getContent() );
-		Map<String,Integer> transformedRecordMap = obtainFacetMap( facetResult.getFacetResultPage("record_is_transformed").getContent() );
-		
+		Map<String, Integer> validRuleMap = obtainFacetMap(facetResult.getFacetResultPage("valid_rules").getContent());
+		Map<String, Integer> invalidRuleMap = obtainFacetMap(facetResult.getFacetResultPage("invalid_rules").getContent());
+		Map<String, Integer> validRecordMap = obtainFacetMap(facetResult.getFacetResultPage("record_is_valid").getContent());
+		Map<String, Integer> transformedRecordMap = obtainFacetMap(facetResult.getFacetResultPage("record_is_transformed").getContent());
+
 		result.size = (int) facetResult.getTotalElements();
 		result.validSize = 0;
 		result.transformedSize = 0;
-		
-		if ( validRecordMap.get("true") != null )
+
+		if (validRecordMap.get("true") != null)
 			result.validSize = validRecordMap.get("true");
-		
-		if ( transformedRecordMap.get("true") != null )
+
+		if (transformedRecordMap.get("true") != null)
 			result.transformedSize = transformedRecordMap.get("true");
 
-		for (String facetName: RecordValidationResult.FACET_FIELDS)  
-			result.facets.put(facetName,  facetResult.getFacetResultPage(facetName).getContent() );
-		
-		
-		for (ValidatorRule rule : validator.getRules() ) {
-			
+		for (String facetName : RecordValidationResult.FACET_FIELDS)
+			result.facets.put(facetName, facetResult.getFacetResultPage(facetName).getContent());
+
+		for (ValidatorRule rule : validator.getRules()) {
+
 			String ruleID = rule.getId().toString();
-			
+
 			DiagnoseRuleResult ruleResult = new DiagnoseRuleResult();
-			
-			result.ruleNameByID.put(ruleID, rule.getName() );
-			
+
+			result.ruleNameByID.put(ruleID, rule.getName());
+
 			ruleResult.ruleID = rule.getId();
 			ruleResult.validCount = validRuleMap.get(ruleID);
 			ruleResult.invalidCount = invalidRuleMap.get(ruleID);
 			ruleResult.name = rule.getName();
 			ruleResult.description = rule.getDescription();
-			ruleResult.mandatory = rule.getMandatory(); 
-			
+			ruleResult.mandatory = rule.getMandatory();
+
 			result.rules.add(ruleResult);
-			
-		}		
-		
+
+		}
+
 		return result;
 	}
-	
+
 	/**
 	 * Retorna un Map entre los ids y los nombres de las reglas
 	 */
-	private Map<String,Integer> obtainFacetMap( List<FacetFieldEntry> facetList ) {
-		
-		Map<String,Integer> facetMap = new HashMap<String, Integer>();
-		
-		for ( FacetFieldEntry entry : facetList ) 
-			facetMap.put( entry.getValue(), (int) entry.getValueCount() );
-		
+	private Map<String, Integer> obtainFacetMap(List<FacetFieldEntry> facetList) {
+
+		Map<String, Integer> facetMap = new HashMap<String, Integer>();
+
+		for (FacetFieldEntry entry : facetList)
+			facetMap.put(entry.getValue(), (int) entry.getValueCount());
+
 		return facetMap;
 	}
-	
+
 	@Getter
 	@Setter
-	class DiagnoseResult {	
-		
+	class DiagnoseResult {
+
 		public DiagnoseResult() {
 			rules = new ArrayList<DiagnoseRuleResult>();
 			facets = new HashMap<String, List<FacetFieldEntry>>();
-			ruleNameByID = new HashMap<String, String>(); 
+			ruleNameByID = new HashMap<String, String>();
 		}
-		
+
 		Integer size;
 		Integer transformedSize;
 		Integer validSize;;
@@ -296,7 +287,7 @@ public class BackEndController {
 		Map<String, String> ruleNameByID;
 		Map<String, List<FacetFieldEntry>> facets;
 	}
-	
+
 	@Getter
 	@Setter
 	class DiagnoseRuleResult {
@@ -307,57 +298,54 @@ public class BackEndController {
 		Integer validCount;
 		Integer invalidCount;
 	}
-	
-	
+
 	@RequestMapping(value = "/public/diagnoseValidationOcurrences/{snapshotID}/{ruleID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
-	public ValidationOccurrencesResult diagnoseValidationOcurrences(@PathVariable Long snapshotID, @PathVariable Long ruleID, @PathVariable List<String> fq)
-			throws Exception {
+	public ValidationOccurrencesResult diagnoseValidationOcurrences(@PathVariable Long snapshotID, @PathVariable Long ruleID, @PathVariable List<String> fq) throws Exception {
 
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(snapshotID);
-	
+
 		if (snapshot == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró snapshot con id: " + snapshotID);
-	
+
 		ValidationOccurrencesResult result = new ValidationOccurrencesResult();
-	
-		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
+
+		FacetQuery facetQuery = new SimpleFacetQuery(new SimpleStringCriteria(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID));
 		facetQuery.setRows(0);
-		
+
 		for (String fqTerm : fq) {
 			fqTerm = fqTerm.replace("@@", ":");
-			facetQuery.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+			facetQuery.addFilterQuery(new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)));
 		}
-		
+
 		FacetOptions facetOptions = new FacetOptions();
 		facetOptions.setFacetMinCount(1);
 		facetOptions.setFacetLimit(1000);
-		
-		facetOptions.addFacetOnField(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX );
+
+		facetOptions.addFacetOnField(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX);
 		facetOptions.addFacetOnField(ruleID.toString() + RecordValidationResult.VALID_RULE_SUFFIX);
-		
-		facetOptions.setFacetSort( FacetSort.COUNT );
-	
+
+		facetOptions.setFacetSort(FacetSort.COUNT);
+
 		facetQuery.setFacetOptions(facetOptions);
-		
+
 		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
-		
+
 		List<OccurrenceCount> validRuleOccurrence = new ArrayList<OccurrenceCount>();
 		List<OccurrenceCount> invalidRuleOccurrence = new ArrayList<OccurrenceCount>();
 
-		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.VALID_RULE_SUFFIX).getContent() ) 
-			validRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
-		
-		for ( FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX ).getContent() ) 
-			invalidRuleOccurrence.add( new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()) );
-		
-		
-		result.setValidRuleOccrs( validRuleOccurrence );
-		result.setInvalidRuleOccrs( invalidRuleOccurrence );
-	
+		for (FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.VALID_RULE_SUFFIX).getContent())
+			validRuleOccurrence.add(new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()));
+
+		for (FacetFieldEntry occr : facetResult.getFacetResultPage(ruleID.toString() + RecordValidationResult.INVALID_RULE_SUFFIX).getContent())
+			invalidRuleOccurrence.add(new OccurrenceCount(occr.getValue(), (int) occr.getValueCount()));
+
+		result.setValidRuleOccrs(validRuleOccurrence);
+		result.setInvalidRuleOccrs(invalidRuleOccurrence);
+
 		return result;
 	}
-	
+
 	@Getter
 	@Setter
 	class OccurrenceCount {
@@ -366,40 +354,38 @@ public class BackEndController {
 			this.value = value;
 			this.count = count;
 		}
+
 		String value;
 		Integer count;
 	}
-	
+
 	@Getter
 	@Setter
 	class ValidationOccurrencesResult {
 		List<OccurrenceCount> invalidRuleOccrs;
-		List<OccurrenceCount> validRuleOccrs;	
+		List<OccurrenceCount> validRuleOccrs;
 	}
-	
-	
+
 	@RequestMapping(value = "/public/diagnoseListRecordValidationResults/{snapshotID}/[{fq}]", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<Page<RecordValidationResult>> diagnoseListRecordValidationResults(@PathVariable Long snapshotID, @PathVariable List<String> fq, Pageable pageable) {
-		
-		Query query = new SimpleQuery( RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString() );
-		
+
+		Query query = new SimpleQuery(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString());
+
 		// Esta correccion permite pagiona
 		pageable = pageable.previousOrFirst();
-		
+
 		query.setPageRequest(pageable);
-		
+
 		for (String fqTerm : fq) {
 			fqTerm = fqTerm.replace("@@", ":");
-			query.addFilterQuery( new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)) );
+			query.addFilterQuery(new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)));
 		}
-	
+
 		Page<RecordValidationResult> results = solrTemplate.queryForPage(query, RecordValidationResult.class);
-		
-		
+
 		return new ResponseEntity<Page<RecordValidationResult>>(results, HttpStatus.OK);
-	  }
-	
+	}
 
 	/*****************************************************************
 	 * Validation Services
@@ -407,8 +393,7 @@ public class BackEndController {
 
 	@ResponseBody
 	@RequestMapping(value = "/public/listValidatorRulesByNetworkID/{id}", method = RequestMethod.GET)
-	public List<ValidatorRule> listValidatorRulesByNetworkID(
-			@PathVariable Long id) throws Exception {
+	public List<ValidatorRule> listValidatorRulesByNetworkID(@PathVariable Long id) throws Exception {
 
 		Network network = networkRepository.findOne(id);
 		if (network == null)
@@ -421,8 +406,7 @@ public class BackEndController {
 	/*************************** Acciones Globales ****************************************/
 	@ResponseBody
 	@RequestMapping(value = "/private/networkAction/{action}/{ids}", method = RequestMethod.GET)
-	public ResponseEntity<String> networkAction(
-			@PathVariable NetworkAction action, @PathVariable Long... ids) {
+	public ResponseEntity<String> networkAction(@PathVariable NetworkAction action, @PathVariable Long... ids) {
 
 		List<Long> networkIdsWithErrors = new ArrayList<Long>();
 
@@ -449,9 +433,7 @@ public class BackEndController {
 			case STOP_HARVESTING:
 
 				// detiene todos los snapshots que estén en status harvesting
-				for (NetworkSnapshot snapshot : networkSnapshotRepository
-						.findByNetworkAndStatus(network,
-								SnapshotStatus.HARVESTING)) {
+				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndStatus(network, SnapshotStatus.HARVESTING)) {
 					snapshotManager.stopHarvesting(snapshot.getId());
 				}
 				break;
@@ -459,12 +441,10 @@ public class BackEndController {
 			case CLEAN_NETWORK:
 
 				// obtiene el lgk para no borrarlo
-				Long lgkSnapshotID = networkSnapshotRepository
-						.findLastGoodKnowByNetworkID(id).getId();
+				Long lgkSnapshotID = networkSnapshotRepository.findLastGoodKnowByNetworkID(id).getId();
 
 				// recorre los snapshots no borrados
-				for (NetworkSnapshot snapshot : networkSnapshotRepository
-						.findByNetworkAndDeleted(network, false)) {
+				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndDeleted(network, false)) {
 
 					// si no es el lgk
 					if (snapshot.getId() != lgkSnapshotID)
@@ -474,12 +454,9 @@ public class BackEndController {
 
 			case ADD_VUFIND_INDEX:
 				try {
-					NetworkSnapshot snapshot = networkSnapshotRepository
-							.findLastGoodKnowByNetworkID(id);
+					NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
 					if (snapshot == null)
-						throw new Exception(
-								"Indexación Vufind fallida - No existe LGK para la red ID:"
-										+ id);
+						throw new Exception("Indexación Vufind fallida - No existe LGK para la red ID:" + id);
 
 					indexerManager.indexNetworkInVufind(id);
 				} catch (Exception e1) {
@@ -489,12 +466,9 @@ public class BackEndController {
 
 			case ADD_XOAI_INDEX:
 				try {
-					NetworkSnapshot snapshot = networkSnapshotRepository
-							.findLastGoodKnowByNetworkID(id);
+					NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
 					if (snapshot == null)
-						throw new Exception(
-								"Indexación XOAI fallida - No existe LGK para la red ID:"
-										+ id);
+						throw new Exception("Indexación XOAI fallida - No existe LGK para la red ID:" + id);
 					indexerManager.indexNetworkInXOAI(id);
 				} catch (Exception e1) {
 					networkIdsWithErrors.add(id);
@@ -570,8 +544,7 @@ public class BackEndController {
 
 	private void deleteNetwork(Network network) throws Exception {
 
-		System.out.println("Comenzando proceso de borrando Red: "
-				+ network.getName());
+		System.out.println("Comenzando proceso de borrando Red: " + network.getName());
 
 		indexerManager.deleteNetworkFromVufind(network.getId());
 		indexerManager.deleteNetworkFromXOAI(network.getId());
@@ -601,11 +574,8 @@ public class BackEndController {
 	@RequestMapping(value = "/public/lastGoodKnowSnapshotByNetworkID/{id}", method = RequestMethod.GET)
 	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable Long id) {
 
-		NetworkSnapshot snapshot = networkSnapshotRepository
-				.findLastGoodKnowByNetworkID(id);
-		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
-						: HttpStatus.OK);
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(id);
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(snapshot, snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
 		return response;
 	}
 
@@ -614,16 +584,13 @@ public class BackEndController {
 	public ResponseEntity<NetworkSnapshot> getSnapshotByID(@PathVariable Long id) {
 
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
-		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
-						: HttpStatus.OK);
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(snapshot, snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
 		return response;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/public/getSnapshotInfoByID/{id}", method = RequestMethod.GET)
-	public NetworkInfo getSnapshotInfoByID(@PathVariable Long id)
-			throws Exception {
+	public NetworkInfo getSnapshotInfoByID(@PathVariable Long id) throws Exception {
 
 		NetworkSnapshot snapshot = networkSnapshotRepository.findOne(id);
 
@@ -648,39 +615,30 @@ public class BackEndController {
 
 	@ResponseBody
 	@RequestMapping(value = "/public/lastGoodKnowSnapshotByNetworkAcronym/{acronym}", method = RequestMethod.GET)
-	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(
-			@PathVariable String acronym) throws Exception {
+	public ResponseEntity<NetworkSnapshot> getLGKSnapshot(@PathVariable String acronym) throws Exception {
 
 		Network network = networkRepository.findByAcronym(acronym);
 		if (network == null) // TODO: Implementar Exc
 			throw new Exception("No se encontró RED: " + acronym);
 
-		NetworkSnapshot snapshot = networkSnapshotRepository
-				.findLastGoodKnowByNetworkID(network.getId());
+		NetworkSnapshot snapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 		if (snapshot == null) // TODO: Implementar Exc
-			throw new Exception("No se encontró snapshot válido de la RED: "
-					+ acronym);
+			throw new Exception("No se encontró snapshot válido de la RED: " + acronym);
 
-		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(
-				snapshot, snapshot == null ? HttpStatus.NOT_FOUND
-						: HttpStatus.OK);
+		ResponseEntity<NetworkSnapshot> response = new ResponseEntity<NetworkSnapshot>(snapshot, snapshot == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
 
 		return response;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/public/listSnapshotsByNetworkAcronym/{acronym}", method = RequestMethod.GET)
-	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(
-			@PathVariable String acronym) throws Exception {
+	public ResponseEntity<List<NetworkSnapshot>> listSnapshotsByAcronym(@PathVariable String acronym) throws Exception {
 
 		Network network = networkRepository.findByAcronym(acronym);
 		if (network == null)
 			throw new Exception("No se encontró RED: " + acronym);
 
-		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(
-				networkSnapshotRepository
-						.findByNetworkOrderByEndTimeAsc(network),
-				HttpStatus.OK);
+		ResponseEntity<List<NetworkSnapshot>> response = new ResponseEntity<List<NetworkSnapshot>>(networkSnapshotRepository.findByNetworkOrderByEndTimeAsc(network), HttpStatus.OK);
 
 		return response;
 	}
@@ -700,8 +658,7 @@ public class BackEndController {
 			ninfo.name = network.getName();
 			ninfo.institution = network.getInstitutionName();
 
-			NetworkSnapshot lstSnapshot = networkSnapshotRepository
-					.findLastByNetworkID(network.getId());
+			NetworkSnapshot lstSnapshot = networkSnapshotRepository.findLastByNetworkID(network.getId());
 			if (lstSnapshot != null) {
 
 				ninfo.lstSnapshotID = lstSnapshot.getId();
@@ -713,8 +670,7 @@ public class BackEndController {
 
 			}
 
-			NetworkSnapshot lgkSnapshot = networkSnapshotRepository
-					.findLastGoodKnowByNetworkID(network.getId());
+			NetworkSnapshot lgkSnapshot = networkSnapshotRepository.findLastGoodKnowByNetworkID(network.getId());
 			if (lgkSnapshot != null) {
 
 				ninfo.snapshotID = lgkSnapshot.getId();
@@ -740,19 +696,16 @@ public class BackEndController {
 	@RequestMapping(value = "/public/listNetworks", method = RequestMethod.GET)
 	public ResponseEntity<List<NetworkInfo>> listNetworks() {
 
-		List<NetworkInfo> ninfoList = networkList2netinfoList(networkRepository
-				.findByPublishedOrderByNameAsc(true));
+		List<NetworkInfo> ninfoList = networkList2netinfoList(networkRepository.findByPublishedOrderByNameAsc(true));
 		return new ResponseEntity<List<NetworkInfo>>(ninfoList, HttpStatus.OK);
 	}
 
 	// listado de todas las redes
 	@ResponseBody
 	@RequestMapping(value = "/public/networks", method = RequestMethod.GET)
-	public ResponseEntity<NetworksListResponse> listNetworks(
-			@RequestParam Map<String, String> params) {
+	public ResponseEntity<NetworksListResponse> listNetworks(@RequestParam Map<String, String> params) {
 
-		NetworksListResponse response = new NetworksListResponse(
-				findByParams(params));
+		NetworksListResponse response = new NetworksListResponse(findByParams(params));
 		return new ResponseEntity<NetworksListResponse>(response, HttpStatus.OK);
 	}
 
@@ -785,8 +738,7 @@ public class BackEndController {
 					String columnName = matcher.group(1);
 					if (params.get(key).equals("desc"))
 						sortDirection = Direction.DESC;
-					pageRequest = new PageRequest(page, count, sortDirection,
-							columnName);
+					pageRequest = new PageRequest(page, count, sortDirection, columnName);
 				}
 			}
 
@@ -806,17 +758,13 @@ public class BackEndController {
 			switch (filterColumn) {
 
 			case "name":
-				return networkRepository.findByNameIgnoreCaseContaining(
-						filterExpression, pageRequest);
+				return networkRepository.findByNameIgnoreCaseContaining(filterExpression, pageRequest);
 
 			case "institution":
-				return networkRepository
-						.findByInstitutionNameIgnoreCaseContaining(
-								filterExpression, pageRequest);
+				return networkRepository.findByInstitutionNameIgnoreCaseContaining(filterExpression, pageRequest);
 
 			case "acronym":
-				return networkRepository.findByAcronymIgnoreCaseContaining(
-						filterExpression, pageRequest);
+				return networkRepository.findByAcronymIgnoreCaseContaining(filterExpression, pageRequest);
 
 			default:
 				return networkRepository.findAll(pageRequest);
@@ -831,8 +779,7 @@ public class BackEndController {
 	@RequestMapping(value = "/public/listNetworksHistory", method = RequestMethod.GET)
 	public ResponseEntity<List<NetworkHistory>> listNetworksHistory() {
 
-		List<Network> allNetworks = networkRepository
-				.findByPublishedOrderByNameAsc(true);// OrderByName();
+		List<Network> allNetworks = networkRepository.findByPublishedOrderByNameAsc(true);// OrderByName();
 		List<NetworkHistory> NHistoryList = new ArrayList<NetworkHistory>();
 
 		for (Network network : allNetworks) {
@@ -840,18 +787,14 @@ public class BackEndController {
 			nhistory.name = network.getName();
 			nhistory.networkID = network.getId();
 			nhistory.acronym = network.getAcronym();
-			nhistory.validSnapshots = networkSnapshotRepository
-					.findByNetworkAndStatusOrderByEndTimeAsc(network,
-							SnapshotStatus.VALID);
+			nhistory.validSnapshots = networkSnapshotRepository.findByNetworkAndStatusOrderByEndTimeAsc(network, SnapshotStatus.VALID);
 			NHistoryList.add(nhistory);
 		}
 
-		ResponseEntity<List<NetworkHistory>> response = new ResponseEntity<List<NetworkHistory>>(
-				NHistoryList, HttpStatus.OK);
+		ResponseEntity<List<NetworkHistory>> response = new ResponseEntity<List<NetworkHistory>>(NHistoryList, HttpStatus.OK);
 
 		return response;
 	}
-
 
 	/************** Clases de retorno de resultados *******************/
 

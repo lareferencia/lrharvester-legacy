@@ -8,6 +8,6 @@ import org.springframework.data.solr.repository.SolrCrudRepository;
 
 public interface RecordValidationResultRepository extends SolrCrudRepository<RecordValidationResult, String> {
 
-	//Long deleteBySnapshotID(Long snapshotID);
-	
+	Long deleteBySnapshot(Long snapshot);
+
 }

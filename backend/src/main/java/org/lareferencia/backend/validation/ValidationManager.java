@@ -41,9 +41,7 @@ public class ValidationManager {
 
 		for (ValidatorRule vrule : vmodel.getRules()) {
 
-			IValidatorRule rule = serializer
-					.deserializeValidatorFromJsonString(vrule
-							.getJSONSerialization());
+			IValidatorRule rule = serializer.deserializeValidatorFromJsonString(vrule.getJSONSerialization());
 
 			/* Estas propiedades son cargadas desde el modelo en el objeto rule */
 			/*
@@ -73,9 +71,7 @@ public class ValidationManager {
 
 		for (TransformerRule trule : tmodel.getRules()) {
 
-			ITransformerRule rule = serializer
-					.deserializeTransformerFromJsonString(trule
-							.getJSONSerialization());
+			ITransformerRule rule = serializer.deserializeTransformerFromJsonString(trule.getJSONSerialization());
 			transformer.getRules().add(rule);
 
 		}
@@ -91,8 +87,7 @@ public class ValidationManager {
 	 * @param description
 	 * @return
 	 */
-	public Validator createModelFromValidator(IValidator validator,
-			String name, String description) {
+	public Validator createModelFromValidator(IValidator validator, String name, String description) {
 
 		Validator validatorModel = new Validator();
 
@@ -104,8 +99,7 @@ public class ValidationManager {
 			ruleModel.setDescription("");
 			ruleModel.setMandatory(vrule.getMandatory());
 			ruleModel.setQuantifier(vrule.getQuantifier());
-			ruleModel.setJSONSerialization(serializer
-					.serializeValidatorToJsonString(vrule));
+			ruleModel.setJSONSerialization(serializer.serializeValidatorToJsonString(vrule));
 
 			validatorModel.getRules().add(ruleModel);
 

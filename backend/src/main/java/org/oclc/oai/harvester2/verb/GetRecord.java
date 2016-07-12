@@ -46,9 +46,7 @@ public class GetRecord extends HarvesterVerb {
 	 * @exception IOException
 	 *                an I/O error occurred
 	 */
-	public GetRecord(String baseURL, String identifier, String metadataPrefix)
-			throws IOException, ParserConfigurationException, SAXException,
-			TransformerException {
+	public GetRecord(String baseURL, String identifier, String metadataPrefix) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		super(getRequestURL(baseURL, identifier, metadataPrefix));
 	}
 
@@ -59,8 +57,7 @@ public class GetRecord extends HarvesterVerb {
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException
 	 */
-	public String getIdentifier() throws TransformerException,
-			NoSuchFieldException {
+	public String getIdentifier() throws TransformerException, NoSuchFieldException {
 		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
 			return getSingleString("/oai20:OAI-PMH/oai20:GetRecord/oai20:record/oai20:header/oai20:identifier");
 		} else if (SCHEMA_LOCATION_V1_1_GET_RECORD.equals(getSchemaLocation())) {
@@ -75,8 +72,7 @@ public class GetRecord extends HarvesterVerb {
 	 * 
 	 * @return a String containing the query portion of the http request
 	 */
-	private static String getRequestURL(String baseURL, String identifier,
-			String metadataPrefix) {
+	private static String getRequestURL(String baseURL, String identifier, String metadataPrefix) {
 		StringBuffer requestURL = new StringBuffer(baseURL);
 		requestURL.append("?verb=GetRecord");
 		requestURL.append("&identifier=").append(identifier);

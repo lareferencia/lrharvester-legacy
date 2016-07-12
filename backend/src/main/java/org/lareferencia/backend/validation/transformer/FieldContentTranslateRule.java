@@ -65,8 +65,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	Boolean testValueAsPrefix = false;
 
 	public FieldContentTranslateRule() {
-		this.translationMap = new TreeMap<String, String>(
-				CaseInsensitiveComparator.INSTANCE);
+		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 	}
 
 	public void setTranslationArray(List<Translation> list) {
@@ -82,8 +81,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	public void setTranslationMapFileName(String filename) {
 
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					new FileInputStream(filename), "UTF8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF8"));
 
 			String line = br.readLine();
 
@@ -93,8 +91,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 				String[] parsedLine = line.split("\\t");
 
 				if (parsedLine.length != 2)
-					throw new Exception("Formato de archivo " + filename
-							+ " incorrecto!! linea: " + lineNumber);
+					throw new Exception("Formato de archivo " + filename + " incorrecto!! linea: " + lineNumber);
 
 				this.translationMap.put(parsedLine[0], parsedLine[1]);
 
@@ -106,9 +103,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 			br.close();
 
 		} catch (FileNotFoundException e) {
-			System.err
-					.println("!!!!!! No se encontró el archivo de valores controlados:"
-							+ filename);
+			System.err.println("!!!!!! No se encontró el archivo de valores controlados:" + filename);
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -179,8 +174,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 							metadata.removeFieldNode(node);
 						}
 
-						metadata.addFieldOcurrence(writeFieldName,
-								translatedOccr);
+						metadata.addFieldOcurrence(writeFieldName, translatedOccr);
 
 					}
 				}
@@ -191,8 +185,7 @@ public class FieldContentTranslateRule extends AbstractTransformerRule {
 	}
 
 	public void setTranslationMap(Map<String, String> translationMap) {
-		this.translationMap = new TreeMap<String, String>(
-				CaseInsensitiveComparator.INSTANCE);
+		this.translationMap = new TreeMap<String, String>(CaseInsensitiveComparator.INSTANCE);
 		this.translationMap.putAll(translationMap);
 	}
 

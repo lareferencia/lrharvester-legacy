@@ -44,8 +44,7 @@ public class Identify extends HarvesterVerb {
 	 * @exception IOException
 	 *                an I/O error occurred
 	 */
-	public Identify(String baseURL) throws IOException,
-			ParserConfigurationException, SAXException, TransformerException {
+	public Identify(String baseURL) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		super(getRequestURL(baseURL));
 	}
 
@@ -56,8 +55,7 @@ public class Identify extends HarvesterVerb {
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException
 	 */
-	public String getProtocolVersion() throws TransformerException,
-			NoSuchFieldException {
+	public String getProtocolVersion() throws TransformerException, NoSuchFieldException {
 		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
 			return getSingleString("/oai20:OAI-PMH/oai20:Identify/oai20:protocolVersion");
 		} else if (SCHEMA_LOCATION_V1_1_IDENTIFY.equals(getSchemaLocation())) {

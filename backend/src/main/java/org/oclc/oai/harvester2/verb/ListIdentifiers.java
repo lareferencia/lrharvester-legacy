@@ -47,9 +47,8 @@ public class ListIdentifiers extends HarvesterVerb {
 	 * @exception IOException
 	 *                an I/O error occurred
 	 */
-	public ListIdentifiers(String baseURL, String from, String until,
-			String set, String metadataPrefix) throws IOException,
-			ParserConfigurationException, SAXException, TransformerException {
+	public ListIdentifiers(String baseURL, String from, String until, String set, String metadataPrefix) throws IOException, ParserConfigurationException, SAXException,
+			TransformerException {
 		super(getRequestURL(baseURL, from, until, set, metadataPrefix));
 	}
 
@@ -63,9 +62,7 @@ public class ListIdentifiers extends HarvesterVerb {
 	 * @throws SAXException
 	 * @throws TransformerException
 	 */
-	public ListIdentifiers(String baseURL, String resumptionToken)
-			throws IOException, ParserConfigurationException, SAXException,
-			TransformerException {
+	public ListIdentifiers(String baseURL, String resumptionToken) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		super(getRequestURL(baseURL, resumptionToken));
 	}
 
@@ -76,12 +73,10 @@ public class ListIdentifiers extends HarvesterVerb {
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException
 	 */
-	public String getResumptionToken() throws TransformerException,
-			NoSuchFieldException {
+	public String getResumptionToken() throws TransformerException, NoSuchFieldException {
 		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
 			return getSingleString("/oai20:OAI-PMH/oai20:ListIdentifiers/oai20:resumptionToken");
-		} else if (SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS
-				.equals(getSchemaLocation())) {
+		} else if (SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS.equals(getSchemaLocation())) {
 			return getSingleString("/oai11_ListIdentifiers:ListIdentifiers/oai11_ListIdentifiers:resumptionToken");
 		} else {
 			throw new NoSuchFieldException(getSchemaLocation());
@@ -93,8 +88,7 @@ public class ListIdentifiers extends HarvesterVerb {
 	 * 
 	 * @return a String containing the query portion of the http request
 	 */
-	private static String getRequestURL(String baseURL, String from,
-			String until, String set, String metadataPrefix) {
+	private static String getRequestURL(String baseURL, String from, String until, String set, String metadataPrefix) {
 		StringBuffer requestURL = new StringBuffer(baseURL);
 		requestURL.append("?verb=ListIdentifiers");
 		if (from != null)
@@ -117,8 +111,7 @@ public class ListIdentifiers extends HarvesterVerb {
 	private static String getRequestURL(String baseURL, String resumptionToken) {
 		StringBuffer requestURL = new StringBuffer(baseURL);
 		requestURL.append("?verb=ListIdentifiers");
-		requestURL.append("&resumptionToken=").append(
-				URLEncoder.encode(resumptionToken));
+		requestURL.append("&resumptionToken=").append(URLEncoder.encode(resumptionToken));
 		return requestURL.toString();
 	}
 }

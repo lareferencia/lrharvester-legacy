@@ -81,8 +81,7 @@ public abstract class HarvesterVerb {
 	private static HashMap builderMap = new HashMap();
 	private static Element namespaceElement = null;
 	private static DocumentBuilderFactory factory = null;
-	private static TransformerFactory xformFactory = TransformerFactory
-			.newInstance();
+	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 
 	static {
 		try {
@@ -94,36 +93,17 @@ public abstract class HarvesterVerb {
 			builderMap.put(t, builder);
 
 			DOMImplementation impl = builder.getDOMImplementation();
-			Document namespaceHolder = impl.createDocument(
-					"http://www.oclc.org/research/software/oai/harvester",
-					"harvester:namespaceHolder", null);
+			Document namespaceHolder = impl.createDocument("http://www.oclc.org/research/software/oai/harvester", "harvester:namespaceHolder", null);
 			namespaceElement = namespaceHolder.getDocumentElement();
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:harvester",
-					"http://www.oclc.org/research/software/oai/harvester");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai11_GetRecord",
-					"http://www.openarchives.org/OAI/1.1/OAI_GetRecord");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai11_Identify",
-					"http://www.openarchives.org/OAI/1.1/OAI_Identify");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai11_ListIdentifiers",
-					"http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers");
-			namespaceElement
-					.setAttributeNS("http://www.w3.org/2000/xmlns/",
-							"xmlns:oai11_ListMetadataFormats",
-							"http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai11_ListRecords",
-					"http://www.openarchives.org/OAI/1.1/OAI_ListRecords");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai11_ListSets",
-					"http://www.openarchives.org/OAI/1.1/OAI_ListSets");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:harvester", "http://www.oclc.org/research/software/oai/harvester");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_GetRecord", "http://www.openarchives.org/OAI/1.1/OAI_GetRecord");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_Identify", "http://www.openarchives.org/OAI/1.1/OAI_Identify");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_ListIdentifiers", "http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_ListMetadataFormats", "http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_ListRecords", "http://www.openarchives.org/OAI/1.1/OAI_ListRecords");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai11_ListSets", "http://www.openarchives.org/OAI/1.1/OAI_ListSets");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -185,8 +165,7 @@ public abstract class HarvesterVerb {
 	 * @throws SAXException
 	 * @throws TransformerException
 	 */
-	public HarvesterVerb(String requestURL) throws IOException,
-			ParserConfigurationException, SAXException, TransformerException {
+	public HarvesterVerb(String requestURL) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		harvest(requestURL);
 	}
 
@@ -199,8 +178,7 @@ public abstract class HarvesterVerb {
 	 * @throws SAXException
 	 * @throws TransformerException
 	 */
-	public void harvest(String requestURL) throws IOException,
-			ParserConfigurationException, SAXException, TransformerException {
+	public void harvest(String requestURL) throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		this.requestURL = requestURL;
 		logger.debug("requestURL=" + requestURL);
 		InputStream in = null;
@@ -208,8 +186,6 @@ public abstract class HarvesterVerb {
 		HttpURLConnection con = null;
 		int responseCode = 0;
 
-		
-		
 		int i = 0;
 		do {
 
@@ -221,8 +197,7 @@ public abstract class HarvesterVerb {
 			con.setReadTimeout(MAX_REQUEST_TIME * 1000);
 
 			con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-			con.setRequestProperty("Accept-Encoding",
-					"compress, gzip, identify");
+			con.setRequestProperty("Accept-Encoding", "compress, gzip, identify");
 
 			try {
 				responseCode = con.getResponseCode();
@@ -249,8 +224,7 @@ public abstract class HarvesterVerb {
 				if (retrySeconds == 0) { // Apparently, it's a bad URL
 					throw new FileNotFoundException("Bad URL?");
 				}
-				System.err.println("Server response: Retry-After="
-						+ retrySeconds);
+				System.err.println("Server response: Retry-After=" + retrySeconds);
 				if (retrySeconds > 0) {
 					try {
 						Thread.sleep(retrySeconds * 1000);
@@ -303,8 +277,7 @@ public abstract class HarvesterVerb {
 		// System.out.println("OCLC Harvester 2: parseado el documento : " +
 		// requestURL);
 
-		StringTokenizer tokenizer = new StringTokenizer(
-				getSingleString("/*/@xsi:schemaLocation"), " ");
+		StringTokenizer tokenizer = new StringTokenizer(getSingleString("/*/@xsi:schemaLocation"), " ");
 		StringBuffer sb = new StringBuffer();
 		while (tokenizer.hasMoreTokens()) {
 			if (sb.length() > 0)
@@ -339,8 +312,7 @@ public abstract class HarvesterVerb {
 		// return str;
 	}
 
-	public String getSingleString(Node node, String xpath)
-			throws TransformerException {
+	public String getSingleString(Node node, String xpath) throws TransformerException {
 		return XPathAPI.eval(node, xpath, namespaceElement).str();
 	}
 
@@ -364,8 +336,7 @@ public abstract class HarvesterVerb {
 		Result output = new StreamResult(sw);
 		try {
 			Transformer idTransformer = xformFactory.newTransformer();
-			idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-					"yes");
+			idTransformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 			idTransformer.transform(input, output);
 			return sw.toString();
 		} catch (TransformerException e) {

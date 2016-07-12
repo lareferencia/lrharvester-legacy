@@ -21,8 +21,7 @@ public class Configuration {
 		data.put(name, new HashMap<String, AbstractProperty>());
 	}
 
-	public void addProperty(String section, String name,
-			AbstractProperty property) {
+	public void addProperty(String section, String name, AbstractProperty property) {
 
 		Map<String, AbstractProperty> properties = data.get(section);
 

@@ -36,8 +36,7 @@ import org.oclc.oai.harvester2.verb.ListSets;
 
 @Component
 @Scope(value = "prototype")
-public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
-		IHarvester {
+public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements IHarvester {
 
 	private static final String METADATA_NODE_NAME = "metadata";
 	private static final Object STATUS_DELETED = "deleted";
@@ -69,8 +68,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		reset();
 	}
 
-	public void harvest(String uri, String from, String until, String setname,
-			String metadataPrefix, String resumptionToken, int maxRetries) {
+	public void harvest(String uri, String from, String until, String setname, String metadataPrefix, String resumptionToken, int maxRetries) {
 
 		ListRecords actualListRecords = null;
 
@@ -82,17 +80,14 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// resumption (caso de fin)
 		// TODO: Hay casos donde dio null y no era el fin, estudiar alternativas
 		// Si levantan la stopSignal entonces corta el ciclo de harvesting
-		while (!stopSignalReceived
-				&& (batchIndex == 0 || (resumptionToken.trim().length() != 0))) {
+		while (!stopSignalReceived && (batchIndex == 0 || (resumptionToken.trim().length() != 0))) {
 
 			do {
 				try {
 
-					System.out.println("Request:" + resumptionToken + " Set:" + setname );
-					
-					
-					actualListRecords = listRecords(uri, setname,
-							metadataPrefix, batchIndex, resumptionToken);
+					System.out.println("Request:" + resumptionToken + " Set:" + setname);
+
+					actualListRecords = listRecords(uri, setname, metadataPrefix, batchIndex, resumptionToken);
 					resumptionToken = actualListRecords.getResumptionToken();
 
 					// se crea un evento a partir del resultado de listRecords
@@ -108,17 +103,13 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 					secondsToNextRetry = INITIAL_SECONDS_TO_RETRY;
 					break;
 
-				} catch (HarvestingException | TransformerException
-						| NoSuchFieldException e) {
+				} catch (HarvestingException | TransformerException | NoSuchFieldException e) {
 
-					String message = buildErrorMessage(e, batchIndex,
-							actualRetry);
+					String message = buildErrorMessage(e, batchIndex, actualRetry);
 					message += "RT Anterior: " + resumptionToken + "\n";
-					message += "\nEsperando " + secondsToNextRetry
-							+ " segundos para el próximo reintento ..";
+					message += "\nEsperando " + secondsToNextRetry + " segundos para el próximo reintento ..";
 
-					fireHarvestingEvent(new HarvestingEvent(message,
-							HarvestingEventStatus.ERROR_RETRY));
+					fireHarvestingEvent(new HarvestingEvent(message, HarvestingEventStatus.ERROR_RETRY));
 
 					// Una espera de secondsToNextRetry
 					try {
@@ -135,8 +126,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 			if (actualRetry == maxRetries) {
 				String message = "Número de reintentos máximos alcanzados.  Abortando proceso de cosecha.";
-				fireHarvestingEvent(new HarvestingEvent(message,
-						HarvestingEventStatus.ERROR_FATAL));
+				fireHarvestingEvent(new HarvestingEvent(message, HarvestingEventStatus.ERROR_FATAL));
 				break;
 			}
 
@@ -144,27 +134,22 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				String message = "Cosecha detenida por el administrador.";
 				message += "  Origen: " + uri;
 				message += "  Set: " + setname;
-				fireHarvestingEvent(new HarvestingEvent(message,
-						HarvestingEventStatus.STOP_SIGNAL_RECEIVED));
+				fireHarvestingEvent(new HarvestingEvent(message, HarvestingEventStatus.STOP_SIGNAL_RECEIVED));
 				break;
 			}
 
 		}
 	}
 
-	private String buildErrorMessage(Exception e, int batchIndex,
-			int actualRetry) {
-		String message = "Error lote: " + batchIndex + " reintento: "
-				+ actualRetry + "\n";
+	private String buildErrorMessage(Exception e, int batchIndex, int actualRetry) {
+		String message = "Error lote: " + batchIndex + " reintento: " + actualRetry + "\n";
 		message += "Detalles:\n";
 		message += e.getMessage() + "\n";
 
 		return message;
 	}
 
-	private ListRecords listRecords(String baseURL, String setSpec,
-			String metadataPrefix, int batchIndex, String resumptionToken)
-			throws HarvestingException {
+	private ListRecords listRecords(String baseURL, String setSpec, String metadataPrefix, int batchIndex, String resumptionToken) throws HarvestingException {
 
 		ListRecords listRecords = null;
 		/*
@@ -174,8 +159,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		try {
 
 			if (batchIndex == 0)
-				listRecords = new ListRecords(baseURL, null, null, setSpec,
-						metadataPrefix);
+				listRecords = new ListRecords(baseURL, null, null, setSpec, metadataPrefix);
 			else
 				listRecords = new ListRecords(baseURL, resumptionToken);
 
@@ -198,8 +182,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		return listRecords;
 	}
 
-	private HarvestingEvent createResultFromListRecords(ListRecords listRecords)
-			throws TransformerException, NoSuchFieldException {
+	private HarvestingEvent createResultFromListRecords(ListRecords listRecords) throws TransformerException, NoSuchFieldException {
 
 		HarvestingEvent result = new HarvestingEvent();
 		/**
@@ -213,16 +196,12 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		NodeList nodes = null;
 		String namespace = null;
 
-		if (listRecords.getSchemaLocation().indexOf(
-				ListRecords.SCHEMA_LOCATION_V2_0) != -1) {
-			nodes = listRecords
-					.getNodeList("/oai20:OAI-PMH/oai20:ListRecords/oai20:record");
+		if (listRecords.getSchemaLocation().indexOf(ListRecords.SCHEMA_LOCATION_V2_0) != -1) {
+			nodes = listRecords.getNodeList("/oai20:OAI-PMH/oai20:ListRecords/oai20:record");
 			namespace = "oai20";
-		} else if (listRecords.getSchemaLocation().indexOf(
-				ListRecords.SCHEMA_LOCATION_V1_1_LIST_RECORDS) != -1) {
+		} else if (listRecords.getSchemaLocation().indexOf(ListRecords.SCHEMA_LOCATION_V1_1_LIST_RECORDS) != -1) {
 			namespace = "oai11_ListRecords";
-			nodes = listRecords
-					.getNodeList("/oai11_ListRecords:ListRecords/oai11_ListRecords:record");
+			nodes = listRecords.getNodeList("/oai11_ListRecords:ListRecords/oai11_ListRecords:record");
 		} else {
 			throw new NoSuchFieldException(listRecords.getSchemaLocation());
 		}
@@ -230,8 +209,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 		// System.out.println( listRecords.toString() );
 
 		// Determina la dirección de cosecha
-		String origin = listRecords.getSingleString("/" + namespace
-				+ ":OAI-PMH/" + namespace + ":request");
+		String origin = listRecords.getSingleString("/" + namespace + ":OAI-PMH/" + namespace + ":request");
 		System.out.println(origin);
 
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -241,25 +219,20 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			String status = "unknown";
 
 			try {
-				identifier = listRecords.getSingleString(nodes.item(i),
-						namespace + ":header/" + namespace + ":identifier");
+				identifier = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":identifier");
 				// System.out.println( identifier);
 
-				String setSpec = listRecords.getSingleString(nodes.item(i),
-						namespace + ":header/" + namespace + ":setSpec");
+				String setSpec = listRecords.getSingleString(nodes.item(i), namespace + ":header/" + namespace + ":setSpec");
 
 				// identifier = identifier.replace("&", "");
 
-				status = listRecords.getSingleString(nodes.item(i), namespace
-						+ ":header/@status");
+				status = listRecords.getSingleString(nodes.item(i), namespace + ":header/@status");
 
 				if (!status.equals(STATUS_DELETED)) {
 
-					metadataString = getMetadataString(nodes.item(i),
-							listRecords.getDocument());
+					metadataString = getMetadataString(nodes.item(i), listRecords.getDocument());
 
-					OAIRecordMetadata metadata = new OAIRecordMetadata(
-							identifier, metadataString);
+					OAIRecordMetadata metadata = new OAIRecordMetadata(identifier, metadataString);
 					metadata.setOrigin(origin);
 					metadata.setSetSpec(setSpec);
 
@@ -269,12 +242,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 			} catch (OAIRecordMetadataParseException e) {
 				// TODO: Hay que poder informar estas exceptions individuales
 				// para que quede registrada la pérdida del registro
-				System.err.println("Error en el parseo de registro: "
-						+ identifier + '\n' + metadataString);
+				System.err.println("Error en el parseo de registro: " + identifier + '\n' + metadataString);
 				result.setRecordMissing(true);
 			} catch (Exception e) {
-				System.err.println("Error desconocido procesando el registro: "
-						+ identifier + '\n' + metadataString);
+				System.err.println("Error desconocido procesando el registro: " + identifier + '\n' + metadataString);
 				System.err.println("Exception:" + e.getMessage());
 				result.setRecordMissing(true);
 				// e.printStackTrace();
@@ -291,8 +262,7 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 	 * @throws TransformerException
 	 * @throws NoSuchFieldException
 	 */
-	private String getMetadataString(Node node, Document document)
-			throws TransformerException, NoSuchFieldException {
+	private String getMetadataString(Node node, Document document) throws TransformerException, NoSuchFieldException {
 
 		/**
 		 * TODO: búsqueda secuencial, puede ser ineficiente pero xpath no esta
@@ -308,14 +278,11 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 				metadataNode = childs.item(i);
 
 		if (metadataNode == null)
-			throw new NoSuchFieldException("No existe el nodo: "
-					+ METADATA_NODE_NAME + " en la respuesta.\n"
-					+ MedatadaDOMHelper.Node2XMLString(node));
+			throw new NoSuchFieldException("No existe el nodo: " + METADATA_NODE_NAME + " en la respuesta.\n" + MedatadaDOMHelper.Node2XMLString(node));
 
 		// este rename unifica los casos distintos de namespace encontrados en
 		// repositorios
-		document.renameNode(metadataNode, metadataNode.getNamespaceURI(),
-				METADATA_NODE_NAME);
+		document.renameNode(metadataNode, metadataNode.getNamespaceURI(), METADATA_NODE_NAME);
 
 		// TODO: Ver el tema del char &#56256;
 		return MedatadaDOMHelper.Node2XMLString(metadataNode);
@@ -328,12 +295,10 @@ public class OCLCBasedHarvesterImpl extends BaseHarvestingEventSource implements
 
 		try {
 			ListSets listSets = new ListSets(uri);
-			NodeList list = listSets.getDocument().getElementsByTagName(
-					"setSpec");
+			NodeList list = listSets.getDocument().getElementsByTagName("setSpec");
 
 			for (int i = 0; i < list.getLength(); i++) {
-				if (list.item(i).getFirstChild() != null
-						&& list.item(i).getFirstChild().getNodeValue() != null)
+				if (list.item(i).getFirstChild() != null && list.item(i).getFirstChild().getNodeValue() != null)
 					setList.add(list.item(i).getFirstChild().getNodeValue());
 			}
 

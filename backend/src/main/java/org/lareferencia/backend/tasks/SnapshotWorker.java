@@ -53,8 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Scope(value = "prototype")
-public class SnapshotWorker implements ISnapshotWorker,
-		IHarvestingEventListener {
+public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener {
 
 	@Value("${harvester.max.retries}")
 	private int MAX_RETRIES;
@@ -156,8 +155,7 @@ public class SnapshotWorker implements ISnapshotWorker,
 			snapshot.setNetwork(network);
 			snapshotRepository.save(snapshot);
 		} else {
-			System.err
-					.println("La Red no existe!! El worker no puede continuar");
+			System.err.println("La Red no existe!! El worker no puede continuar");
 			return;
 		}
 
@@ -182,15 +180,12 @@ public class SnapshotWorker implements ISnapshotWorker,
 				// networkRepository.flush();
 
 				if (network.getValidator() != null) {
-					validator = validationManager
-							.createValidatorFromModel(network.getValidator());
+					validator = validationManager.createValidatorFromModel(network.getValidator());
 					// System.out.println( validator.getRules() );
 				} // TODO: Anunciar que no hay validador
 
 				if (network.getTransformer() != null) {
-					transformer = validationManager
-							.createTransformerFromModel(network
-									.getTransformer());
+					transformer = validationManager.createTransformerFromModel(network.getTransformer());
 					// System.out.println( transformer.getRules() );
 				}
 
@@ -244,8 +239,7 @@ public class SnapshotWorker implements ISnapshotWorker,
 					if (network.mustRunVufindIndexing()) {
 
 						logMessage("Comenzando indexación Vufind ...");
-						logMessage(indexerManager
-								.indexSnapshotInVufind(snapshot));
+						logMessage(indexerManager.indexSnapshotInVufind(snapshot));
 					}
 
 					if (network.mustRunXOAIIndexing()) {
@@ -289,25 +283,22 @@ public class SnapshotWorker implements ISnapshotWorker,
 
 			// si tiene sets declarados solo va a cosechar
 			if (origin.getSets().size() > 0) {
-				
-				logMessage("Hay sets definidos, se cosecharán sólo los sets definidos");
-				
-				for (OAISet set : origin.getSets()) {
-					
-					logMessage("Cosechando set: " + set.getName() + " .. " + set.getSpec() );
 
-					harvester.harvest(origin.getUri(), null, null,
-							set.getSpec(), origin.getMetadataPrefix(), null,
-							MAX_RETRIES);
+				logMessage("Hay sets definidos, se cosecharán sólo los sets definidos");
+
+				for (OAISet set : origin.getSets()) {
+
+					logMessage("Cosechando set: " + set.getName() + " .. " + set.getSpec());
+
+					harvester.harvest(origin.getUri(), null, null, set.getSpec(), origin.getMetadataPrefix(), null, MAX_RETRIES);
 				}
 			}
 			// si no hay set declarado cosecha todo
 			else {
-				
+
 				logMessage("NO hay sets definidos, se cosechará toda la colección");
-				
-				harvester.harvest(origin.getUri(), null, null, null,
-						origin.getMetadataPrefix(), null, MAX_RETRIES);
+
+				harvester.harvest(origin.getUri(), null, null, null, origin.getMetadataPrefix(), null, MAX_RETRIES);
 			}
 		}
 	}
@@ -321,10 +312,8 @@ public class SnapshotWorker implements ISnapshotWorker,
 			List<String> setList = harvester.listSets(origin.getUri());
 
 			for (String setName : setList) {
-				System.out.println("Cosechando: " + origin.getName() + " set: "
-						+ setName);
-				harvester.harvest(origin.getUri(), null, null, setName,
-						origin.getMetadataPrefix(), null, MAX_RETRIES);
+				System.out.println("Cosechando: " + origin.getName() + " set: " + setName);
+				harvester.harvest(origin.getUri(), null, null, setName, origin.getMetadataPrefix(), null, MAX_RETRIES);
 			}
 		}
 
@@ -334,13 +323,12 @@ public class SnapshotWorker implements ISnapshotWorker,
 	@Transactional
 	public void harvestingEventOccurred(HarvestingEvent event) {
 
-		System.out.println(network.getName() + "  HarvestingEvent recibido: "
-				+ event.getStatus());
+		System.out.println(network.getName() + "  HarvestingEvent recibido: " + event.getStatus());
 
 		switch (event.getStatus()) {
 
 		case OK:
-			
+
 			List<RecordValidationResult> validationResults = new ArrayList<RecordValidationResult>();
 
 			// Agrega los records al snapshot actual
@@ -353,15 +341,13 @@ public class SnapshotWorker implements ISnapshotWorker,
 					if (network.mustRunValidation()) {
 
 						// prevalidación
-						ValidatorResult validationResult = validator
-								.validate(record);
+						ValidatorResult validationResult = validator.validate(record);
 
 						// si corresponde lo transforma
 						if (network.mustRunTransformation()) {
 
 							// transforma
-							Boolean wasTransformed = transformer.transform(
-									record, validationResult);
+							Boolean wasTransformed = transformer.transform(record, validationResult);
 
 							// marca si el registro fue transformado
 							record.setWasTransformed(wasTransformed);
@@ -387,10 +373,11 @@ public class SnapshotWorker implements ISnapshotWorker,
 
 						// // SE ALMACENA EL REGISTRO
 						recordRepository.save(record);
-						//recordRepository.flush(); // TODO: Optimizar esto. es realmente necesario?
+						// recordRepository.flush(); // TODO: Optimizar esto. es
+						// realmente necesario?
 
 						// Se almacenan las estadísticas de cosecha
-						validationResults.add( new RecordValidationResult( record, validationResult ) );						
+						validationResults.add(new RecordValidationResult(record, validationResult));
 
 					}
 
@@ -406,7 +393,7 @@ public class SnapshotWorker implements ISnapshotWorker,
 			}
 
 			validationResultRepository.save(validationResults);
-		
+
 			recordRepository.flush();
 			snapshot.setEndTime(new Date());
 

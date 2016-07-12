@@ -36,33 +36,24 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 		super();
 		this.page = page;
 		if (page.hasPrevious()) {
-			String path = createBuilder()
-					.queryParam(pageParam, page.getNumber() - 1)
-					.queryParam(sizeParam, page.getSize()).build()
-					.toUriString();
+			String path = createBuilder().queryParam(pageParam, page.getNumber() - 1).queryParam(sizeParam, page.getSize()).build().toUriString();
 			Link link = new Link(path, Link.REL_PREVIOUS);
 			add(link);
 		}
 		if (page.hasNext()) {
-			String path = createBuilder()
-					.queryParam(pageParam, page.getNumber() + 1)
-					.queryParam(sizeParam, page.getSize()).build()
-					.toUriString();
+			String path = createBuilder().queryParam(pageParam, page.getNumber() + 1).queryParam(sizeParam, page.getSize()).build().toUriString();
 			Link link = new Link(path, Link.REL_NEXT);
 			add(link);
 		}
 
-		Link link = buildPageLink(pageParam, 0, sizeParam, page.getSize(),
-				Link.REL_FIRST);
+		Link link = buildPageLink(pageParam, 0, sizeParam, page.getSize(), Link.REL_FIRST);
 		add(link);
 
 		int indexOfLastPage = page.getTotalPages() - 1;
-		link = buildPageLink(pageParam, indexOfLastPage, sizeParam,
-				page.getSize(), Link.REL_LAST);
+		link = buildPageLink(pageParam, indexOfLastPage, sizeParam, page.getSize(), Link.REL_LAST);
 		add(link);
 
-		link = buildPageLink(pageParam, page.getNumber(), sizeParam,
-				page.getSize(), Link.REL_SELF);
+		link = buildPageLink(pageParam, page.getNumber(), sizeParam, page.getSize(), Link.REL_SELF);
 		add(link);
 	}
 
@@ -70,10 +61,8 @@ public class PageResource<T> extends ResourceSupport implements Page<T> {
 		return ServletUriComponentsBuilder.fromCurrentRequestUri();
 	}
 
-	private Link buildPageLink(String pageParam, int page, String sizeParam,
-			int size, String rel) {
-		String path = createBuilder().queryParam(pageParam, page)
-				.queryParam(sizeParam, size).build().toUriString();
+	private Link buildPageLink(String pageParam, int page, String sizeParam, int size, String rel) {
+		String path = createBuilder().queryParam(pageParam, page).queryParam(sizeParam, size).build().toUriString();
 		Link link = new Link(path, rel);
 		return link;
 	}

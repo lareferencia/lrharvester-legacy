@@ -49,8 +49,7 @@ public class IndexerManager {
 		snapshot.setStatus(SnapshotStatus.INDEXING);
 
 		// Indexa
-		boolean isSuccesfullyIndexed = indexerVufind.index(
-				snapshot.getNetwork(), snapshot, false);
+		boolean isSuccesfullyIndexed = indexerVufind.index(snapshot.getNetwork(), snapshot, false);
 
 		// Si el indexado es exitoso marca el snap válido
 		if (isSuccesfullyIndexed) {
@@ -70,8 +69,7 @@ public class IndexerManager {
 		snapshot.setStatus(SnapshotStatus.INDEXING);
 
 		// Indexa
-		boolean isSuccesfullyIndexed = indexerXOAI.index(snapshot.getNetwork(),
-				snapshot, false);
+		boolean isSuccesfullyIndexed = indexerXOAI.index(snapshot.getNetwork(), snapshot, false);
 
 		// Si el indexado es exitoso marca el snap válido
 		if (isSuccesfullyIndexed) {
@@ -87,11 +85,9 @@ public class IndexerManager {
 	}
 
 	// Precondición: Debe existir una LGKSnapshot
-	private void launchIndexerWorker(Long networkID, IIndexer specificIndexer,
-			boolean deleteOnly) throws Exception {
+	private void launchIndexerWorker(Long networkID, IIndexer specificIndexer, boolean deleteOnly) throws Exception {
 
-		IndexerWorker worker = applicationContext.getBean("indexerWorker",
-				IndexerWorker.class);
+		IndexerWorker worker = applicationContext.getBean("indexerWorker", IndexerWorker.class);
 		worker.setNetworkID(networkID);
 		worker.setIndexer(specificIndexer);
 		worker.setDeleteNetworkWithoutReindexing(deleteOnly);

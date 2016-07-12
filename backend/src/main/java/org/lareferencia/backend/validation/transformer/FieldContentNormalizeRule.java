@@ -31,10 +31,8 @@ public class FieldContentNormalizeRule extends AbstractTransformerRule {
 
 	@Override
 	public String toString() {
-		return "FieldContentNormalizeRule [validationRule=" + validationRule
-				+ ", fieldName=" + fieldName + ", removeInvalidOccurrences="
-				+ removeInvalidOccurrences + ", removeDuplicatedOccurrences="
-				+ removeDuplicatedOccurrences + "]";
+		return "FieldContentNormalizeRule [validationRule=" + validationRule + ", fieldName=" + fieldName + ", removeInvalidOccurrences=" + removeInvalidOccurrences
+				+ ", removeDuplicatedOccurrences=" + removeDuplicatedOccurrences + "]";
 	}
 
 	private IValidatorFieldContentRule validationRule;

@@ -56,9 +56,7 @@ public class Intelligo4Indexer implements IIndexer {
 	private String xslFileName;
 	private String solrNetworkIDField;
 
-	public Intelligo4Indexer(String xslFileName, String solrURL,
-			String solrNetworkIDField, String langProfileDirectory)
-			throws IndexerException {
+	public Intelligo4Indexer(String xslFileName, String solrURL, String solrNetworkIDField, String langProfileDirectory) throws IndexerException {
 		this.solrURL = solrURL;
 		this.solrServer = new HttpSolrServer(solrURL);
 		this.xslFileName = xslFileName;
@@ -67,9 +65,7 @@ public class Intelligo4Indexer implements IIndexer {
 		try {
 			DetectorFactory.loadProfile(langProfileDirectory);
 		} catch (LangDetectException e) {
-			System.err
-					.println("!!!! Error al cargar los perfiles del detector de idiomas en: "
-							+ langProfileDirectory);
+			System.err.println("!!!! Error al cargar los perfiles del detector de idiomas en: " + langProfileDirectory);
 		}
 	}
 
@@ -77,8 +73,7 @@ public class Intelligo4Indexer implements IIndexer {
 	 * Este método es syncronized para asegurar que no se superpongan dos
 	 * indexaciones y los commits solr (not isolated) se produzan
 	 */
-	public synchronized boolean index(Network network,
-			NetworkSnapshot snapshot, boolean deleteOnly) {
+	public synchronized boolean index(Network network, NetworkSnapshot snapshot, boolean deleteOnly) {
 
 		boolean valid = false;
 
@@ -101,48 +96,38 @@ public class Intelligo4Indexer implements IIndexer {
 			String networkAcronym = snapshot.getNetwork().getAcronym();
 
 			// Update de los registros de a PAGE_SIZE
-			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(
-					snapshot.getId(), RecordStatus.VALID, new PageRequest(0,
-							PAGE_SIZE));
+			Page<OAIRecord> page = recordRepository.findBySnapshotIdAndStatus(snapshot.getId(), RecordStatus.VALID, new PageRequest(0, PAGE_SIZE));
 			int totalPages = page.getTotalPages();
 
 			metadataTransformer = new OAIMetadataXSLTransformer(xslFileName);
 			metadataTransformer.setParameter("networkAcronym", networkAcronym);
-			metadataTransformer.setParameter("networkName", snapshot
-					.getNetwork().getName());
-			metadataTransformer.setParameter("institutionName", snapshot
-					.getNetwork().getInstitutionName());
+			metadataTransformer.setParameter("networkName", snapshot.getNetwork().getName());
+			metadataTransformer.setParameter("institutionName", snapshot.getNetwork().getInstitutionName());
 
 			Long lastRecordID = -1L;
 
 			for (int i = 0; i < totalPages; i++) {
 
-				System.out.println("Indexando Snapshot: " + snapshot.getId()
-						+ " de: " + snapshot.getNetwork().getName()
-						+ " página: " + (i + 1) + " de: " + totalPages);
+				System.out.println("Indexando Snapshot: " + snapshot.getId() + " de: " + snapshot.getNetwork().getName() + " página: " + (i + 1) + " de: " + totalPages);
 
 				/**
 				 * Este pedido paginado pide siempre la primera página
 				 * restringida a que el id sea mayor al ultimo anterior
 				 **/
-				page = recordRepository.findBySnapshotIdAndStatusOptimized(
-						snapshot.getId(), RecordStatus.VALID, lastRecordID,
-						new PageRequest(0, PAGE_SIZE));
+				page = recordRepository.findBySnapshotIdAndStatusOptimized(snapshot.getId(), RecordStatus.VALID, lastRecordID, new PageRequest(0, PAGE_SIZE));
 				List<OAIRecord> records = page.getContent();
 
 				StringBuffer stringBuffer = new StringBuffer();
 
 				for (OAIRecord record : records) {
 
-					OAIRecordMetadata metadata = new OAIRecordMetadata(
-							record.getIdentifier(), record.getPublishedXML());
+					OAIRecordMetadata metadata = new OAIRecordMetadata(record.getIdentifier(), record.getPublishedXML());
 
 					// ///// DC:DESCRIPTION - Detección y división de idiomas
 					String ab_es = "";
 					String ab_en = "";
 					String ab_pt = "";
-					for (String ab : metadata
-							.getFieldOcurrences("dc:description")) {
+					for (String ab : metadata.getFieldOcurrences("dc:description")) {
 						String lang = detectLang(ab);
 						switch (lang) {
 						case "es":
@@ -186,29 +171,24 @@ public class Intelligo4Indexer implements IIndexer {
 					// ///////////////////////////////////////////////////////////
 
 					// fingerprint del registro
-					metadataTransformer.setParameter("vufind_id",
-							record.getFingerprint());
+					metadataTransformer.setParameter("vufind_id", record.getFingerprint());
 					// TODO: Creo que sería bueno cambiar el nombre de vufind_id
 					// por fingerprint y modificarlo en el xsl
 
 					// identifier del record
-					metadataTransformer.setParameter("header_id",
-							record.getIdentifier());
+					metadataTransformer.setParameter("header_id", record.getIdentifier());
 
 					// metadata como string
-					metadataTransformer.setParameter("record_id", record
-							.getId().toString());
+					metadataTransformer.setParameter("record_id", record.getId().toString());
 
 					// Se transforma y genera el string del registro
-					stringBuffer
-							.append(metadataTransformer.transform(metadata));
+					stringBuffer.append(metadataTransformer.transform(metadata));
 
 					lastRecordID = record.getId();
 				}
 
 				try {
-					this.sendUpdateToSolr("<add>" + stringBuffer.toString()
-							+ "</add>");
+					this.sendUpdateToSolr("<add>" + stringBuffer.toString() + "</add>");
 				} catch (Exception e) {
 					System.out.println(e.getMessage());
 				}
@@ -221,24 +201,19 @@ public class Intelligo4Indexer implements IIndexer {
 			this.sendUpdateToSolr("<commit/>");
 
 		} catch (TransformerConfigurationException e) {
-			System.err.println("Problemas en la carga del transformador xsl:"
-					+ xslFileName);
+			System.err.println("Problemas en la carga del transformador xsl:" + xslFileName);
 			solrRollback();
 			return false;
 		} catch (TransformerException e) {
-			System.err.println("Problemas en el proceso de transformación xsl:"
-					+ xslFileName);
+			System.err.println("Problemas en el proceso de transformación xsl:" + xslFileName);
 			solrRollback();
 			return false;
 		} catch (SolrServerException e) {
-			System.err.println("Problemas en el proceso de envío a Intelligo:"
-					+ solrURL);
+			System.err.println("Problemas en el proceso de envío a Intelligo:" + solrURL);
 			solrRollback();
 			return false;
 		} catch (IOException e) {
-			System.err
-					.println("Problemas en el proceso de envío a Intelligo - E/S:"
-							+ solrURL);
+			System.err.println("Problemas en el proceso de envío a Intelligo - E/S:" + solrURL);
 			solrRollback();
 			return false;
 		} catch (Exception e) {
@@ -257,27 +232,21 @@ public class Intelligo4Indexer implements IIndexer {
 
 			// Borrado de la red
 			String networkAcronym = network.getAcronym();
-			this.sendUpdateToSolr("<delete><query>" + this.solrNetworkIDField
-					+ ":" + networkAcronym + "</query></delete>");
+			this.sendUpdateToSolr("<delete><query>" + this.solrNetworkIDField + ":" + networkAcronym + "</query></delete>");
 
 			// commit de los cambios
 			this.sendUpdateToSolr("<commit/>");
 
 		} catch (SolrServerException e) {
-			System.err
-					.println("Problemas en el proceso de borrado de red en Intelligo:"
-							+ solrURL);
+			System.err.println("Problemas en el proceso de borrado de red en Intelligo:" + solrURL);
 			solrRollback();
 			return false;
 		} catch (IOException e) {
-			System.err
-					.println("Problemas en el proceso de envío a Intelligo - E/S:"
-							+ solrURL);
+			System.err.println("Problemas en el proceso de envío a Intelligo - E/S:" + solrURL);
 			solrRollback();
 			return false;
 		} catch (Exception e) {
-			System.err
-					.println("Problemas en borrado durante indexación - Indeterminado");
+			System.err.println("Problemas en borrado durante indexación - Indeterminado");
 			solrRollback();
 			e.printStackTrace();
 			return false;
@@ -290,16 +259,13 @@ public class Intelligo4Indexer implements IIndexer {
 		try {
 			this.sendUpdateToSolr("<rollback/>");
 		} catch (SolrServerException e) {
-			System.err
-					.println("Problemas en rollback Intelligo - Indexer - SolrServer");
+			System.err.println("Problemas en rollback Intelligo - Indexer - SolrServer");
 		} catch (IOException e) {
-			System.err
-					.println("Problemas en rollback Intelligo - Indexer - Error E/S");
+			System.err.println("Problemas en rollback Intelligo - Indexer - Error E/S");
 		}
 	}
 
-	private void sendUpdateToSolr(String data) throws SolrServerException,
-			IOException {
+	private void sendUpdateToSolr(String data) throws SolrServerException, IOException {
 		DirectXmlRequest request = new DirectXmlRequest("/update", data);
 		solrServer.request(request);
 	}

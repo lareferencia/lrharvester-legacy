@@ -31,8 +31,7 @@ public class InvalidXMLCharFilterReader extends FilterReader {
 				if (!isBadXMLChar(buf[i])) {
 					buf[last++] = buf[i];
 				} else {
-					System.out.println("Char XML inválido eliminado: "
-							+ String.format("%04x", (int) buf[i]));
+					System.out.println("Char XML inválido eliminado: " + String.format("%04x", (int) buf[i]));
 				}
 			}
 
@@ -43,10 +42,7 @@ public class InvalidXMLCharFilterReader extends FilterReader {
 
 	private boolean isBadXMLChar(char c) {
 
-		if ((c == 0x9) || (c == 0xA) || (c == 0xD)
-				|| ((c >= 0x20) && (c <= 0xD7FF))
-				|| ((c >= 0xE000) && (c <= 0xFFFD))
-				|| ((c >= 0x10000) && (c <= 0x10FFFF))) {
+		if ((c == 0x9) || (c == 0xA) || (c == 0xD) || ((c >= 0x20) && (c <= 0xD7FF)) || ((c >= 0xE000) && (c <= 0xFFFD)) || ((c >= 0x10000) && (c <= 0x10FFFF))) {
 			return false;
 		}
 		return true;

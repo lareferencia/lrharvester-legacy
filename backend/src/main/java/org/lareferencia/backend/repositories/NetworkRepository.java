@@ -34,10 +34,8 @@ public interface NetworkRepository extends JpaRepository<Network, Long> {
 
 	Page<Network> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
-	Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution,
-			Pageable pageable);
+	Page<Network> findByInstitutionNameIgnoreCaseContaining(String institution, Pageable pageable);
 
-	Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression,
-			Pageable pageRequest);
+	Page<Network> findByAcronymIgnoreCaseContaining(String filterExpression, Pageable pageRequest);
 
 }

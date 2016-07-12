@@ -37,8 +37,7 @@ public class TransformerImpl implements ITransformer {
 	}
 
 	@Override
-	public boolean transform(OAIRecord record, ValidatorResult validationResult)
-			throws Exception {
+	public boolean transform(OAIRecord record, ValidatorResult validationResult) throws Exception {
 
 		boolean anyTransformationOccurred = false;
 
@@ -49,10 +48,7 @@ public class TransformerImpl implements ITransformer {
 				// o si se especifica expresamente
 				anyTransformationOccurred |= rule.transform(record);
 			} catch (Exception e) {
-				throw new Exception(
-						"Ocurrio un problema durante la transformacion de "
-								+ record.getIdentifier() + " con la regla: "
-								+ rule.getClass().getName(), e);
+				throw new Exception("Ocurrio un problema durante la transformacion de " + record.getIdentifier() + " con la regla: " + rule.getClass().getName(), e);
 			}
 		}
 

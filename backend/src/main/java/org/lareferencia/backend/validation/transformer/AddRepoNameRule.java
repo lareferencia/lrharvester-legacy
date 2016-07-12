@@ -68,16 +68,11 @@ public class AddRepoNameRule extends AbstractTransformerRule {
 
 		// Si está configurado agrega a la metadata el reponame y el instname
 		if (doRepoNameAppend) {
-			repositoryNameHelper.appendNameToMetadata(metadata, repoNameField,
-					repoNamePrefix,
-					record.getSnapshot().getNetwork().getName(),
-					doRepoNameReplace);
+			repositoryNameHelper.appendNameToMetadata(metadata, repoNameField, repoNamePrefix, record.getSnapshot().getNetwork().getName(), doRepoNameReplace);
 		}
 
 		if (doInstNameAppend)
-			repositoryNameHelper.appendNameToMetadata(metadata, instNameField,
-					instNamePrefix, record.getSnapshot().getNetwork()
-							.getInstitutionName(), doInstNameReplace);
+			repositoryNameHelper.appendNameToMetadata(metadata, instNameField, instNamePrefix, record.getSnapshot().getNetwork().getInstitutionName(), doInstNameReplace);
 
 		return doInstNameAppend || doRepoNameAppend;
 	}

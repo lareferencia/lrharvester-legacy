@@ -26,11 +26,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 
-
-
-
- 
-
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EvaluatorTests {
@@ -43,19 +38,20 @@ public class EvaluatorTests {
 			+ "<dc:type xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.driver-repository.eu/\">info:eu-repo/semantics/publishedVersion</dc:type>"
 			+ "</oai_dc:dc>" + "</metadata>";
 
-	
-	 @Test 
-	 public void test() throws Exception {
-		 
-		 OAIRecordMetadata metadata = new OAIRecordMetadata("dumyid", xmlstring);
-			
-		 FieldExpressionEvaluator evaluator = new FieldExpressionEvaluator(QuantifierValues.ONE_OR_MORE);
-		
-		 System.out.println ("dc:type=info:eu-repo/semantics/article -> " + evaluator.evaluate("dc:type=='info:eu-repo/semantics/article' OR dc:type=='info:eu-repo/semantics/doctoralThesis' OR dc:type=='info:eu-repo/semantics/masterThesis' OR dc:type=='info:eu-repo/semantics/report'", metadata));
-		
-	 
-	 }
-	
-	 
+	@Test
+	public void test() throws Exception {
+
+		OAIRecordMetadata metadata = new OAIRecordMetadata("dumyid", xmlstring);
+
+		FieldExpressionEvaluator evaluator = new FieldExpressionEvaluator(QuantifierValues.ONE_OR_MORE);
+
+		System.out
+				.println("dc:type=info:eu-repo/semantics/article -> "
+						+ evaluator
+								.evaluate(
+										"dc:type=='info:eu-repo/semantics/article' OR dc:type=='info:eu-repo/semantics/doctoralThesis' OR dc:type=='info:eu-repo/semantics/masterThesis' OR dc:type=='info:eu-repo/semantics/report'",
+										metadata));
+
+	}
 
 }

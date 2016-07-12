@@ -43,8 +43,7 @@ public abstract class MedatadaDOMHelper {
 
 	private static Element namespaceElement = null;
 	private static DocumentBuilderFactory factory;
-	private static TransformerFactory xformFactory = TransformerFactory
-			.newInstance();
+	private static TransformerFactory xformFactory = TransformerFactory.newInstance();
 	private static HashMap<String, DocumentBuilder> builderMap = new HashMap<String, DocumentBuilder>();
 
 	static {
@@ -52,11 +51,8 @@ public abstract class MedatadaDOMHelper {
 			factory = DocumentBuilderFactory.newInstance();
 			factory.setNamespaceAware(true);
 
-			DOMImplementation impl = obtainThreadBuider()
-					.getDOMImplementation();
-			Document namespaceHolder = impl.createDocument(
-					"http://www.openarchives.org/OAI/2.0/oai_dc",
-					"oaidc:namespaceHolder", null);
+			DOMImplementation impl = obtainThreadBuider().getDOMImplementation();
+			Document namespaceHolder = impl.createDocument("http://www.openarchives.org/OAI/2.0/oai_dc", "oaidc:namespaceHolder", null);
 
 			/**
 			 * TODO: Este listado comprende los namespaces que es capaza de
@@ -65,38 +61,29 @@ public abstract class MedatadaDOMHelper {
 			 * DC
 			 */
 			namespaceElement = namespaceHolder.getDocumentElement();
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:oai_dc",
-					"http://www.openarchives.org/OAI/2.0/oai_dc/");
-			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-					"xmlns:dc", "http://purl.org/dc/elements/1.1/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
+			namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:dc", "http://purl.org/dc/elements/1.1/");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static NodeList getNodeList(Node node, String xpath)
-			throws TransformerException {
+	public static NodeList getNodeList(Node node, String xpath) throws TransformerException {
 		return XPathAPI.selectNodeList(node, xpath, namespaceElement);
 	}
 
-	public static String getSingleString(Node node, String xpath)
-			throws TransformerException {
+	public static String getSingleString(Node node, String xpath) throws TransformerException {
 		return XPathAPI.eval(node, xpath, namespaceElement).str();
 	}
 
-	public static XObject getSingleXObjet(Node node, String xpath)
-			throws TransformerException {
+	public static XObject getSingleXObjet(Node node, String xpath) throws TransformerException {
 		return XPathAPI.eval(node, xpath, namespaceElement);
 	}
 
-	public static Document parseXML(String xmlstring)
-			throws ParserConfigurationException, SAXException, IOException {
+	public static Document parseXML(String xmlstring) throws ParserConfigurationException, SAXException, IOException {
 		InputSource is = new InputSource();
 		is.setCharacterStream(new StringReader(xmlstring));
 
@@ -105,8 +92,7 @@ public abstract class MedatadaDOMHelper {
 
 	protected static DocumentBuilder obtainThreadBuider() {
 
-		DocumentBuilder builder = builderMap.get(Thread.currentThread()
-				.getName());
+		DocumentBuilder builder = builderMap.get(Thread.currentThread().getName());
 		if (builder == null) {
 			try {
 				builder = factory.newDocumentBuilder();

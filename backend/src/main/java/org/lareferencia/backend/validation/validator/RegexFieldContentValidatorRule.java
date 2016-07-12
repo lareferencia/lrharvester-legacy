@@ -22,8 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @ToString(exclude = { "pattern" })
-public class RegexFieldContentValidatorRule extends
-		AbstractValidatorFieldContentRule {
+public class RegexFieldContentValidatorRule extends AbstractValidatorFieldContentRule {
 
 	private static final int MAX_EXPECTED_LENGTH = 255;
 
@@ -47,8 +46,7 @@ public class RegexFieldContentValidatorRule extends
 			result.setReceivedValue("NULL");
 			result.setValid(false);
 		} else {
-			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content
-					.substring(0, MAX_EXPECTED_LENGTH) : content);
+			result.setReceivedValue(content.length() > MAX_EXPECTED_LENGTH ? content.substring(0, MAX_EXPECTED_LENGTH) : content);
 			result.setValid(pattern.matcher(content).matches());
 		}
 

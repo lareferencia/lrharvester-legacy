@@ -18,8 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "network_property", collectionResourceRel = "property")
-public interface NetworkPropertyRepository extends
-		JpaRepository<NetworkProperty, Long> {
+public interface NetworkPropertyRepository extends JpaRepository<NetworkProperty, Long> {
 	/*
 	 * List<Network> findByPublishedOrderByNameAsc(boolean published); Network
 	 * findByAcronym(String acronym);

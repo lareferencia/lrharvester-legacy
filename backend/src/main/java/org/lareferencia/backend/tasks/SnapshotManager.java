@@ -58,8 +58,7 @@ public class SnapshotManager {
 
 		for (Long snapshotID : workersBySnapshotID.keySet()) {
 
-			result.add(snapshotID.toString() + " :: "
-					+ workersBySnapshotID.get(snapshotID).getStatus());
+			result.add(snapshotID.toString() + " :: " + workersBySnapshotID.get(snapshotID).getStatus());
 		}
 		return result;
 	}
@@ -76,8 +75,7 @@ public class SnapshotManager {
 		scheduleAllNetworks();
 	}
 
-	public void registerWorkerBeginSnapshot(Long snapshotID,
-			ISnapshotWorker worker) {
+	public void registerWorkerBeginSnapshot(Long snapshotID, ISnapshotWorker worker) {
 		workersBySnapshotID.put(snapshotID, worker);
 	}
 
@@ -99,8 +97,7 @@ public class SnapshotManager {
 		Collection<Network> storedNetworks = networkRepository.findAll();
 
 		for (Network storedNetwork : storedNetworks) {
-			ISnapshotWorker worker = (ISnapshotWorker) applicationContext
-					.getBean("snapshotWorker");
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 			worker.setNetworkID(storedNetwork.getId());
 			worker.setManager(this);
 			scheduler.schedule(worker, new SnapshotCronTrigger(storedNetwork));
@@ -117,10 +114,8 @@ public class SnapshotManager {
 			NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
 
 			if (snapshot != null
-					&& (snapshot.getStatus().equals(SnapshotStatus.HARVESTING)
-							|| snapshot.getStatus().equals(
-									SnapshotStatus.INDEXING) || snapshot
-							.getStatus().equals(SnapshotStatus.RETRYING))) {
+					&& (snapshot.getStatus().equals(SnapshotStatus.HARVESTING) || snapshot.getStatus().equals(SnapshotStatus.INDEXING) || snapshot.getStatus().equals(
+							SnapshotStatus.RETRYING))) {
 				snapshot.setStatus(SnapshotStatus.HARVESTING_STOPPED);
 				snapshotRepository.save(snapshot);
 				snapshotRepository.flush();
@@ -133,8 +128,7 @@ public class SnapshotManager {
 	public synchronized void lauchHarvesting(Long networkD) {
 		// TODO: debiera chequear la existencia de la red
 
-		ISnapshotWorker worker = (ISnapshotWorker) applicationContext
-				.getBean("snapshotWorker");
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 		worker.setHarvestBySet(false);
 		worker.setNetworkID(networkD);
 		worker.setManager(this);
@@ -144,8 +138,7 @@ public class SnapshotManager {
 	public synchronized void lauchSetBySetHarvesting(Long networkD) {
 		// TODO: debiera chequear la existencia de la red
 
-		ISnapshotWorker worker = (ISnapshotWorker) applicationContext
-				.getBean("snapshotWorker");
+		ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 		worker.setHarvestBySet(true);
 		worker.setNetworkID(networkD);
 		worker.setManager(this);
@@ -156,10 +149,8 @@ public class SnapshotManager {
 
 		NetworkSnapshot snapshot = snapshotRepository.findOne(snapshotID);
 
-		if (snapshot != null
-				&& snapshot.getStatus() == SnapshotStatus.HARVESTING_STOPPED) {
-			ISnapshotWorker worker = (ISnapshotWorker) applicationContext
-					.getBean("snapshotWorker");
+		if (snapshot != null && snapshot.getStatus() == SnapshotStatus.HARVESTING_STOPPED) {
+			ISnapshotWorker worker = (ISnapshotWorker) applicationContext.getBean("snapshotWorker");
 			worker.setSnapshotID(snapshotID);
 			worker.setManager(this);
 			scheduler.schedule(worker, new Date());

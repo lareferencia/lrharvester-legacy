@@ -89,16 +89,14 @@ public class RuleJSONSerializationTest {
 		trule.setValidationRule(ccrule);
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerSubtypes(FieldContentNormalizeRule.class,
-				ControlledValueFieldContentValidatorRule.class);
+		mapper.registerSubtypes(FieldContentNormalizeRule.class, ControlledValueFieldContentValidatorRule.class);
 
 		String jsonString = mapper.writeValueAsString(trule);
 		System.out.println(jsonString);
 
 		SchemaFactoryWrapper ruleWrapper = new SchemaFactoryWrapper();
 
-		mapper.acceptJsonFormatVisitor(FieldContentNormalizeRule.class,
-				ruleWrapper);
+		mapper.acceptJsonFormatVisitor(FieldContentNormalizeRule.class, ruleWrapper);
 
 		JsonSchema schema = ruleWrapper.finalSchema();
 		System.out.println(mapper.writeValueAsString(schema));

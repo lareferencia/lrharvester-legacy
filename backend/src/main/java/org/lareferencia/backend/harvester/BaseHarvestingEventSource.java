@@ -16,8 +16,7 @@ package org.lareferencia.backend.harvester;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BaseHarvestingEventSource implements
-		IHarvestingEventSource {
+public abstract class BaseHarvestingEventSource implements IHarvestingEventSource {
 
 	protected List<IHarvestingEventListener> listeners;
 

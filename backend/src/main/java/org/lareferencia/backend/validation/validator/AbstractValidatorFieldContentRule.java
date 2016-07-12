@@ -37,8 +37,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @Getter
 @Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-public abstract class AbstractValidatorFieldContentRule extends
-		AbstractValidatorRule implements IValidatorFieldContentRule {
+public abstract class AbstractValidatorFieldContentRule extends AbstractValidatorRule implements IValidatorFieldContentRule {
 
 	@JsonProperty("fieldname")
 	private String fieldname;
@@ -67,8 +66,7 @@ public abstract class AbstractValidatorFieldContentRule extends
 		for (int i = 0; i < occurrences.size(); i++) {
 
 			// Se valida cada ocurrencia y se obtiene el resultado
-			ContentValidatorResult occurrenceResult = this
-					.validate(occurrences.get(i));
+			ContentValidatorResult occurrenceResult = this.validate(occurrences.get(i));
 
 			// Se agrega a la lista de ocurrencias
 			results.add(occurrenceResult);

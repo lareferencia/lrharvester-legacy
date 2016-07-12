@@ -17,8 +17,7 @@ class Translation {
 	@JsonProperty("replace")
 	String replace;
 
-	public Translation(@JsonProperty("search") String search,
-			@JsonProperty("replace") String replace) {
+	public Translation(@JsonProperty("search") String search, @JsonProperty("replace") String replace) {
 		super();
 		this.search = search;
 		this.replace = replace;

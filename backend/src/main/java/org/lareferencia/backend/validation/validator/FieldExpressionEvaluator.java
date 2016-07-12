@@ -20,14 +20,11 @@ import com.fathzer.soft.javaluator.Parameters;
 public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 
 	/** The negate unary operator. */
-	public final static Operator NEGATE = new Operator("NOT", 1,
-			Operator.Associativity.RIGHT, 3);
+	public final static Operator NEGATE = new Operator("NOT", 1, Operator.Associativity.RIGHT, 3);
 	/** The logical AND operator. */
-	private static final Operator AND = new Operator("AND", 2,
-			Operator.Associativity.LEFT, 2);
+	private static final Operator AND = new Operator("AND", 2, Operator.Associativity.LEFT, 2);
 	/** The logical OR operator. */
-	public final static Operator OR = new Operator("OR", 2,
-			Operator.Associativity.LEFT, 1);
+	public final static Operator OR = new Operator("OR", 2, Operator.Associativity.LEFT, 1);
 
 	public final static Pattern PATTERN = Pattern.compile("(.+)(==|=%)'(.*)'");
 
@@ -40,7 +37,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 		PARAMETERS.add(AND);
 		PARAMETERS.add(OR);
 		PARAMETERS.add(NEGATE);
-		
+
 		PARAMETERS.addExpressionBracket(BracketPair.PARENTHESES);
 	}
 
@@ -50,12 +47,12 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 		super(PARAMETERS);
 		this.quantifier = quantifier;
 	}
-	
+
 	@Getter
 	List<ContentValidatorResult> evaluationResults;
-	
-	
-	@Override public Boolean evaluate(String expression, Object evaluationContext) {
+
+	@Override
+	public Boolean evaluate(String expression, Object evaluationContext) {
 		evaluationResults = new ArrayList<ContentValidatorResult>();
 		return super.evaluate(expression, evaluationContext);
 	};
@@ -74,74 +71,72 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 
 			String fieldName = matcher.group(1);
 			String testValue = matcher.group(3);
-			String operator  = matcher.group(2);
+			String operator = matcher.group(2);
 
 			int validOccurrencesCount = 0;
-			
+
 			int occurrencesSize = 0;
 
 			for (String fieldValue : metadata.getFieldOcurrences(fieldName)) {
-				
-				occurrencesSize++;
-				
-				ContentValidatorResult result = new ContentValidatorResult();
-				result.setReceivedValue( fieldName + " = "+ fieldValue );
-				result.setValid(false);
 
+				occurrencesSize++;
+
+				ContentValidatorResult result = new ContentValidatorResult();
+				result.setReceivedValue(fieldName + " = " + fieldValue);
+				result.setValid(false);
 
 				switch (operator) {
 
-					case "==": /* caso igualdad strings */
-						if (testValue.equals(fieldValue)) {
-							result.setValid( true );
-							validOccurrencesCount++;
-						}
-						break;
-	
-					case "=%": /* caso expresiones regulares */
-						if (Pattern.matches(testValue, fieldValue)) {
-							result.setValid( true );
-							validOccurrencesCount++;
-						}
-						break;
-	
-					default:
-						break;
+				case "==": /* caso igualdad strings */
+					if (testValue.equals(fieldValue)) {
+						result.setValid(true);
+						validOccurrencesCount++;
 					}
-				
+					break;
+
+				case "=%": /* caso expresiones regulares */
+					if (Pattern.matches(testValue, fieldValue)) {
+						result.setValid(true);
+						validOccurrencesCount++;
+					}
+					break;
+
+				default:
+					break;
+				}
+
 				evaluationResults.add(result);
 
 			}
 
-	
-			
-			/* de acuerdo al cuantificador y la cantidad de reglas válidas decide si la reglas es válida */
+			/*
+			 * de acuerdo al cuantificador y la cantidad de reglas válidas
+			 * decide si la reglas es válida
+			 */
 			switch (quantifier) {
 
-				case ONE_ONLY:
-					return validOccurrencesCount == 1;
-		
-				case ONE_OR_MORE:
-					return validOccurrencesCount >= 1;
-	
-				case ZERO_OR_MORE:
-					return validOccurrencesCount >= 0;
-		
-				case ZERO_ONLY:
-					return validOccurrencesCount == 0;
+			case ONE_ONLY:
+				return validOccurrencesCount == 1;
 
-				case ALL:
-					return validOccurrencesCount == occurrencesSize;
-	
-				default:
-					return false;
+			case ONE_OR_MORE:
+				return validOccurrencesCount >= 1;
+
+			case ZERO_OR_MORE:
+				return validOccurrencesCount >= 0;
+
+			case ZERO_ONLY:
+				return validOccurrencesCount == 0;
+
+			case ALL:
+				return validOccurrencesCount == occurrencesSize;
+
+			default:
+				return false;
 
 			}
-			
-		
 
 		} else {
-			
+
 			System.err.println("Error en la expresión de regla: " + literal);
 			return false;
 		}
@@ -149,8 +144,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 	}
 
 	@Override
-	protected Boolean evaluate(Operator operator, Iterator<Boolean> operands,
-			Object metadataObject) {
+	protected Boolean evaluate(Operator operator, Iterator<Boolean> operands, Object metadataObject) {
 		if (operator == NEGATE) {
 			return !operands.next();
 		} else if (operator == OR) {

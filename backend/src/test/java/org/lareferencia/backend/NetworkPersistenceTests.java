@@ -83,8 +83,7 @@ public class NetworkPersistenceTests {
 		assertEquals(1, loadedNN.getOrigins().size());
 		assertEquals(o, loadedNN.getOrigins().iterator().next());
 
-		assertEquals(s, loadedNN.getOrigins().iterator().next().getSets()
-				.iterator().next());
+		assertEquals(s, loadedNN.getOrigins().iterator().next().getSets().iterator().next());
 
 	}
 

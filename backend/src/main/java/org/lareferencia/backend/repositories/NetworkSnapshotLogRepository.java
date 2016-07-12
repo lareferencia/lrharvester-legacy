@@ -24,12 +24,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
 @RepositoryRestResource(path = "log", collectionResourceRel = "log", exported = true)
-public interface NetworkSnapshotLogRepository extends
-		JpaRepository<NetworkSnapshotLog, Long> {
+public interface NetworkSnapshotLogRepository extends JpaRepository<NetworkSnapshotLog, Long> {
 
 	@Query("select nsl from NetworkSnapshotLog nsl where nsl.snapshot.id = :snapshot_id order by nsl.id asc")
-	Page<NetworkSnapshotLog> findBySnapshotId(
-			@Param("snapshot_id") Long snapshot_id, Pageable page);
+	Page<NetworkSnapshotLog> findBySnapshotId(@Param("snapshot_id") Long snapshot_id, Pageable page);
 
 	@Modifying
 	@Transactional
