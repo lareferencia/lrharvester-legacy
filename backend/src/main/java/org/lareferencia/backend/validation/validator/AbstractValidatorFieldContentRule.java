@@ -63,16 +63,24 @@ public abstract class AbstractValidatorFieldContentRule extends AbstractValidato
 
 		List<String> occurrences = metadata.getFieldOcurrences(fieldname);
 
-		for (int i = 0; i < occurrences.size(); i++) {
+		for (String fieldValue : occurrences) {
 
 			// Se valida cada ocurrencia y se obtiene el resultado
-			ContentValidatorResult occurrenceResult = this.validate(occurrences.get(i));
+			ContentValidatorResult occurrenceResult = this.validate(fieldValue);
 
 			// Se agrega a la lista de ocurrencias
 			results.add(occurrenceResult);
 
 			// Se suman las ocurrencias válidas
 			validOccurrencesCount += occurrenceResult.isValid() ? 1 : 0;
+		}
+		
+		// SI NO HAY OCCRS LO INDICA COMO UN VALOR DE RESULTADO
+		if ( occurrences.size() == 0 ) {
+			ContentValidatorResult occurrenceResult = new ContentValidatorResult();
+			occurrenceResult.setReceivedValue(fieldname + " :: " + "OCCRS = 0");
+			occurrenceResult.setValid(false);
+			results.add(occurrenceResult);
 		}
 
 		boolean isRuleValid;

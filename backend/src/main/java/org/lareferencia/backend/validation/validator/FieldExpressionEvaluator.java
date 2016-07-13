@@ -76,8 +76,12 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 			int validOccurrencesCount = 0;
 
 			int occurrencesSize = 0;
+			
+			
+			List<String> occrs =  metadata.getFieldOcurrences(fieldName);
+			
 
-			for (String fieldValue : metadata.getFieldOcurrences(fieldName)) {
+			for (String fieldValue :occrs) {
 
 				occurrencesSize++;
 
@@ -107,6 +111,14 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 
 				evaluationResults.add(result);
 
+			}
+			
+			// SI NO HAY OCCRS LO INDICA COMO UN VALOR DE RESULTADO
+			if ( occrs.size() == 0 ) {
+				ContentValidatorResult result = new ContentValidatorResult();
+				result.setReceivedValue(fieldName + " :: " + "OCCRS = 0");
+				result.setValid(false);
+				evaluationResults.add(result);
 			}
 
 			/*
