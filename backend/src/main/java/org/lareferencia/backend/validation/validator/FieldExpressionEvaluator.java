@@ -82,7 +82,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 				occurrencesSize++;
 
 				ContentValidatorResult result = new ContentValidatorResult();
-				result.setReceivedValue(fieldName + " = " + fieldValue);
+				result.setReceivedValue(fieldName + " :: " + testValue + " " + operator + " " + fieldValue);
 				result.setValid(false);
 
 				switch (operator) {
