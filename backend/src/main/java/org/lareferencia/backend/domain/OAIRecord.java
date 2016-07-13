@@ -36,6 +36,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.util.RepositoryNameHelper;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -46,6 +47,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @JsonIgnoreProperties({ "publishedXML", "snapshot", "datestamp", "metadata" })
 public class OAIRecord extends AbstractEntity {
+	
+	@Getter
+	@Setter
+	@Transient 
+	private String institutionName;
+	
+	@Getter
+	@Setter
+	@Transient 
+	private String repositoryName;
+	
 
 	@Transient
 	private OAIRecordMetadata metadata;
@@ -106,7 +118,8 @@ public class OAIRecord extends AbstractEntity {
 		else
 			return "00" + "_" + DigestUtils.md5Hex(identifier);
 	}
-
+	
+	
 	@PrePersist
 	private void updatePublishedXML() {
 
@@ -114,4 +127,8 @@ public class OAIRecord extends AbstractEntity {
 		if (metadata != null)
 			publishedXML = metadata.toString();
 	}
+	
+	
+	
+	
 }

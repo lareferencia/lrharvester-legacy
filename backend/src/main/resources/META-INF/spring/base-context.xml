@@ -32,6 +32,12 @@
 
 	<context:component-scan base-package="org.lareferencia.backend" />
 	
+	<bean id="repositoryNameHelper" class="org.lareferencia.backend.util.RepositoryNameHelper">
+		<property name="repositoryFieldName" value="${reponame.fieldname}"/>
+		<property name="repositoryPrefix" value="${reponame.prefix}"/>
+		<property name="institutionFieldName" value="${instname.fieldname}"/>
+		<property name="institutionPrefix" value="${instname.prefix}"/>		
+  	</bean>
 	
 	
 	

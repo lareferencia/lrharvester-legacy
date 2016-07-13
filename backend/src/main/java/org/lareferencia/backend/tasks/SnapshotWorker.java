@@ -40,6 +40,7 @@ import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
 import org.lareferencia.backend.repositories.OAIRecordRepository;
 import org.lareferencia.backend.repositories.RecordValidationResultRepository;
 import org.lareferencia.backend.repositories.ValidatorRepository;
+import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.validation.ValidationManager;
 import org.lareferencia.backend.validation.transformer.ITransformer;
 import org.lareferencia.backend.validation.validator.IValidator;
@@ -78,6 +79,9 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 
 	@Autowired
 	private OAIRecordRepository recordRepository;
+	
+	@Autowired
+	private RepositoryNameHelper repositoryNameHelper;
 
 	private IHarvester harvester;
 
@@ -371,11 +375,15 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 							record.setStatus(RecordStatus.INVALID);
 						}
 
+						
+						// Se agregan cargan inst y reponame desde la metadata
+						repositoryNameHelper.fillRepositoryAndInstitutionName(record);
+						
 						// // SE ALMACENA EL REGISTRO
 						recordRepository.save(record);
 						// recordRepository.flush(); // TODO: Optimizar esto. es
 						// realmente necesario?
-
+						
 						// Se almacenan las estadísticas de cosecha
 						validationResults.add(new RecordValidationResult(record, validationResult));
 

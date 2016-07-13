@@ -1,26 +1,43 @@
 package org.lareferencia.backend.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import lombok.Setter;
 
+import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 
+@Component
 public class RepositoryNameHelper {
 
-	private Pattern pattern = null;
-
+	//private Pattern pattern = null;
+	
+	@Setter
+	private String repositoryFieldName;
+	
+	@Setter
+	private String repositoryPrefix;
+	
+	@Setter
+	private String institutionFieldName;
+	
+	@Setter
+	private String institutionPrefix;
+	
+	
 	public RepositoryNameHelper() {
+		
+		/*
 		try {
 			pattern = Pattern.compile(DOMAIN_NAME_PATTERN_STR);
 		} catch (PatternSyntaxException e) {
 			System.err.println("RepositoryNameHelper::Error en el patron: " + DOMAIN_NAME_PATTERN_STR);
 
-		}
+		}*/
 
 	}
-
+/*
 	public void setDetectREPattern(String patternString) {
 
 		try {
@@ -31,7 +48,6 @@ public class RepositoryNameHelper {
 		}
 	}
 
-	public static String UNKNOWN = "No clasificados";
 
 	public static final String DOMAIN_NAME_PATTERN_STR = "[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})";
 	private static final String NAME_PATTERN_STR = "[A-Za-z0-9-]{4,}";
@@ -47,8 +63,19 @@ public class RepositoryNameHelper {
 
 		return result;
 	}
+*/
+	public static String UNKNOWN = "No clasificados";
+	
+	
+	public void fillRepositoryAndInstitutionName(OAIRecord record) {
+		
+		record.setRepositoryName( this.extractNameFromMetadata(record.getMetadata(), repositoryFieldName, repositoryPrefix) );
+		record.setInstitutionName( this.extractNameFromMetadata(record.getMetadata(), institutionFieldName, institutionPrefix) );
 
-	static public String extractNameFromMetadata(OAIRecordMetadata metadata, String fieldname, String prefix) {
+	}
+
+	
+	public String extractNameFromMetadata(OAIRecordMetadata metadata, String fieldname, String prefix) {
 
 		String name = UNKNOWN;
 

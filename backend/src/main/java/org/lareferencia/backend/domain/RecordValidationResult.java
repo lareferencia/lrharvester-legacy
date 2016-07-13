@@ -16,13 +16,14 @@ import org.lareferencia.backend.util.RepositoryNameHelper;
 import org.lareferencia.backend.validation.validator.ContentValidatorResult;
 import org.lareferencia.backend.validation.validator.ValidatorResult;
 import org.lareferencia.backend.validation.validator.ValidatorRuleResult;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.Dynamic;
 
 @Getter
 @Setter
 public class RecordValidationResult {
-
+	
 	public static final String[] FACET_FIELDS = { "record_is_valid", "record_is_transformed", "valid_rules", "invalid_rules", "institution_name", "repository_name" };
 	public static final String SNAPSHOT_ID_FIELD = "snapshot_id";
 	public static final String INVALID_RULE_SUFFIX = "_rule_invalid_occrs";
@@ -92,8 +93,8 @@ public class RecordValidationResult {
 		setSpec = record.getMetadata().getSetSpec();
 		isTransformed = record.isWasTransformed();
 
-		repositoryName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "reponame:");
-		institutionName = RepositoryNameHelper.extractNameFromMetadata(record.getMetadata(), "dc:source", "instname:");
+		repositoryName = record.getRepositoryName();
+		institutionName = record.getInstitutionName();
 
 		snapshotID = record.getSnapshot().getId();
 		networkAcronym = record.getSnapshot().getNetwork().getAcronym();
