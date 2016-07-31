@@ -1,0 +1,19 @@
+<div class="modal-header">
+	<h3 class="modal-title">Vitácora de la cosecha</h3>
+</div>
+
+
+<div class="modal-body">
+
+	<table ng-table="logTable" class="table table-bordered table-striped table-condensed" export-csv="csvHistorial" separator=";">
+		<tr ng-repeat="entry in $data">
+		
+		  <td  data-title="'Hora'">{{entry.timestamp}}</td>
+	      <td  data-title="'Mensaje'">{{entry.message}}</td>
+	   
+	</table>
+		
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>

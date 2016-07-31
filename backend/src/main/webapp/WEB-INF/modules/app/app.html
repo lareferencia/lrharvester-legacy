@@ -5,10 +5,15 @@
 		<h4>Listado de repositorios disponibles</h4>
 		<p>Puede acciones sobre un grupo de repositorios seleccionados utilizando los checkbox de la tabla.</p>
 
+		<a ng-click="networksTableRefreshCallback()" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-refresh"></span> Actualizar</a>
 
-		<a ui-sref="network.new" class="btn btn-sm btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Nuevo repositorio</a>
+		<a ui-sref="network.new" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo repositorio</a>
+		
+		<timer interval="5000">{{hours}} hour{{hoursS}}, {{minutes}} minute{{minutesS}}, {{seconds}} second{{secondsS}}.</timer>
+		<button class="btn btn-sm btn-primary pull-right" ng-click="startTimer('poll-server')" ng-if="!timerRunning">Encender actualización</button>
+        <button class="btn btn-sm btn-primary pull-right" ng-click="stopTimer('poll-server')" ng-if="timerRunning">Apagar actualización</button>
 
-		<div class="btn-group" uib-dropdown>
+		<div class="btn-group pull-left" uib-dropdown>
 			<button type="button" class="btn btn-sm btn-success" uib-dropdown-toggle>
 				Acciones <span class="caret"></span>
 			</button>
@@ -16,14 +21,12 @@
 				<li role="menuitem"><a href="" ng-click="executeNetworkAction('START_HARVESTING', currentSelectedNetworkList(), networksTableRefreshCallback)">Cosechar</a></li>
 				<li role="menuitem"><a href="" ng-click="executeNetworkAction('STOP_HARVESTING', currentSelectedNetworkList(), networksTableRefreshCallback)">Detener cosecha </a></li>
 				
-				<li role="menuitem"><a href="#">Indexar Vufind</a></li>
-				<li role="menuitem"><a href="#">Indexar XOAI</a></li>
+				<li role="menuitem"><a href="" ng-click="executeNetworkAction('ADD_VUFIND_INDEX', network.networkID, networksTableRefreshCallback)">Indexar Vufind</a></li>
+				<li role="menuitem"><a href="" ng-click="executeNetworkAction('ADD_XOAI_INDEX', network.networkID, networksTableRefreshCallback)">Indexar XOAI</a></li>
 				<li class="divider"></li>
-				<li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
-				<li role="menuitem"><a href="#">Retirar de Vufind</a></li>
-				<li role="menuitem"><a href="#">Retirar de XOAI</a></li>
-				<li class="divider"></li>
-				<li role="menuitem"><a href="#">Borrar</a></li>
+				<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos e información de diagnóstico de todos los snapshots excepto el último válido. Se conservará los datos básicos de snapshots antiguos válidos." ng-click="executeNetworkAction('CLEAN_NETWORK', currentSelectedNetworkList(), networksTableRefreshCallback)">Limpiar snapshots antiguos</a></li>
+				<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos indexados en Vufind."  ng-click="executeNetworkAction('DELETE_VUFIND_INDEX', network.networkID, networksTableRefreshCallback)">Retirar de Vufind</a></li>
+				<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos indexados en XOAI OAI-PMH Provider"  ng-click="executeNetworkAction('DELETE_XOAI_INDEX', network.networkID, networksTableRefreshCallback)">Retirar de XOAI</a></li>
 			</ul>
 		</div>
 	</div>
@@ -42,13 +45,13 @@
 				<td style="width: 150px;" data-title="'Repositorio'" filter="{name: 'text'}" sortable="'name'">{{network.name}}</td>
 				<td style="width: 300px;" data-title="'Institución'" filter="{institution: 'text'}" sortable="'institutionName'">{{network.institution}}</td>
 				<td data-title="'Última cosecha'">
-					<h5>{{network.lstSnapshotStatus}}</h5>
+					<h5>{{network.lstSnapshotStatus | Status }}</h5>
 					<div class="small">{{network.lstSize}} | V: {{network.lstValidSize}} | T: {{network.lstTransformedSize}}</div>
 					<div class="small">
 						<i class="fa fa-clock-o"> </i> <span class="c-white">{{network.lstSnapshotDate}}</span>
 					</div>
 					<div class="small">
-							<i class="fa fa-history" aria-hidden="true"></i> <span class="c-white"><button class="btn btn-xs btn-info" ui-sref="diagnose({ snapshotID: network.lgkSnapshotID })">Historial</button></span>
+							<i class="fa fa-history" aria-hidden="true"></i> <span class="c-white"><button class="btn btn-xs btn-info" ng-click="openHistory(network.networkID)">Historial</button></span>
 					</div>
 				</td>
 				<td data-title="'Última cosecha exitosa'">
@@ -78,23 +81,22 @@
 							<li role="menuitem"><a href="" ng-click="executeNetworkAction('START_HARVESTING', network.networkID, networksTableRefreshCallback)">Cosechar</a></li>
 							<li role="menuitem"><a href="" ng-click="executeNetworkAction('STOP_HARVESTING', network.networkID, networksTableRefreshCallback)">Detener cosecha </a></li>
 							<li class="divider"></li>
-							<li role="menuitem"><a href="#">Limpiar snapshots antiguos</a></li>
-							<li role="menuitem"><a href="#">Indexar Vufind</a></li>
-							<li role="menuitem"><a href="#">Indexar XOAI</a></li>
+							<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos e información de diagnóstico de todos los snapshots excepto el último válido. Se conservará los datos básicos de snapshots antiguos válidos." ng-click="executeNetworkAction('CLEAN_NETWORK', network.networkID, networksTableRefreshCallback)">Limpiar snapshots antiguos</a></li>
+							<li role="menuitem"><a href="" ng-click="executeNetworkAction('ADD_VUFIND_INDEX', network.networkID, networksTableRefreshCallback)">Indexar Vufind</a></li>
+							<li role="menuitem"><a href="" ng-click="executeNetworkAction('ADD_XOAI_INDEX', network.networkID, networksTableRefreshCallback)">Indexar XOAI</a></li>
 							<li class="divider"></li>
-							<li role="menuitem"><a href="#">Retirar de Vufind</a></li>
-							<li role="menuitem"><a href="#">Retirar de XOAI</a></li>
+							<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos indexados en Vufind."  ng-click="executeNetworkAction('DELETE_VUFIND_INDEX', network.networkID, networksTableRefreshCallback)">Retirar de Vufind</a></li>
+							<li role="menuitem"><a href="" ng-confirm-click="Esta accción eliminará los metadatos indexados en XOAI OAI-PMH Provider"  ng-click="executeNetworkAction('DELETE_XOAI_INDEX', network.networkID, networksTableRefreshCallback)">Retirar de XOAI</a></li>
 							<li class="divider"></li>
+							<li role="menuitem"><a href="" ng-confirm-click="Esta accción borrará la red y todos sus datos sin posibilidad de recuperación."  ng-click="executeNetworkAction('DELETE_NETWORK', network.networkID, networksTableRefreshCallback)">Borrar Red (!!)</a></li>
 						</ul>
 					</div>
 					</p>
 					<p>
 						<button class="btn btn-primary btn-sm" ui-sref="network.edit({ id: network.networkID })">
-							<span class="glyphicon glyphicon-pencil"></span>
+							<span class="glyphicon glyphicon-pencil"></span> Editar
 						</button>
-						<button class="btn btn-danger  btn-sm" ng-click="main.del(network)">
-							<span class="glyphicon glyphicon-trash"></span>
-						</button>
+						
 					</p>
 				</td>
 			</tr>

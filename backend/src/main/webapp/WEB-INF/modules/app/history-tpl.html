@@ -1,0 +1,28 @@
+<div class="modal-header">
+	<h3 class="modal-title">Historial de cosechas</h3>
+</div>
+<div class="modal-body">
+
+	<table ng-table="snapshotsTable" class="table table-bordered table-striped table-condensed" export-csv="csvHistorial" separator=";">
+		<tr ng-repeat="snapshot in $data">
+		
+		  <td  data-title="'ID'">{{snapshot | ObjectID }}</td>	
+		  <td  data-title="'Status'">{{snapshot.status | Status}}</td>	
+		  <td  data-title="'Inicio'" sortable="'startTime'">{{snapshot.startTime}}</td>
+	      <td  data-title="'Final'" sortable="'endTime'">{{snapshot.endTime}}</td>
+	      <td  data-title="'Registros'" >{{snapshot.size}}</td>
+	      <td  data-title="'Validos'" >{{snapshot.validSize}}</td>
+	      <td  data-title="'Trasformados'">{{snapshot.transformedSize}}</td>
+	      <td  data-title="'Borrada'" >{{snapshot.deleted | SiNo}}</td>
+	      <td ng-if="!snapshot.deleted">
+	      		<button class="btn btn-primary  btn-sm" ng-click="openLog(snapshot)">
+					<span>Log</span>
+				</button>
+		  </td>
+		</tr>
+	</table>
+		
+</div>
+<div class="modal-footer">
+	<button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>

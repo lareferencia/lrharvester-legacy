@@ -6,6 +6,14 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return '/rest/network/' + networkID;	
 	  };
 	  
+	  this.networkSnapshotsURLByID = function (networkID) {
+		  return '/rest/network/' + networkID + '/snapshots';	
+	  };
+	  
+	  this.snapshotLogURLByID = function (snapshotID) {
+		  return '/rest/log/search/findBySnapshotId?snapshot_id=' + snapshotID;
+	  };
+	  
 	  this.validatorURLByID = function (id) {
 		  return '/rest/validator/' + id;	
 	  };
@@ -64,15 +72,14 @@ angular.module('rest.url.helper', []).service('RestURLHelper',  [
 		  return entity._links.self.href;
 	  }; 
 	  
-	 /* this.idFromEntity = function (entity) {
-		  return entity._links.self.href;
-	  }; */
 	  
-	  this.networkActionURL = function (action, networkIDs) {
-		  
+	  this.OIDfromEntity = function (entity) {
+		  var splitted_url = entity._links.self.href.split("/");
+  		  return splitted_url[ splitted_url.length - 1 ];
+	  }; 
+	  
+	  this.networkActionURL = function (action, networkIDs) { 
 		  var idsString = networkIDs;
-		  
-		  
 		  return "/private/networkAction/" + action + "/" + idsString;  
 	  };
 	  

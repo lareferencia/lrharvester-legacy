@@ -83,6 +83,8 @@
     <!-- metisMenu JS -->
     <script src="static/libs/metisMenu.min.js"></script>
     
+    <script type="text/javascript" src="static/libs/moment.min.js"></script>
+    <script type="text/javascript" src="static/libs/humanize-duration.js"></script>
     
     <!-- Angular js -->
 	<script type="text/javascript" src="static/libs/angular.min.js"/></script>
@@ -90,6 +92,8 @@
     <script type="text/javascript" src="static/libs/angular-resource.min.js"/></script>
     <script type="text/javascript" src="static/libs/angular-route.min.js"/></script>
     <script type="text/javascript" src="static/libs/angular-animate.min.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-timer.min.js"/></script>
+    
  
     <!-- script src="static/libs/angular-ui-bootstrap.min.js"></script-->
     <script src="static/libs/angular-ui-router.min.js"></script>

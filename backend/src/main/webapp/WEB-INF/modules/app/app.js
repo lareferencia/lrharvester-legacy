@@ -10,6 +10,7 @@ angular.module('app', [
     'ngTable',
     'ui.router',
     'ui.bootstrap',
+    'timer',
     'table.services',
     'rest.url.helper',
     'data.services',
@@ -22,6 +23,58 @@ angular.module('app', [
     'diagnose'
 
 ])
+
+	.filter('Status', function() {
+		return function(input) {
+			
+			switch (input) {
+			case "VALID": return "COSECHA VÁLIDA";
+			case "HARVESTING_FINISHED_ERROR": return "COSECHA INVÁLIDA";
+			case "HARVESTING": return "COSECHANDO ...";
+			case "HARVESTING_STOPPED": return "COSECHA DETENIDA";
+			case "RETRYING": return "REITENTANDO ...";
+			case "INDEXING": return "INDEXANDO ...";
+
+			default:
+				return "DESCONOCIDA";
+			}
+			
+		};
+	})
+	
+	.filter('SiNo', function() {
+    	return function(input) {
+    		return input ? 'Si' : 'No';
+    	};
+    })
+    
+    .filter('ObjectID', function() {
+    	return function(input) {
+    		
+    		var splitted_url = input._links.self.href.split("/");
+    		return splitted_url[ splitted_url.length - 1 ];
+    	};
+    })
+    
+    .directive('ngConfirmClick', [
+		  function() {
+		    return {
+		      priority: 1,
+		      link: function(scope, element, attr) {
+		        var msg = attr.ngConfirmClick || "Are you sure?";
+		        var clickAction = attr.ngClick;
+		        attr.ngClick = "";
+		        element.bind('click', function(event) {
+		          if (window.confirm(msg)) {
+		            scope.$eval(clickAction)
+		          }
+		        });
+		      }
+		    };
+		  }
+	])
+   
+	
     .config(['$stateProvider', function ($stateProvider) {
         'use strict';
 
@@ -36,7 +89,7 @@ angular.module('app', [
             });
     }])
 
-    .controller('app', ['$rootScope', '$scope', '$state', 'TableSrv', 'RestURLHelper', 'DataSrv', function ($rootScope, $scope, $state, TableSrv, RestURLHelper, DataSrv) {
+    .controller('app', ['$rootScope', '$scope', '$state', '$uibModal', 'TableSrv', 'RestURLHelper', 'DataSrv', function ($rootScope, $scope, $state, $uibModal, TableSrv, RestURLHelper, DataSrv) {
         'use strict';
         
         $scope.loggedIn = true;
@@ -72,8 +125,8 @@ angular.module('app', [
          * @param Action
          * @param networkID or networkList
          */	
-         $scope.executeNetworkAction = function (action, networkIDs, success_callback) {
-        	 
+         $scope.executeNetworkAction = function (action, networkIDs, success_callback, must_confim) {
+         	 
         	 if (networkIDs != null && networkIDs != "" ) {
         		 DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { alert("Error en la llamada a networkAction");} );	
         	 }
@@ -95,10 +148,120 @@ angular.module('app', [
         	 
          };
          
+   	  
+         /** 
+     	 * openHistory 
+     	 *     
+     	 **/	
+     	 $scope.openHistory = function (networkID) {
+     	
+     		    var modalInstance = $uibModal.open({
+     		      animation: true,
+     		      templateUrl: 'modules/app/history-tpl.html',
+     		      controller: 'HistoryCtrl',
+     		      size: 'lg',
+     		      resolve: {
+     		  	      networkID: function() { return networkID; }
+     		      }
+   
+     	    });
+     	
+     	    modalInstance.result.then( function () {}, function () {});
+     	   
+     	}; /* fin openRecordDiagnose */ 
+     	
+       
+        /*** Timer ******/
+     	 $scope.timerRunning = true;
+
+         $scope.timerType = '';
+
+         $scope.startTimer = function (){
+             $scope.$broadcast('timer-start');
+             $scope.timerRunning = true;
+         };
+
+         $scope.stopTimer = function (){
+             $scope.$broadcast('timer-stop');
+             $scope.timerRunning = false;
+         };
+
+         $scope.$on('timer-tick', function (event, args) {
+        	 $scope.networksTableRefreshCallback();
+         });
+     
          
-
-
     }])
 
+    /* History Controller*/
+	.controller('HistoryCtrl', ['$scope', '$uibModal', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv','networkID', function ($scope, $uibModal, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, networkID) {
+	
+	
+		 /** 
+      	 * loadSnapshots 
+      	 **/
+     	$scope.loadSnapshots = function(networkID) {
+	     	DataSrv.callRestWS( RestURLHelper.networkSnapshotsURLByID(networkID), function(response) {		
+				$scope.snapshotsTable = TableSrv.createNgTableFromArray(response.data._embedded.snapshot);
+			});
+		};
+		
+		$scope.loadSnapshots(networkID);
+		
+		// Accciones de los botones del modal
+		$scope.ok = function () { $uibModalInstance.close(null); };
+		$scope.cancel = function () { $uibModalInstance.dismiss('cancel');};
+		
+		 /** 
+     	 * openLog
+     	 **/	
+     	 $scope.openLog = function (snapshot) {
+     	
+     		    var modalInstance = $uibModal.open({
+     		      animation: true,
+     		      templateUrl: 'modules/app/log-tpl.html',
+     		      controller: 'LogCtrl',
+     		      size: 'lg',
+     		      resolve: {
+     		  	      snapshotID: function() { return RestURLHelper.OIDfromEntity(snapshot); }
+     		      }
    
-   ;
+     	    });
+     	
+     	    modalInstance.result.then( function () {}, function () {});
+     	   
+     	}; /* fin openRecordDiagnose */ 
+     	
+     	 /** 
+     	 * stopHarvesting  
+     	 **/	
+     	 $scope.stopHarvesting = function (snapshot) {
+     	
+     		  RestURLHelper.OIDfromEntity(snapshot); 
+     		  
+     		  DataSrv.callRestWS( RestURLHelper.networkActionURL('STOP_HARVESTING',RestURLHelper.OIDfromEntity(snapshot)), function(response) {
+     				$scope.loadSnapshots(networkID); 
+     		  });
+	
+     	 };
+     	 
+     	
+		
+     	 
+
+}])
+	/* Log Controller*/
+	.controller('LogCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv','snapshotID', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID) {
+	
+	
+		DataSrv.callRestWS( RestURLHelper.snapshotLogURLByID(snapshotID), function(response) {		
+			$scope.logTable = TableSrv.createNgTableFromArray(response.data._embedded.log);
+		});
+		
+		
+		// Accciones de los botones del modal
+		$scope.ok = function () { $uibModalInstance.close(null); };
+		$scope.cancel = function () { $uibModalInstance.dismiss('cancel');};
+		
+	
+}]);  
