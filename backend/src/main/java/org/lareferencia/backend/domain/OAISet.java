@@ -15,6 +15,10 @@ package org.lareferencia.backend.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +29,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({ "origin" })
 public class OAISet extends AbstractEntity {
 
 	private String name;
 
 	@Column(nullable = false)
 	private String spec;
+	
+	@Getter
+	@Setter
+	@ManyToOne()
+	@JoinColumn(name = "origin_id")
+	private OAIOrigin origin;
 
 }

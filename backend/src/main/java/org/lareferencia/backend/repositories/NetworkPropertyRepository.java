@@ -15,7 +15,10 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.NetworkProperty;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 @RepositoryRestResource(path = "network_property", collectionResourceRel = "property")
 public interface NetworkPropertyRepository extends JpaRepository<NetworkProperty, Long> {
@@ -29,5 +32,10 @@ public interface NetworkPropertyRepository extends JpaRepository<NetworkProperty
 	 * findByAcronymIgnoreCaseContaining(String filterExpression, Pageable
 	 * pageRequest);
 	 */
+	
+	@Modifying
+	@Transactional
+	@Query("delete from NetworkProperty np where np.network.id = ?1")
+	void deleteByNetworkID(Long network_id);
 
 }

@@ -20,10 +20,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +37,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({ "network" })
 public class OAIOrigin extends AbstractEntity {
 
 	public OAIOrigin() {
@@ -49,10 +53,16 @@ public class OAIOrigin extends AbstractEntity {
 
 	private String name;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name = "origin_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	// Si es LAZY genera problemas durante el procesamiento
 	private Collection<OAISet> sets = new LinkedHashSet<OAISet>();
+	
+	@Getter
+	@Setter
+	@ManyToOne()
+	@JoinColumn(name = "network_id"/* , nullable=false */)
+	private Network network;
 
 }

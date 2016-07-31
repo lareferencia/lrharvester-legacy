@@ -42,6 +42,7 @@ import org.lareferencia.backend.harvester.OAIRecordMetadata;
 import org.lareferencia.backend.indexer.IIndexer;
 import org.lareferencia.backend.indexer.IndexerManager;
 import org.lareferencia.backend.indexer.IndexerWorker;
+import org.lareferencia.backend.repositories.NetworkPropertyRepository;
 import org.lareferencia.backend.repositories.NetworkRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotLogRepository;
 import org.lareferencia.backend.repositories.NetworkSnapshotRepository;
@@ -115,6 +116,9 @@ public class BackEndController {
 
 	@Autowired
 	private NetworkSnapshotRepository networkSnapshotRepository;
+	
+	@Autowired
+	private NetworkPropertyRepository networkPropertyRepository;
 
 	@Autowired
 	private NetworkSnapshotLogRepository networkSnapshotLogRepository;
@@ -126,7 +130,8 @@ public class BackEndController {
 	private RecordValidationResultRepository validationResultRepository;
 
 	@Autowired
-	private SolrTemplate solrTemplate;
+	@Qualifier("validationSolrTemplate")
+	private SolrTemplate validationSolrTemplate;
 
 	@Autowired
 	private ValidationManager validationManager;
@@ -215,7 +220,7 @@ public class BackEndController {
 		facetQuery.setFacetOptions(facetOptions);
 
 		// Consulta SOLR
-		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
+		FacetPage<RecordValidationResult> facetResult = validationSolrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
 
 		Map<String, Integer> validRuleMap = obtainFacetMap(facetResult.getFacetResultPage("valid_rules").getContent());
 		Map<String, Integer> invalidRuleMap = obtainFacetMap(facetResult.getFacetResultPage("invalid_rules").getContent());
@@ -329,7 +334,7 @@ public class BackEndController {
 
 		facetQuery.setFacetOptions(facetOptions);
 
-		FacetPage<RecordValidationResult> facetResult = solrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
+		FacetPage<RecordValidationResult> facetResult = validationSolrTemplate.queryForFacetPage(facetQuery, RecordValidationResult.class);
 
 		List<OccurrenceCount> validRuleOccurrence = new ArrayList<OccurrenceCount>();
 		List<OccurrenceCount> invalidRuleOccurrence = new ArrayList<OccurrenceCount>();
@@ -382,7 +387,7 @@ public class BackEndController {
 			query.addFilterQuery(new SimpleFilterQuery(new SimpleStringCriteria(fqTerm)));
 		}
 
-		Page<RecordValidationResult> results = solrTemplate.queryForPage(query, RecordValidationResult.class);
+		Page<RecordValidationResult> results = validationSolrTemplate.queryForPage(query, RecordValidationResult.class);
 
 		return new ResponseEntity<Page<RecordValidationResult>>(results, HttpStatus.OK);
 	}
@@ -423,6 +428,12 @@ public class BackEndController {
 			switch (action) {
 
 			case START_HARVESTING:
+				
+				// primero detiene todos los snapshots que estén en status harvesting
+				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndStatus(network, SnapshotStatus.HARVESTING)) {
+					snapshotManager.stopHarvesting(snapshot.getId());
+				}
+				
 				snapshotManager.lauchHarvesting(id);
 				break;
 
@@ -439,6 +450,11 @@ public class BackEndController {
 				break;
 
 			case CLEAN_NETWORK:
+				
+				// detiene todos los snapshots que estén en status harvesting
+				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndStatus(network, SnapshotStatus.HARVESTING)) {
+					snapshotManager.stopHarvesting(snapshot.getId());
+				}
 
 				// obtiene el lgk para no borrarlo
 				Long lgkSnapshotID = networkSnapshotRepository.findLastGoodKnowByNetworkID(id).getId();
@@ -447,8 +463,11 @@ public class BackEndController {
 				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndDeleted(network, false)) {
 
 					// si no es el lgk
-					if (snapshot.getId() != lgkSnapshotID)
+					if (snapshot.getId() != lgkSnapshotID) {
 						cleanSnapshot(snapshot);
+					}
+					
+					
 				}
 				break;
 
@@ -511,18 +530,19 @@ public class BackEndController {
 	}
 
 	/***** Acciones Auxiliares */
+	
+	private void deleteValidationResultsBySnapshotID(Long snapshotID) {
+		Query query = new SimpleQuery(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString());
+		validationSolrTemplate.delete(query);
+	}
 
 	private void cleanSnapshot(NetworkSnapshot snapshot) {
 
-		System.out.println("Limpiando Snapshot: " + snapshot.getId());
-
-		// TODO: Falta borrar el índice de solr de estadísticas
+		System.out.println("Comenzando Limpieza Snapshot: " + snapshot.getId());
 
 		// borra los resultados de validación
 		System.out.println("Borrando registros de validaciones");
-
-		// borra las estadisticas
-		System.out.println("Borrando stadísticas de metadatos");
+		deleteValidationResultsBySnapshotID( snapshot.getId() );
 
 		// borra el log de cosechas
 		System.out.println("Borrando registros de log");
@@ -535,13 +555,18 @@ public class BackEndController {
 		// marcando snapshot borrado
 		snapshot.setDeleted(true);
 		networkSnapshotRepository.save(snapshot);
+		
+		if (! snapshot.getStatus().equals( SnapshotStatus.VALID ) ) {
+			System.out.println("Borrando snapshot");
+			networkSnapshotRepository.deleteBySnapshotID(snapshot.getId());
+		}
+		
+		networkSnapshotRepository.flush();		
+		System.out.println("Terminando Limpieza Snapshot: " + snapshot.getId());
 	}
 
-	private void deleteSnapshot(NetworkSnapshot snapshot) {
-		cleanSnapshot(snapshot);
-		networkSnapshotRepository.delete(snapshot);
-	}
 
+    
 	private void deleteNetwork(Network network) throws Exception {
 
 		System.out.println("Comenzando proceso de borrando Red: " + network.getName());
@@ -550,19 +575,17 @@ public class BackEndController {
 		indexerManager.deleteNetworkFromXOAI(network.getId());
 
 		for (NetworkSnapshot snapshot : network.getSnapshots()) {
-			deleteSnapshot(snapshot);
+			cleanSnapshot(snapshot);
 		}
-
-		System.out.println("Borrando Origenes/Sets");
+		networkSnapshotRepository.deleteByNetworkID(network.getId());
+		networkPropertyRepository.deleteByNetworkID(network.getId());
 
 		for (OAIOrigin origin : network.getOrigins()) {
-			setRepository.deleteInBatch(origin.getSets());
+			setRepository.deleteByOriginID(origin.getId());
 		}
-
-		originRepository.deleteInBatch(network.getOrigins());
-
-		networkRepository.delete(network);
-
+		originRepository.deleteByNetworkID(network.getId());
+		networkRepository.deleteByNetworkID(network.getId());
+		
 		System.out.println("Finalizando borrado red: " + network.getName());
 	}
 

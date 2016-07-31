@@ -38,14 +38,14 @@
 	<import resource="file:${validator.path}/transformers-context.xml"/-->	
 	
 	
-	<solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="solrTemplate" multicore-support="true"/>
+	<solr:repositories base-package="org.lareferencia.backend.repositories" solr-template-ref="validationSolrTemplate" multicore-support="true"/>
 	
 	<!-- Configures HTTP Solr server -->
     <!-- solr:solr-server id="solrServer" url="${vstats.solr.server}"/-->
     <solr:solr-client id="solrClient"  url="${vstats.solr.server}"/>
    
     <!-- Configures Solr template -->
-    <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+    <bean id="validationSolrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
         <constructor-arg index="0" ref="solrClient"/>
         <constructor-arg index="1"><value>${vstats.solr.core}</value></constructor-arg>
     </bean>

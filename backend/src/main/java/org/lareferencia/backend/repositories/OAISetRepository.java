@@ -15,10 +15,18 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.OAISet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 @RepositoryRestResource(path = "set", collectionResourceRel = "set")
 public interface OAISetRepository extends JpaRepository<OAISet, Long> {
+	
+	@Modifying
+	@Transactional
+	@Query("delete from OAISet s where s.origin.id = ?1")
+	void deleteByOriginID(Long origin_id);
 
 }

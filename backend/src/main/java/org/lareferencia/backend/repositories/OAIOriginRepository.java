@@ -15,9 +15,17 @@ package org.lareferencia.backend.repositories;
 
 import org.lareferencia.backend.domain.OAIOrigin;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.transaction.annotation.Transactional;
 
 @RepositoryRestResource(path = "origin", collectionResourceRel = "origin")
 public interface OAIOriginRepository extends JpaRepository<OAIOrigin, Long> {
+	
+	@Modifying
+	@Transactional
+	@Query("delete from OAIOrigin o where o.network.id = ?1")
+	void deleteByNetworkID(Long network_id);
 
 }

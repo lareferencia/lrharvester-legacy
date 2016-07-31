@@ -49,4 +49,16 @@ public interface NetworkSnapshotRepository extends JpaRepository<NetworkSnapshot
 
 	@Query("select ns from NetworkSnapshot ns where ns.network.id = :network_id order by ns.startTime desc")
 	Page<NetworkSnapshot> findByNetworkIdOrderByStartTimeDesc(@Param("network_id") Long network_id, Pageable page);
+	
+	@Modifying
+	@Transactional
+	@Query("delete from NetworkSnapshot ns where ns.id = ?1")
+	void deleteBySnapshotID(Long snapshot_id);
+	
+	@Modifying
+	@Transactional
+	@Query("delete from NetworkSnapshot ns where ns.network.id = ?1")
+	void deleteByNetworkID(Long network_id);
+
+	
 }
