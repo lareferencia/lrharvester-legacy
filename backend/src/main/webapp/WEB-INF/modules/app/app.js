@@ -96,6 +96,49 @@ angular.module('app', [
         $scope.navbarCollapsed = true;
         
         
+        /*** Timer ******/
+    	var MAX_SECS = 5;	
+    	
+        /* Indica acción ejecutada, se usa para mostrar alert */
+        $scope.actionExecuted = false;
+    	
+    	$scope.restartTimerRemaining = function() {
+          	$scope.timerRemainingSeconds = MAX_SECS;
+        };	
+    	
+    	$scope.timerRunning = true;
+    	$scope.timerRemainingSeconds = MAX_SECS;
+
+        $scope.timerType = '';
+
+        $scope.startTimer = function (){
+        	$scope.restartTimerRemaining();
+            $scope.$broadcast('timer-start');
+            $scope.timerRunning = true;
+        };
+
+        $scope.stopTimer = function (){
+            $scope.$broadcast('timer-stop');
+            $scope.timerRunning = false;
+        };
+
+        $scope.$on('timer-tick', function (event, args) {
+       	 
+	       	 if ( $scope.timerRemainingSeconds == 0) {
+	       		 $scope.networksTableRefreshCallback();
+	       		 $scope.restartTimerRemaining();	       		 
+	       		 $scope.actionExecuted = false;
+	       	 }
+	       	 else {
+	       		 $scope.timerRemainingSeconds--;
+	       	 }
+        });   
+        /*** FIN DE RUTINAS TIMER ****/
+        
+        
+
+        
+        
         $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', 
         		function(data) { 
 					return { 
@@ -128,7 +171,13 @@ angular.module('app', [
          $scope.executeNetworkAction = function (action, networkIDs, success_callback, must_confim) {
          	 
         	 if (networkIDs != null && networkIDs != "" ) {
-        		 DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { alert("Error en la llamada a networkAction");} );	
+        		 DataSrv.callRestWS( RestURLHelper.networkActionURL(action,networkIDs), success_callback, function() { 
+        			 alert("Error en la llamada a networkAction. Recargue la aplicación.");
+        		 });
+        		 
+        		 $scope.restartTimerRemaining(); 
+        		 $scope.actionExecuted = true;
+        		 $scope.actionIdentifier = action;
         	 }
          };
          
@@ -171,24 +220,7 @@ angular.module('app', [
      	}; /* fin openRecordDiagnose */ 
      	
        
-        /*** Timer ******/
-     	 $scope.timerRunning = true;
-
-         $scope.timerType = '';
-
-         $scope.startTimer = function (){
-             $scope.$broadcast('timer-start');
-             $scope.timerRunning = true;
-         };
-
-         $scope.stopTimer = function (){
-             $scope.$broadcast('timer-stop');
-             $scope.timerRunning = false;
-         };
-
-         $scope.$on('timer-tick', function (event, args) {
-        	 $scope.networksTableRefreshCallback();
-         });
+ 
      
          
     }])

@@ -29,8 +29,7 @@ harvester.max.retries = 10
 harvester.retry.seconds = 3
 harvester.retry.factor = 2
 
-#reponame e instname, estos campos 
-
+#reponame e instname
 reponame.fieldname=dc:source
 reponame.prefix=reponame:
 
