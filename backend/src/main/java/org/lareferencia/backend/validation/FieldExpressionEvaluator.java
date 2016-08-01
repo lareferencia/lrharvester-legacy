@@ -1,4 +1,4 @@
-package org.lareferencia.backend.validation.validator;
+package org.lareferencia.backend.validation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.validation.validator.ContentValidatorResult;
+import org.lareferencia.backend.validation.validator.QuantifierValues;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.BracketPair;

@@ -119,6 +119,23 @@ angular.module('transformation.json.schemas', []).service('JSONTransformationSch
 		} /* fin schema */
 	},
 	
+	{ 		
+		name : "Agregado condicional de ocurrencias de campo",
+		className: "org.lareferencia.backend.validation.transformer.FieldContentConditionalAddOccrRule",
+		form: [ { "key": "conditionalExpression", "type": "textarea" },"fieldName","valueToAdd","removeDuplicatedOccurrences",
+		        { type: "submit", title: "Guardar cambios" }
+		],
+		schema: {
+			type: "object",
+			    properties: {
+			    	conditionalExpression:{ type: "string", title: "Expresion a evaluar", description: "Es importante dejar espacios entre los paréntesis. \n Ej: ( dc:type=='info:eu-repo/semantics/article' AND dc:rights=%'info.+' ) OR ( dc:type=='info:eu-repo/semantics/bachelorThesis' )" },
+			    	fieldName:{ type: "string", title: "Nombre del campo a modificar", description: "Ej: dc:type" },
+			    	valueToAdd:{ type: "string", title: "Valor a agregar en caso de que se cumpla el condicional", description: "Ej: info:eu-repo/semantics/article" },
+			    	removeDuplicatedOccurrences:{ type: "boolean", title: "¿Remover ocurrencias duplicadas?", description: "" },
+			    }
+		} /* fin schema */
+	},
+	
 	
 	
 ]; //***** fin de _RULES ******/// 

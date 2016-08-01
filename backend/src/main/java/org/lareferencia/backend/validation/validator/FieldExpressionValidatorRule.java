@@ -21,6 +21,7 @@ import lombok.Setter;
 
 import org.lareferencia.backend.domain.OAIRecord;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
+import org.lareferencia.backend.validation.FieldExpressionEvaluator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

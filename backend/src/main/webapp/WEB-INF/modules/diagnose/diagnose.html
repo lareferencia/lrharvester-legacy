@@ -32,6 +32,14 @@
                             </ul>  
                             <!-- /.nav-second-level -->
                         </li>
+                        
+                         <li>
+                            <a><i class="fa fa-cog fa-fw"></i> Transformación de registros <span class="fa arrow"></span></a>
+                            <ul id="record_is_transformed_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_transformed">
+                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Transformados' : 'Sin transformar'}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
+                            </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
                        
                         <li>
                             <a><i class="fa fa-check fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
@@ -198,7 +206,7 @@
 											</td>
 											<td  data-title="'Estado'">
 												<button type="button" class="btn btn-xs btn-{{record.isValid | successOrDanger}}">{{record.isValid | isValid}}</button>
-												<button ng-if="isTransformed" type="button" class="btn btn-xs btn-warning">{{record.isTrasformed | isTransformed}}</button>
+												<button ng-if="record.isTransformed" type="button" class="btn btn-xs btn-warning">Transformado</button>
 												
 											</td>
 											<td>

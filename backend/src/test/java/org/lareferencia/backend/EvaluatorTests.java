@@ -19,7 +19,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.validation.validator.FieldExpressionEvaluator;
+import org.lareferencia.backend.validation.FieldExpressionEvaluator;
 import org.lareferencia.backend.validation.validator.QuantifierValues;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

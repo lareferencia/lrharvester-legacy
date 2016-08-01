@@ -460,14 +460,14 @@ public class BackEndController {
 				Long lgkSnapshotID = networkSnapshotRepository.findLastGoodKnowByNetworkID(id).getId();
 
 				// recorre los snapshots no borrados
-				for (NetworkSnapshot snapshot : networkSnapshotRepository.findByNetworkAndDeleted(network, false)) {
+				List<NetworkSnapshot> snapshots = networkSnapshotRepository.findByNetworkAndDeleted(network, false);
+				
+				for (NetworkSnapshot snapshot : snapshots) {
 
 					// si no es el lgk
 					if (snapshot.getId() != lgkSnapshotID) {
 						cleanSnapshot(snapshot);
 					}
-					
-					
 				}
 				break;
 
