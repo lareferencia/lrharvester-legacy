@@ -85,6 +85,11 @@ body {
     left: auto;
 }
 
+.nav-first-level {
+	padding-bottom: 20px;
+	
+}
+
 .sidebar .sidebar-nav.navbar-collapse {
     padding-right: 0;
     padding-left: 0;
@@ -378,4 +383,18 @@ table.dataTable thead .sorting:after {
 .selected {
 	font-weight: bold;
 	
+}
+
+.facet_selected {
+	font-weight: bold;
+	font-size: 120%;
+	color:green;
+	
+	
+}
+.facet_selected::after { 
+    content: " -";
+}
+.facet_deselected::after { 
+    content: " +";
 }

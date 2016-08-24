@@ -22,7 +22,7 @@
     <link type="text/css" rel="stylesheet" href="static/css/metisMenu.min.css" >
              
     <!-- HighLight CSS -->
-    <link type="text/css" rel="stylesheet" href="static/css/jquery.highlight.css"/>
+    <link type="text/css" rel="stylesheet" href="static/css/highlight/github.css"/>
 
     <!-- Custom Fonts -->
     <link type="text/css" rel="stylesheet" href="static/css/font-awesome.min.css"/>
@@ -115,7 +115,11 @@
 	<script type="text/javascript" src="static/libs/schema-form.min.js"/></script>
     <script type="text/javascript" src="static/libs/bootstrap-decorator.min.js"/></script>
     
-    <script type="text/javascript" src="static/libs/jquery.highlight.js"></script>
+    
+    <!-- Libs Angular de sintax highlight -->
+    
+    <script type="text/javascript" src="static/libs/highlight.pack.js"/></script>
+    <script type="text/javascript" src="static/libs/angular-highlightjs.min.js"/></script>
 	<script type="text/javascript" src="static/libs/vkbeautify.js"></script>
     
     

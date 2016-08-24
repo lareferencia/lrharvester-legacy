@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
 public abstract class AbstractTransformerRule implements ITransformerRule {
 
+	
 	public AbstractTransformerRule() {
 	}
 
@@ -35,4 +36,7 @@ public abstract class AbstractTransformerRule implements ITransformerRule {
 	 * @return Retorna true si fue necesario aplicar una transformación
 	 */
 	public abstract boolean transform(OAIRecord record);
+	
+	
+	
 }

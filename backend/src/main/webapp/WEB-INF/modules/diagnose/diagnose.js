@@ -14,6 +14,7 @@ var mod_diagnose = angular.module('diagnose', [
     'table.services',
     'rest.url.helper',
     'data.services',
+    'hljs'
 ]);
 
 
@@ -65,9 +66,11 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
         $scope.update_diagnose = function() {
         	
         	var fqList = $scope.currentFilterQueryList();
+        	
+        	$scope.openLoadingModal();
         	       	
         	// 
-        	DataSrv.callRestWS( RestURLHelper.diagnoseURLByID($scope.snapshotID, fqList ), function(response) {	
+        	DataSrv.callRestWS( RestURLHelper.diagnoseURLByID($scope.snapshotID, fqList), function(response) {	
         		
         		$scope.recordsSize = response.data.size;
         		$scope.validSize = response.data.validSize;
@@ -87,6 +90,8 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
         					};
         				}, 1, 20, [20]
     	        );
+        		
+        		$scope.loadingModalInstance.close();
         		
         	
         	}, $scope.error_callback);
@@ -142,6 +147,26 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
 	       	 return fq;
         };
         
+        
+        
+        /** 
+    	 * openLoadingModal: Apertura de modal espera de carga
+    	 *     
+    	 **/	
+    	 $scope.openLoadingModal = function () {
+    	
+    		    $scope.loadingModalInstance = $uibModal.open({
+    		      animation: true,
+    		      templateUrl: 'modules/diagnose/loading-tpl.html',
+    		      controller: 'LoadingDiagnoseCtrl',
+    		      size: 'xs',
+    		      resolve: {}
+  
+    	    });
+    	
+    	   
+    	}; /* fin openLoadingModal */ 
+    	
         
         /** 
     	 * openRecordDiagnose: Apertura de modal de detalle de diagnostico de un registro
@@ -208,6 +233,11 @@ mod_diagnose.config(['$stateProvider', function ($stateProvider) {
       
     }]);
 
+
+
+mod_diagnose.controller('LoadingDiagnoseCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+}]); /* LoadingDiagnoseCtrl */
+
 mod_diagnose.controller('RecordDiagnoseCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'record', 'rulesMap', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, record, rulesMap) {
 	
 	
@@ -222,12 +252,14 @@ mod_diagnose.controller('RecordDiagnoseCtrl', ['$scope', '$uibModalInstance', 'R
 		$scope.recordMetadata = vkbeautify.xml(response.data);
 		
     
-    	//$('#modalViewMetadataBody .code').highlight();  
 	});
+	
+	
+	
 
 }]); /* RecordDiagnoseCtrl */
 
-mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv', 'snapshotID', 'rule', 'fq', function ($scope, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID, rule, fq) {
+mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModal', '$uibModalInstance', 'RestURLHelper', 'DataSrv', 'TableSrv', 'snapshotID', 'rule', 'fq', function ($scope, $uibModal, $uibModalInstance,RestURLHelper, DataSrv, TableSrv, snapshotID, rule, fq) {
 	
 	// Accciones de los botones del modal
 	$scope.ok = function () { $uibModalInstance.close(null); };
@@ -237,12 +269,38 @@ mod_diagnose.controller('RuleOccrStatsCtrl', ['$scope', '$uibModalInstance', 'Re
 	$scope.ruleID = rule.ruleID;
 	$scope.rule = rule;
 	
+	
+	/** 
+	 * openLoadingModal: Apertura de modal espera de carga
+	 *     
+	 **/	
+	 $scope.openLoadingModal = function () {
+	
+		    $scope.loadingModalInstance = $uibModal.open({
+		      animation: true,
+		      templateUrl: 'modules/diagnose/loading-tpl.html',
+		      controller: 'LoadingDiagnoseCtrl',
+		      size: 'xs',
+		      resolve: {}
+
+	    });
+	
+	   
+	}; /* fin openLoadingModal */  
+	
+	$scope.openLoadingModal();
+
 	DataSrv.callRestWS( RestURLHelper.diagnoseRuleOccrURLByID($scope.snapshotID, $scope.ruleID, fq), function(response) {	
 		
 			$scope.validOccrTable = TableSrv.createNgTableFromArray(response.data.validRuleOccrs);
 			$scope.invalidOccrTable = TableSrv.createNgTableFromArray(response.data.invalidRuleOccrs);
+			
+			$scope.loadingModalInstance.close();
 
 	});
+	
+	
+    
 
 }]); /* RuleOccrStatsCtrl */
     

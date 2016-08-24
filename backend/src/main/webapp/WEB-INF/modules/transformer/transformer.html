@@ -32,8 +32,9 @@
 				<div class="col-xs-12">
 					<table ng-table="transformerRulesTable"
 						class="table table-bordered table-striped table-condensed">
-						<tr ng-repeat="vrule in $data">
-							<td data-title="'Nombre'">{{vrule.name}}</td>
+						<tr ng-repeat="vrule in $data | orderBy:'+runorder'">
+							<td data-title="'Orden'" sortable="'runorder'">{{vrule.runorder}}</td>
+							<td data-title="'Nombre'" sortable="'name'">{{vrule.name}}</td>
 							<td data-title="'Descripción'">{{vrule.description}}</td>
 							<td>
 								<button class="btn btn-primary btn-sm"

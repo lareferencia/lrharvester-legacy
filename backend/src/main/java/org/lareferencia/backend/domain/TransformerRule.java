@@ -34,7 +34,17 @@ public class TransformerRule extends AbstractEntity {
 
 	@Column(nullable = true)
 	private String description;
+	
+	@Column(nullable = false)
+	private Integer runorder;
 
 	@Type(type = "org.hibernate.type.StringClobType")
 	private String JSONSerialization;
+
+	@Override
+	public String toString() {
+		return "TransformerRule [name=" + name + ", order=" + runorder + "]";
+	}
+	
+	
 }

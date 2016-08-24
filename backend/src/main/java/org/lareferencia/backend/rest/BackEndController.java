@@ -175,7 +175,7 @@ public class BackEndController {
 	 ******************************************************/
 
 	@ResponseBody
-	@RequestMapping(value = "/public/getRecordMetadataByID/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/public/getRecordMetadataByID/{id}", method = RequestMethod.GET, produces = "application/xml; charset=utf-8")
 	public String getRecordMetadataByID(@PathVariable Long id) throws Exception {
 
 		OAIRecord record = recordRepository.findOne(id);

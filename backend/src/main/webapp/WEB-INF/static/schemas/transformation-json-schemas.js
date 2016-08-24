@@ -39,13 +39,15 @@ angular.module('transformation.json.schemas', []).service('JSONTransformationSch
 	};
 	
 	
-	this.rule_data_form = [ "name", "description"];
+	this.rule_data_form = [ "name", "description", "runorder"];
 	
 	this.rule_data_schema = {
 			type: "object",
 		    properties: {
-		      name :{ type: "string", title: "Nombre", description: "" }, 
-		      description :{ type: "string", title: "Description", description: "" }
+		      name :{ type: "string", title: "Nombre de la regla", description: "" }, 
+		      description :{ type: "string", title: "Description de la regla", description: "" },
+		      runorder :{ type: "integer", title: "Orden", description: "Orden en que se aplicará la transformación" }, 
+
 		    }
 	};
 	
@@ -57,7 +59,7 @@ angular.module('transformation.json.schemas', []).service('JSONTransformationSch
 			name : "Traducción de valores de campos",
 			className: "org.lareferencia.backend.validation.transformer.FieldContentTranslateRule",
 			form: [ 
-			        "testFieldName", "writeFieldName", "replaceOccurrence", "testValueAsPrefix", "translationArray", { type: "submit", title: "Guardar cambios" }],
+			        { type: "submit", title: "Guardar cambios" }, "testFieldName", "writeFieldName", "replaceOccurrence", "testValueAsPrefix", "translationArray", { type: "submit", title: "Guardar cambios" }],
 			schema: {
 				type: "object",
 				    properties: {
@@ -85,7 +87,7 @@ angular.module('transformation.json.schemas', []).service('JSONTransformationSch
 		name : "Traducción de nombres de campo",
 		className: "org.lareferencia.backend.validation.transformer.FieldNameTranslateRule",
 		form: [ 
-		        "sourceFieldName", "targetFieldName", { type: "submit", title: "Guardar cambios" }],
+		        { type: "submit", title: "Guardar cambios" }, "sourceFieldName", "targetFieldName", { type: "submit", title: "Guardar cambios" }],
 		schema: {
 			type: "object",
 			    properties: {
@@ -132,6 +134,20 @@ angular.module('transformation.json.schemas', []).service('JSONTransformationSch
 			    	fieldName:{ type: "string", title: "Nombre del campo a modificar", description: "Ej: dc:type" },
 			    	valueToAdd:{ type: "string", title: "Valor a agregar en caso de que se cumpla el condicional", description: "Ej: info:eu-repo/semantics/article" },
 			    	removeDuplicatedOccurrences:{ type: "boolean", title: "¿Remover ocurrencias duplicadas?", description: "" },
+			    }
+		} /* fin schema */
+	},
+	
+	{ 		
+		name : "Remover ocurrencias duplicadas en un campo",
+		className: "org.lareferencia.backend.validation.transformer.RemoveDuplicateOccrsRule",
+		form: ["fieldName",
+		        { type: "submit", title: "Guardar cambios" }
+		],
+		schema: {
+			type: "object",
+			    properties: {
+			    	fieldName:{ type: "string", title: "Nombre del campo a modificar", description: "Ej: dc:type" },
 			    }
 		} /* fin schema */
 	},

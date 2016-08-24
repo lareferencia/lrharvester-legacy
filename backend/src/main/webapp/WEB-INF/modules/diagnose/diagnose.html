@@ -9,50 +9,51 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         
-                      	<li>
+                        <li class="nav-first-level">
+                            <a><i class="fa fa-check-square-o fa-fw"></i> Validez de registros <span class="fa arrow"></span></a>
+                            <ul id="record_is_valid_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_valid">
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Válidos' : 'Inválidos'}} ({{facet.valueCount}})</a></li>
+                            </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
+                        
+                         <li class="nav-first-level">
+                            <a><i class="fa fa-cog fa-fw"></i> Transformación de registros <span class="fa arrow"></span></a>
+                            <ul id="record_is_transformed_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_transformed">
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Transformados' : 'Sin transformar'}} ({{facet.valueCount}})</a></li>
+                            </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
+                       
+                        <li class="nav-first-level">
+                            <a><i class="fa fa-check fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
+                            <ul id="valid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.valid_rules">
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})</a></li>
+                            </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
+                        
+                        <li class="nav-first-level">
+                            <a><i class="fa fa-times fa-fw"></i> Reglas Inválidas <span class="fa arrow"></span></a>
+                            <ul id="invalid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.invalid_rules">  
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})</a></li>
+                            </ul>  
+                            <!-- /.nav-second-level -->
+                        </li>
+                        
+                        <li class="nav-first-level">
                             <a><i class="fa fa-university fa-fw"></i> Instituciones <span class="fa arrow"></span></a>
                             <ul id="institution_name_facet" class="nav nav-second-level" ng-repeat="facet in facets.institution_name"> 
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
                              </ul>  
                             <!-- /.nav-second-level -->
                         </li>
                        
-                        <li>
+                        <li class="nav-first-level">
                             <a><i class="fa fa-sitemap fa-fw"></i> Subredes <span class="fa arrow"></span></a>
                             <ul id="repository_name_facet" class="nav nav-second-level" ng-repeat="facet in facets.repository_name">
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
+                            		<li><a  ng-class="{'facet_selected': is_facet_selected(facet), 'facet_deselected': !is_facet_selected(facet) }" ng-click="toogleFacetFilter(facet)">{{facet.value}} ({{facet.valueCount}})</a></li>
                       		</ul>   
-                            <!-- /.nav-second-level -->
-                        </li>
-                        
-                        <li>
-                            <a><i class="fa fa-check-square-o fa-fw"></i> Validez de registros <span class="fa arrow"></span></a>
-                            <ul id="record_is_valid_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_valid">
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Válidos' : 'Inválidos'}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
-                            </ul>  
-                            <!-- /.nav-second-level -->
-                        </li>
-                        
-                         <li>
-                            <a><i class="fa fa-cog fa-fw"></i> Transformación de registros <span class="fa arrow"></span></a>
-                            <ul id="record_is_transformed_facet" class="nav nav-second-level" ng-repeat="facet in facets.record_is_transformed">
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{facet.value == "true" ? 'Transformados' : 'Sin transformar'}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
-                            </ul>  
-                            <!-- /.nav-second-level -->
-                        </li>
-                       
-                        <li>
-                            <a><i class="fa fa-check fa-fw"></i> Reglas Válidas  <span class="fa arrow"></span></a>
-                            <ul id="valid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.valid_rules">
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
-                            </ul>  
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a><i class="fa fa-times fa-fw"></i> Reglas Inválidas <span class="fa arrow"></span></a>
-                            <ul id="invalid_rules_facet" class="nav nav-second-level" ng-repeat="facet in facets.invalid_rules">  
-                            		<li><a ng-click="toogleFacetFilter(facet)">{{ruleNameByID[facet.value]}} ({{facet.valueCount}})<b ng-if="is_facet_selected(facet)"> - </b><b ng-if="!is_facet_selected(facet)"> + </b></li>
-                            </ul>  
                             <!-- /.nav-second-level -->
                         </li>
                         

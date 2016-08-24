@@ -1,5 +1,7 @@
 package org.lareferencia.backend.validation;
 
+import java.util.List;
+
 import org.lareferencia.backend.domain.Transformer;
 import org.lareferencia.backend.domain.TransformerRule;
 import org.lareferencia.backend.domain.Validator;
@@ -12,6 +14,9 @@ import org.lareferencia.backend.validation.validator.IValidatorRule;
 import org.lareferencia.backend.validation.validator.ValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 
 /**
  * 
@@ -28,6 +33,13 @@ public class ValidationManager {
 
 	@Autowired
 	private RuleSerializer serializer;
+	
+	
+	private Ordering<TransformerRule> ruleByOrderOrdering = new Ordering<TransformerRule>() {
+		  public int compare(TransformerRule left, TransformerRule right) {
+		    return Ints.compare(left.getRunorder(), right.getRunorder());
+		  }
+	};
 
 	/**
 	 * Crea un validador a partir de un validador modelo
@@ -68,13 +80,23 @@ public class ValidationManager {
 	public ITransformer createTransformerFromModel(Transformer tmodel) {
 
 		ITransformer transformer = new TransformerImpl();
+		
+		System.out.println( "UNSORTED:" + tmodel.getRules() ); 
+		
+		// se ordena la lista en base al atributo order para generar el transformador con reglas ordenadas
+		List<TransformerRule> trules = ruleByOrderOrdering.sortedCopy(tmodel.getRules() );
+		
+		System.out.println( "SORTED:" + trules ); 
 
-		for (TransformerRule trule : tmodel.getRules()) {
-
+		
+		for (TransformerRule trule : trules) {
 			ITransformerRule rule = serializer.deserializeTransformerFromJsonString(trule.getJSONSerialization());
 			transformer.getRules().add(rule);
-
 		}
+		
+		
+		System.out.println( "SortedFinalRules:" + transformer.getRules() ); 
+
 
 		return transformer;
 	}
