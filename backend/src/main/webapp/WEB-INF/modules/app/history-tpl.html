@@ -4,7 +4,7 @@
 <div class="modal-body">
 
 	<table ng-table="snapshotsTable" class="table table-bordered table-striped table-condensed" export-csv="csvHistorial" separator=";">
-		<tr ng-repeat="snapshot in $data">
+		<tr ng-repeat="snapshot in $data | orderBy:'-startTime'"">
 		
 		  <td  data-title="'ID'">{{snapshot | ObjectID }}</td>	
 		  <td  data-title="'Status'">{{snapshot.status | Status}}</td>	

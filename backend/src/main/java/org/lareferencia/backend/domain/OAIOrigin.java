@@ -53,7 +53,7 @@ public class OAIOrigin extends AbstractEntity {
 
 	private String name;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval=true*/)
 	@JoinColumn(name = "origin_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	// Si es LAZY genera problemas durante el procesamiento

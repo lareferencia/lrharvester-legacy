@@ -49,13 +49,13 @@ public class Network extends AbstractEntity {
 	@Column(nullable = false, length = 20, unique = true)
 	private String acronym;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval=true*/)
 	@JoinColumn(name = "network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	// Si es LAZY genera problemas durante el procesamiento
 	private Collection<OAIOrigin> origins = new LinkedHashSet<OAIOrigin>();
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL /*, orphanRemoval=true*/)
 	@JoinColumn(name = "network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkSnapshot> snapshots = new LinkedHashSet<NetworkSnapshot>();
@@ -76,7 +76,7 @@ public class Network extends AbstractEntity {
 
 	private String scheduleCronExpression;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval=true*/)
 	@JoinColumn(name = "network_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Collection<NetworkProperty> properties = new LinkedHashSet<NetworkProperty>();;
