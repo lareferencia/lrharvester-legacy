@@ -33,9 +33,9 @@
 					<table ng-table="validatorRulesTable"
 						class="table table-bordered table-striped table-condensed">
 						<tr ng-repeat="vrule in $data">
-							<td data-title="'Nombre'">{{vrule.name}}</td>
+							<td data-title="'Nombre'" sortable="'name'">{{vrule.name}}</td>
 							<td data-title="'Descripción'">{{vrule.description}}</td>
-							<td data-title="'Mandatoria'">{{vrule.mandatory}}</td>
+							<td data-title="'Mandatoria'" sortable="'mandatory'">{{vrule.mandatory}}</td>
 							<td>
 								<button class="btn btn-primary btn-sm"
 									ng-click="editValidatorRule(vrule)">
