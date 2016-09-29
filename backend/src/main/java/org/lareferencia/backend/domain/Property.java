@@ -33,6 +33,7 @@ public class Property {
 	public static final String RUN_XOAI_INDEXING = "RUN_XOAI_INDEXING";
 	public static final String RUN_VALIDATION = "RUN_VALIDATION";
 	public static final String RUN_TRANSFORMATION = "RUN_TRANSFORMATION";
+	public static final String RUN_DIAGNOSTIC = "RUN_DIAGNOSTIC";
 
 	@Id
 	@Column(nullable = false, unique = true)

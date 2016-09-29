@@ -385,7 +385,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 						// realmente necesario?
 						
 						// Se almacenan las estadísticas de cosecha
-						validationResults.add(new RecordValidationResult(record, validationResult));
+						if ( network.mustRunDiagnostic() )
+							validationResults.add(new RecordValidationResult(record, validationResult));
 
 					}
 
@@ -400,7 +401,8 @@ public class SnapshotWorker implements ISnapshotWorker, IHarvestingEventListener
 				}
 			}
 
-			validationResultRepository.save(validationResults);
+			if ( network.mustRunDiagnostic() )
+				validationResultRepository.save(validationResults);
 
 			recordRepository.flush();
 			snapshot.setEndTime(new Date());

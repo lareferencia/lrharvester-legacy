@@ -134,5 +134,9 @@ public class Network extends AbstractEntity {
 	public boolean mustRunTransformation() {
 		return getBooleanPropertyValue(Property.RUN_TRANSFORMATION);
 	}
+	@Transient
+	public boolean mustRunDiagnostic() {
+		return getBooleanPropertyValue(Property.RUN_DIAGNOSTIC);
+	}
 
 }
