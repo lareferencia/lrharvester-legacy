@@ -12,6 +12,7 @@ angular.module('app', [
     'ui.bootstrap',
     'timer',
     'table.services',
+    'rest.url.rebase',
     'rest.url.helper',
     'data.services',
     'origin',
@@ -139,7 +140,7 @@ angular.module('app', [
 
         
         
-        $scope.networksTable = TableSrv.createNgTableFromWsURL('/public/networks', 
+        $scope.networksTable = TableSrv.createNgTableFromWsURL(RestURLHelper.listNetworks(), 
         		function(data) { 
 					return { 
 							 data:   data.networks,

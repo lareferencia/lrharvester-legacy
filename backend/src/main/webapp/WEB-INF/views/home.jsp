@@ -32,6 +32,8 @@
     
     <!-- App CSS -->
     <!-- >link type="text/css" rel="stylesheet" href="static/css/styles.css"/-->
+    
+    
        
 
 </head>
@@ -130,6 +132,21 @@
     <script src="static/services/table-services.js"></script>
     <script src="static/services/data-services.js"></script>
     <script src="static/services/rest-url-helper.js"/></script>
+    
+    <script>
+        
+		angular.module('rest.url.rebase', []).service('ReBaseURLHelper',  [ 
+		    
+		  function() {
+		
+			  this.rebaseURL = function (url) {
+				  return "./" + '<spring:url value="/" />' + url;	
+			  };
+	      }]);
+    
+    </script>
+    
+    
     
     <!-- Schemas  -->
     <script type="text/javascript" src="static/schemas/network-json-schemas.js"/></script>
