@@ -140,7 +140,7 @@
 		  function() {
 		
 			  this.rebaseURL = function (url) {
-				  return "./" + '<spring:url value="/" />' + url;	
+				  return "./" /*+ '<spring:url value="/" />'*/ + url;	
 			  };
 	      }]);
     
