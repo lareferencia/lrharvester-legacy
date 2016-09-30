@@ -532,8 +532,14 @@ public class BackEndController {
 	/***** Acciones Auxiliares */
 	
 	private void deleteValidationResultsBySnapshotID(Long snapshotID) {
-		Query query = new SimpleQuery(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString());
-		validationSolrTemplate.delete(query);
+		
+		try {
+			Query query = new SimpleQuery(RecordValidationResult.SNAPSHOT_ID_FIELD + ":" + snapshotID.toString());
+			validationSolrTemplate.delete(query);	
+		} catch (Exception e) {
+			System.err.println("Error en el borrado de registros de validación: " + e.getMessage() );
+		}
+		
 	}
 
 	private void cleanSnapshot(NetworkSnapshot snapshot) {
