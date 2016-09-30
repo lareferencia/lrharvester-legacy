@@ -85,7 +85,7 @@ angular.module('rest.url.helper', ['rest.url.rebase']).service('RestURLHelper', 
 	  
 	  this.networkActionURL = function (action, networkIDs) { 
 		  var idsString = networkIDs;
-		  return ReBaseURLHelper.rebaseURL('private/networkAction/' + action + '' + idsString);  
+		  return ReBaseURLHelper.rebaseURL('private/networkAction/' + action + '/' + idsString);  
 	  };
 	  
 	  this.diagnoseURLByID = function (snapshotID, fqList) {
@@ -96,7 +96,7 @@ angular.module('rest.url.helper', ['rest.url.rebase']).service('RestURLHelper', 
 			  fqEncodedList.push( encodeURI(fqList[i]) );
 		  }
 		  
-		  return ReBaseURLHelper.rebaseURL('public/diagnose/' + snapshotID + '[' + fqEncodedList.join(',') + ']');	
+		  return ReBaseURLHelper.rebaseURL('public/diagnose/' + snapshotID + '/[' + fqEncodedList.join(',') + ']');	
 	  };
 	  
 	 
@@ -110,7 +110,7 @@ angular.module('rest.url.helper', ['rest.url.rebase']).service('RestURLHelper', 
 		  }
 		  
 		  
-		  return ReBaseURLHelper.rebaseURL('public/diagnoseValidationOcurrences/' + snapshotID + '' + ruleID + '[' + fqEncodedList.join(',') + ']');	
+		  return ReBaseURLHelper.rebaseURL('public/diagnoseValidationOcurrences/' + snapshotID + '/' + ruleID + '/[' + fqEncodedList.join(',') + ']');	
 	  };
 	  
 	  
@@ -122,7 +122,7 @@ angular.module('rest.url.helper', ['rest.url.rebase']).service('RestURLHelper', 
 			  fqEncodedList.push( encodeURI(fqList[i]) );
 		  }
 		  
-		  return ReBaseURLHelper.rebaseURL('public/diagnoseListRecordValidationResults/' + snapshotID + '[' + fqEncodedList.join(',') + ']');	
+		  return ReBaseURLHelper.rebaseURL('public/diagnoseListRecordValidationResults/' + snapshotID + '/[' + fqEncodedList.join(',') + ']');	
 	  };
 	  
 	  
