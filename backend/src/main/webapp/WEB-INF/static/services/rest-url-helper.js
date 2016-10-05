@@ -12,7 +12,7 @@ angular.module('rest.url.helper', ['rest.url.rebase']).service('RestURLHelper', 
 	  };
 	  
 	  this.networkSnapshotsURLByID = function (networkID) {
-		  return ReBaseURLHelper.rebaseURL('rest/network/' + networkID + 'snapshots');	
+		  return ReBaseURLHelper.rebaseURL('rest/network/' + networkID + '/snapshots');	
 	  };
 	  
 	  this.snapshotLogURLByID = function (snapshotID) {
