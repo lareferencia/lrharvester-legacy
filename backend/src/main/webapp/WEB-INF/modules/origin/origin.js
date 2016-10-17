@@ -143,43 +143,44 @@ angular.module('origin', [
     	    	else { // si es un origen ya grabada entonces se llama a la función update 
     	    	
     	    		
-    	    		$scope.origin_model.reload( function() {
-    	    		// se obtienen los sets originales antes de actualizar
-    	    		
-	    	    		$scope.origin_model.original_sets =  angular.copy( $scope.origin_model.getLinkItems("sets") );	
-	            	  
-	            	    // se desvinculan todos los sets 
-	            	  	$scope.origin_model.unbindCollection('sets', function( model ) {
-	  		    		
-					    		// Borra los sets antiguos
-					    		angular.forEach($scope.origin_model.original_sets, function(set, i) {
-					    			set.remove( function() {}, onSaveError);
-					    		}); 
-			  		    		
-			  		    	
-			  		    		// Para cada set en el formulario 
-			  		    		angular.forEach($scope.origin_model.form_sets, function(set, i) {
-			  		    			
-			  		    			// Se crea un objeto set en la bd
-			  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
-			  		    				
-			  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
-			  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
-			  		    						// Callback agregado exitosa del set al origin
-			      	    						function() { /* success callback */ }, 
-			      	    		    			onSaveError
-			      	    		    	); /* fin de addToCollection*/
-			  		    				
-			  		    			}, onSaveError);
-			  		    		}); 
-			  		    		
-			  		    	  // Se graba el modelo	
-			    		      $scope.origin_model.update(
-			    		    	function() { $scope.saved = true; },
-			    		    	onSaveError
-			    		      ); // fin de origin_model.update
-		    		
-	            	  	}, onSaveError);
+    	    		 // Se graba el modelo	
+	    		      $scope.origin_model.update( function() {
+		    		      
+			    		  	$scope.origin_model.original_sets =  angular.copy( $scope.origin_model.getLinkItems("sets") );	
+			            	  
+		            	    // se desvinculan todos los sets 
+		            	  	$scope.origin_model.unbindCollection('sets', function( model ) {
+		  		    		
+						    		// Borra los sets antiguos
+						    		angular.forEach($scope.origin_model.original_sets, function(set, i) {
+						    			set.remove( function() {}, onSaveError);
+						    		}); 
+				  		    		
+				  		    	
+				  		    		// Para cada set en el formulario 
+				  		    		angular.forEach($scope.origin_model.form_sets, function(set, i) {
+				  	 	    			
+				  		    			// Se crea un objeto set en la bd
+				  		    			DataSrv.add( RestURLHelper.setURL(), set, function(set_model) {
+				  		    				
+				  		    				// Si la creación es exitosa se agrega a la colección de sets del origin
+				  		    				$scope.origin_model.addToCollection('sets',  RestURLHelper.urlFromEntity(set_model),
+				  		    						// Callback agregado exitosa del set al origin
+				      	    						function() { /* success callback */ }, 
+				      	    		    			onSaveError
+				      	    		    	); /* fin de addToCollection*/
+				  		    				
+				  		    			}, onSaveError);
+				  		    		}); 
+				  		    		
+				  		    		//
+				  		    		$scope.saved = true; 
+		    		      
+	    		      },
+	    		    	onSaveError
+	    		      ); // fin de origin_model.update
+  		
+    	    	
 		
     	    		}); // fin de callback reload
     	    	} /* fin del origen ya grabado */
