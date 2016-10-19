@@ -29,6 +29,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 	public final static Operator OR = new Operator("OR", 2, Operator.Associativity.LEFT, 1);
 
 	public final static Pattern PATTERN = Pattern.compile("(.+)(==|=%)'(.*)'");
+	public final static Pattern TOKENIZER_PATTERN = Pattern.compile("\\(|\\)|[^\\s']+?=='[^']*'|[^\\s']+");
 
 	private static final Parameters PARAMETERS;
 
@@ -176,7 +177,17 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 
 	@Override
 	protected Iterator<String> tokenize(String expression) {
-		return Arrays.asList(expression.split("\\s+")).iterator();
+	
+		 List<String> tokens = new ArrayList<String>();
+		 Matcher m = TOKENIZER_PATTERN.matcher(expression);   // get a matcher object
+
+	      while(m.find()) {
+	         String token = expression.substring(m.start(), m.end() );
+	         tokens.add(token);
+	         ///System.out.println(token);
+	      }
+		
+		return tokens.iterator();
 	}
 
 }
