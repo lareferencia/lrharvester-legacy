@@ -29,7 +29,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 	public final static Operator OR = new Operator("OR", 2, Operator.Associativity.LEFT, 1);
 
 	public final static Pattern PATTERN = Pattern.compile("(.+)(==|=%)'(.*)'");
-	public final static Pattern TOKENIZER_PATTERN = Pattern.compile("\\(|\\)|[^\\s']+?=='[^']*'|[^\\s']+");
+	public final static Pattern TOKENIZER_PATTERN = Pattern.compile("\\(|\\)|[^\\s']+?(==|=%)'[^']*'|[^\\s']+");
 
 	private static final Parameters PARAMETERS;
 
