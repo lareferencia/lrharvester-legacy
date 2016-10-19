@@ -111,7 +111,7 @@ public class FieldExpressionEvaluator extends AbstractEvaluator<Boolean> {
 					break;
 				}
 
-				evaluationResults.add(result);
+				//evaluationResults.add(result);
 
 			}
 			
