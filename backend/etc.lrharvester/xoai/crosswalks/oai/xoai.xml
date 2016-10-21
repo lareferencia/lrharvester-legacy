@@ -248,10 +248,13 @@
                 <string name="operator">ends_with</string>
                 <list name="values">
                     <string>article</string>
-                    <!--  string>bachelorThesis</string-->
                     <string>masterThesis</string>
                     <string>doctoralThesis</string>
-                    <!--  string>book</string>
+                    <string>report</string>
+                  
+                    <!-- string>bachelorThesis</string>
+                  
+                    <string>book</string>
                     <string>bookPart</string>
                     <string>review</string>
                     <string>conferenceObject</string>
@@ -262,7 +265,7 @@
                     <string>annotation</string>
                     <string>contributionToPeriodical</string>
                     <string>patent</string>
-                    <string>other</string-->
+                    <string>other</string -->
                 </list>
             </Configuration>
         </CustomCondition>
