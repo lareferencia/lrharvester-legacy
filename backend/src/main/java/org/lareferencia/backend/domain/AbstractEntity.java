@@ -29,7 +29,7 @@ import org.springframework.hateoas.Identifiable;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class AbstractEntity implements Identifiable<Long> {
+public abstract class AbstractEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
