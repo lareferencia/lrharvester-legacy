@@ -2,7 +2,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<h3>Edición de orígen de datos</h3>
-		<p>Aqui ....</p>
+		<p>Aquí se editan los datos de la url de cosecha y los sets cosechados</p>
 
 
 	</div>
@@ -15,9 +15,14 @@
 	<div class="col-md-12">
 	
 		<button class="btn btn-info btn-sm pull-right" ui-sref="network.edit({ id: network_id })">
-			<span> Salir sin guardar </span>
+			<span> Volver </span>
 		</button>
+		<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
+		<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
+		<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
+		
 		<form name="originEditForm" sf-schema="origin_schema" sf-form="origin_form" sf-model="origin_model" ng-submit="onSubmit(originEditForm)"></form>
+		
 		<div ng-if="saved" class="alert alert-success" role="alert">Los datos han sido grabados con éxito</div>
 		<div ng-if="!is_form_valid" class="alert alert-danger" role="alert">Los datos no son válidos, no se han grabado</div>
 		<div ng-if="save_error" class="alert alert-danger" role="alert">No se han podido guardar los datos - {{save_error_message}}</div>
