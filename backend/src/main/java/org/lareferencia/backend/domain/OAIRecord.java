@@ -14,14 +14,11 @@
 package org.lareferencia.backend.domain;
 
 import java.util.Date;
-import java.util.regex.*;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
@@ -35,8 +32,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.lareferencia.backend.harvester.OAIRecordMetadata;
-import org.lareferencia.backend.util.RepositoryNameHelper;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
