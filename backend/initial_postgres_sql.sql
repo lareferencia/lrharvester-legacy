@@ -31,6 +31,7 @@ INSERT INTO property VALUES ('RUN_TRANSFORMATION', 'Ejecutar la transformación 
 INSERT INTO property VALUES ('RUN_VALIDATION', 'Ejecutar la validación de registros');
 INSERT INTO property VALUES ('RUN_VUFIND_INDEXING', 'Indexar los registros en Vufind');
 INSERT INTO property VALUES ('RUN_XOAI_INDEXING', 'Indexar los registros en XOAI (provider)');
+INSERT INTO property VALUES ('RUN_DIAGNOSTIC', 'Ejecutar los dianósticos');
 
 
 --
