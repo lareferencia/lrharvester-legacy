@@ -42,7 +42,7 @@
                 <field name="item.id"><xsl:value-of select="$record_id"/></field>
                
                 <!-- ID es parámetro -->
-                <field name="item.handle"><xsl:value-of select="$header_id"/></field>   
+                <field name="item.handle"><xsl:value-of select="replace($header_id,'&amp;','&amp;amp;')"/></field>   
                 
                 <field name="item.lastmodified"><xsl:value-of  select="format-dateTime(current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')"/></field>    
 
