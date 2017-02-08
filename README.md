@@ -4,15 +4,8 @@ Plataforma de cosecha / transformación / validación / publicación - LAReferen
 El presente es el desarrollo realizado en el marco del proyecto LA Referencia.
 Consiste en un agregador OAI-PMH que permite la cosecha, validación y tranformación de metadatos de diversos orígenes.
 
-En las páginas wiki se encuentra la documentación de manuales de instalación y mantenimiento.
+En las páginas wiki se encuentra la documentación de manuales de instalación y mantenimiento de las versiones 1.0 y 2.0 de la plataforma. 
 
-Requerimientos para la instalación.
+En este repositorio se encuentran alojadas las versiones desarrolladas hasta 2016, incluyendo la versión original del piloto original y su documentación. 
 
-* Java Sun JDK preferentemente versión 1.7
-* Apache Tomcat (preferentemente versión 7.0)
-* MySQL version 5.5 o posterior.
-o
-* Postegres 9.3
 
-La plataforma está testeada sobre Ubuntu 14.04LTS aunque puede funcionar adecuadamente en cualquier
-distribución de Linux.
