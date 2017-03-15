@@ -21,10 +21,8 @@
         
        
         <form-login 
-        	login-page="/login" 
-        	default-target-url="/" 
-        	authentication-failure-url="/login?errorLogin"/> 
-     
+        	default-target-url="/" ></form-login>
+        	
         <logout logout-url="/logout"/>
         
     </http>
