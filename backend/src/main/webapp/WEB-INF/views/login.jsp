@@ -67,6 +67,8 @@
 					<input name="j_password" type="password" id="login-password" class="round full-width-input" />
 				</p>
 				
+				<input type="hidden" name="${_csrf.parameterName}"   value="${_csrf.token}" />
+				
 				
 				<input  class="button round blue image-right ic-right-arrow" type="submit" value="Log in"/>    
 				
