@@ -8,13 +8,46 @@
      http://www.springframework.org/schema/security
      http://www.springframework.org/schema/security/spring-security-4.2.xsd">
      
+     
+     
+      <http auto-config="true" >
+        <intercept-url pattern="/public/**" access="permitAll" />
+        <intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/modules/**" access="permitAll" />
+        <intercept-url pattern="/login" access="permitAll" />
+        <intercept-url pattern="/favicon.ico" access="permitAll" />
+        
+        <intercept-url pattern="/**" access="hasRole('ADMIN')" />
+        
+       
+        <form-login 
+        	login-page="/login" 
+        	default-target-url="/" 
+        	authentication-failure-url="/login?errorLogin"/> 
+     
+        <logout logout-url="/logout"/>
+        
+    </http>
+  
+    <authentication-manager >
+        <authentication-provider>
+            <user-service>
+                <user name="${admin.user}" password="${admin.pass}" authorities="ROLE_ADMIN"/>
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+     
+     
+    
+     
+     <!-- 
      <http security="none" pattern="/public/**"/> 
      <http security="none" pattern="/static/**"/> 
      <http security="none" pattern="/modules/**"/> 
      <http security="none" pattern="/login"/> 
 
      
-     <!--  http security="none" pattern="/rest/**"/ -->
+     <http security="none" pattern="/rest/**" />
      
      <http security="none" pattern="/favicon.ico" />
      
@@ -38,4 +71,9 @@
          </user-service>
        </authentication-provider>
      </authentication-manager>
+     
+     
+      -->
+     
+     
    </bean:beans>
