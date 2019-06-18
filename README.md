@@ -8,11 +8,13 @@ En las páginas wiki se encuentra la documentación de manuales de instalación 
 
 En este repositorio se encuentran alojadas las versiones desarrolladas hasta 2016, incluyendo la versión original del piloto original y su documentación. 
 
-ATENCION: ESTA NO ES LA VERSIÓN ACTUAL DEL SOFTWARE
+ATENCIÓN: ESTA NO ES LA VERSIÓN ACTUAL DEL SOFTWARE
 ----------------------------------------
 
 VERSION ACTUAL EN PRODUCCIÓN: V3.3
+
 VERSION ACTUAL EN DESARROLLO: V3.4
+
 PROXIMA VERSIÓN: V4.0
 
 
