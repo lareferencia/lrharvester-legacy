@@ -16,7 +16,7 @@
 		<spring.framework.security.version>3.2.4.RELEASE</spring.framework.security.version>
 		<hibernate.version>4.3.5.Final</hibernate.version>
 		<hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
-		<jackson.version>2.4.1</jackson.version>
+		<jackson.version>2.9.10.4</jackson.version>
 		<spring.data.rest>2.2.0.M1</spring.data.rest>
 		<spring.data.jpa>1.7.0.M1</spring.data.jpa>
 		<logback.version>1.0.6</logback.version>
